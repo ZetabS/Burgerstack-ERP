@@ -11,17 +11,17 @@
 	<jsp:include page="common/menubarHO.jsp" />
 
     <div class="outer" align="center">
-        <h1>요청 발주 조회</h1>
+        <h1>요청 발주 목록조회</h1>
         <div class="filter" align="right">
             <select name="status" id="purchaseStatus">
                 <option>전체</option>
-                <option>완료</option>
                 <option>요청중</option>
+                <option>완료</option>
             </select>
             <input type="date">
             ~
             <input type="date">
-            <input type="text" value="검색어 입력">
+            <input type="text" placeholder="검색어 입력">
             <button type="button" onclick="alert('클릭!')">
                 <img src="..\..\..\resources\images\BS_logo2.png" style="width: 16px;"/>
                 검색
