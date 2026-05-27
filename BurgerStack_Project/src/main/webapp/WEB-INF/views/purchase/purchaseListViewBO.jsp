@@ -22,12 +22,9 @@
 			<option>완료</option>
 		</select>
 		
-		<select>
-			<option>기간선택</option>
-			<option>오늘</option>
-			<option>1주일</option>
-			<option>1개월</option>
-		</select>
+		<input type="date" id="startDate">
+
+		<input type="date" id="endDate"> 
 		
 		<div class="search-box">
 			<input type="text" placeholder="검색어 입력">
