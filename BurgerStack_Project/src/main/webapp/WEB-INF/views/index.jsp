@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,9 +10,14 @@
 <body>
 	
 	<!-- 항상 모든 페이지 상단에는 menubar.jsp 가 보여지게끔 include -->
-	<jsp:include page="common/menubarHO.jsp" />
+	<%--<jsp:include page="common/menubarHO.jsp" />--%>
+
+	<!-- 공통 메뉴바 -->
+	<t:menubarHO>
+		<!-- main context -->
+		<h1>버거스택 index 페이지</h1>
+	</t:menubarHO>
 	
-	<h1>버거스택 index 페이지</h1>
 	
 	<!-- 본사는 HO(HeadOffice), 점포는 BO(BranchOffice) 로 통일-->
 	
