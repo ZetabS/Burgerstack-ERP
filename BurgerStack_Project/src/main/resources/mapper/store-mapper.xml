@@ -1,0 +1,65 @@
+<mapper namespace="storeMapper">
+
+    <!-- 점주 존재 여부 확인 -->
+    <select id="checkOwner"
+            parameterType="string"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM MEMBER
+        WHERE MEMBER_ID = #{ownerId}
+
+    </select>
+
+    <!-- 점포 등록 -->
+    <insert id="insertStore"
+            parameterType="com.kh.burgerstack.store.model.vo.Store">
+
+        <selectKey keyProperty="storeNo"
+                   resultType="int"
+                   order="BEFORE">
+
+            SELECT SEQ_STORE_NO.NEXTVAL
+            FROM DUAL
+
+        </selectKey>
+
+        INSERT INTO STORE
+        (
+            STORE_NO,
+            STORE_NAME,
+            OWNER_ID,
+            STORE_PHONE,
+            STORE_ADDRESS
+        )
+        VALUES
+        (
+            #{storeNo},
+            #{storeName},
+            #{ownerId},
+            #{storePhone},
+            #{storeAddress}
+        )
+
+    </insert>
+
+    <!-- 전체 자재 기준 점포 재고 생성 -->
+    <insert id="insertStoreStockMaterial"
+            parameterType="int">
+
+        INSERT INTO STORE_STOCK
+        (
+            STORE_NO,
+            MATERIAL_NO,
+            STOCK_QTY
+        )
+
+        SELECT
+            #{storeNo},
+            MATERIAL_NO,
+            0
+        FROM MATERIAL
+
+    </insert>
+
+</mapper>
