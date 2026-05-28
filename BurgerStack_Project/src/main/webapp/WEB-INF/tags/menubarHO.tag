@@ -11,7 +11,7 @@
 
 <link rel="shortcut icon"
       type="image/x-icon"
-      href="/resources/images/BS_logo2.png" />
+      href="${pageContext.request.contextPath}/resources/images/BS_logo2.png" />
 
 <!-- Bootstrap -->
 <link rel="stylesheet"
@@ -142,27 +142,53 @@ body{
     padding-top:10px;
 }
 
+/* 메뉴 묶음 */
+.menu-item{
+    width:100%;
+}
+
+/* 상위 메뉴 */
 .menu-title{
     padding:15px 20px;
     font-size:15px;
     font-weight:600;
     background:#393E46;
+    cursor:pointer;
+    transition:background 0.2s;
 }
 
+.menu-title:hover{
+    background:#4b5457;
+}
+
+/* 서브메뉴 (기본 숨김) */
 .submenu{
     list-style:none;
     margin:0;
+    padding:0;
+    max-height:0; 
+
+    overflow:hidden; 
+
+    background:#2f3638; 
+    
+    transition:max-height 0.35s ease;
 }
 
-.submenu li{
-    padding:13px 35px;
-    font-size:14px;
-    border-bottom:1px solid #3b3b3b;
-    cursor:pointer;
-}
+/* 열렸을 때 */ 
+.menu-item.active .submenu{ 
+    max-height:500px; 
+} 
 
-.submenu li:hover{
-    background:#4b5457;
+/* submenu item */ 
+.submenu li{ 
+    padding:13px 35px; 
+    border-bottom:1px solid #3b3b3b; 
+    cursor:pointer; 
+    transition:background 0.2s; 
+} 
+.submenu li:hover{ 
+    background:#4b5457; 
 }
 
 /* =========================
@@ -188,10 +214,6 @@ body{
 }
 
 </style>
-
-</head>
-
-<body>
 
 <div class="wrap">
 
@@ -230,60 +252,89 @@ body{
 
             <div class="menu">
 
-                <div class="menu-title">
-                    점포 관리
+                <!-- 점포 관리 -->
+                <div class="menu-item">
+
+                    <div class="menu-title">
+                        점포 관리
+                    </div>
+
+                    <ul class="submenu">
+                        <li>점포 조회</li>
+                        <li>점포 등록</li>
+                    </ul>
+
                 </div>
 
-                <ul class="submenu">
-                    <li>점포 조회</li>
-                    <li>점포 등록</li>
-                </ul>
+                <!-- 점포 재고 모니터링 -->
+                <div class="menu-item">
 
-                <div class="menu-title">
-                    점포 재고 모니터링
+                    <div class="menu-title">
+                        점포 재고 모니터링
+                    </div>
+
+                    <ul class="submenu">
+                        <li>이상 재고 변동 조회</li>
+                        <li>점포별 재고 변동 이력 조회</li>
+                        <li>점포별 재고 현황 조회</li>
+                        <li>점포 재고 조정</li>
+                    </ul>
+
                 </div>
 
-                <ul class="submenu">
-                    <li>이상 재고 변동 조회</li>
-                    <li>점포별 재고 변동 이력 조회</li>
-                    <li>점포별 재고 현황 조회</li>
-                    <li>점포 재고 조정</li>
-                </ul>
+                <!-- 재고 관리 -->
+                <div class="menu-item">
 
-                <div class="menu-title">
-                    재고 관리
+                    <div class="menu-title">
+                        재고 관리
+                    </div>
+
+                    <ul class="submenu">
+                        <li>재고 조회</li>
+                        <li>재고 등록</li>
+                    </ul>
+
                 </div>
 
-                <ul class="submenu">
-                    <li>재고 조회</li>
-                    <li>재고 등록</li>
-                </ul>
+                <!-- 발주 관리 -->
+                <div class="menu-item">
 
-                <div class="menu-title">
-                    발주 관리
+                    <div class="menu-title">
+                        발주 관리
+                    </div>
+
+                    <ul class="submenu">
+                        <li>발주 조회</li>
+                    </ul>
+
                 </div>
 
-                <ul class="submenu">
-                    <li>발주 조회</li>
-                </ul>
+                <!-- 공지사항 -->
+                <div class="menu-item">
 
-                <div class="menu-title">
-                    공지사항
+                    <div class="menu-title">
+                        공지사항
+                    </div>
+
+                    <ul class="submenu">
+                        <li>공지사항 목록</li>
+                        <li>공지사항 등록</li>
+                    </ul>
+
                 </div>
 
-                <ul class="submenu">
-                    <li>공지사항 목록</li>
-                    <li>공지사항 등록</li>
-                </ul>
+                <!-- 문의사항 -->
+                <div class="menu-item">
 
-                <div class="menu-title">
-                    문의사항
+                    <div class="menu-title">
+                        문의사항
+                    </div>
+
+                    <ul class="submenu">
+                        <li>문의사항 목록</li>
+                    </ul>
+
                 </div>
-
-                <ul class="submenu">
-                    <li>문의사항 목록</li>
-                    <li>문의사항 등록</li>
-                </ul>
 
             </div>
 
@@ -301,9 +352,23 @@ body{
 
         </div>
 
+
     </div>
 
 </div>
+
+<script> 
+    const menuTitles = document.querySelectorAll('.menu-title'); 
+
+    menuTitles.forEach(title => { 
+        title.addEventListener('click', () => { 
+            const menuItem = title.parentElement; 
+
+            // 현재 메뉴 toggle 
+            menuItem.classList.toggle('active'); 
+        }); 
+    }); 
+</script>
 
 </body>
 </html>

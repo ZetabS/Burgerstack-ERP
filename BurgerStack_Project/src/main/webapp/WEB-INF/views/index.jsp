@@ -6,11 +6,14 @@
 <head>
 <meta charset="UTF-8">
 <link rel="shortcut icon" type="image/x-icon" href="resources/images/BS_logo2.png" />
+<STYle>
+
+</STYle>
 </head>
 <body>
 	
 	<!-- 항상 모든 페이지 상단에는 menubar.jsp 가 보여지게끔 include -->
-	<%--<jsp:include page="common/menubarHO.jsp" />--%>
+	<!-- <%--<jsp:include page="common/menubarHO.jsp" />--%> -->
 
 	<!-- 공통 메뉴바 -->
 	<t:menubarHO>
@@ -18,10 +21,9 @@
 		<h1>버거스택 index 페이지</h1>
 	</t:menubarHO>
 	
-	
 	<!-- 본사는 HO(HeadOffice), 점포는 BO(BranchOffice) 로 통일-->
 	
-	<!-- =========================================================
+	<!-- ========================================================= 
 	 🍔 Burger Stack ERP - INDEX PAGE TODO LIST
 	========================================================= -->
 	
