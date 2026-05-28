@@ -1,2 +1,174 @@
 @charset "UTF-8";
-/* combobox */
+/* 공통 CSS */
+/* 버튼 */
+.button-primary {
+    width : 100px;
+    height : 40px;
+    margin : 5px;
+    border-radius: 10px;
+    border : none;
+    color : white;
+    background-color : #1F2937;
+}
+.button-secondary {
+    width : 100px;
+    height : 40px;
+    margin : 5px;
+    border-radius: 10px;
+    border : none;
+    color : white;
+    background-color : #64748B;
+}
+.button-danger {
+    width : 100px;
+    height : 40px;
+    margin : 5px;
+    border-radius: 10px;
+    border : none;
+    color : white;
+    background-color : #EF4444;
+}
+
+
+/* 검색창 */
+.search-box {
+    display: flex;
+    align-items: center;
+}
+.search-box input[type="text"] {
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    border-right: none;
+    border-radius: 15px 0 0 15px;
+    outline: none;
+}
+.search-box button {
+    width : 50px;
+    height: 30px;
+    padding: 0 15px;
+    border: none;
+    background-color: #64748B;
+    border-radius: 0 15px 15px 0;
+    cursor: pointer;
+    margin-left: 0;        
+}
+.search-box>button>img {
+    height : 20px;
+    width : 20px;
+}
+
+
+/* 전체 목록 보기 */
+/* 스크롤 버전 */
+/* 전체 테이블 컨테이너 */
+.grid-table, .content {
+    width: 100%;
+    max-width: 800px; 
+    min-width : 600px;
+    margin: 0 auto;
+}
+
+.grid-header, .grid-row {
+    display: grid;
+    /* 컬럼 수에 따라 사이즈 조절 */
+    grid-template-columns: 50px minmax(150px, 1fr) 100px 60px 100px 100px;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+/* 헤더 스타일 */
+.grid-header {
+    font-weight: bold;
+    background-color: #22C55E;
+    padding: 10px 0px 10px 0px ; 
+}
+.grid-row {
+    padding : 5px 0px 5px 0px;
+}
+
+/* 헤더, 바디 공통 스타일 */
+.grid-header > div, .grid-row > div {
+    display : flex;
+    justify-content :center;
+    align-items: center;
+}
+/* 스크롤 영역 설정 */
+.grid-body {
+    max-height : 50%;
+    overflow-y : auto;
+}
+
+/* 스크롤바 */
+.grid-body::-webkit-scrollbar {
+    width: 5px;
+}
+.grid-body::-webkit-scrollbar-thumb {
+    background-color: #64748B;
+}
+.grid-body::-webkit-scrollbar-track {
+    background-color: none;
+}
+.grid-table {
+    scrollbar-gutter: stable; 
+}
+
+/* 바디 스타일 및 정렬 */
+.grid-row > div:nth-child(0) {
+    justify-content : center;
+} 
+
+.grid-row > div:nth-child(2) {
+    justify-content : left;
+    padding-left: 10px;
+} 
+.grid-row > div:nth-child(3) {
+    justify-content : right;
+    padding-right: 30px;
+}
+.grid-row:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+/* 주문수량 input 상자 스타일 조정 */
+.grid-row input[type="text"] {
+    width: 40px;
+    text-align: center;
+    padding: 2px;
+}
+
+/* 목록 아래 옵션 */
+.bottom-area {
+    display : flex;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    justify-content: space-between;
+    align-items: center;
+}
+.button-group>button {
+    width : 100px;
+    height : 40px;
+    margin : 5px;
+    border-radius: 10px;
+    border : none;
+    color : white;
+    background-color : #1F2937;
+}
+
+.middle-area {
+    display : flex;
+    justify-content: right;
+}
+.middle-area>* {
+    margin : 10px;
+}
+
+/* 파일 내보내기 */
+.file-export {
+    border-radius: 20px;
+    border : none;
+    color : white;
+    background-color : #64748B;
+    padding : 0px 20px 0px 20px;
+}
