@@ -6,9 +6,9 @@
 <head>
 <meta charset="UTF-8">
 <link rel="shortcut icon" type="image/x-icon" href="resources/images/BS_logo2.png" />
-<STYle>
+<style>
 
-</STYle>
+</style>
 </head>
 <body>
 	
@@ -19,7 +19,36 @@
 	<t:menubarHO>
 		<!-- main context -->
 		<h1>버거스택 index 페이지</h1>
+			<!-- 개별 상품 카드 -->
+			<div class="img-wrap" onclick="openDrawer('양상추', 
+											'resources/images/BS_logo2.png',
+											'1111',
+											'냉장식품',
+											'9900',
+											'양상추입니다',
+											'10',
+											'판매중')">
+				<b>양상추</b>
+				<br>
+				<img src="resources/images/BS_logo2.png">
+			</div>
+			<div class="img-wrap" onclick="openDrawer('토마토', 'resources/images/BS_logo3.png')">
+				<b>토마토</b>
+				<br>
+				<img src="resources/images/BS_logo3.png">
+			</div>
+		
+		<%-- <t:materialSidebar/> --%>
+		<t:sidebar>
+			<jsp:attribute name="sidebarTitle">
+				사이드바 제목
+			</jsp:attribute>
+			<jsp:body>
+				사이드바 내용
+			</jsp:body>
+		</t:sidebar>
 	</t:menubarHO>
+
 	
 	<!-- 본사는 HO(HeadOffice), 점포는 BO(BranchOffice) 로 통일-->
 	

@@ -111,10 +111,10 @@ body{
 }
 
 /* =========================
-    SIDEBAR
+    MENUBAR
 ========================= */
 
-.sidebar{
+.menubar{
     width:250px;
     background:#2d3436;
     color:white;
@@ -145,6 +145,16 @@ body{
 /* 메뉴 묶음 */
 .menu-item{
     width:100%;
+}
+
+.menu-item a {
+    color: inherit;          /* 부모 색상 사용 */
+    text-decoration: none;   /* 밑줄 제거 */
+}
+
+.menu-item a:hover {
+    color: inherit;          /* 부모 색상 사용 */
+    text-decoration: none;   /* 밑줄 제거 */
 }
 
 /* 상위 메뉴 */
@@ -214,7 +224,24 @@ body{
 }
 
 </style>
-
+</head>
+<body>
+    <%-- 
+		* menubar.jsp 에 공통 코드 작업을 해볼 것!!
+		- 1회성 alert 기능
+		- script 태그 내에서는 JSP Action Tag 들이 사용 불가함!! (자바스크립트 영역이기 때문)
+	--%>
+	<c:if test="${ not empty sessionScope.alertMsg }">
+		<script>
+			
+			let alertMsg = "${ sessionScope.alertMsg }";
+			
+			// alert(alertMsg);
+			alertify.alert(alertMsg, function(){ alertify.success('Ok'); });
+			
+		</script>
+		<c:remove var="alertMsg" scope="session" />
+	</c:if>
 <div class="wrap">
 
     <!-- HEADER -->
@@ -242,8 +269,8 @@ body{
 
     <div class="body-area">
 
-        <!-- SIDEBAR -->
-        <div class="sidebar">
+        <!-- MenuBar -->
+        <div class="menubar">
 
             <div class="profile-box">
                 <div class="profile-name">관리자</div>
