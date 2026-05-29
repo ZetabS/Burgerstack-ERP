@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-jsptaglibrary_3_0.xsd"
+	version="3.0">
+
+	<tlib-version>1.0</tlib-version>
+	<short-name>uri</short-name>
+	<uri>/WEB-INF/tld/uri.tld</uri>
+
+	<function>
+		<name>organize</name>
+		<function-class>com.kh.burgerstack.common.helper.QueryStringUtils</function-class>
+		<function-signature>java.lang.String
+			organize(java.lang.String)
+		</function-signature>
+	</function>
+	<function>
+		<name>replace</name>
+		<function-class>com.kh.burgerstack.common.helper.QueryStringUtils</function-class>
+		<function-signature>java.lang.String
+			replace(java.lang.String,java.lang.String,java.lang.String)
+		</function-signature>
+	</function>
+	<function>
+		<name>applyPagination</name>
+		<function-class>com.kh.burgerstack.common.helper.QueryStringUtils</function-class>
+		<function-signature>java.lang.String
+			applyPagination(java.lang.String,int,int)
+		</function-signature>
+	</function>
+</taglib>
