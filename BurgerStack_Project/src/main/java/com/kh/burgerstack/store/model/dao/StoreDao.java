@@ -1,9 +1,15 @@
 package com.kh.burgerstack.store.model.dao;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.catalina.Manager;
+import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.kh.burgerstack.store.model.vo.SelectStoreList;
 import com.kh.burgerstack.store.model.vo.Store;
 
 @Repository
@@ -37,4 +43,60 @@ public class StoreDao {
                 storeNo
         );
     }
+    
+    // 점포 목록 조회
+    public List<SelectStoreList> selectStoreList (
+    		SqlSession sqlSession,
+    		Map<String, String>map) {
+    	
+    	return sqlSession.selectOne(
+    			"storeMapper.selectStoreList",map);
+    }   
+    
+    // 점포 개수 조회
+	public int selectStoreCount (
+			SqlSession sqlSession,
+			Map<String, String>map) {
+		
+		return sqlSession.selectOne(
+				"storeMapper.selectStoreCount", map);
+	}
+	
+	public Store selectStoreDetail(SqlSession sqlSession, int storeCode) {
+		
+		return sqlSession.selectOne("storeMapper.selectStoreDetail", storeCode);
+	}
+	
+	public Manager selectStoreManager(SqlSession sqlSession, int storeCode) {
+		
+		return sqlSession.selectOne("storeMapper.selectStoreManager", storeCode);
+	}
+	
+	public int updateStore(SqlSession sqlSession, Store store) {
+		
+		return sqlSession.update("storeMapper.updateStore", store);
+	}
+	
+	public int deleteStore(SqlSession sqlSession, int storeCode) {
+		
+		return sqlSession.update("storeMapper.deleteStore", storeCode);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
+
+	
+
+
+
+
+
+
