@@ -16,7 +16,7 @@
 	<!-- <%--<jsp:include page="common/menubarHO.jsp" />--%> -->
 
 	<!-- 공통 메뉴바 -->
-	<t:menubarHO>
+	<t:menubarBO>
 		<!-- main context -->
 		<h1>버거스택 index 페이지</h1>
 			<!-- 개별 상품 카드 -->
@@ -39,7 +39,7 @@
 			</div>
 			<t:pagination pageInfo="${pageInfo}" />
 		
-		<%-- <t:materialSidebar/> --%>
+		<!-- <%-- <t:materialSidebar/> --%> -->
 		<t:sidebar>
 			<jsp:attribute name="sidebarTitle">
 				사이드바 제목
@@ -48,7 +48,7 @@
 				사이드바 내용
 			</jsp:body>
 		</t:sidebar>
-	</t:menubarHO>
+	</t:menubarBO>
 
 	
 	<!-- 본사는 HO(HeadOffice), 점포는 BO(BranchOffice) 로 통일-->
