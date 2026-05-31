@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.burgerstack.file.FileMapper">
+    <insert id="insert" parameterType="StoredFile">
+        /* id="insert" */
+        <selectKey keyProperty="fileId" resultType="long" order="BEFORE">
+            SELECT SEQ_FILE.NEXTVAL
+            FROM DUAL
+        </selectKey>
+        INSERT INTO FILES (
+            FILE_ID
+           ,ORIGINAL_NAME
+           ,STORED_NAME
+           ,STORAGE_PATH
+           ,MIME_TYPE
+           ,FILE_SIZE
+           ,CREATED_BY
+        ) VALUES (
+            #{fileId}
+           ,#{originalName}
+           ,#{storedName}
+           ,#{storagePath}
+           ,#{mimeType}
+           ,#{fileSize}
+           ,#{createdBy}
+        )
+    </insert>
+
+    <select id="findById" parameterType="long" resultType="StoredFile">
+        /* id="findById" */
+         SELECT *
+           FROM FILES
+          WHERE FILE_ID = #{fileId}
+    </select>
+
+    <update id="markDeleted" parameterType="long">
+        /* id="markDeleted" */
+         UPDATE FILES
+            SET DELETED_AT = SYSDATE
+          WHERE FILE_ID = #{fileId}
+    </update>
+</mapper>
