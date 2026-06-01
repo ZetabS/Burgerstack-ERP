@@ -67,9 +67,9 @@
                         <td>양상추</td>
                         <td>20</td>
                         <td><input type="number" id="inputStuff"></td>
-                        <td><input type="number" id="badStuff"></td>
+                        <td><input type="number" name="defect_quantity" min="0"></td>
                         <td>
-                            <select id="badReason" disabled>
+                            <select name="defect_reason" disabled>
                                 <option value="" hidden selected disabled>선택</option>
                                 <option>파손</option>
                                 <option>유통기한 임박</option>
@@ -86,9 +86,9 @@
                         <td>양상추</td>
                         <td>20</td>
                         <td><input type="number" id="inputStuff"></td>
-                        <td><input type="number" id="badStuff"></td>
+                        <td><input type="number" name="defect_quantity" min="0"></td>
                         <td>
-                            <select id="badReason" disabled>
+                            <select name="defect_reason" disabled>
                                 <option value="" hidden selected disabled>선택</option>
                                 <option>파손</option>
                                 <option>유통기한 임박</option>
@@ -114,23 +114,31 @@
 	</t:menubarBO>
 
     <script>
-        $(document).ready(function() {
-            // #badStuff 입력창의 값이 변경될 때마다 실행
-            $('#badStuff').on('input', function() {
-                // 입력된 값을 숫자로 변환 (빈 값일 경우 0 처리)
-                var badCount = parseInt($(this).val()) || 0;
+        // 불량수량 입력창의 값이 변경될 때마다 실행
+        $(document).on('input change', 'input[name="defect_quantity"]', function() {
+            let $row = $(this).closest('tr'); // 현재 행(row) 찾기
+            let $reasonSelect = $row.find('select[name="defect_reason"]'); // 불량사유 select
+            let defectQty = parseInt($(this).val());
 
-                // 7번째 td '안에 있는' select 태그를 찾습니다.
-                var $selectBox = $('.table td').find('select');
+            // 1) 빈 값이거나 숫자가 아닌 경우 0으로 처리
+            if (isNaN(defectQty)) {
+                defectQty = 0;
+            }
 
-                if (badCount > 0) {
-                    // 불량수량이 0보다 크면 비활성화 해제
-                    $selectBox.attr('disabled', false);
-                } else {
-                    // 값이 0 이하이면 다시 비활성화
-                    $selectBox.prop('disabled', true);
-                }
-            });
+            // 2) [핵심 추가] 불량수량이 0 미만으로 내려가려고 하면 0으로 강제 고정
+            if (defectQty < 0) {
+                defectQty = 0;
+                $(this).val(0); // input창의 값도 0으로 변경
+            }
+
+            // 3) 조건에 따른 불량사유 select 제어
+            if (defectQty >= 1) {
+                // 불량 수량이 1 이상일 때만 활성화
+                $reasonSelect.prop('disabled', false);
+            } else {
+                // 0일 때는 비활성화 및 '선택'으로 변경
+                $reasonSelect.val('').prop('disabled', true); 
+            }
         });
     </script>
 </body>

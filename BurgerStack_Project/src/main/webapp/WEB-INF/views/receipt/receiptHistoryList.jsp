@@ -33,10 +33,10 @@
             <table>
                 <tr>
                     <td>
-                        매장명 : ${requestScope.receiveId}
+                        매장명 : ${requestScope.storeId}
                     </td>
                     <td>
-                        매장 담당자 : ${requestScope.receiveDate}
+                        매장 담당자 : ${requestScope.receivedBy}
                     </td>
                 </tr>
             </table>
