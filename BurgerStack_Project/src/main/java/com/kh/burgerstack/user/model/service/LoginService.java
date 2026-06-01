@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kh.burgerstack.user.model.dao.LoginDao;
-import com.kh.burgerstack.user.model.vo.User;
+import com.kh.burgerstack.user.model.vo.LoginUser;
 
 @Service
 public class LoginService {
@@ -14,11 +14,11 @@ public class LoginService {
 	private SqlSessionTemplate sqlSession;
 	
 	@Autowired
-	private LoginDao memberDao;
-	
-	public User loginUser(User u) {
+	private LoginDao loginDao;
+
+	public LoginUser login(String loginId) {
 		
-		return memberDao.loginUser(sqlSession, u);
-	}
-	
+		return loginDao.login(loginId);
+		
+	}	
 }

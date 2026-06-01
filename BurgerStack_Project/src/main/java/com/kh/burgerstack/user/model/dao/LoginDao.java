@@ -2,13 +2,17 @@ package com.kh.burgerstack.user.model.dao;
 
 import org.springframework.stereotype.Repository;
 
-import com.kh.burgerstack.user.model.vo.User;
+import com.kh.burgerstack.user.model.vo.LoginUser;
+
+import lombok.RequiredArgsConstructor;
 
 @Repository
+@RequiredArgsConstructor
 public class LoginDao {
-
-	public User loginUser(SqlSessionTemplate sqlSesion, User u);
 	
-	return sqlSession.selectOne();
+	private final UserMapper userMapper;
 
+	public LoginUser login(String loginId) {
+		return userMapper.login(loginId);
+	}
 }

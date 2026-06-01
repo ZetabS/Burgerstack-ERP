@@ -891,7 +891,7 @@ INSERT INTO USERS (
     , UPDATED_AT
 ) VALUES ( SEQ_USER.NEXTVAL
          , 'admin'
-         , 'adminpass' -- TODO: 해시된 비밀번호로 수정
+         , '$2a$10$A/GEtn8aVhdFaHXV1wTeeefiNg7Y5j08J6Ry1g59lGlAekUOXoBFq'
          , '관리자'
          , '010-0000-0000'
          , 'admin@burgerstack.com'
@@ -913,7 +913,7 @@ INSERT INTO USERS (
     , UPDATED_AT
 ) VALUES ( SEQ_USER.NEXTVAL
          , 'owner01'
-         , 'pass01' -- TODO: 해시된 비밀번호로 수정
+         , '$2a$10$lDCgUXLq5qKbDY0NIs/JvuwH6flkRDSL0Hjwjw0Jo/lfDWd0FBSOO'
          , '홍길동'
          , '010-1234-5678'
          , 'gd.hong@burgerstack.com'

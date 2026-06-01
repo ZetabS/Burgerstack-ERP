@@ -1,136 +1,34 @@
 package com.kh.burgerstack.user.model.vo;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class User {
-		
-		private int userNo;
-		private String userId;
-		private String userPwd;
-		private String userName;
-		private String phone;
-		private String email;
-		private Date enrollDate;
-		private Date modifyDate;
-		private String status;
-		
-		
-		public User() { }
+	
+			private Long userId;				//	USER_ID    NUMBER NOT NULL 
+			private String loginId;				//	LOGIN_ID   VARCHAR2(50) NOT NULL 
+			private String password;			//	PASSWORD   VARCHAR2(255) NOT NULL 
+			private String userName;			//	USER_NAME  VARCHAR2(50) NOT NULL 
+			private String phone;				//	PHONE      VARCHAR2(30) 
+			private String email;				//	EMAIL      VARCHAR2(100) 
+			private String role;				//	ROLE       VARCHAR2(20) DEFAULT 'OWNER' NOT NULL 
+			private String status; 				//	STATUS     VARCHAR2(20) DEFAULT 'ACTIVE' NOT NULL 
+			private Long createdBy;				//	CREATED_BY NUMBER 
+			private LocalDateTime createdAt;	//	CREATED_AT DATE DEFAULT SYSDATE NOT NULL 
+			private Long updatedBy;				//	UPDATED_BY NUMBER 
+			private LocalDateTime updatedAt;	//	UPDATED_AT DATE 
 
-
-		public User(int userNo, String userId, String userPwd, String userName, String phone, String email,
-				Date enrollDate, Date modifyDate, String status) {
-			super();
-			this.userNo = userNo;
-			this.userId = userId;
-			this.userPwd = userPwd;
-			this.userName = userName;
-			this.phone = phone;
-			this.email = email;
-			this.enrollDate = enrollDate;
-			this.modifyDate = modifyDate;
-			this.status = status;
-		}
-
-
-		public int getUserNo() {
-			return userNo;
-		}
-
-
-		public void setUserNo(int userNo) {
-			this.userNo = userNo;
-		}
-
-
-		public String getUserId() {
-			return userId;
-		}
-
-
-		public void setUserId(String userId) {
-			this.userId = userId;
-		}
-
-
-		public String getUserPwd() {
-			return userPwd;
-		}
-
-
-		public void setUserPwd(String userPwd) {
-			this.userPwd = userPwd;
-		}
-
-
-		public String getUserName() {
-			return userName;
-		}
-
-
-		public void setUserName(String userName) {
-			this.userName = userName;
-		}
-
-
-		public String getPhone() {
-			return phone;
-		}
-
-
-		public void setPhone(String phone) {
-			this.phone = phone;
-		}
-
-
-		public String getEmail() {
-			return email;
-		}
-
-
-		public void setEmail(String email) {
-			this.email = email;
-		}
-
-
-		public Date getEnrollDate() {
-			return enrollDate;
-		}
-
-
-		public void setEnrollDate(Date enrollDate) {
-			this.enrollDate = enrollDate;
-		}
-
-
-		public Date getModifyDate() {
-			return modifyDate;
-		}
-
-
-		public void setModifyDate(Date modifyDate) {
-			this.modifyDate = modifyDate;
-		}
-
-
-		public String getStatus() {
-			return status;
-		}
-
-
-		public void setStatus(String status) {
-			this.status = status;
-		}
-
-
-		@Override
-		public String toString() {
-			return "User [userNo=" + userNo + ", userId=" + userId + ", userPwd=" + userPwd + ", userName=" + userName
-					+ ", phone=" + phone + ", email=" + email + ", enrollDate=" + enrollDate + ", modifyDate="
-					+ modifyDate + ", status=" + status + "]";
-		}
-		
-
-		
+			
 }
+
 	
