@@ -37,6 +37,7 @@
 				<br>
 				<img src="resources/images/BS_logo3.png">
 			</div>
+			<t:pagination pageInfo="${pageInfo}" />
 		
 		<%-- <t:materialSidebar/> --%>
 		<t:sidebar>

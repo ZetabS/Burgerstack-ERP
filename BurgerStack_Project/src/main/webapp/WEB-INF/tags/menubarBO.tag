@@ -44,6 +44,22 @@ body{
     flex-direction:column;
 }
 
+/* 모든 하이퍼링크의 기본 스타일 제거 및 정렬 */
+.link {
+  display: inline-flex;    /* 내부 요소(이미지, 텍스트 등)를 가로로 일렬 정렬 */
+  align-items: center;     /* 세로축 중앙 정렬 */
+  text-decoration: none;   /* 밑줄 제거 */
+  color: inherit;          /* 글자 색상이 파란색으로 변하지 않고 부모의 색상을 따름 */
+}
+
+/* 마우스를 올리거나 클릭했을 때도 스타일 유지 */
+.link:hover, 
+.link:focus, 
+.link:active {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* =========================
     HEADER
 ========================= */
@@ -69,10 +85,27 @@ body{
     gap:15px;
 }
 
+/* 1. 하이퍼링크 스타일 초기화 및 가로 정렬 */
+.brand-link {
+  display: inline-flex;    /* 내부 요소들을 한 줄로 정렬 */
+  align-items: center;     /* 이미지와 텍스트의 세로 중앙 맞춤 */
+  text-decoration: none;   /* 하이퍼링크 밑줄 제거 */
+  color: inherit;          /* 부모 요소의 글자 색상을 그대로 따라감 (또는 #ffffff 등 원하는 색상 지정) */
+}
+
+/* 2. 마우스를 올렸을 때도 스타일이 유지되도록 설정 (선택사항) */
+.brand-link:hover, 
+.brand-link:focus, 
+.brand-link:active {
+  text-decoration: none;
+  color: inherit;
+}
+
 .logo{
-    font-size:28px;
-    font-weight:700;
-    color:#ff6b00;
+    margin-right: 8px;       /* 로고 이미지 오른쪽에 약간의 공백 추가 */
+    /* 필요하다면 이미지 크기 고정 */
+    width: 32px; 
+    height: 32px;
 }
 
 .system-title{
@@ -248,16 +281,10 @@ body{
     <div class="header">
 
         <div class="header-left">
-
-            <div class="logo">
-                <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png"
-                     style="width:32px;">
-            </div>
-
-            <div class="system-title">
-                BurgerStack ERP
-            </div>
-
+            <a href="/burgerstack/owner/dashboard" class="brand-link">
+                <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png" alt="logo" class="logo">
+                <span class="system-title">BurgerStack ERP</span>
+            </a>
         </div>
 
         <div class="header-right">
@@ -273,11 +300,23 @@ body{
         <div class="menubar">
 
             <div class="profile-box">
-                <div class="profile-name">강남H</div>
+                <span class="profile-name">강남H</span>
+                <span class="profile-role"><a class="link" href="/burgerstack/owner/mypage">마이페이지</a></span>
                 <div class="profile-role">점주</div>
             </div>
 
             <div class="menu">
+
+                <!-- 점포 관리 -->
+                <div class="menu-item">
+                    <div class="menu-title">
+                        점포 관리
+                    </div>
+
+                    <ul class="submenu" >
+                        <a href="/burgerstack/owner/store"><li>입고 예정 목록</li></a>
+                    </ul>
+                </div>
 
                 <!-- 입고 관리 -->
                 <div class="menu-item">
@@ -286,21 +325,8 @@ body{
                     </div>
 
                     <ul class="submenu" >
-                        <a href="/burgerstack/receive/receiveForm"><li>입고 처리</li></a>
-                        <a href="/burgerstack/receive/receivePlanList"><li>입고 예정 목록</li></a>
-                        <a href="/burgerstack/receive/receiveHistoryList"><li>입고 이력 목록</li></a>
-                    </ul>
-                </div>
-
-                <!-- 발주 관리 -->
-                <div class="menu-item">
-                    <div class="menu-title">
-                        발주 관리
-                    </div>
-
-                    <ul class="submenu">
-                        <li>발주 요청</li>
-                        <li>발주 목록 조회</li>
+                        <a href="/burgerstack/owner/purchases?status=APPROVED"><li>입고 예정 목록</li></a>
+                        <a href="/burgerstack/owner/receipts"><li>입고 이력 목록</li></a>
                     </ul>
                 </div>
 
@@ -311,8 +337,8 @@ body{
                     </div>
 
                     <ul class="submenu">
-                        <li>일일 재고 마감</li>
-                        <li>마감 이력 목록</li>
+                        <a href="/burgerstack/owner/closings/new"><li>일일 재고 마감</li></a>
+                        <a href="/burgerstack/owner/closings"><li>마감 이력 목록</li></a>
                     </ul>
                 </div>
 
@@ -323,11 +349,22 @@ body{
                     </div>
 
                     <ul class="submenu">
-                        <li>재고 현황 조회</li>
-                        <li>재고 수량 조정</li>
-                        <li>재고 변동 이력 조회</li>
-                        <li>이상 재고 변동 조회</li>
-                        <li>안전 재고 수정</li>
+                        <a href="/burgerstack/owner/inventories"><li>재고 목록 조회</li></a>
+                        <a href="/burgerstack/owner/inventory-transactions?abnormalOnly=true"><li>이상 재고 변동 조회</li></a>
+                        <a href="/burgerstack/owner/inventory-transactions"><li>재고 변동 이력 조회</li></a>
+                        <a href="/burgerstack/owner/inventories/{inventoryId}/edit"><li>재고 수량 조정</li></a>
+                    </ul>
+                </div>
+
+                <!-- 발주 관리 -->
+                <div class="menu-item">
+                    <div class="menu-title">
+                        발주 관리
+                    </div>
+
+                    <ul class="submenu">
+                        <a href="/burgerstack/owner/purchases/new"><li>발주 요청</li></a>
+                        <a href="/burgerstack/owner/purchases"><li>발주 목록 조회</li></a>
                     </ul>
                 </div>
 
@@ -338,8 +375,7 @@ body{
                     </div>
 
                     <ul class="submenu">
-                        <li>자재 목록 조회</li>
-                        <li>자재 상세 조회</li>
+                        <a href="/burgerstack/owner/materials"><li>자재 목록 조회</li></a>
                     </ul>
                 </div>
 
@@ -350,7 +386,7 @@ body{
                     </div>
 
                     <ul class="submenu">
-                        <li>공지사항 목록</li>
+                        <a href="/burgerstack/owner/notices"><li>공지사항 목록</li></a>
                     </ul>
                 </div>
 
@@ -361,8 +397,8 @@ body{
                     </div>
 
                     <ul class="submenu">
-                        <li>문의사항 목록</li>
-                        <li>문의사항 등록</li>
+                        <a href="/burgerstack/owner/inquiries"><li>문의사항 목록</li></a>
+                        <a href="/burgerstack/owner/inquiries/new"><li>문의사항 등록</li></a>
                     </ul>
                 </div>
 

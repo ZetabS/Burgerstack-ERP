@@ -8,8 +8,8 @@
 
 사용 방법:
 ```
-<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
-<ui:pagination pageInfo="${pageInfo}" />
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<t:pagination pageInfo="${pageInfo}" />
 ```
 \ --%>
 
