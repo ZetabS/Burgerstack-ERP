@@ -67,14 +67,12 @@ public class StoreService {
     	this.sqlSession = sqlSession;
     }
     
-    public Store selectStoreDetail (int storeCode) {
-    	return storeDao.selectStoreDetail(sqlSession, storeCode);
- 
+    public Store selectStoreDetail(int storeCode) {
+        return storeDao.selectStoreDetail(storeCode);
     }
- 
-    public Manager selectStoreManager (int storeCode) {
-    	return (Manager) storeDao.selectStoreManager(sqlSession, storeCode);
- 
+
+    public Manager selectStoreManager(int storeCode) {
+        return storeDao.selectStoreManager(storeCode);
     }
     
     public int updateStore(Store store) {

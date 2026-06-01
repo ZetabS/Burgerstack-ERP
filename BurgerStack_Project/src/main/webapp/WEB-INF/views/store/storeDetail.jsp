@@ -13,6 +13,9 @@
 
 <h1>점포 상세 정보 조회</h1>
 
+<p>loginUser: ${loginUser}</p>
+<p>role: ${loginUser.userRole}</p>
+
 <form action="${pageContext.request.contextPath}/store/update" method="post">
 
     <input type="hidden" name="storeCode" value="${store.storeCode}">
@@ -49,10 +52,8 @@
             <c:if test="${loginUser.userRole ne 'ADMIN'}">readonly</c:if>>
     </div>
 
-    <c:if test="${loginUser.userRole eq 'ADMIN'}">
-        <button type="submit">수정</button>
-        <button type="button" onclick="deleteStore('${store.storeCode}')">삭제</button>
-    </c:if>
+	    <button type="submit">수정</button>
+		<button type="button" onclick="deleteStore('${store.storeCode}')">삭제</button>
 
     <button type="button"
         onclick="location.href='${pageContext.request.contextPath}/store/list'">

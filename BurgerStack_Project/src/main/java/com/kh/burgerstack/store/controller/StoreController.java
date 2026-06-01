@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.kh.burgerstack.common.model.vo.PageInfo;
+import com.kh.burgerstack.common.template.Pagination;
 import com.kh.burgerstack.member.model.vo.Member;
 import com.kh.burgerstack.store.model.service.StoreService;
 import com.kh.burgerstack.store.model.vo.Manager;
@@ -29,7 +30,7 @@ public class StoreController {
     @Autowired
     private StoreService storeService;
 
-    @PostMapping("insertStore.st")
+    @PostMapping("insertStore")
     public String insertStore(Store store,
                               String createStockYn) {
 
@@ -41,7 +42,7 @@ public class StoreController {
 
         if(result > 0) {
 
-            return "redirect:/storeList.st";
+            return "redirect:/store/list";
 
         } else {
 
@@ -49,32 +50,36 @@ public class StoreController {
         }
     }
     
+    @GetMapping("/enroll")
+    public String storeEnrollForm() {
+        return "store/storeEnrollForm";
+    }
+    
     @GetMapping("/list")
-    public String selectStoreList (
-    		String status,
-    		String startDate,
-    		String endDate,
-    		String keyword,
-    		Model model) {
-    	
-    	Map<String, String> map = new HashMap<>();
-    	
-    	map.put("status", status);
-    	map.put("startDate", startDate);
-    	map.put("endDate", endDate);
-    	map.put("keyword", keyword);
-    	
-    	// 테이블 만들기 전 임시 화면 확인용
-        model.addAttribute("count", 0);
+    public String selectStoreList(
+            @RequestParam(value="currentPage", defaultValue="1") int currentPage,
+            String status,
+            String startDate,
+            String endDate,
+            String keyword,
+            Model model) {
+
+        Map<String, String> map = new HashMap<>();
+
+        map.put("status", status);
+        map.put("startDate", startDate);
+        map.put("endDate", endDate);
+        map.put("keyword", keyword);
+
+        int count = storeService.selectStoreCount(map);
+
+        PageInfo pi = Pagination.getPageInfo(count, currentPage, 10, 10);
+
+        model.addAttribute("count", count);
+        model.addAttribute("pi", pi);
         model.addAttribute("list", new ArrayList<>());
-    	
-    	// 점포 목록
-    	// model.addAttribute(
-    			// "count",
-    			// storeService.selectStoreCount(map));
-    	
-    	return "store/storeListView";
-    	
+
+        return "store/storeListView";
     }
     
     public StoreController(StoreService storeService) {
@@ -83,18 +88,22 @@ public class StoreController {
     }
     
     @GetMapping("/detail")
-    public String selectStoreDetail(@RequestParam int storeCode,
-    								Model model,
-    								HttpSession session) {
-    	
-    	Store store = storeService.selectStoreDetail(storeCode);
-    	Manager manager = (Manager) storeService.selectStoreManager(storeCode);
-    	
-    	model.addAttribute("store", store);
-    	model.addAttribute("manager", manager);
-    	
-    	return "store/storeDetail";
-    	
+    public String selectStoreDetail(@RequestParam("storeCode") int storeCode,
+                                    Model model,
+                                    HttpSession session) {
+
+        System.out.println("넘어온 storeCode = " + storeCode);
+
+        Store store = storeService.selectStoreDetail(storeCode);
+        Manager manager = storeService.selectStoreManager(storeCode);
+
+        Member loginUser = (Member)session.getAttribute("loginUser");
+
+        model.addAttribute("loginUser", loginUser);
+        model.addAttribute("store", store);
+        model.addAttribute("manager", manager);
+
+        return "store/storeDetail";
     }
     
     // 수정

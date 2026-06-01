@@ -11,8 +11,8 @@
             resultType="int">
 
         SELECT COUNT(*)
-        FROM MEMBER
-        WHERE MEMBER_ID = #{ownerId}
+        FROM MANAGER
+        WHERE MANAGER_ID = #{ownerId}
 
     </select>
 
@@ -154,32 +154,35 @@
 
 
 	<select id="selectStoreDetail"
-			parameterType="int"
-			resultType="com.kh.burgerstack.store.model.vo.Store">
-			
-			SELECT
-				STORE_CODE AS storeCode,
-				STORE_NAME AS storeName,
-				STORE_STATUS AS storeStatus,
-				STORE_PHONE AS storePhone,
-				STORE_ADDRESS AS storeAddress,
-				STORE_DETAIL_ADDRESS AS storeDetailAddress
-			FROM STORE
-			WHERE STORE_CODE = #{storeCode}
-	
+        parameterType="int"
+        resultType="com.kh.burgerstack.store.model.vo.Store">
+
+    SELECT
+        STORE_CODE AS storeCode,
+        STORE_NAME AS storeName,
+        STORE_STATUS AS storeStatus,
+        STORE_PHONE AS storePhone,
+        STORE_ADDRESS AS storeAddress,
+        STORE_DETAIL_ADDRESS AS storeDetailAddress
+    FROM BURGERSTACK.STORE
+    WHERE STORE_CODE = #{storeCode}
+
 	</select>
-	<select id="selectStoreManager"
-			parameterType="int"
-			resultType="com.kh.burgerstack.store.model.vo.Manager">
 	
-			SELECT
-				M.MANAGER_ID AS managerId,
-				M.MANAGER_NAME AS managerName,
-				M.MANAGER_PHONE AS managerPhone,
-				M.MANAGER_EMAIL AS managerEmail
-			FROM MANAGER M
-			JOIN STORE S ON M.MANAGER_ID = S.MANAGER_ID
-			WHERE S.STORE_CODE = #{storeCode}
+	<select id="selectStoreManager"
+        parameterType="int"
+        resultType="com.kh.burgerstack.store.model.vo.Manager">
+
+	    SELECT
+	        M.MANAGER_ID AS managerId,
+	        M.MANAGER_NAME AS managerName,
+	        M.MANAGER_PHONE AS managerPhone,
+	        M.MANAGER_EMAIL AS managerEmail
+	    FROM BURGERSTACK.MANAGER M
+	    JOIN BURGERSTACK.STORE S
+	    ON M.MANAGER_ID = S.MANAGER_ID
+	    WHERE S.STORE_CODE = #{storeCode}
+	
 	</select>
 			
 			

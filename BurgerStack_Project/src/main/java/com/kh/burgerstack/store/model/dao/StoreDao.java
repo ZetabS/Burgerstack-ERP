@@ -3,12 +3,13 @@ package com.kh.burgerstack.store.model.dao;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.catalina.Manager;
+
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.kh.burgerstack.store.model.vo.Manager;
 import com.kh.burgerstack.store.model.vo.SelectStoreList;
 import com.kh.burgerstack.store.model.vo.Store;
 
@@ -49,7 +50,7 @@ public class StoreDao {
     		SqlSession sqlSession,
     		Map<String, String>map) {
     	
-    	return sqlSession.selectOne(
+    	return sqlSession.selectList(
     			"storeMapper.selectStoreList",map);
     }   
     
@@ -62,14 +63,12 @@ public class StoreDao {
 				"storeMapper.selectStoreCount", map);
 	}
 	
-	public Store selectStoreDetail(SqlSession sqlSession, int storeCode) {
-		
-		return sqlSession.selectOne("storeMapper.selectStoreDetail", storeCode);
+	public Store selectStoreDetail(int storeCode) {
+	    return sqlSession.selectOne("storeMapper.selectStoreDetail", storeCode);
 	}
-	
-	public Manager selectStoreManager(SqlSession sqlSession, int storeCode) {
-		
-		return sqlSession.selectOne("storeMapper.selectStoreManager", storeCode);
+
+	public Manager selectStoreManager(int storeCode) {
+	    return sqlSession.selectOne("storeMapper.selectStoreManager", storeCode);
 	}
 	
 	public int updateStore(SqlSession sqlSession, Store store) {
