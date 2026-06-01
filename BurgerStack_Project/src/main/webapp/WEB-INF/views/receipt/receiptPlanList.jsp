@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,6 +55,14 @@
             
             <tbody>
                 <tr>
+                    <td>${requestScope.receipts.receiptId}</td>
+                    <td>${requestScope.purchaseRequests.status}</td>
+                    <td>토마토 외 5건</td>
+                    <td>150,000</td>
+                    <td>${requestScope.receipts.receivedAT}</td>
+                    <td>${requestScope.purchaseRequests.updatedAT}</td>
+                </tr>  
+                <tr>
                     <td>1111</td>
                     <td>배송중</td>
                     <td>토마토 외 5건</td>
@@ -70,6 +79,7 @@
                 </tr>      
             </tbody>
         </table>
+        <ui:pagination pageInfo="${pageInfo}"></ui:pagination>
 	</t:menubarBO>
 </body>
 </html>

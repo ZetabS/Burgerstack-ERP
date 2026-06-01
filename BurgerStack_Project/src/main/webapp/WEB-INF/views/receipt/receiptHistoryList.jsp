@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,7 +29,7 @@
             </button>                
         </div>
 	
-        <div class="receive-info">
+        <div class="receipt-info">
             <table>
                 <tr>
                     <td>
@@ -53,7 +54,15 @@
                 </tr>
             </thead>
             
-            <tbody>                
+            <tbody>   
+                <tr>
+                    <td>${requestScope.receipts.receiptId}</td>
+                    <td>토마토 외 5건</td>
+                    <td>150,000</td>
+                    <td>${requestScope.receipts.receivedAT}</td>
+                    <td>${requestScope.purchaseRequests.updatedAT}</td>
+                    <td>${requestScope.receipts.receivedBy}</td>
+                </tr>                
                 <tr>
                     <td>1113</td>
                     <td>토마토 외 2건</td>
@@ -75,6 +84,15 @@
         
         
         </table>
+
+        <ui:pagination pageInfo="${pageInfo}"></ui:pagination>
+
 	</t:menubarBO>
+
+    <script>
+
+        
+    </script>
+
 </body>
 </html>
