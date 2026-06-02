@@ -47,10 +47,10 @@
                 파일, 자재명, 유형, 원가, 판매가, 상세정보, 등록자 아이디
                 
             -->
-            <form action="/burgerstack/material/insert" method="post"
+            <form action="/burgerstack/admin/materials" method="post"
                   enctype="multipart/form-data">
 
-                <input type="hidden" name="createdBy" value="관리자">
+                <input type="hidden" name="createdBy" value="1">
 
                 <div id="img-area" onclick="" align="center">
                     <div id="imagePreviewContainer" onclick="document.getElementById('fileInput').click();" style="width: 300px; height: 300px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin: 0 auto 20px;">

@@ -1,17 +1,20 @@
 package com.kh.burgerstack.material;
 
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class MaterialDao {
 
-	public void materialInsert() {
-
+	@Autowired
+	private MaterialMapper materialMapper;
+	
+	public int filesInsert() {
+		return 1;
 	} //materialInsert
 
-	public int materialInsert(SqlSessionTemplate sqlSession, Material m) {
-
-		return 1;
-	}
+	public int materialInsert(Material m) {
+		return materialMapper.insert(m);
+	} //materialInsert
 }

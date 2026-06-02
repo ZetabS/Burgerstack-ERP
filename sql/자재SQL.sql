@@ -16,8 +16,6 @@ INSERT INTO FILES(FILE_ID
                 , ?
                 , ?
                 , ?);
--- 자재 채번 쿼리문
-
 
 -- 자재 등록 쿼리문
 INSERT INTO MATERIALS(MATERIAL_ID
@@ -41,3 +39,14 @@ INSERT INTO MATERIALS(MATERIAL_ID
 
 
 -- 자재 목록 조회 쿼리문
+SELECT MATERIAL_NAME
+	 , MATERIAL_TYPE
+	 , COST_PRICE
+	 , SELLING_PRICE
+	 , IMAGE_FILE_ID
+	 , DETAILS
+	 , CREATED_BY
+     , STATUS
+  FROM MATERIALS M
+  JOIN FILES ON (IMAGE_FILE_ID = FILE_ID)
+ WHERE STATUS != 'INACTIVE'

@@ -224,6 +224,7 @@
 
         let desc1 = "<div id='detailContent'>"
                   + "<p>"
+                  +      "등록일자 : 2026-06-02" + "<br>"
                   +      "재질 : pp / 종이" + "<br>"
                   +      "가로 : 15 cm" + "<br>"
                   +      "세로 : 15 cm" + "<br>"
@@ -242,13 +243,12 @@
         document.getElementById('drawerDesc1').innerHTML = desc1;
         document.getElementById('drawerDesc2').innerHTML = desc2;
 
-        // 드로어 정면에 open 클래스 추가해서 화면에 등장시키기
+        
         document.getElementById('detailDrawer').classList.add('open');
         }
 
         // 드로어 닫기 함수
         function closeDrawer() {
-        // open 클래스를 제거해서 다시 오른쪽으로 숨기기
         document.getElementById('detailDrawer').classList.remove('open');
         }
     </script>
