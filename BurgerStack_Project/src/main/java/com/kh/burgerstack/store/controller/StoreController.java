@@ -31,22 +31,20 @@ public class StoreController {
     @Autowired
     private StoreService storeService;
 
-    @PostMapping("insertStore")
+    // 점포 등록 처리
+    @PostMapping("/insertStore")
     public String insertStore(Store store,
                               String createStockYn) {
 
-        int result =
-                storeService.insertStore(
-                        store,
-                        createStockYn
-                );
+        System.out.println("ownerId = " + store.getOwnerId());
+
+        int result = storeService.insertStore(store, createStockYn);
+
+        System.out.println("insert result = " + result);
 
         if(result > 0) {
-
             return "redirect:/store/list";
-
         } else {
-
             return "common/errorPage";
         }
     }
@@ -111,37 +109,17 @@ public class StoreController {
     
     // 수정
     @PostMapping("/update")
-    public String updateStore(Store store,
-                              HttpSession session) {
-
-        Member loginUser =
-                (Member)session.getAttribute("loginUser");
-
-        if(loginUser == null
-            || !"ADMIN".equals(loginUser.getUserRole())) {
-
-            return "redirect:/store/detail?storeCode="
-                    + store.getStoreCode();
-        }
+    public String updateStore(Store store) {
 
         storeService.updateStore(store);
 
-        return "redirect:/store/detail?storeCode="
-                + store.getStoreCode();
+        return "redirect:/store/list";
     }
     
     // 삭제
     @GetMapping("/delete")
-    public String deleteStore(@RequestParam int storeCode,
-    							HttpSession session) {
-    	
-    	Member loginUser = (Member) session.getAttribute("loginUser");
-    	
-    	if(loginUser == null || !"ADMIN".equals(loginUser.getUserRole())) {
-    		
-    		return "redirect:/store/detail?storeCode=" + storeCode;
-    	}
-    	
+    public String deleteStore(@RequestParam int storeCode) {
+    							
     	storeService.deleteStore(storeCode);
     	
     	return "redirect:/store/list";

@@ -147,6 +147,17 @@
         border-bottom:1px solid #3b3b3b;
         cursor:pointer;
     }
+    
+    .submenu a {
+	    color: white;
+	    text-decoration: none;
+	    display: block;
+	}
+
+	.submenu a:hover {
+		color: white;
+		text-decoration: none;
+	}
 
     .submenu li:hover{
         background:#4b5457;
@@ -242,11 +253,18 @@
                 </div>
 
                 <ul class="submenu">
-                    <li>점포 조회</li>
-                    <li>점포 등록</li>
-                    <li>점포 수정</li>
-                </ul>
-
+				    <li>
+				        <a href="${pageContext.request.contextPath}/store/list">점포 조회</a>
+				    </li>
+				
+				    <li>
+				        <a href="${pageContext.request.contextPath}/store/enroll">점포 등록</a>
+				    </li>
+				
+				    <li>
+				        <a href="${pageContext.request.contextPath}/store/list">점포 수정</a>
+				    </li>
+				</ul>
                 <div class="menu-title">
                     재고 관리
                 </div>

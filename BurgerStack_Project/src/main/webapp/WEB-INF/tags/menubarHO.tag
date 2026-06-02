@@ -122,6 +122,21 @@ body{
     overflow-y:auto;
 }
 
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar a:visited {
+    color: white;
+}
+
+.sidebar a:hover {
+    color: white;
+    text-decoration: none;
+}
+
 .profile-box{
     padding:25px 20px;
     border-bottom:1px solid #444;
@@ -235,9 +250,18 @@ body{
                 </div>
 
                 <ul class="submenu">
-                    <li>점포 조회</li>
-                    <li>점포 등록</li>
-                </ul>
+				    <li>
+				        <a href="/burgerstack/store/list">
+						    점포 조회
+						</a>
+				    </li>
+				
+				    <li>
+				        <a href="${pageContext.request.contextPath}/store/enroll">
+				            점포 등록
+				        </a>
+				    </li>
+				</ul>
 
                 <div class="menu-title">
                     점포 재고 모니터링
