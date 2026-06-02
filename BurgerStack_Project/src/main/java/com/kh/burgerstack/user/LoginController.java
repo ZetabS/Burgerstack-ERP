@@ -53,18 +53,22 @@ public class LoginController {
 					  "redirectUrl","/burgerstack");
 	}
 	
-//	
-//	@GetMapping("logout")
-//	public String logoutMember(HttpSession session) {
-//		
-//		session.removeAttribute("loginUser");
-//
-//		session.setAttribute("alertMsg", "성공적으로 로그아웃이 되었습니다.");
-//		
-//		return "redirect/";
-//		
-//	}
-//	
+	@GetMapping("myPage")
+	public String myPage() {
+		
+		return "user/myPage";
+	}
+	
+	
+	@GetMapping("logout")
+	public String logoutMember(HttpSession session) {
+		
+		session.removeAttribute("loginUser");
+		
+		return "redirect:/user/loginForm";
+		
+	}
+	
 //	@GetMapping("/mypage")
 //	public String mypage(Model model) {
 //		
@@ -79,4 +83,6 @@ public class LoginController {
 //
 //	    return "mypage";
 //	}
+	
+	
 }

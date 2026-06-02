@@ -7,4 +7,6 @@ public interface UserMapper {
 
 	public LoginUser login(String loginId);
 
+	public int insertStoreOwner(User u);
+	
 }
