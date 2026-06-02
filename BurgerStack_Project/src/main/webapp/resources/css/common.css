@@ -75,8 +75,39 @@ table tbody tr td:nth-child(n+3) {
   background-color: none;
 }
 
+/* 테이블스타일2 */
+.table2 {
+    width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background-color: white;
+    text-align: center;
+    font-size: 13px;
+}
 
-/* 버튼 */
+.table2 thead tr {
+    background-color: #19c765;
+    height: 35px;
+}
+
+.table2 th {
+    padding: 10px;
+}
+
+.table2 tbody tr {
+    height: 38px;
+    border-bottom: 1px solid #f1f1f1;
+    cursor: pointer;
+}
+
+.table2 tbody tr:hover {
+    background-color: #f2f6ff;
+}
+
+
+/* =================== */
+/*         버튼        */
+/* =================== */
 .button-primary {
     width : 100px;
     height : 40px;
@@ -123,7 +154,9 @@ table tbody tr td:nth-child(n+3) {
   padding: 0px 20px;
 }
 
-/* 검색창 */
+/* =================== */
+/*        검색창        */
+/* =================== */
 .search-box {
   display: flex;
   align-items: center;
@@ -151,12 +184,71 @@ table tbody tr td:nth-child(n+3) {
   width: 20px;
 }
 
+
+/* 검색 영역 스타일2 */
+.search-area {
+    width: 100%;
+    margin: 0 auto 15px auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-area select {
+    width: 100px;
+    height: 30px;
+    border: 1px solid black;
+    border-radius: 15px;
+    padding-left: 10px;
+}
+
+.search-area input[type="date"]{
+    height: 30px;
+    border: 1px solid black;
+    padding: 0 8px;
+}
+
+.search-box {
+    display: flex;
+    height: 30px;
+}
+
+.search-box input {
+    width: 130px;
+    border: 1px solid black;
+    border-right: none;
+    padding-left: 10px;
+}
+
+.search-btn {
+    width: 35px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    background-color: #60758f;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+}
+
+.search-btn img {
+    width: 35px;
+    height: 30px;
+    display: block;
+    object-fit: contain;
+}
+
+
 /* 기타 옵션 */
 /* 토탈 가격 */
 .bottom-area {
   display: flex;
   width: 100%;
-  max-width: 800px;
+  /* max-width: 800px; */
   margin: 0 auto;
   justify-content: space-between;
   align-items: center;
@@ -168,7 +260,17 @@ table tbody tr td:nth-child(n+3) {
     box-sizing:border-box;
 }
 
-/*asdf*/
+
+
+/* =================== */
+/*       menubar       */
+/* =================== */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
     background-color:#f5f6fa;
     overflow:hidden;
@@ -180,6 +282,22 @@ body{
     height:100vh;
     display:flex;
     flex-direction:column;
+}
+
+/* 모든 하이퍼링크의 기본 스타일 제거 및 정렬 */
+.link {
+  display: inline-flex;    /* 내부 요소(이미지, 텍스트 등)를 가로로 일렬 정렬 */
+  align-items: center;     /* 세로축 중앙 정렬 */
+  text-decoration: none;   /* 밑줄 제거 */
+  color: inherit;          /* 글자 색상이 파란색으로 변하지 않고 부모의 색상을 따름 */
+}
+
+/* 마우스를 올리거나 클릭했을 때도 스타일 유지 */
+.link:hover, 
+.link:focus, 
+.link:active {
+  text-decoration: none;
+  color: inherit;
 }
 
 /* =========================
@@ -207,10 +325,27 @@ body{
     gap:15px;
 }
 
+/* 1. 하이퍼링크 스타일 초기화 및 가로 정렬 */
+.brand-link {
+  display: inline-flex;    /* 내부 요소들을 한 줄로 정렬 */
+  align-items: center;     /* 이미지와 텍스트의 세로 중앙 맞춤 */
+  text-decoration: none;   /* 하이퍼링크 밑줄 제거 */
+  color: inherit;          /* 부모 요소의 글자 색상을 그대로 따라감 (또는 #ffffff 등 원하는 색상 지정) */
+}
+
+/* 2. 마우스를 올렸을 때도 스타일이 유지되도록 설정 (선택사항) */
+.brand-link:hover, 
+.brand-link:focus, 
+.brand-link:active {
+  text-decoration: none;
+  color: inherit;
+}
+
 .logo{
-    font-size:28px;
-    font-weight:700;
-    color:#ff6b00;
+    margin-right: 8px;       /* 로고 이미지 오른쪽에 약간의 공백 추가 */
+    /* 필요하다면 이미지 크기 고정 */
+    width: 32px; 
+    height: 32px;
 }
 
 .system-title{
