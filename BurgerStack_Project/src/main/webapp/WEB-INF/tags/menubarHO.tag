@@ -9,6 +9,9 @@
 
 <title>${empty title ? 'BurgerStack ERP' : title}</title>
 
+<!-- CSS -->
+<link rel="stylesheet" href="/burgerstack/resources/css/common.css">
+
 <link rel="shortcut icon"
       type="image/x-icon"
       href="${pageContext.request.contextPath}/resources/images/BS_logo2.png" />

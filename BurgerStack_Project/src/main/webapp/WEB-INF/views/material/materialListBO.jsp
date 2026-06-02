@@ -39,13 +39,13 @@
     .detail-drawer {
     position: fixed;
     top: 0;
-    right: -400px; /* 드로어 너비만큼 오른쪽 화면 바깥으로 밀어내서 숨김 */
+    right: -400px;
     width: 400px;
     height: 100vh;
     background-color: #ffffff;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); /* 왼쪽에 은은한 그림자 */
-    transition: right 0.3s ease-in-out; /* 0.3초 동안 스르륵 움직이는 효과 */
-    z-index: 1000; /* 화면 최상단에 뜨도록 설정 */
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
     box-sizing: border-box;
     }
 
@@ -76,9 +76,9 @@
     }
     .drawer-content>img {
         border : 1px solid lightgray;
-        width:50%;
+        width: 200px;
+        height : 200px;
         border-radius:8px;
-        padding : 10px;
         display : block;
         margin : 0 auto;
     }
@@ -111,7 +111,7 @@
                 <div class="img-wrap" onclick="openDrawer('양상추', 'C:/00_Semi_Workspace/BurgerStack_Project/src/main/webapp/resources/images/burgerstack_logo_s.png')">
                     <b>양상추</b>
                     <br>
-                    <img src="C:\00_Semi_Workspace\BurgerStack_Project\src\main\webapp\resources\images\burgerstack_logo_s.png">
+                    <img src="C:\00_Semi_Workspace\BurgerStack_Project\src\main\webapp\resources\images\BS_logo1.svg">
                 </div>
                 <div class="img-wrap">
                     <b>토마토</b>
