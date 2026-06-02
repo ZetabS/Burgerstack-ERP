@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.kh.burgerstack.common.model.vo.PageInfo;
-import com.kh.burgerstack.common.template.Pagination;
+import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.store.StoreService;
 import com.kh.burgerstack.store.SelectStoreList;
 import com.kh.burgerstack.store.Store;
@@ -48,7 +47,7 @@ public class StoreController {
     // 점포 목록 조회
     @GetMapping("/list")
     public String selectStoreList(
-            @RequestParam(value="currentPage", defaultValue="1") int currentPage,
+            PagingRequest pi,
             String status,
             String startDate,
             String endDate,
@@ -64,13 +63,10 @@ public class StoreController {
 
         int count = storeService.selectStoreCount(map);
 
-        PageInfo pi = Pagination.getPageInfo(count, currentPage, 10, 10);
-
-        List<SelectStoreList> list =
-                storeService.selectStoreList(map, pi);
+        List<SelectStoreList> list = storeService.selectStoreList(map, pi);
 
         model.addAttribute("count", count);
-        model.addAttribute("pi", pi);
+        model.addAttribute("pageInfo", pi.toPageInfo(count));
         model.addAttribute("list", list);
 
         return "store/storeListView";

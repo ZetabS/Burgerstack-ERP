@@ -9,7 +9,8 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.kh.burgerstack.common.model.vo.PageInfo;
+
+import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.store.model.vo.SelectStoreList;
 import com.kh.burgerstack.store.model.vo.Store;
 
@@ -29,15 +30,6 @@ public class StoreDao {
 		return sqlSessionTemplate.insert("storeMapper.insertStore", store);
 	}
 
-	// 점포 목록 조회
-	public List<SelectStoreList> selectStoreList(SqlSession sqlSession, Map<String, String> map, PageInfo pi) {
-
-		int offset = (pi.getCurrentPage() - 1) * pi.getBoardLimit();
-
-		RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
-
-		return sqlSession.selectList("storeMapper.selectStoreList", map, rowBounds);
-	}
 
 	// 점포 개수 조회
 	public int selectStoreCount(SqlSession sqlSession, Map<String, String> map) {
@@ -48,6 +40,17 @@ public class StoreDao {
 	// 점포 상세 조회
 	public Store selectStoreDetail(int storeId) {
 		return sqlSessionTemplate.selectOne("storeMapper.selectStoreDetail", storeId);
+	}
+
+	// 점포 목록 조회
+	public List<SelectStoreList> selectStoreList(SqlSession sqlSession, Map<String, String> map, PagingRequest pi) {
+        int offset = (pi.getPage() - 1)
+                * pi.getLimit();
+
+        // 페이지 처리 코드
+        RowBounds rowBounds = new RowBounds(offset, pi.getLimit());
+
+		return sqlSession.selectList("storeMapper.selectStoreList", map, rowBounds);
 	}
 
 	// 점포 수정

@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kh.burgerstack.common.model.vo.PageInfo;
+import com.kh.burgerstack.common.pagination.PageInfo;
+import com.kh.burgerstack.common.pagination.PagingRequest;
+
+import org.apache.ibatis.session.SqlSession;
 
 @Service
 public class StoreService {
@@ -31,7 +34,7 @@ public class StoreService {
     // 점포 목록 조회
     public List<SelectStoreList> selectStoreList(
             Map<String, String> map,
-            PageInfo pi) {
+            PagingRequest pi) {
 
         return storeDao.selectStoreList(sqlSession, map, pi);
     }
