@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -66,12 +67,33 @@
                     <td>80000</td>
                     <td>판매중</td>
                 </tr>
+                <c:forEach var="m" items="${list}">
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>${m.materialName}</td>
+                        <td>${m.costPrice}</td>
+                        <td>${m.currentQuantity}</td>
+                        <td><input name="orderQuantity" type="number" value="0"></td>
+                        <td>${m.buyPrice}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${m.status eq 'ACTIVE'}">
+                                    판매중
+                                </c:when>
+                                <c:otherwise>
+                                    재고 부족
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                    </tr>
+                </c:forEach>
                 <tr>
                     <td colspan="2">총 금액</td>
                     <td colspan="3"></td>
                     <td>
                         330,000원
                     </td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>

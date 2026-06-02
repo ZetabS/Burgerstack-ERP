@@ -6,6 +6,8 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
+
 @Service
 public class PurchaseService {
 
@@ -15,7 +17,7 @@ public class PurchaseService {
     @Autowired
     private PurchaseDao purchaseDao;
 
-    public ArrayList<PurchaseRequest> searchMaterialsList() {
+    public ArrayList<MaterialInventoryDto> searchMaterialsList() {
 
         return purchaseDao.searchMaterialsList(sqlSession);
 
