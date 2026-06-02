@@ -95,18 +95,19 @@
 
 
 			<div class="login-area">
-				<form id="login-form" action="" method="post">
+			
+				<form id="login-form" action="/burgerstack/user/login" method="post">
 					<table>
-						<tr id="userId">
+						<tr id="login">
 							<th>아이디</th>
 							<td>
-								<input type="text" name="userId" id="" required>
+								<input type="text" name="loginId" id="login-id-input" required>
 							</td>
 						</tr>
 						<tr id="userPwd">
 							<th>비밀번호</th>
 							<td>
-								<input type="password" name="userPwd" id="" required>
+								<input type="password" name="password" id="password-input" required>
 							</td>
 						</tr>
 						<tr id="saveId">
@@ -119,17 +120,22 @@
 							</td>
 						</tr>
 						
+						
+						
 					</table>
+						<button type="submit" class="btn btn-secondary btn-sm" id="loginbutton">
+							로그인
+						</button>
+						
+						<div id="loginMessage">
+							
+						</div>
+						
 				</form>
 				
 			</div>	
 
 			<br><br>
-
-			<div class="login-button" align="center" onclick="">
-				<h2>로그인</h2>
-				<!-- <a href="" align="center"><h3>로그인</h3></a> -->
-			</div>
 
 		</div>
 			
@@ -141,8 +147,33 @@
 					전화번호 :02)1234-1234
 			</div>
 
-
 		
 	</div>
+	
+	<script>
+		$(function() {
+			$("#loginbutton").click(function(e) {
+				e.preventDefault();
+				
+				$.ajax({
+				  url : "/burgerstack/user/login",
+				  type : "post",
+				  data : { 
+					       loginId : $("#login-id-input").val(), 
+					       password : $("#password-input").val()
+					     },
+				  success : function(result){
+								if(result.success){
+									location.href = result.redirectUrl;
+									return ;
+								}
+					
+								$("#loginMessage").text(result.message);
+							}
+				})
+			});
+			
+		});
+	</script>
 </body>
 </html>

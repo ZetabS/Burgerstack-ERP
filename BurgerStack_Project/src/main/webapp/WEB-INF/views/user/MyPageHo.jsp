@@ -352,7 +352,35 @@
 
                 <h3>마이페이지</h3>
 
-                <hr class="line">
+                <hr class="line_1">
+
+                <div class="info-title">
+                    점포 정보
+                </div>
+
+                <table class="info-table">
+
+                    <tr>
+                        <th>점포명</th>
+                        <td>강남H</td>
+                    </tr>
+
+                    <tr>
+                        <th>연락처</th>
+                        <td>02-1234-5678</td>
+                    </tr>
+
+                    <tr>
+                        <th>주소</th>
+                        <td>
+                            서울특별시 강남구 테헤란로14길 6<br>
+                            남도빌딩
+                        </td>
+                    </tr>
+
+                </table>
+
+                <hr class="line_2">
 
                 <div class="info-title">
                     점장 정보
@@ -364,7 +392,7 @@
 
                     <tr>
                         <th>아이디</th>
-                        <td>점장아이디</td>
+                        <td>${loginUser.userId}</td>
                     </tr>
 
                     <tr>
@@ -383,17 +411,17 @@
 
                     <tr>
                         <th>이름</th>
-                        <td>유종규</td>
+                        <td>${loginUser.userName}</td>
                     </tr>
 
                     <tr>
                         <th>연락처</th>
-                        <td>010-1111-2222</td>
+                        <td>${loginUser.phone}</td>
                     </tr>
 
                     <tr>
                         <th>이메일</th>
-                        <td>dbwhdrb1@gmail.com</td>
+                        <td>${loginUser.email}</td>
                     </tr>
                 </table>
                     

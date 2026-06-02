@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.burgerstack.user.model.dao.UserMapper">
+   <select id="login" parameterType="String" resultType="LoginUser">
+   	SELECT USER_ID, LOGIN_ID, PASSWORD, ROLE
+	  FROM USERS
+	 WHERE LOGIN_ID = #{loginId}
+	     AND STATUS = 'ACTIVE'
+   </select>
+</mapper>
