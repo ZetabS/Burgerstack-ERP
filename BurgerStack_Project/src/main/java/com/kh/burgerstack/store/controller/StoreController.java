@@ -1,7 +1,7 @@
 package com.kh.burgerstack.store.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import com.kh.burgerstack.common.template.Pagination;
 import com.kh.burgerstack.member.model.vo.Member;
 import com.kh.burgerstack.store.model.service.StoreService;
 import com.kh.burgerstack.store.model.vo.Manager;
+import com.kh.burgerstack.store.model.vo.SelectStoreList;
 import com.kh.burgerstack.store.model.vo.Store;
 
 import jakarta.servlet.http.HttpSession;
@@ -74,10 +75,12 @@ public class StoreController {
         int count = storeService.selectStoreCount(map);
 
         PageInfo pi = Pagination.getPageInfo(count, currentPage, 10, 10);
+        
+        List<SelectStoreList> list = storeService.selectStoreList(map, pi);
 
         model.addAttribute("count", count);
         model.addAttribute("pi", pi);
-        model.addAttribute("list", new ArrayList<>());
+        model.addAttribute("list", list);
 
         return "store/storeListView";
     }

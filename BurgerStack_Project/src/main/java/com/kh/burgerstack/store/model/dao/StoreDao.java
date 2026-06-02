@@ -3,12 +3,13 @@ package com.kh.burgerstack.store.model.dao;
 import java.util.List;
 import java.util.Map;
 
-
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.kh.burgerstack.common.model.vo.PageInfo;
 import com.kh.burgerstack.store.model.vo.Manager;
 import com.kh.burgerstack.store.model.vo.SelectStoreList;
 import com.kh.burgerstack.store.model.vo.Store;
@@ -48,11 +49,22 @@ public class StoreDao {
     // 점포 목록 조회
     public List<SelectStoreList> selectStoreList (
     		SqlSession sqlSession,
-    		Map<String, String>map) {
+    		Map<String, String>map, PageInfo pi) {
     	
-    	return sqlSession.selectList(
-    			"storeMapper.selectStoreList",map);
-    }   
+    	int offset =
+                (pi.getCurrentPage() - 1)
+                * pi.getBoardLimit();
+    	
+    	// 페이지 처리 코드
+        RowBounds rowBounds =
+                new RowBounds(offset, pi.getBoardLimit());
+
+        return sqlSession.selectList(
+                "storeMapper.selectStoreList",
+                map,
+                rowBounds
+        );
+    }
     
     // 점포 개수 조회
 	public int selectStoreCount (

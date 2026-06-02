@@ -3,10 +3,11 @@ package com.kh.burgerstack.store.model.service;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.ibatis.session.SqlSession;
+
+import com.kh.burgerstack.common.model.vo.PageInfo;
 import com.kh.burgerstack.store.model.dao.StoreDao;
 import com.kh.burgerstack.store.model.vo.Manager;
 import com.kh.burgerstack.store.model.vo.SelectStoreList;
@@ -43,11 +44,12 @@ public class StoreService {
     
     // 점포 목록 조회
     public List<SelectStoreList> selectStoreList (
-    							 Map<String, String>map){
+    							 Map<String, String> map, PageInfo pi){
     	
     	return storeDao.selectStoreList(
     			sqlSession,
-    			map
+    			map,
+    			pi
     	);	
     }
     
