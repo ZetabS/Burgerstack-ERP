@@ -16,7 +16,7 @@
 
     <!-- 점포 등록 -->
     <insert id="insertStore"
-	        parameterType="com.kh.burgerstack.store.model.vo.Store">
+	        parameterType="com.kh.burgerstack.store.Store">
 	
 	    <selectKey keyProperty="storeId"
 	               resultType="int"
@@ -58,7 +58,7 @@
     <!-- 관리자 점포 목록 조회 -->
     <select id="selectStoreList"
 	        parameterType="map"
-	        resultType="com.kh.burgerstack.store.model.vo.SelectStoreList">
+	        resultType="com.kh.burgerstack.store.SelectStoreList">
 	
 	    SELECT
 	        STORE_ID AS storeId,
@@ -122,7 +122,7 @@
     <!-- 점포 상세 조회 -->
     <select id="selectStoreDetail"
 	        parameterType="int"
-	        resultType="com.kh.burgerstack.store.model.vo.Store">
+	        resultType="com.kh.burgerstack.store.Store">
 	
 	    SELECT
 	        STORE_ID AS storeId,

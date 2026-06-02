@@ -1,7 +1,7 @@
 <%@ tag language="java" pageEncoding="UTF-8" body-content="empty" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="uri" uri="/WEB-INF/tld/uri.tld" %>
-<%@ attribute name="pageInfo" required="true" type="com.kh.burgerstack.common.pagination.model.dto.PageInfo" %>
+<%@ attribute name="pageInfo" required="true" type="com.kh.burgerstack.common.pagination.PageInfo" %>
 
 <%-- \
 페이지네이션 태그입니다.
