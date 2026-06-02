@@ -13,7 +13,7 @@
 
     <!-- 점포 등록 -->
     <insert id="insertStore"
-            parameterType="com.kh.burgerstack.store.model.vo.Store">
+            parameterType="com.kh.burgerstack.store.Store">
 
         <selectKey keyProperty="storeNo"
                    resultType="int"
