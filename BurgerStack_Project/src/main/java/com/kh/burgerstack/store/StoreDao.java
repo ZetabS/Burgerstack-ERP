@@ -18,11 +18,11 @@ public class StoreDao {
     private SqlSessionTemplate sqlSession;
 
     // 기존 점주 계정 확인
-    public int checkOwner(String ownerId) {
+    public int checkOwner(Long ownerUserId) {
 
         return sqlSession.selectOne(
                 "storeMapper.checkOwner",
-                ownerId);
+                ownerUserId);
     }
 
     // 점포 등록
@@ -33,15 +33,15 @@ public class StoreDao {
     }
 
     // 전체 자재 기준 점포 재고 생성
-    public int insertStoreStockMaterial(int storeNo) {
+    public int insertStoreStockMaterial(Long storeId) {
 
         return sqlSession.insert(
                 "storeMapper.insertStoreStockMaterial",
-                storeNo);
+                storeId);
     }
 
     // 점포 목록 조회
-    public List<SelectStoreList> selectStoreList(
+    public List<StoreListRow> selectStoreList(
             SqlSession sqlSession,
             Map<String, String> map, PagingRequest pi) {
 
@@ -66,12 +66,12 @@ public class StoreDao {
                 "storeMapper.selectStoreCount", map);
     }
 
-    public Store selectStoreDetail(int storeCode) {
-        return sqlSession.selectOne("storeMapper.selectStoreDetail", storeCode);
+    public Store selectStoreDetail(Long storeId) {
+        return sqlSession.selectOne("storeMapper.selectStoreDetail", storeId);
     }
 
-    public Manager selectStoreManager(int storeCode) {
-        return sqlSession.selectOne("storeMapper.selectStoreManager", storeCode);
+    public StoreManagerView selectStoreManager(Long storeId) {
+        return sqlSession.selectOne("storeMapper.selectStoreManager", storeId);
     }
 
     public int updateStore(SqlSession sqlSession, Store store) {
@@ -79,9 +79,9 @@ public class StoreDao {
         return sqlSession.update("storeMapper.updateStore", store);
     }
 
-    public int deleteStore(SqlSession sqlSession, int storeCode) {
+    public int deleteStore(SqlSession sqlSession, Long storeId) {
 
-        return sqlSession.update("storeMapper.deleteStore", storeCode);
+        return sqlSession.update("storeMapper.deleteStore", storeId);
     }
 
 }

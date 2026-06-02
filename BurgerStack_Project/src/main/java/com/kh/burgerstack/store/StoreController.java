@@ -65,7 +65,7 @@ public class StoreController {
 
         int count = storeService.selectStoreCount(map);
 
-        List<SelectStoreList> list = storeService.selectStoreList(map, pi);
+        List<StoreListRow> list = storeService.selectStoreList(map, pi);
 
         model.addAttribute("count", count);
         model.addAttribute("pageInfo", pi.toPageInfo(count));
@@ -80,14 +80,14 @@ public class StoreController {
     }
 
     @GetMapping("/detail")
-    public String selectStoreDetail(@RequestParam("storeCode") int storeCode,
+    public String selectStoreDetail(@RequestParam("storeId") Long storeId,
             Model model,
             HttpSession session) {
 
-        System.out.println("넘어온 storeCode = " + storeCode);
+        System.out.println("넘어온 storeId = " + storeId);
 
-        Store store = storeService.selectStoreDetail(storeCode);
-        Manager manager = storeService.selectStoreManager(storeCode);
+        Store store = storeService.selectStoreDetail(storeId);
+        StoreManagerView manager = storeService.selectStoreManager(storeId);
 
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
@@ -108,29 +108,29 @@ public class StoreController {
         if (loginUser == null
                 || !"ADMIN".equals(loginUser.getRole())) {
 
-            return "redirect:/store/detail?storeCode="
-                    + store.getStoreCode();
+            return "redirect:/store/detail?storeId="
+                    + store.getStoreId();
         }
 
         storeService.updateStore(store);
 
-        return "redirect:/store/detail?storeCode="
-                + store.getStoreCode();
+        return "redirect:/store/detail?storeId="
+                + store.getStoreId();
     }
 
     // 삭제
     @GetMapping("/delete")
-    public String deleteStore(@RequestParam int storeCode,
+    public String deleteStore(@RequestParam Long storeId,
             HttpSession session) {
 
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
         if (loginUser == null || !"ADMIN".equals(loginUser.getRole())) {
 
-            return "redirect:/store/detail?storeCode=" + storeCode;
+            return "redirect:/store/detail?storeId=" + storeId;
         }
 
-        storeService.deleteStore(storeCode);
+        storeService.deleteStore(storeId);
 
         return "redirect:/store/list";
     }

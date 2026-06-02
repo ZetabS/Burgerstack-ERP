@@ -21,7 +21,7 @@ public class StoreService {
     public int insertStore(Store store, String createStockYn) {
 
         // 기존 점주 계정 존재 여부 확인
-        int ownerCount = storeDao.checkOwner(store.getOwnerId());
+        int ownerCount = storeDao.checkOwner(store.getOwnerUserId());
 
         if (ownerCount == 0) {
             return 0;
@@ -33,14 +33,14 @@ public class StoreService {
         // 전체 자재 기준 점포 재고 행 생성
         if (result > 0 && "Y".equals(createStockYn)) {
 
-            storeDao.insertStoreStockMaterial(store.getStoreNo());
+            storeDao.insertStoreStockMaterial(store.getStoreId());
         }
 
         return result;
     }
 
     // 점포 목록 조회
-    public List<SelectStoreList> selectStoreList(
+    public List<StoreListRow> selectStoreList(
             Map<String, String> map, PagingRequest pi) {
 
         return storeDao.selectStoreList(
@@ -64,20 +64,20 @@ public class StoreService {
         this.sqlSession = sqlSession;
     }
 
-    public Store selectStoreDetail(int storeCode) {
-        return storeDao.selectStoreDetail(storeCode);
+    public Store selectStoreDetail(Long storeId) {
+        return storeDao.selectStoreDetail(storeId);
     }
 
-    public Manager selectStoreManager(int storeCode) {
-        return storeDao.selectStoreManager(storeCode);
+    public StoreManagerView selectStoreManager(Long storeId) {
+        return storeDao.selectStoreManager(storeId);
     }
 
     public int updateStore(Store store) {
         return storeDao.updateStore(sqlSession, store);
     }
 
-    public int deleteStore(int storeCode) {
-        return storeDao.deleteStore(sqlSession, storeCode);
+    public int deleteStore(Long storeId) {
+        return storeDao.deleteStore(sqlSession, storeId);
     }
 
 }
