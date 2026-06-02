@@ -20,7 +20,8 @@ public class FileDao {
         return Optional.ofNullable(fileMapper.findActiveById(fileId));
     }
 
-    public void markDeleted(long fileId) {
-        fileMapper.markDeleted(fileId);
+    public boolean markDeleted(long fileId) {
+        int result = fileMapper.markDeleted(fileId);
+        return result > 0;
     }
 }
