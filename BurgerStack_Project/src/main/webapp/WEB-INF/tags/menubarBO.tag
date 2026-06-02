@@ -44,6 +44,22 @@ body{
     flex-direction:column;
 }
 
+/* 모든 하이퍼링크의 기본 스타일 제거 및 정렬 */
+.link {
+  display: inline-flex;    /* 내부 요소(이미지, 텍스트 등)를 가로로 일렬 정렬 */
+  align-items: center;     /* 세로축 중앙 정렬 */
+  text-decoration: none;   /* 밑줄 제거 */
+  color: inherit;          /* 글자 색상이 파란색으로 변하지 않고 부모의 색상을 따름 */
+}
+
+/* 마우스를 올리거나 클릭했을 때도 스타일 유지 */
+.link:hover, 
+.link:focus, 
+.link:active {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* =========================
     HEADER
 ========================= */
@@ -69,10 +85,27 @@ body{
     gap:15px;
 }
 
+/* 1. 하이퍼링크 스타일 초기화 및 가로 정렬 */
+.brand-link {
+  display: inline-flex;    /* 내부 요소들을 한 줄로 정렬 */
+  align-items: center;     /* 이미지와 텍스트의 세로 중앙 맞춤 */
+  text-decoration: none;   /* 하이퍼링크 밑줄 제거 */
+  color: inherit;          /* 부모 요소의 글자 색상을 그대로 따라감 (또는 #ffffff 등 원하는 색상 지정) */
+}
+
+/* 2. 마우스를 올렸을 때도 스타일이 유지되도록 설정 (선택사항) */
+.brand-link:hover, 
+.brand-link:focus, 
+.brand-link:active {
+  text-decoration: none;
+  color: inherit;
+}
+
 .logo{
-    font-size:28px;
-    font-weight:700;
-    color:#ff6b00;
+    margin-right: 8px;       /* 로고 이미지 오른쪽에 약간의 공백 추가 */
+    /* 필요하다면 이미지 크기 고정 */
+    width: 32px; 
+    height: 32px;
 }
 
 .system-title{
@@ -111,10 +144,10 @@ body{
 }
 
 /* =========================
-    SIDEBAR
+    MENUBAR
 ========================= */
 
-.sidebar{
+.menubar{
     width:250px;
     background:#2d3436;
     color:white;
@@ -142,27 +175,63 @@ body{
     padding-top:10px;
 }
 
+/* 메뉴 묶음 */
+.menu-item{
+    width:100%;
+}
+
+.menu-item a {
+    color: inherit;          /* 부모 색상 사용 */
+    text-decoration: none;   /* 밑줄 제거 */
+}
+
+.menu-item a:hover {
+    color: inherit;          /* 부모 색상 사용 */
+    text-decoration: none;   /* 밑줄 제거 */
+}
+
+/* 상위 메뉴 */
 .menu-title{
     padding:15px 20px;
     font-size:15px;
     font-weight:600;
     background:#393E46;
+    cursor:pointer;
+    transition:background 0.2s;
 }
 
+.menu-title:hover{
+    background:#4b5457;
+}
+
+/* 서브메뉴 (기본 숨김) */
 .submenu{
     list-style:none;
     margin:0;
+    padding:0;
+    max-height:0; 
+
+    overflow:hidden; 
+
+    background:#2f3638; 
+    
+    transition:max-height 0.35s ease;
 }
 
-.submenu li{
-    padding:13px 35px;
-    font-size:14px;
-    border-bottom:1px solid #3b3b3b;
-    cursor:pointer;
-}
+/* 열렸을 때 */ 
+.menu-item.active .submenu{ 
+    max-height:500px; 
+} 
 
-.submenu li:hover{
-    background:#4b5457;
+/* submenu item */ 
+.submenu li{ 
+    padding:13px 35px; 
+    border-bottom:1px solid #3b3b3b; 
+    cursor:pointer; 
+    transition:background 0.2s; 
+} 
+.submenu li:hover{ 
+    background:#4b5457; 
 }
 
 /* =========================
@@ -188,31 +257,38 @@ body{
 }
 
 </style>
-
 </head>
-
 <body>
-
+    <%-- 
+		* menubar.jsp 에 공통 코드 작업을 해볼 것!!
+		- 1회성 alert 기능
+		- script 태그 내에서는 JSP Action Tag 들이 사용 불가함!! (자바스크립트 영역이기 때문)
+	--%>
+	<c:if test="${ not empty sessionScope.alertMsg }">
+		<script>
+			
+			let alertMsg = "${ sessionScope.alertMsg }";
+			
+			// alert(alertMsg);
+			alertify.alert(alertMsg, function(){ alertify.success('Ok'); });
+			
+		</script>
+		<c:remove var="alertMsg" scope="session" />
+	</c:if>
 <div class="wrap">
 
     <!-- HEADER -->
     <div class="header">
 
         <div class="header-left">
-
-            <div class="logo">
-                <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png"
-                     style="width:32px;">
-            </div>
-
-            <div class="system-title">
-                BurgerStack ERP
-            </div>
-
+            <a href="/burgerstack/owner/dashboard" class="brand-link">
+                <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png" alt="logo" class="logo">
+                <span class="system-title">BurgerStack ERP</span>
+            </a>
         </div>
 
         <div class="header-right">
-            <span>관리자님 환영합니다.</span>
+            <span>강남H님 환영합니다.</span>
             <button class="logout-btn">로그아웃</button>
         </div>
 
@@ -220,70 +296,111 @@ body{
 
     <div class="body-area">
 
-        <!-- SIDEBAR -->
-        <div class="sidebar">
+        <!-- TitleBar -->
+        <div class="menubar">
 
             <div class="profile-box">
-                <div class="profile-name">관리자</div>
-                <div class="profile-role">총괄 관리자</div>
+                <span class="profile-name">강남H</span>
+                <span class="profile-role"><a class="link" href="/burgerstack/owner/mypage">마이페이지</a></span>
+                <div class="profile-role">점주</div>
             </div>
 
             <div class="menu">
 
-                <div class="menu-title">
-                    점포 관리
+                <!-- 점포 관리 -->
+                <div class="menu-item">
+                    <div class="menu-title">
+                        점포 관리
+                    </div>
+
+                    <ul class="submenu" >
+                        <a href="/burgerstack/owner/store"><li>입고 예정 목록</li></a>
+                    </ul>
                 </div>
 
-                <ul class="submenu">
-                    <li>점포 조회</li>
-                    <li>점포 등록</li>
-                </ul>
+                <!-- 입고 관리 -->
+                <div class="menu-item">
+                    <div class="menu-title">
+                        입고 관리
+                    </div>
 
-                <div class="menu-title">
-                    점포 재고 모니터링
+                    <ul class="submenu" >
+                        <a href="/burgerstack/owner/purchases?status=APPROVED"><li>입고 예정 목록</li></a>
+                        <a href="/burgerstack/owner/receipts"><li>입고 이력 목록</li></a>
+                    </ul>
                 </div>
 
-                <ul class="submenu">
-                    <li>이상 재고 변동 조회</li>
-                    <li>점포별 재고 변동 이력 조회</li>
-                    <li>점포별 재고 현황 조회</li>
-                    <li>점포 재고 조정</li>
-                </ul>
+                <!-- 일일 마감 -->
+                <div class="menu-item">
+                    <div class="menu-title">
+                        일일 마감
+                    </div>
 
-                <div class="menu-title">
-                    재고 관리
+                    <ul class="submenu">
+                        <a href="/burgerstack/owner/closings/new"><li>일일 재고 마감</li></a>
+                        <a href="/burgerstack/owner/closings"><li>마감 이력 목록</li></a>
+                    </ul>
                 </div>
 
-                <ul class="submenu">
-                    <li>재고 조회</li>
-                    <li>재고 등록</li>
-                </ul>
+                <!-- 재고 관리 -->
+                <div class="menu-item">
+                    <div class="menu-title">
+                        재고 관리
+                    </div>
 
-                <div class="menu-title">
-                    발주 관리
+                    <ul class="submenu">
+                        <a href="/burgerstack/owner/inventories"><li>재고 목록 조회</li></a>
+                        <a href="/burgerstack/owner/inventory-transactions?abnormalOnly=true"><li>이상 재고 변동 조회</li></a>
+                        <a href="/burgerstack/owner/inventory-transactions"><li>재고 변동 이력 조회</li></a>
+                        <a href="/burgerstack/owner/inventories/{inventoryId}/edit"><li>재고 수량 조정</li></a>
+                    </ul>
                 </div>
 
-                <ul class="submenu">
-                    <li>발주 조회</li>
-                </ul>
+                <!-- 발주 관리 -->
+                <div class="menu-item">
+                    <div class="menu-title">
+                        발주 관리
+                    </div>
 
-                <div class="menu-title">
-                    공지사항
+                    <ul class="submenu">
+                        <a href="/burgerstack/owner/purchases/new"><li>발주 요청</li></a>
+                        <a href="/burgerstack/owner/purchases"><li>발주 목록 조회</li></a>
+                    </ul>
                 </div>
 
-                <ul class="submenu">
-                    <li>공지사항 목록</li>
-                    <li>공지사항 등록</li>
-                </ul>
+                <!-- 자재 관리 -->
+                <div class="menu-item">
+                    <div class="menu-title">
+                        자재 관리
+                    </div>
 
-                <div class="menu-title">
-                    문의사항
+                    <ul class="submenu">
+                        <a href="/burgerstack/owner/materials"><li>자재 목록 조회</li></a>
+                    </ul>
                 </div>
 
-                <ul class="submenu">
-                    <li>문의사항 목록</li>
-                    <li>문의사항 등록</li>
-                </ul>
+                <!-- 공지사항 -->
+                <div class="menu-item">
+                    <div class="menu-title">
+                        공지사항
+                    </div>
+
+                    <ul class="submenu">
+                        <a href="/burgerstack/owner/notices"><li>공지사항 목록</li></a>
+                    </ul>
+                </div>
+
+                <!-- 문의사항 -->
+                <div class="menu-item">
+                    <div class="menu-title">
+                        문의사항
+                    </div>
+
+                    <ul class="submenu">
+                        <a href="/burgerstack/owner/inquiries"><li>문의사항 목록</li></a>
+                        <a href="/burgerstack/owner/inquiries/new"><li>문의사항 등록</li></a>
+                    </ul>
+                </div>
 
             </div>
 
@@ -303,7 +420,18 @@ body{
 
     </div>
 
-</div>
+    <script> 
+        const menuTitles = document.querySelectorAll('.menu-title'); 
+
+        menuTitles.forEach(title => { 
+            title.addEventListener('click', () => { 
+                const menuItem = title.parentElement; 
+
+                // 현재 메뉴 toggle 
+                menuItem.classList.toggle('active'); 
+            }); 
+        }); 
+    </script>
 
 </body>
 </html>
