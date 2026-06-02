@@ -36,9 +36,6 @@ public class LoginController {
 									 HttpSession session) {
 		
 		LoginUser loginUser = loginService.login(loginId);
-		System.out.println(loginId);
-		System.out.println(password);
-		System.out.println(bCryptPasswordEncoder.encode(password));
 		
 		if((loginUser == null)||
 				(!bCryptPasswordEncoder.matches(password, loginUser.getPassword()))) {
@@ -49,8 +46,15 @@ public class LoginController {
 		
 		session.setAttribute("loginUser", loginUser);
 		
+		if("ADMIN".equals(loginUser.getRole())) {
+		    return Map.of(
+		            "success", true,
+		            "redirectUrl", "/burgerstack/user/dashboardHo");
+		}
+
+		
 		return Map.of("success", true,
-					  "redirectUrl","/burgerstack");
+					  "redirectUrl","/burgerstack/user/dashboardBo");
 	}
 	
 	@GetMapping("myPage")
