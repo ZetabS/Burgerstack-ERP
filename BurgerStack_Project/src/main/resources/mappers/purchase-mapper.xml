@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.burgerstack.purchase.PurchaseMapper">
+
+	<!-- <resultMap id="purchaseReqeustResultSet" type="purchaseReqeust">
+
+		<id column="MATERIAL_NAME" property="materialName" />
+		<result column="COST_PRICE" property="costPrice" />
+		<result column="CURRENT_QUANTITY" property="currentQuantity" />
+		<result column="STATUS" property="status" />
+		
+	</resultMap> -->
+
+    <select id="searchMaterialsList"
+            resultType="com.kh.burgerstack.purchase.dto.MaterialInventoryDto">
+
+            SELECT
+                M.MATERIAL_NAME AS materialName,
+                M.COST_PRICE AS costPrice,
+                I.CURRENT_QUANTITY AS currentQuantity,
+                (M.COST_PRICE * I.CURRENT_QUANTITY) AS buyPrice,
+                M.STATUS AS status
+            FROM MATERIALS M
+            JOIN STORE_INVENTORIES I
+                ON M.MATERIAL_ID = I.MATERIAL_ID
+            WHERE I.STORE_ID = 1
+
+    </select>
+
+</mapper>
