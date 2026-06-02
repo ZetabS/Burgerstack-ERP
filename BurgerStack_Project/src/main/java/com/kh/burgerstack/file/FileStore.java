@@ -62,7 +62,10 @@ public class FileStore {
     }
 
     public void delete(long fileId) {
-        fileDao.markDeleted(fileId);
+        boolean success = fileDao.markDeleted(fileId);
+        if (!success) {
+            throw new FileStoreException("삭제할 파일을 찾을 수 없습니다.");
+        }
     }
 
     private String extractExtension(String originalName) {
