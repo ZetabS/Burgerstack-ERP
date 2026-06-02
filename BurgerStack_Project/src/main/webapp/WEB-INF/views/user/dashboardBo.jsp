@@ -11,13 +11,9 @@
 </head>
 <body>
 
-<t:menubarHO>
-<h1>관리자 마이페이지</h1>
-
-	
-
-
-</t:menubarHO>
+<t:menubarBO>
+<h1>점주 대시보드</h1>
+</t:menubarBO>
 
 
 </body>

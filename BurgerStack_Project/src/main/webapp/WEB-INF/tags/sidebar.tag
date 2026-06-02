@@ -3,6 +3,20 @@
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="sidebarTitle" fragment="true" required="true" %>
 
+<%--
+사용법
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+
+<t:sidebar>
+    <jsp:attribute name="sidebarTitle">
+        사이드바 제목(필수)
+    </jsp:attribute>
+    <jsp:body>
+        사이드바 내용
+    </jsp:body>
+</t:sidebar>
+--%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -58,7 +72,7 @@
         position: fixed;
         top: 70px;
         right: 0px;
-        width: 30px;
+        width: 40px;
         height: calc(100vh - 70px); /* 전체 화면 높이(100vh)에서 헤더 높이만큼 제외 */
         background-color: #999999
         z-index: 90;
@@ -148,7 +162,7 @@
             </h2>
 
             <!-- 닫기 버튼 -->
-            <button class="close-btn" onclick="closeSidebar()">&times;</button>
+            <div class="close-btn" onclick="closeSidebar();">&times;</div>
         </div>
         <div class="drawer-content">
             <br>

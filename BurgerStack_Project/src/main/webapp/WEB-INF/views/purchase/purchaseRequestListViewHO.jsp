@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,7 +9,7 @@
 </head>
 <body>
     <!-- 항상 모든 페이지 상단에는 menubar.jsp 가 보여지게끔 include -->
-	<jsp:include page="common/menubarHO.jsp" />
+	<!-- <%--<jsp:include page="common/menubarHO.jsp" />--%> -->
 
     <div class="outer" align="center">
         <h1>요청 발주 목록조회</h1>

@@ -36,9 +36,6 @@ public class LoginController {
 									 HttpSession session) {
 		
 		LoginUser loginUser = loginService.login(loginId);
-		System.out.println(loginId);
-		System.out.println(password);
-		System.out.println(bCryptPasswordEncoder.encode(password));
 		
 		if((loginUser == null)||
 				(!bCryptPasswordEncoder.matches(password, loginUser.getPassword()))) {
@@ -49,22 +46,33 @@ public class LoginController {
 		
 		session.setAttribute("loginUser", loginUser);
 		
+		if("ADMIN".equals(loginUser.getRole())) {
+		    return Map.of(
+		            "success", true,
+		            "redirectUrl", "/burgerstack/user/dashboardHo");
+		}
+
+		
 		return Map.of("success", true,
-					  "redirectUrl","/burgerstack");
+					  "redirectUrl","/burgerstack/user/dashboardBo");
 	}
 	
-//	
-//	@GetMapping("logout")
-//	public String logoutMember(HttpSession session) {
-//		
-//		session.removeAttribute("loginUser");
-//
-//		session.setAttribute("alertMsg", "성공적으로 로그아웃이 되었습니다.");
-//		
-//		return "redirect/";
-//		
-//	}
-//	
+	@GetMapping("myPage")
+	public String myPage() {
+		
+		return "user/myPage";
+	}
+	
+	
+	@GetMapping("logout")
+	public String logoutMember(HttpSession session) {
+		
+		session.removeAttribute("loginUser");
+		
+		return "redirect:/user/loginForm";
+		
+	}
+	
 //	@GetMapping("/mypage")
 //	public String mypage(Model model) {
 //		
@@ -79,4 +87,6 @@ public class LoginController {
 //
 //	    return "mypage";
 //	}
+	
+	
 }
