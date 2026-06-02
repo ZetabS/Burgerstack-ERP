@@ -1,7 +1,5 @@
 package com.kh.burgerstack.receipt;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,13 +11,14 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Receipt {
+public class ReceiptItem {
 
+    private Long receiptItemId;
     private Long receiptId;
-    private Long purchaseRequestId;
-    private Long storeId;
-    private String receiptMemo;
-    private Long receivedBy;
-    private LocalDateTime receivedAt;
-
+    private Long purchaseRequestItemId;
+    private Long materialId;
+    private Long approvedQuantity;
+    private Long receivedQuantity;
+    private Long defectQuantity;
+    private String receiptItemMemo;
 }

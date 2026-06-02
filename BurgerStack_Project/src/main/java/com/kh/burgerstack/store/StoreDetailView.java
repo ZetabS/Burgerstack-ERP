@@ -1,7 +1,5 @@
 package com.kh.burgerstack.store;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,17 +11,17 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Store {
+public class StoreDetailView {
 
-	private Long storeId;
+    private Long storeId;
     private String storeCode;
     private String storeName;
     private String phone;
     private String address;
     private Long ownerUserId;
     private String status;
-    private Long createdBy;
-    private LocalDateTime createdAt;
-    private Long updatedBy;
-    private LocalDateTime updatedAt;
+    private String ownerLoginId;
+    private String ownerUserName;
+    private String ownerPhone;
+    private String ownerEmail;
 }

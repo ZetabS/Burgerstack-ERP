@@ -1,4 +1,4 @@
-package com.kh.burgerstack.store;
+package com.kh.burgerstack.inventory;
 
 import java.time.LocalDateTime;
 
@@ -13,15 +13,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Store {
+public class StoreInventory {
 
-	private Long storeId;
-    private String storeCode;
-    private String storeName;
-    private String phone;
-    private String address;
-    private Long ownerUserId;
-    private String status;
+    private Long storeInventoryId;
+    private Long storeId;
+    private Long materialId;
+    private Long currentQuantity;
+    private Long safetyQuantity;
     private Long createdBy;
     private LocalDateTime createdAt;
     private Long updatedBy;

@@ -1,4 +1,4 @@
-package com.kh.burgerstack.notice;
+package com.kh.burgerstack.inventory;
 
 import java.time.LocalDateTime;
 
@@ -13,14 +13,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Notice {
+public class InventoryTransaction {
 
-    private Long noticeId;
-    private String title;
-    private String content;
-    private LocalDateTime deletedAt;
+    private Long inventoryTransactionId;
+    private Long storeId;
+    private String sourceType;
+    private Long sourceId;
+    private String transactionMemo;
     private Long createdBy;
     private LocalDateTime createdAt;
-    private Long updatedBy;
-    private LocalDateTime updatedAt;
 }

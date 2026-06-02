@@ -1,6 +1,7 @@
 package com.kh.burgerstack.material;
 
-import java.sql.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,17 +16,17 @@ import lombok.ToString;
 @ToString
 public class Material {
 
-	private int materialId;			//	MATERIAL_ID	NUMBER
-	private String materialCode;	//	MATERIAL_CODE	VARCHAR2(30 BYTE)
-	private String materialName;	//	MATERIAL_NAME	VARCHAR2(100 BYTE)
-	private String materialType;	//	MATERIAL_TYPE	VARCHAR2(50 BYTE)
-	private int costPrice;			//	COST_PRICE	NUMBER(12,0)
-	private int sellingPrice;		//	SELLING_PRICE	NUMBER(12,0)
-	private int imageFileId;		//	IMAGE_FILE_ID	NUMBER
-	private String details;			//	DETAILS VARCHAR2(3000)
-	private String status;			//	STATUS	VARCHAR2(20 BYTE)
-	private String createdBy;		//	CREATED_BY	NUMBER
-	private Date createdAt;			//	CREATED_AT	DATE
-	private int updatedBy;			//	UPDATED_BY	NUMBER
-	private Date updatedAt;			//	UPDATED_AT	DATE
+	private Long materialId;
+	private String materialCode;
+	private String materialName;
+	private String materialType;
+	private BigDecimal costPrice;
+	private BigDecimal sellingPrice;
+	private Long imageFileId;
+	private String details;
+	private String status;
+	private Long createdBy;
+	private LocalDateTime createdAt;
+	private Long updatedBy;
+	private LocalDateTime updatedAt;
 }

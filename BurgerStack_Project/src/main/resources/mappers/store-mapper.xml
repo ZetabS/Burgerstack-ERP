@@ -58,7 +58,7 @@
     <!-- 관리자 점포 목록 조회 -->
     <select id="selectStoreList"
 	        parameterType="map"
-	        resultType="com.kh.burgerstack.store.SelectStoreList">
+	        resultType="com.kh.burgerstack.store.StoreListRow">
 	
 	    SELECT
 	        STORE_ID AS storeId,

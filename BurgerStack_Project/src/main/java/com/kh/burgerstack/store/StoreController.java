@@ -63,7 +63,7 @@ public class StoreController {
 
         int count = storeService.selectStoreCount(map);
 
-        List<SelectStoreList> list = storeService.selectStoreList(map, pi);
+        List<StoreListRow> list = storeService.selectStoreList(map, pi);
 
         model.addAttribute("count", count);
         model.addAttribute("pageInfo", pi.toPageInfo(count));
@@ -74,7 +74,7 @@ public class StoreController {
 
     // 점포 상세 조회
     @GetMapping("/detail")
-    public String selectStoreDetail(@RequestParam("storeId") int storeId,
+    public String selectStoreDetail(@RequestParam("storeId") Long storeId,
                                     Model model) {
 
         Store store = storeService.selectStoreDetail(storeId);
@@ -90,12 +90,13 @@ public class StoreController {
 
         storeService.updateStore(store);
 
+
         return "redirect:/store/list";
     }
 
     // 점포 폐점 처리
     @GetMapping("/delete")
-    public String deleteStore(@RequestParam int storeId) {
+    public String deleteStore(@RequestParam Long storeId) {
 
         storeService.deleteStore(storeId);
 

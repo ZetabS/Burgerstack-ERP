@@ -1,5 +1,6 @@
-package com.kh.burgerstack.store;
+package com.kh.burgerstack.purchase;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -13,15 +14,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Store {
+public class PurchaseRequest {
 
-	private Long storeId;
-    private String storeCode;
-    private String storeName;
-    private String phone;
-    private String address;
-    private Long ownerUserId;
+    private Long purchaseRequestId;
+    private Long storeId;
     private String status;
+    private BigDecimal totalAmount;
+    private String requestMemo;
     private Long createdBy;
     private LocalDateTime createdAt;
     private Long updatedBy;
