@@ -5,14 +5,17 @@ import lombok.Data;
 @Data
 public class Store {
 
-	private int storeCode;
-    private int storeNo;
-    private String storeName;
-    private String ownerId;
-    private String storeStatus;
-    private String storePhone;
-    private String storeAddress;
-    private String storeDetailAddress;
+	private int storeId;
+	private String storeCode;
+	private String storeName;
+	private String storePhone;
+	private String storeAddress;
+	private int ownerUserId;
+	private String storeStatus;
+	private int createUser;
+	private String createDate;
+	private int updateUser;
+	private String updateDate;
 	
 	}
 

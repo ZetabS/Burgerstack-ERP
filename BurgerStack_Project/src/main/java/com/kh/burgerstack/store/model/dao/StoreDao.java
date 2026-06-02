@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.model.vo.PageInfo;
-import com.kh.burgerstack.store.model.vo.Manager;
 import com.kh.burgerstack.store.model.vo.SelectStoreList;
 import com.kh.burgerstack.store.model.vo.Store;
 
@@ -18,12 +17,11 @@ import com.kh.burgerstack.store.model.vo.Store;
 public class StoreDao {
 
     @Autowired
-    private SqlSessionTemplate sqlSession;
+    private SqlSessionTemplate sqlSessionTemplate;
 
-    // 기존 점주 계정 확인
+    // 점주 계정 확인
     public int checkOwner(String ownerId) {
-
-        return sqlSession.selectOne(
+        return sqlSessionTemplate.selectOne(
                 "storeMapper.checkOwner",
                 ownerId
         );
@@ -31,31 +29,22 @@ public class StoreDao {
 
     // 점포 등록
     public int insertStore(Store store) {
-
-        return sqlSession.insert(
-                "storeMapper.insertStore", store
+        return sqlSessionTemplate.insert(
+                "storeMapper.insertStore",
+                store
         );
     }
 
-    // 전체 자재 기준 점포 재고 생성
-    public int insertStoreStockMaterial(int storeNo) {
-
-        return sqlSession.insert(
-                "storeMapper.insertStoreStockMaterial",
-                storeNo
-        );
-    }
-    
     // 점포 목록 조회
-    public List<SelectStoreList> selectStoreList (
-    		SqlSession sqlSession,
-    		Map<String, String>map, PageInfo pi) {
-    	
-    	int offset =
+    public List<SelectStoreList> selectStoreList(
+            SqlSession sqlSession,
+            Map<String, String> map,
+            PageInfo pi) {
+
+        int offset =
                 (pi.getCurrentPage() - 1)
                 * pi.getBoardLimit();
-    	
-    	// 페이지 처리 코드
+
         RowBounds rowBounds =
                 new RowBounds(offset, pi.getBoardLimit());
 
@@ -65,49 +54,45 @@ public class StoreDao {
                 rowBounds
         );
     }
-    
+
     // 점포 개수 조회
-	public int selectStoreCount (
-			SqlSession sqlSession,
-			Map<String, String>map) {
-		
-		return sqlSession.selectOne(
-				"storeMapper.selectStoreCount", map);
-	}
-	
-	public Store selectStoreDetail(int storeCode) {
-	    return sqlSession.selectOne("storeMapper.selectStoreDetail", storeCode);
-	}
+    public int selectStoreCount(
+            SqlSession sqlSession,
+            Map<String, String> map) {
 
-	public Manager selectStoreManager(int storeCode) {
-	    return sqlSession.selectOne("storeMapper.selectStoreManager", storeCode);
-	}
-	
-	public int updateStore(SqlSession sqlSession, Store store) {
-		
-		return sqlSession.update("storeMapper.updateStore", store);
-	}
-	
-	public int deleteStore(SqlSession sqlSession, int storeCode) {
-		
-		return sqlSession.update("storeMapper.deleteStore", storeCode);
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+        return sqlSession.selectOne(
+                "storeMapper.selectStoreCount",
+                map
+        );
+    }
+
+    // 점포 상세 조회
+    public Store selectStoreDetail(int storeId) {
+        return sqlSessionTemplate.selectOne(
+                "storeMapper.selectStoreDetail",
+                storeId
+        );
+    }
+
+    // 점포 수정
+    public int updateStore(
+            SqlSession sqlSession,
+            Store store) {
+
+        return sqlSession.update(
+                "storeMapper.updateStore",
+                store
+        );
+    }
+
+    // 점포 폐점 처리
+    public int deleteStore(
+            SqlSession sqlSession,
+            int storeId) {
+
+        return sqlSession.update(
+                "storeMapper.deleteStore",
+                storeId
+        );
+    }
 }
-
-	
-
-
-
-
-
-

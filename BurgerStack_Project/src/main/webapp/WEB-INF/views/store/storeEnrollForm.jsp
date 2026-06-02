@@ -1,11 +1,113 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>관리자 - 점포 등록</title>
+<style>
+	.content {
+		width : 100%;
+		padding-top: 35px;
+	}
+
+	.content h1 {
+		width: 1300px;
+		margin: 0 auto 35px auto;
+		font-size: 30px;
+		font-weight: bold;
+	}
+
+	/* 검색 영역 */
+	.search-area {
+		width: 1300px;
+		margin: 0 auto 15px auto;
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.search-area select {
+		width: 100px;
+		height: 30px;
+		border: 1px solid black;
+		border-radius: 15px;
+		padding-left: 10px;
+	}
+
+	.search-area input[type="date"]{
+		height: 30px;
+		border: 1px solid black;
+		padding: 0 8px;
+	}
+
+	.search-box {
+		display: flex;
+		height: 30px;
+	}
+
+	.search-box input {
+		width: 130px;
+		border: 1px solid black;
+		border-right: none;
+		padding-left: 10px;
+	}
+
+	.search-btn {
+		width: 35px;
+		height: 30px;
+		padding: 0;
+		border: none;
+		background-color: #60758f;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		cursor: pointer;
+	}
+
+	.search-btn img {
+		width: 35px;
+		height: 30px;
+		display: block;
+		object-fit: contain;
+	}
+
+	/* 테이블 */
+	table {
+		width: 1300px;
+		margin: 0 auto;
+		border-collapse: collapse;
+		background-color: white;
+		text-align: center;
+		font-size: 13px;
+	}
+
+	thead tr {
+		background-color: #19c765;
+		height: 35px;
+	}
+
+	th {
+		padding: 10px;
+	}
+
+	tbody tr {
+		height: 38px;
+		border-bottom: 1px solid #f1f1f1;
+		cursor: pointer;
+	}
+
+	tbody tr:hover {
+    	background-color: #f2f6ff;
+	}
+
+</style>
 </head>
 <body>
 <t:menubarHO>
@@ -78,9 +180,7 @@
 			    <div class="form-row">
 			        <label>선택된 점주</label>
 			
-			        <input type="hidden"
-			               id="ownerId"
-			               name="ownerId">
+			        <input type="hidden" id="ownerUserId" name="ownerUserId" value="1">
 			
 			        <input type="text"
 			               id="selectedOwner"
@@ -143,27 +243,24 @@
 			    let html = "";
 
 			    // 아이디 기준 검색
-			    if(keyword === "hong123") {
-
-			        html += `
-			            <div class="owner-item"
-			                 onclick="selectOwner('hong123', '홍길동')">
-
-			                hong123 / 홍길동
-			            </div>
-			        `;
-			    }
+			    if(keyword === "owner02") {
+				    html += `
+				        <div class="owner-item"
+				             onclick="selectOwner(1, '김철수')">
+				            owner02 / 김철수
+				        </div>
+				    `;
+				}
 
 			    document.getElementById("ownerResultArea").innerHTML = html;
 			}
 				
-				function selectOwner(ownerId, ownerName) {
-				
-				    document.getElementById("ownerId").value = ownerId;
-				
+				function selectOwner(ownerUserId, ownerName) {
+				    document.getElementById("ownerUserId").value = ownerUserId;
+	
 				    document.getElementById("selectedOwner").value =
-				        ownerId + " / " + ownerName;
-				
+				        ownerUserId + " / " + ownerName;
+	
 				    alert(ownerName + " 점주 계정이 연동되었습니다.");
 				}
 			

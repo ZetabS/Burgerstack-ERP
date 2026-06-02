@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.common.model.vo.PageInfo;
 import com.kh.burgerstack.store.model.dao.StoreDao;
-import com.kh.burgerstack.store.model.vo.Manager;
 import com.kh.burgerstack.store.model.vo.SelectStoreList;
 import com.kh.burgerstack.store.model.vo.Store;
 
@@ -28,13 +27,10 @@ public class StoreService {
 
         int result = storeDao.insertStore(store);
 
-       // if(result > 0 && "Y".equals(createStockYn)) {
-         //   storeDao.insertStoreStockMaterial(store.getStoreCode());
-        // }
-
         return result;
     }
 
+    // 점포 목록 조회
     public List<SelectStoreList> selectStoreList(
             Map<String, String> map,
             PageInfo pi) {
@@ -42,24 +38,27 @@ public class StoreService {
         return storeDao.selectStoreList(sqlSession, map, pi);
     }
 
+    // 점포 개수 조회
     public int selectStoreCount(Map<String, String> map) {
 
         return storeDao.selectStoreCount(sqlSession, map);
     }
 
-    public Store selectStoreDetail(int storeCode) {
-        return storeDao.selectStoreDetail(storeCode);
+    // 점포 상세 조회
+    public Store selectStoreDetail(int storeId) {
+
+        return storeDao.selectStoreDetail(storeId);
     }
 
-    public Manager selectStoreManager(int storeCode) {
-        return storeDao.selectStoreManager(storeCode);
-    }
-
+    // 점포 수정
     public int updateStore(Store store) {
+
         return storeDao.updateStore(sqlSession, store);
     }
 
-    public int deleteStore(int storeCode) {
-        return storeDao.deleteStore(sqlSession, storeCode);
+    // 점포 폐점 처리
+    public int deleteStore(int storeId) {
+
+        return storeDao.deleteStore(sqlSession, storeId);
     }
 }

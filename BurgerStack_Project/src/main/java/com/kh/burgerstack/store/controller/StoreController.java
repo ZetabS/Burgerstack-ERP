@@ -14,15 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.kh.burgerstack.common.model.vo.PageInfo;
 import com.kh.burgerstack.common.template.Pagination;
-import com.kh.burgerstack.member.model.vo.Member;
 import com.kh.burgerstack.store.model.service.StoreService;
-import com.kh.burgerstack.store.model.vo.Manager;
 import com.kh.burgerstack.store.model.vo.SelectStoreList;
 import com.kh.burgerstack.store.model.vo.Store;
-
-import jakarta.servlet.http.HttpSession;
-
-
 
 @Controller
 @RequestMapping("/store")
@@ -36,11 +30,7 @@ public class StoreController {
     public String insertStore(Store store,
                               String createStockYn) {
 
-        System.out.println("ownerId = " + store.getOwnerId());
-
         int result = storeService.insertStore(store, createStockYn);
-
-        System.out.println("insert result = " + result);
 
         if(result > 0) {
             return "redirect:/store/list";
@@ -48,12 +38,14 @@ public class StoreController {
             return "common/errorPage";
         }
     }
-    
+
+    // 점포 등록 화면
     @GetMapping("/enroll")
     public String storeEnrollForm() {
         return "store/storeEnrollForm";
     }
-    
+
+    // 점포 목록 조회
     @GetMapping("/list")
     public String selectStoreList(
             @RequestParam(value="currentPage", defaultValue="1") int currentPage,
@@ -73,8 +65,9 @@ public class StoreController {
         int count = storeService.selectStoreCount(map);
 
         PageInfo pi = Pagination.getPageInfo(count, currentPage, 10, 10);
-        
-        List<SelectStoreList> list = storeService.selectStoreList(map, pi);
+
+        List<SelectStoreList> list =
+                storeService.selectStoreList(map, pi);
 
         model.addAttribute("count", count);
         model.addAttribute("pi", pi);
@@ -82,32 +75,20 @@ public class StoreController {
 
         return "store/storeListView";
     }
-    
-    public StoreController(StoreService storeService) {
-    	
-    	this.storeService = storeService;
-    }
-    
+
+    // 점포 상세 조회
     @GetMapping("/detail")
-    public String selectStoreDetail(@RequestParam("storeCode") int storeCode,
-                                    Model model,
-                                    HttpSession session) {
+    public String selectStoreDetail(@RequestParam("storeId") int storeId,
+                                    Model model) {
 
-        System.out.println("넘어온 storeCode = " + storeCode);
+        Store store = storeService.selectStoreDetail(storeId);
 
-        Store store = storeService.selectStoreDetail(storeCode);
-        Manager manager = storeService.selectStoreManager(storeCode);
-
-        Member loginUser = (Member)session.getAttribute("loginUser");
-
-        model.addAttribute("loginUser", loginUser);
         model.addAttribute("store", store);
-        model.addAttribute("manager", manager);
 
         return "store/storeDetail";
     }
-    
-    // 수정
+
+    // 점포 수정 처리
     @PostMapping("/update")
     public String updateStore(Store store) {
 
@@ -115,21 +96,13 @@ public class StoreController {
 
         return "redirect:/store/list";
     }
-    
-    // 삭제
+
+    // 점포 폐점 처리
     @GetMapping("/delete")
-    public String deleteStore(@RequestParam int storeCode) {
-    							
-    	storeService.deleteStore(storeCode);
-    	
-    	return "redirect:/store/list";
+    public String deleteStore(@RequestParam int storeId) {
+
+        storeService.deleteStore(storeId);
+
+        return "redirect:/store/list";
     }
-    
-    
-    
-    
-    
-    
-    
-    
 }
