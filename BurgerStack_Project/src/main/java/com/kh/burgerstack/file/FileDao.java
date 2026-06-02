@@ -13,11 +13,11 @@ public class FileDao {
 
     public StoredFile save(StoredFile storedFile) {
         fileMapper.insert(storedFile);
-        return fileMapper.findById(storedFile.getFileId());
+        return fileMapper.findActiveById(storedFile.getFileId());
     }
 
     public Optional<StoredFile> findById(long fileId) {
-        return Optional.ofNullable(fileMapper.findById(fileId));
+        return Optional.ofNullable(fileMapper.findActiveById(fileId));
     }
 
     public void markDeleted(long fileId) {
