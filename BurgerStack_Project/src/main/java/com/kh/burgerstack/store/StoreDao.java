@@ -9,7 +9,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.kh.burgerstack.common.model.vo.PageInfo;
+import com.kh.burgerstack.common.pagination.PagingRequest;
 
 @Repository
 public class StoreDao {
@@ -43,13 +43,13 @@ public class StoreDao {
     // 점포 목록 조회
     public List<SelectStoreList> selectStoreList(
             SqlSession sqlSession,
-            Map<String, String> map, PageInfo pi) {
+            Map<String, String> map, PagingRequest pi) {
 
-        int offset = (pi.getCurrentPage() - 1)
-                * pi.getBoardLimit();
+        int offset = (pi.getPage() - 1)
+                * pi.getLimit();
 
         // 페이지 처리 코드
-        RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
+        RowBounds rowBounds = new RowBounds(offset, pi.getLimit());
 
         return sqlSession.selectList(
                 "storeMapper.selectStoreList",

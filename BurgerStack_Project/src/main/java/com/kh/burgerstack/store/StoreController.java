@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.kh.burgerstack.common.model.vo.PageInfo;
-import com.kh.burgerstack.common.template.Pagination;
+import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.user.LoginUser;
 
 import jakarta.servlet.http.HttpSession;
@@ -50,7 +49,7 @@ public class StoreController {
 
     @GetMapping("/list")
     public String selectStoreList(
-            @RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
+            PagingRequest pi,
             String status,
             String startDate,
             String endDate,
@@ -66,12 +65,10 @@ public class StoreController {
 
         int count = storeService.selectStoreCount(map);
 
-        PageInfo pi = Pagination.getPageInfo(count, currentPage, 10, 10);
-
         List<SelectStoreList> list = storeService.selectStoreList(map, pi);
 
         model.addAttribute("count", count);
-        model.addAttribute("pi", pi);
+        model.addAttribute("pageInfo", pi.toPageInfo(count));
         model.addAttribute("list", list);
 
         return "store/storeListView";
@@ -106,10 +103,10 @@ public class StoreController {
     public String updateStore(Store store,
             HttpSession session) {
 
-        Member loginUser = (Member) session.getAttribute("loginUser");
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
         if (loginUser == null
-                || !"ADMIN".equals(loginUser.getUserRole())) {
+                || !"ADMIN".equals(loginUser.getRole())) {
 
             return "redirect:/store/detail?storeCode="
                     + store.getStoreCode();
@@ -126,9 +123,9 @@ public class StoreController {
     public String deleteStore(@RequestParam int storeCode,
             HttpSession session) {
 
-        Member loginUser = (Member) session.getAttribute("loginUser");
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        if (loginUser == null || !"ADMIN".equals(loginUser.getUserRole())) {
+        if (loginUser == null || !"ADMIN".equals(loginUser.getRole())) {
 
             return "redirect:/store/detail?storeCode=" + storeCode;
         }
