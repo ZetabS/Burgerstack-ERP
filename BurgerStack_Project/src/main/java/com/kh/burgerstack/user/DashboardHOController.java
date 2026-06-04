@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("admin")
-public class MyPageHoController {
+public class DashboardHOController {
 
-	@GetMapping("mypage")
-	public String MyPageHo() {
-		return "user/MyPageHo";
+	@GetMapping("dashboardHO")
+	public String dashboardHo() {
+		return "user/dashboardHO";
 	}
 }

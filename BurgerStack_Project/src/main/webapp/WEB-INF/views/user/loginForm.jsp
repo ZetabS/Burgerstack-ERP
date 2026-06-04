@@ -37,7 +37,7 @@
 		border:1px solid lightgray;
 	}
 
-	.login-button{
+	.loginbutton{
 		margin: auto;
 		border-radius: 10px;
 		border: 1px solid lightgray;

@@ -49,20 +49,13 @@ public class LoginController {
 		if("ADMIN".equals(loginUser.getRole())) {
 		    return Map.of(
 		            "success", true,
-		            "redirectUrl", "/burgerstack/user/dashboardHo");
+		            "redirectUrl", "/burgerstack/user/dashboardHO");
 		}
 
 		
 		return Map.of("success", true,
-					  "redirectUrl","/burgerstack/user/dashboardBo");
+					  "redirectUrl","/burgerstack/user/dashboardBO");
 	}
-	
-	@GetMapping("myPage")
-	public String myPage() {
-		
-		return "user/myPage";
-	}
-	
 	
 	@GetMapping("logout")
 	public String logoutMember(HttpSession session) {

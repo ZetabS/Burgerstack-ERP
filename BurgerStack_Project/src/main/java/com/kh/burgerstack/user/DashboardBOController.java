@@ -6,10 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("owner")
-public class MyPageBoController {
+public class DashboardBOController {
 
-	@GetMapping("mypage")
-	public String MyPageBo() {
-		return "user/MyPageBo";
+	@GetMapping("dashboardBO")
+	public String dashboardBo() {
+		System.out.println("잘 호출 되나..?");
+		return "user/dashboardBO";
 	}
 }

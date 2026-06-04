@@ -62,8 +62,8 @@
 	}
 	
 	.button-area{
-	    text-align:center;
-	    margin-top:30px;
+    text-align:right;
+    margin-top:30px;
 	}
 	
 	#updateBtn{
@@ -77,30 +77,49 @@
 	    cursor:pointer;
 	    transition:0.2s;
 	}
-		#updateBtn_1{
-	    width:150px;
-	    height:45px;
-	    border:none;
-	    border-radius:8px;
-	    background:#FF7F50;
-	    color:white;
-	    font-size:15px;
-	    cursor:pointer;
-	    transition:0.2s;
-	 }
+	
+	#changePwdBtn{
+    width:150px;
+    height:45px;
+    border:none;
+    border-radius:8px;
+    background:#ff7f27;
+    color:white;
+    font-size:15px;
+    cursor:pointer;
+	}
+	
+	#changePwdBtn:hover{
+	    background:#e86d0c;
+	}
 	
 	#updateBtn:hover{
 	    background:#212529;
+	}
+	.home-btn-area{
+    text-align: center;
+    margin-top: 30px;
+	}
+	
+	#homeBtn{
+	    width: 150px;
+	    height: 45px;
+	    border: none;
+	    border-radius: 8px;
+	    cursor: pointer;
+	    font-size: 16px;
 	}
 </style>
 </head>
 <body>
 
 <t:menubarBO>
-	 
-		<div class="mypage-container">
+
+	<div class="mypage-container">
 		
-		    <h2>점포 관리자 정보</h2>
+	<h2>점포 관리자 정보</h2>
+
+	<form id="revise" action="/burgerstack/owner/revise" method="post">
 		
 		    <table>
 		        <tr>
@@ -127,19 +146,63 @@
 		            </td>
 		        </tr>
 		    </table>
-		
+
 		    <br>
 		
-		    <button id="updateBtn">
-		        정보 수정
-		    </button>
+		    <div class="button-area">
+			    <button id="updateBtn">
+			        정보 수정
+			    </button>
+			</div>
 		    
-		    <button id="updateBtn_1">
-		        비밀번호 번경
-		    </button>
+		    <hr>
+		    
+	</form>
+		    
+	<form id="change-password" action="/burgerstack/owner/changePassword" method="post">
+		    
+			<h2>비밀번호 변경</h2>
+			
+			<table>
+			    <tr>
+			        <th>현재 비밀번호</th>
+			        <td>
+			            <input type="password" id="currentPwd">
+			        </td>
+			    </tr>
+			
+			    <tr>
+			        <th>새 비밀번호</th>
+			        <td>
+			            <input type="password" id="newPwd">
+			        </td>
+			    </tr>
+			
+			    <tr>
+			        <th>비밀번호 확인</th>
+			        <td>
+			            <input type="password" id="checkPwd">
+			        </td>
+			    </tr>
+			</table>
+			
+			<div class="button-area">
+			    <button id="changePwdBtn">
+			        비밀번호 변경
+			    </button>
+			</div>
 		
 		</div>
+		
+	</form>
 	
+	<form id="home-button" action="/burgerstack/owner/homebutton" method="get">
+		<div class="home-btn-area">
+    		<button type="submit" id="homeBtn">
+		        홈으로
+		    </button>
+		</div>
+	</form>
 	
 	
 	<!-- 

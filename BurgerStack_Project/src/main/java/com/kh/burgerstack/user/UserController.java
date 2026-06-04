@@ -23,8 +23,6 @@ public class UserController {
 	@GetMapping("enrollForm")
 	public String storeOwnerEnrollForm() {
 		
-		System.out.println("잘 출력되나..?");
-		
 		return "user/userEnrollForm";
 	}
 	
@@ -42,7 +40,7 @@ public class UserController {
 		if(result > 0) {
 		    session.setAttribute("alertMsg", "계정이 등록되었습니다.");
 		    
-		    return "redirect:/user/myPage";
+		    return "redirect:/user/MyPageHO";
 		} else {
 			model.addAttribute("errorMsg", "회원가입에 실패했습니다");
 			return "common/errorPage";
