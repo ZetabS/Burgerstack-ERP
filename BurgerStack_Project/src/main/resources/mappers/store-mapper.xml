@@ -6,7 +6,7 @@
 
     <!-- 점주 존재 여부 확인 -->
     <select id="checkOwner"
-	        parameterType="int"
+	        parameterType="long"
 	        resultType="int">
 	    SELECT COUNT(*)
 	    FROM USERS
@@ -15,16 +15,14 @@
 	</select>
 
     <!-- 점포 등록 -->
-    <insert id="insertStore"
+	<insert id="insertStore"
 	        parameterType="com.kh.burgerstack.store.Store">
 	
 	    <selectKey keyProperty="storeId"
-	               resultType="int"
+	               resultType="long"
 	               order="BEFORE">
-	
 	        SELECT SEQ_STORE.NEXTVAL
 	        FROM DUAL
-	
 	    </selectKey>
 	
 	    INSERT INTO STORES
@@ -32,20 +30,20 @@
 	        STORE_ID,
 	        STORE_CODE,
 	        STORE_NAME,
-	        STORE_PHONE,
-	        STORE_ADDRESS,
+	        PHONE,
+	        ADDRESS,
 	        OWNER_USER_ID,
-	        STORE_STATUS,
-	        CREATE_USER,
-	        CREATE_DATE
+	        STATUS,
+	        CREATED_BY,
+	        CREATED_AT
 	    )
 	    VALUES
 	    (
 	        #{storeId},
 	        'S' || #{storeId},
 	        #{storeName},
-	        #{storePhone},
-	        #{storeAddress},
+	        #{phone},
+			#{address},
 	        #{ownerUserId},
 	        'OPEN',
 	        1,
@@ -64,25 +62,23 @@
 	        STORE_ID AS storeId,
 	        STORE_CODE AS storeCode,
 	        STORE_NAME AS storeName,
-	        STORE_PHONE AS storePhone,
-	        STORE_ADDRESS AS storeAddress,
-	        STORE_STATUS AS storeStatus,
-	        TO_CHAR(CREATE_DATE, 'YYYY.MM.DD') AS createDate
-	
+	        PHONE AS Phone,
+	        ADDRESS AS Address,
+	        STATUS AS Status,
+	        CREATED_AT AS createdAt
 	    FROM STORES
-	
 	    WHERE 1 = 1
 	
 	    <if test="status != null and status != ''">
-	        AND STORE_STATUS = #{status}
+	        AND STATUS = #{status}
 	    </if>
 	
 	    <if test="keyword != null and keyword != ''">
 	        AND (
 	            STORE_NAME LIKE '%' || #{keyword} || '%'
 	            OR STORE_CODE LIKE '%' || #{keyword} || '%'
-	            OR STORE_PHONE LIKE '%' || #{keyword} || '%'
-	            OR STORE_ADDRESS LIKE '%' || #{keyword} || '%'
+	            OR PHONE LIKE '%' || #{keyword} || '%'
+	            OR ADDRESS LIKE '%' || #{keyword} || '%'
 	        )
 	    </if>
 	
@@ -92,49 +88,50 @@
 
     <!-- 점포 개수 조회 -->
     <select id="selectStoreCount"
-            parameterType="map"
-            resultType="int">
-        SELECT COUNT(*)
-        FROM STORES
-        WHERE 1 = 1
-
-        <if test="status != null and status != ''">
-            AND STORE_STATUS = #{status}
-        </if>
-
-        <if test="startDate != null and startDate != ''">
-		    AND CREATE_DATE <![CDATA[ >= ]]> TO_DATE(#{startDate}, 'YYYY-MM-DD')
-		</if>
-		
-		<if test="endDate != null and endDate != ''">
-		    AND CREATE_DATE <![CDATA[ <= ]]> TO_DATE(#{endDate}, 'YYYY-MM-DD')
-		</if>
-
-        <if test="keyword != null and keyword != ''">
-            AND (
-                STORE_NAME LIKE '%' || #{keyword} || '%'
-                OR STORE_ADDRESS LIKE '%' || #{keyword} || '%'
-                OR STORE_PHONE LIKE '%' || #{keyword} || '%'
-            )
-        </if>
-    </select>
+	        parameterType="map"
+	        resultType="int">
+	
+	    SELECT COUNT(*)
+	    FROM STORES
+	    WHERE 1 = 1
+	
+	    <if test="status != null and status != ''">
+	        AND STATUS = #{status}
+	    </if>
+	
+	    <if test="startDate != null and startDate != ''">
+	        AND CREATED_AT <![CDATA[ >= ]]> TO_DATE(#{startDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="endDate != null and endDate != ''">
+	        AND CREATED_AT <![CDATA[ <= ]]> TO_DATE(#{endDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="keyword != null and keyword != ''">
+	        AND (
+	            STORE_NAME LIKE '%' || #{keyword} || '%'
+	            OR STORE_CODE LIKE '%' || #{keyword} || '%'
+	            OR PHONE LIKE '%' || #{keyword} || '%'
+	            OR ADDRESS LIKE '%' || #{keyword} || '%'
+	        )
+	    </if>
+	
+	</select>
 
     <!-- 점포 상세 조회 -->
-    <select id="selectStoreDetail"
-	        parameterType="int"
+	<select id="selectStoreDetail"
+	        parameterType="long"
 	        resultType="com.kh.burgerstack.store.Store">
 	
 	    SELECT
 	        STORE_ID AS storeId,
 	        STORE_CODE AS storeCode,
 	        STORE_NAME AS storeName,
-	        STORE_PHONE AS storePhone,
-	        STORE_ADDRESS AS storeAddress,
+	        PHONE AS phone,
+			ADDRESS AS address,
 	        OWNER_USER_ID AS ownerUserId,
-	        STORE_STATUS AS storeStatus
-	
+			STATUS AS status
 	    FROM STORES
-	
 	    WHERE STORE_ID = #{storeId}
 	
 	</select>
@@ -157,27 +154,27 @@
   
 
     <!-- 점포 수정 -->
-    <update id="updateStore"
-	        parameterType="com.kh.burgerstack.store.model.vo.Store">
-	
-	    UPDATE STORES
-	    SET
-	        STORE_NAME = #{storeName},
-	        STORE_PHONE = #{storePhone},
-	        STORE_ADDRESS = #{storeAddress},
-	        STORE_STATUS = #{storeStatus}
-	    WHERE STORE_ID = #{storeId}
-	
-	</update>
+	<update id="updateStore"
+        parameterType="com.kh.burgerstack.store.Store">
+
+    UPDATE STORES
+    SET
+        STORE_NAME = #{storeName},
+        PHONE = #{phone},
+        ADDRESS = #{address},
+        STATUS = #{status},
+        UPDATED_AT = SYSDATE
+    WHERE STORE_ID = #{storeId}
+
+</update>
 
     <!-- 점포 삭제/폐점 처리 -->
-    <update id="deleteStore"
-	        parameterType="int">
+	<delete id="deleteStore"
+	        parameterType="long">
 	
-	    UPDATE STORES
-	    SET STORE_STATUS = 'CLOSED'
+	    DELETE FROM STORES
 	    WHERE STORE_ID = #{storeId}
 	
-	</update>
+	</delete>
 
 </mapper>

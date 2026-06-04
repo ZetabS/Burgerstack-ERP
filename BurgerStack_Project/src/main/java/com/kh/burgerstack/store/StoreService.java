@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 
-import org.apache.ibatis.session.SqlSession;
+import com.kh.burgerstack.store.StoreListRow;
 
 @Service
 public class StoreService {
@@ -32,7 +32,7 @@ public class StoreService {
 
 
     // 점포 목록 조회
-    public List<SelectStoreList> selectStoreList(
+    public List<StoreListRow> selectStoreList(
             Map<String, String> map,
             PagingRequest pi) {
 

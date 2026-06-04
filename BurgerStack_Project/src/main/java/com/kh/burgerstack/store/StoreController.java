@@ -8,44 +8,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.store.StoreService;
-import com.kh.burgerstack.store.SelectStoreList;
-import com.kh.burgerstack.store.Store;
 
 @Controller
-@RequestMapping("/store")
+@RequestMapping("admin/stores")
 public class StoreController {
 
     @Autowired
     private StoreService storeService;
 
     // 점포 등록 처리
-    @PostMapping("/insertStore")
+    @PostMapping("")
     public String insertStore(Store store,
                               String createStockYn) {
 
         int result = storeService.insertStore(store, createStockYn);
 
         if(result > 0) {
-            return "redirect:/store/list";
+            return "redirect:/admin/stores";
         } else {
             return "common/errorPage";
         }
     }
 
     // 점포 등록 화면
-    @GetMapping("/enroll")
+    @GetMapping("new")
     public String storeEnrollForm() {
         return "store/storeEnrollForm";
     }
 
     // 점포 목록 조회
-    @GetMapping("/list")
+    @GetMapping("")
     public String selectStoreList(
             PagingRequest pi,
             String status,
@@ -69,12 +66,13 @@ public class StoreController {
         model.addAttribute("pageInfo", pi.toPageInfo(count));
         model.addAttribute("list", list);
 
-        return "store/storeListView";
+        return "store/storeList";
     }
 
+ 
     // 점포 상세 조회
-    @GetMapping("/detail")
-    public String selectStoreDetail(@RequestParam("storeId") Long storeId,
+    @GetMapping("/{storeId}")
+    public String selectStoreDetail(@PathVariable("storeId") Long storeId,
                                     Model model) {
 
         Store store = storeService.selectStoreDetail(storeId);
@@ -85,21 +83,31 @@ public class StoreController {
     }
 
     // 점포 수정 처리
-    @PostMapping("/update")
-    public String updateStore(Store store) {
+    @PostMapping("/{storeId}")
+    public String updateStore(@PathVariable("storeId") Long storeId,
+                              Store store) {
 
-        storeService.updateStore(store);
+        store.setStoreId(storeId);
 
+        int result = storeService.updateStore(store);
 
-        return "redirect:/store/list";
+        if(result > 0) {
+            return "redirect:/admin/stores";
+        }
+
+        return "common/errorPage";
     }
 
-    // 점포 폐점 처리
-    @GetMapping("/delete")
-    public String deleteStore(@RequestParam Long storeId) {
+    @GetMapping("/{storeId}/status")
+    public String deleteStore(
+            @PathVariable("storeId") Long storeId) {
 
-        storeService.deleteStore(storeId);
+        int result = storeService.deleteStore(storeId);
 
-        return "redirect:/store/list";
+        if(result > 0) {
+            return "redirect:/admin/stores";
+        }
+
+        return "common/errorPage";
     }
 }

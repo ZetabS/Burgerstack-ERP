@@ -11,8 +11,7 @@ import org.springframework.stereotype.Repository;
 
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.store.model.vo.SelectStoreList;
-import com.kh.burgerstack.store.model.vo.Store;
+import com.kh.burgerstack.store.StoreListRow;
 
 @Repository
 public class StoreDao {
@@ -37,12 +36,12 @@ public class StoreDao {
 	}
 
 	// 점포 상세 조회
-	public Store selectStoreDetail(int storeId) {
+	public Store selectStoreDetail(Long storeId) {
 		return sqlSessionTemplate.selectOne("storeMapper.selectStoreDetail", storeId);
 	}
 
 	// 점포 목록 조회
-	public List<SelectStoreList> selectStoreList(SqlSession sqlSession, Map<String, String> map, PagingRequest pi) {
+	public List<StoreListRow> selectStoreList(SqlSession sqlSession, Map<String, String> map, PagingRequest pi) {
         int offset = (pi.getPage() - 1)
                 * pi.getLimit();
 
