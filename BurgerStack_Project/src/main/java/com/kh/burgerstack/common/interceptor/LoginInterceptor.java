@@ -31,7 +31,14 @@ public class LoginInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession();
 
         // 2. 로그인 사용자 정보 꺼내기
-        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        LoginUser loginUser = (session != null)
+                ? (LoginUser) session.getAttribute("loginUser")
+                : null;
+
+        // 디버깅 코드
+        // System.out.println("session id = " + session.getId());
+        // System.out.println("loginUser = " + session.getAttribute("loginUser"));
+        // System.out.println("URL = " + request.getRequestURI());
 
         // 3. 로그인 여부 확인
         if(loginUser != null) {

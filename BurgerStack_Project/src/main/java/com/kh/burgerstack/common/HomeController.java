@@ -1,11 +1,13 @@
 package com.kh.burgerstack.common;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.kh.burgerstack.user.LoginUser;
 
 import jakarta.servlet.http.HttpSession;
 
+@Controller
 public class HomeController {
 
     @GetMapping("/")

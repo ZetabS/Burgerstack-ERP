@@ -79,7 +79,8 @@
                 </tr>      
             </tbody>
         </table>
-        <ui:pagination pageInfo="${pageInfo}"></ui:pagination>
+        <br>
+        <t:pagination pageInfo="${pageInfo}"></t:pagination>
 	</t:menubarBO>
 	
 

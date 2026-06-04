@@ -3,81 +3,64 @@ package com.kh.burgerstack.store;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 
-import org.apache.ibatis.session.SqlSession;
+import com.kh.burgerstack.store.StoreListRow;
 
 @Service
 public class StoreService {
 
-    private final StoreDao storeDao;
-    private final SqlSession sqlSession;
+    @Autowired
+    private StoreDao storeDao;
+
+    @Autowired
+    private SqlSession sqlSession;
 
     @Transactional
     public int insertStore(Store store, String createStockYn) {
 
-        // 기존 점주 계정 존재 여부 확인
-        int ownerCount = storeDao.checkOwner(store.getOwnerUserId());
-
-        if (ownerCount == 0) {
-            return 0;
-        }
-
-        // 점포 등록
         int result = storeDao.insertStore(store);
-
-        // 전체 자재 기준 점포 재고 행 생성
-        if (result > 0 && "Y".equals(createStockYn)) {
-
-            storeDao.insertStoreStockMaterial(store.getStoreId());
-        }
 
         return result;
     }
 
+
     // 점포 목록 조회
     public List<StoreListRow> selectStoreList(
-            Map<String, String> map, PagingRequest pi) {
+            Map<String, String> map,
+            PagingRequest pi) {
 
-        return storeDao.selectStoreList(
-                sqlSession,
-                map,
-                pi);
+        return storeDao.selectStoreList(sqlSession, map, pi);
     }
+
 
     // 점포 개수 조회
-    public int selectStoreCount(
-            Map<String, String> map) {
+    public int selectStoreCount(Map<String, String> map) {
 
-        return storeDao.selectStoreCount(
-                sqlSession,
-                map);
-
+        return storeDao.selectStoreCount(sqlSession, map);
     }
 
-    public StoreService(StoreDao storeDao, SqlSession sqlSession) {
-        this.storeDao = storeDao;
-        this.sqlSession = sqlSession;
-    }
-
+    // 점포 상세 조회
     public Store selectStoreDetail(Long storeId) {
+
         return storeDao.selectStoreDetail(storeId);
     }
 
-    public StoreManagerView selectStoreManager(Long storeId) {
-        return storeDao.selectStoreManager(storeId);
-    }
-
+    // 점포 수정
     public int updateStore(Store store) {
+
         return storeDao.updateStore(sqlSession, store);
     }
 
+    // 점포 폐점 처리
     public int deleteStore(Long storeId) {
+
         return storeDao.deleteStore(sqlSession, storeId);
     }
-
 }
