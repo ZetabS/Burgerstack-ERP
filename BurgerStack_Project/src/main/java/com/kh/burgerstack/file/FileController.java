@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class FileController {
     private final FileService fileService;
 
     @GetMapping("/{fileId}")
-    public ResponseEntity<Resource> viewFile(Long fileId) {
+    public ResponseEntity<Resource> viewFile(@PathVariable("fileId") Long fileId) {
         FileResource fileResource = fileService.loadFile(fileId);
         return ResponseEntity.ok()
                 .contentType(resolveMediaType(fileResource.getMimeType()))
@@ -34,7 +35,7 @@ public class FileController {
     }
 
     @GetMapping("/{fileId}/download")
-    public ResponseEntity<Resource> downloadFile(Long fileId) {
+    public ResponseEntity<Resource> downloadFile(@PathVariable("fileId") Long fileId) {
         FileResource fileResource = fileService.loadFile(fileId);
         return ResponseEntity.ok()
                 .contentType(resolveMediaType(fileResource.getMimeType()))
