@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.burgerstack.common.template.XssDefencePolicy;
-import com.kh.burgerstack.file.FileStore;
+import com.kh.burgerstack.file.FileService;
 import com.kh.burgerstack.file.StoredFile;
 
 import jakarta.servlet.http.HttpSession;
@@ -27,7 +27,7 @@ public class MaterialController {
 	@Autowired
 	private MaterialService materialService;
 	@Autowired
-	private FileStore fileStore;
+	private FileService fileService;
 	
 	
 	
@@ -57,7 +57,7 @@ public class MaterialController {
 	    try {
 	        // 1. 파일 저장
 	        if (imageFile != null && !imageFile.isEmpty()) {
-	            StoredFile storedFile = fileStore.store(imageFile, m.getCreatedBy());
+	            StoredFile storedFile = fileService.storeFile(imageFile, m.getCreatedBy());
 	            m.setImageFileId(storedFile.getFileId());
 	        }
 
@@ -97,6 +97,7 @@ public class MaterialController {
 		// > materialName, imageFileId 는 화면 출력에 사용
 		// > materialType 은 상품 분류에 사용
 		ArrayList<Material> list = materialService.selectMaterialList(); 
+		System.out.println(list.get(0).getImageFileId());
         model.addAttribute("materials", list);
 		return "material/materialListHO";
 	}
@@ -162,7 +163,7 @@ public class MaterialController {
 	    // 💡 이미지 업로드 및 기존 이미지 유지 로직
 	    if (imageFile != null && !imageFile.isEmpty()) {
 	        // 새 이미지를 업로드한 경우
-	        StoredFile storedFile = fileStore.store(imageFile, m.getCreatedBy());
+	        StoredFile storedFile = fileService.storeFile(imageFile, m.getCreatedBy());
 	        m.setImageFileId(storedFile.getFileId());
 	    } else {
 	        // 새 이미지를 올리지 않은 경우 -> DB에서 기존 정보를 꺼내와서 파일 ID를 복원

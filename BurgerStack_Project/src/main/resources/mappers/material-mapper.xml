@@ -22,33 +22,18 @@
 		                    , #{createdBy})
 	</insert>
 	
-	<!-- 임시 조회용 -->
+	<!-- 전체조회용 -->
 	<select id="selectMaterialList" resultType="Material">
-		SELECT MATERIAL_ID
-		     , MATERIAL_TYPE
-		     , MATERIAL_NAME
-	      FROM MATERIALS
-	     WHERE STATUS = 'ACTIVE'
-	     ORDER BY MATERIAL_TYPE, MATERIAL_NAME
+	    SELECT M.MATERIAL_ID
+	         , M.MATERIAL_TYPE
+	         , M.MATERIAL_NAME
+	         , M.IMAGE_FILE_ID
+	         , F.STORED_NAME
+	      FROM MATERIALS M
+	      LEFT OUTER JOIN FILES F ON M.IMAGE_FILE_ID = F.FILE_ID
+	     WHERE M.STATUS != 'INACTIVE'
+	     ORDER BY M.MATERIAL_TYPE ASC, M.MATERIAL_NAME ASC
 	</select>
-	
-	<!-- 파일 관련 클래스, 매퍼 완료되면
-		id="selectMaterialList"
-	
-	<select id="" resultType="Material">
-		SELECT MATERIAL_ID
-		     , MATERIAL_TYPE
-		     , MATERIAL_NAME
-		     , IMAGE_FILE_ID
-		     , STORAGE_PATH
-		     , STORED_NAME
-		     , MIME_TYPE
-		  FROM MATERIALS M
-		  LEFT OUTER JOIN FILES F ON (M.IMAGE_FILE_ID = F.FILE_ID)
-		WHERE M.STATUS != 'INACTIVE'
-		ORDER BY M.MATERIAL_TYPE, M.MATERIAL_NAME
-	</select>
-	 -->
 	
 	<!-- 상세조회용 -->
 	<select id="materialDetail" parameterType="long" resultType="Material">
