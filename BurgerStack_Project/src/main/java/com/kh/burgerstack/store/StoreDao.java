@@ -13,6 +13,8 @@ import com.kh.burgerstack.common.pagination.PagingRequest;
 
 @Repository
 public class StoreDao {
+    @Autowired
+    private StoreMapper storeMapper;
 
     @Autowired
     private SqlSessionTemplate sqlSession;
@@ -84,4 +86,7 @@ public class StoreDao {
         return sqlSession.update("storeMapper.deleteStore", storeId);
     }
 
+    public Long findStoreIdByOwnerUserId(Long OwnerUserId) {
+        return storeMapper.findStoreIdByOwnerUserId(OwnerUserId);
+    }
 }
