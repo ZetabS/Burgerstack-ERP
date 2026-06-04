@@ -96,7 +96,7 @@
 
 			<div class="login-area">
 			
-				<form id="login-form" action="/burgerstack/user/login" method="post">
+				<form id="login-form" action="/burgerstack/auth/login" method="post">
 					<table>
 						<tr id="login">
 							<th>아이디</th>
@@ -156,7 +156,7 @@
 				e.preventDefault();
 				
 				$.ajax({
-				  url : "/burgerstack/user/login",
+				  url : "/burgerstack/auth/login",
 				  type : "post",
 				  data : { 
 					       loginId : $("#login-id-input").val(), 

@@ -16,7 +16,7 @@
     
     <br>
 
-    <form action="/owner/purchases" method="post">
+    <form action="${pageContext.request.contextPath}/owner/purchases" method="post">
         <!-- 검색 / 필터 -->
         <div class="search-area" align="rignt">
             <select>
