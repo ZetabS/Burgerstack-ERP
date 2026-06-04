@@ -1,510 +1,108 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%-- <%@ taglib prefix="c" uri="jakarta.tags.core" %> --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>BurgerStack</title>
-<link rel="shortcut icon" type="image/x-icon" href="/resources/images/BS_logo2.png" />
 <style>
 
-    *{
-        margin:0;
-        padding:0;
-        box-sizing:border-box;
-    }
+table {
+  border-collapse: collapse;
+  width: max-content; 
+}
 
-    body{
-        background-color:#f5f6fa;
-        overflow:hidden;
-        font-family:'Malgun Gothic';
-    }
+table thead tr {
+  display: grid;
+  grid-template-columns: 50px 500px 150px;
+  align-items: center;
+  border-bottom: 2px solid #ddd;
+  font-weight: bold;
+  background-color: #22C55E;
+  color: white;
+  padding: 10px 0;
+}
 
-    .wrap{
-        width:100%;
-        height:100vh;
-        display:flex;
-        flex-direction:column;
-    }
+table tbody tr {
+  display: grid;
+  grid-template-columns: 50px 500px 150px;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding: 8px 0;
+}
 
-    /* =========================
-        HEADER
-    ========================= */
+table tbody tr:hover {
+  cursor: pointer;
+  background-color: #f4fbf7;
+}
+table tbody tr td:nth-child(1) {
+    text-align: center;
+}
 
-    .header{
-        width:100%;
-        height:70px;
-        background:#222831;
-        color:white;
+table tbody tr td:nth-child(2) {
+    text-align: left;
+    padding-left: 15px;
+    padding-right: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
+table tbody tr td:nth-child(3) {
+    text-align: center;
+}
 
-        padding:0 30px;
+/* 💡 화면 중앙에 배치하되, 내부 요소들은 왼쪽 정렬이 되도록 감싸는 컨테이너 추가 */
+.content-container {
+    width: max-content;
+    margin: 0 auto;       /* 이 부분이 흰색 판 안에서 전체 요소를 가운데로 정렬해 줍니다 */
+    text-align: left;     /* 내부 텍스트(h2)와 테이블은 왼쪽 정렬 */
+}
 
-        border-bottom:1px solid #393E46;
-    }
-
-    .header-left{
-        display:flex;
-        align-items:center;
-        gap:15px;
-    }
-
-    .logo{
-        font-size:28px;
-        font-weight:700;
-        color:#ff6b00;
-    }
-
-    .system-title{
-        font-size:20px;
-        font-weight:600;
-    }
-
-    .header-right{
-        display:flex;
-        align-items:center;
-        gap:20px;
-        font-size:14px;
-    }
-
-    .logout-btn{
-        border:none;
-        background:#ff6b00;
-        color:white;
-        padding:8px 15px;
-        border-radius:5px;
-        cursor:pointer;
-    }
-
-    .logout-btn:hover{
-        background:#e45f00;
-    }
-
-    /* =========================
-        BODY
-    ========================= */
-
-    .body-area{
-        flex:1;
-        display:flex;
-        overflow:hidden;
-    }
-
-    /* =========================
-        SIDEBAR
-    ========================= */
-
-    .sidebar{
-        width:250px;
-        background:#2d3436;
-        color:white;
-
-        overflow-y:auto;
-    }
-
-    .profile-box{
-        padding:25px 20px;
-        border-bottom:1px solid #444;
-    }
-
-    .profile-name{
-        font-size:18px;
-        font-weight:600;
-    }
-
-    .profile-role{
-        font-size:13px;
-        color:#bbb;
-        margin-top:5px;
-    }
-
-    .menu{
-        padding-top:10px;
-    }
-
-    .menu-title{
-        padding:15px 20px;
-        font-size:15px;
-        font-weight:600;
-        background:#393E46;
-
-        cursor:pointer;
-    }
-
-    .submenu{
-        list-style:none;
-        margin:0;
-    }
-
-    .submenu li{
-        padding:13px 35px;
-        font-size:14px;
-        border-bottom:1px solid #3b3b3b;
-        cursor:pointer;
-    }
-
-    .submenu li:hover{
-        background:#4b5457;
-    }
-
-    /* =========================
-        CONTENT
-    ========================= */
-
-    .content{
-        flex:1;
-        padding:30px;
-        overflow-y:auto;
-    }
-
-    .content-box{
-        width:100%;
-        min-height:500px;
-
-        background:white;
-        border-radius:10px;
-
-        padding:30px;
-
-        box-shadow:0 2px 10px rgba(0,0,0,0.08);
-    }
-
-        body{
-        background:#f5f6fa;
-        font-family:'Malgun Gothic';
-    }
-
-    .outer{
-        width:1000px;
-        margin:auto;
-        margin-top:40px;
-    }
-
-    .title-area{
-        margin-bottom:30px;
-    }
-
-    .title-area h2{
-        font-weight:700;
-    }
-
-    /* 검색창 */
-
-    .search-area{
-        display:flex;
-        justify-content:flex-end;
-        margin-bottom:10px;
-    }
-
-    .search-form{
-        display:flex;
-        align-items:center;
-    }
-
-    .search-form input{
-        width:220px;
-        height:38px;
-        border:1px solid #cfd3d7;
-        border-right:none;
-        padding-left:10px;
-        outline:none;
-    }
-
-    .search-btn{
-        width:45px;
-        height:38px;
-        border:none;
-        background:#6c7a92;
-        color:white;
-        font-size:18px;
-        cursor:pointer;
-    }
-
-    /* 테이블 */
-
-    .board-table{
-        width:100%;
-        background:white;
-        border-collapse:collapse;
-    }
-
-    .board-table thead{
-        background:#20bf55;
-        color:white;
-    }
-
-    .board-table th{
-        padding:12px;
-        text-align:center;
-        font-size:14px;
-    }
-
-    .board-table td{
-        padding:14px 10px;
-        text-align:center;
-        border-bottom:1px solid #f1f1f1;
-        font-size:14px;
-    }
-
-    .board-table tbody tr:hover{
-        background:#f8f9fa;
-        cursor:pointer;
-    }
-
-    .title-col{
-        text-align:left !important;
-        padding-left:20px !important;
-    }
-
-    /* 페이지 영역 */
-
-    .paging-area{
-        margin-top:30px;
-        text-align:center;
-    }
-
-    .paging-area a{
-        margin:0 5px;
-        text-decoration:none;
-        color:#4c6ef5;
-        font-size:18px;
-    }
-
-    .paging-area a:hover{
-        font-weight:bold;
-    }
+.content-container h2 {
+    margin-bottom: 20px; /* 타이틀과 테이블 사이의 간격 조정 */
+}
 </style>
-
-<!-- alertify 라이브러리 연동 구문 -->
-<!-- JavaScript -->
-<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/alertify.min.js"></script>
-
-<!-- CSS -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/alertify.min.css"/>
-<!-- Default theme -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/default.min.css"/>
-<!-- Semantic UI theme -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/semantic.min.css"/>
-
-<!-- JSP 에서 부트스트랩 연동도 가능함!! -->
-<!-- 부트스트랩 CDN 방식으로 연동하는 구문들 -->
-<!-- 예쁘게 정의된 스타일들이 들어 있는 CSS 파일 -->
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-
-<!-- 간단한 동작들을 정의해둔 JS 파일 -->
-<!-- 온라인 방식 -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-<!-- Popper JS -->
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-
-<!-- Latest compiled JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
+    <t:menubarHO>
 
-<!-- 본사 공통 레이아웃 -->
+        
+        <div class="content-container">
+            <h2>공지사항 목록 조회</h2>
+            <br>
+            <table>
+                <thead align="center">
+                    <tr>
+                        <th>No</th>
+                        <th>제목</th>
+                        <th>작성일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:if test="${empty notices}">
+                        <tr style="display: flex; justify-content: center; padding: 30px 0; color: #888;">
+                            <td colspan="3">등록된 공지사항이 없습니다.</td>
+                        </tr>
+                    </c:if>
 
-<div class="wrap">
-
-    <!-- HEADER -->
-    <div class="header">
-
-        <div class="header-left">
-            <div class="logo">BS</div>
-            <div class="system-title">BurgerStack ERP</div>
+                    <c:forEach items="${notices}" var="n">
+                        <tr>
+                            <td>${n.noticeId}</td>
+                            <td>${n.title}</td>
+                            <td>${n.createdAt}</td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
         </div>
+        <br>
+        <t:pagination pageInfo="${pageInfo}"/>
+    </t:menubarHO>
+    <script>
 
-        <div class="header-right">
-            <span>관리자님 환영합니다.</span>
-            <button class="logout-btn">로그아웃</button>
-        </div>
-
-    </div>
-
-    <!-- BODY -->
-    <div class="body-area">
-
-        <!-- SIDEBAR -->
-        <div class="sidebar">
-
-            <div class="profile-box">
-                <div class="profile-name">관리자</div>
-                <div class="profile-role">총괄 관리자</div>
-            </div>
-
-            <div class="menu">
-
-                <div class="menu-title">
-                    점포 관리
-                </div>
-
-                <ul class="submenu">
-                    <li>점포 조회</li>
-                    <li>점포 등록</li>
-                    <li>점포 수정</li>
-                </ul>
-
-                <div class="menu-title">
-                    재고 관리
-                </div>
-
-                <ul class="submenu">
-                    <li>재고 조회</li>
-                    <li>입고 관리</li>
-                    <li>출고 관리</li>
-                </ul>
-
-                <div class="menu-title">
-                    발주 관리
-                </div>
-
-                <ul class="submenu">
-                    <li>발주 등록</li>
-                    <li>발주 조회</li>
-                </ul>
-
-                <div class="menu-title">
-                    게시판
-                </div>
-
-                <ul class="submenu">
-                    <li>공지사항</li>
-                    <li>문의사항</li>
-                </ul>
-
-            </div>
-
-        </div>
-
-        <!-- CONTENT -->
-        <div class="content">
-
-            <div class="content-box">
-
-                <div class="outer">
-
-    <!-- 제목 -->
-    <div class="title-area">
-        <h2>공지사항</h2>
-    </div>
-
-    <!-- 검색 -->
-    <div class="search-area">
-
-        <form class="search-form" action="" method="get">
-
-            <input type="text"
-                   name="keyword"
-                   placeholder="검색어 입력">
-
-            <button type="submit" class="search-btn">
-                검색
-            </button>
-
-        </form>
-
-    </div>
-
-    <!-- 테이블 -->
-    <table class="board-table">
-
-        <thead>
-
-            <tr>
-                <th width="10%">글번호</th>
-                <th width="55%">제목</th>
-                <th width="15%">조회수</th>
-                <th width="20%">등록일자</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            <tr>
-                <td>10</td>
-                <td class="title-col">
-                    공지사항입니다 대충 무슨무슨 이벤트
-                    (01/01 ~ 01/30 까지)
-                </td>
-                <td>32</td>
-                <td>2026-05-24</td>
-            </tr>
-
-            <tr>
-                <td>9</td>
-                <td class="title-col">
-                    공지사항입니다 대충 제목
-                </td>
-                <td>123</td>
-                <td>2026-05-24</td>
-            </tr>
-
-            <tr>
-                <td>8</td>
-                <td class="title-col">
-                    공지사항입니다 대충 제목
-                </td>
-                <td>789</td>
-                <td>2026-05-24</td>
-            </tr>
-
-            <tr>
-                <td>7</td>
-                <td class="title-col">
-                    공지사항입니다 대충 제목
-                </td>
-                <td>561</td>
-                <td>2026-05-24</td>
-            </tr>
-
-            <tr>
-                <td>6</td>
-                <td class="title-col">
-                    공지사항입니다 대충 제목
-                </td>
-                <td>1230</td>
-                <td>2026-05-24</td>
-            </tr>
-
-        </tbody>
-
-    </table>
-
-    <!-- 페이지 -->
-    <div class="paging-area">
-
-        <a href="#">&lt;&lt;</a>
-        <a href="#">&lt;</a>
-
-        <a href="#">1</a>
-        <a href="#">2</a>
-        <a href="#">3</a>
-        <a href="#">4</a>
-        <a href="#">5</a>
-
-        <a href="#">&gt;</a>
-        <a href="#">&gt;&gt;</a>
-
-    </div>
-
-</div>
-
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
+    </script>
 </body>
 </html>
