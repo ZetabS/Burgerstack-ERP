@@ -14,19 +14,119 @@
 		
 	</resultMap> -->
 
-    <select id="searchMaterialsList"
-            resultType="com.kh.burgerstack.purchase.PurchaseRequest">
+<select id="searchMaterialsList"
+        resultType="com.kh.burgerstack.purchase.dto.MaterialInventoryDto">
 
-        SELECT
-            M.MATERIAL_NAME AS requestMemo,
-            M.COST_PRICE AS totalAmount,
-            I.CURRENT_QUANTITY AS storeId,
-            (M.COST_PRICE * I.CURRENT_QUANTITY) AS BUY_PRICE,
-            M.STATUS AS status
+            SELECT
+            M.MATERIAL_ID AS materialId,
+            M.MATERIAL_NAME AS materialName,
+            M.COST_PRICE AS costPrice,
+
+            /* 점포 재고 (없으면 0) */
+            NVL(I.CURRENT_QUANTITY, 0) AS currentQuantity,
+
+            /* 구매가격 */
+            (M.COST_PRICE * NVL(I.CURRENT_QUANTITY, 0)) AS buyPrice,
+
+            /* =====================================
+            상태 = 본사 기준 + 판매 가능 여부만
+            ===================================== */
+            CASE
+                WHEN M.STATUS = 'ACTIVE' THEN '판매중'
+                ELSE '판매중지'
+            END AS status
+
         FROM MATERIALS M
-        JOIN STORE_INVENTORIES I
+
+        /* 재고가 없어도 무조건 보여야 하므로 LEFT JOIN */
+        LEFT JOIN STORE_INVENTORIES I
             ON M.MATERIAL_ID = I.MATERIAL_ID
+            AND I.STORE_ID = #{storeId}
+
+        /* 본사 기준으로 전체 자재 표시 */
+        WHERE 1=1
+
+        ORDER BY M.MATERIAL_NAME
 
     </select>
 
+    <!-- 발주 목록 + 품목 요약 -->
+    <select id="searchPurchaseList"
+            resultType="com.kh.burgerstack.purchase.dto.PurchaseDto">
+
+        SELECT
+            PR.PURCHASE_REQUEST_ID AS purchaseRequestId,
+            PR.STORE_ID            AS storeId,
+            PR.STATUS              AS status,
+            PR.TOTAL_AMOUNT        AS totalAmount,
+            PR.REQUEST_MEMO        AS requestMemo,
+            PR.CREATED_BY          AS createdBy,
+            TO_CHAR(PR.CREATED_AT, 'YYYY.MM.DD') AS createdAt,
+
+            (
+                SELECT
+                    MIN(PRI.MATERIAL_NAME_SNAPSHOT)
+                    || ' 외 '
+                    || (COUNT(*) - 1)
+                    || '건'
+                FROM PURCHASE_REQUEST_ITEMS PRI
+                WHERE PRI.PURCHASE_REQUEST_ID = PR.PURCHASE_REQUEST_ID
+            ) AS itemSummary
+
+        FROM PURCHASE_REQUESTS PR
+        ORDER BY PR.PURCHASE_REQUEST_ID DESC
+
+    </select>
+
+    <insert id="insertPurchaseRequest" useGeneratedKeys="true" keyProperty="purchaseRequestId">
+
+        INSERT INTO PURCHASE_REQUESTS (
+            PURCHASE_REQUEST_ID,
+            STORE_ID,
+            STATUS,
+            TOTAL_AMOUNT,
+            REQUEST_MEMO,
+            CREATED_BY,
+            CREATED_AT
+        )
+        VALUES (
+            SEQ_PUR_REQ.NEXTVAL,
+            #{storeId},
+            'REQUESTED',
+            #{totalAmount},
+            #{requestMemo},
+            #{createdBy},
+            SYSDATE
+        )
+
+    </insert>
+
+    <insert id="insertPurchaseRequestItem">
+
+        INSERT INTO PURCHASE_REQUEST_ITEMS (
+            PURCHASE_REQUEST_ITEM_ID,
+            PURCHASE_REQUEST_ID,
+            MATERIAL_ID,
+            MATERIAL_NAME_SNAPSHOT,
+            UNIT_PRICE_SNAPSHOT,
+            REQUEST_QUANTITY,
+            APPROVED_QUANTITY,
+            ITEM_STATUS,
+            SUBTOTAL_AMOUNT
+        )
+        VALUES (
+            SEQ_PUR_REQ_ITEM.NEXTVAL,
+            #{purchaseRequestId},
+            #{materialId},
+            #{materialNameSnapshot},
+            #{unitPriceSnapshot},
+            #{requestQuantity},
+            0,
+            'REQUESTED',
+            #{unitPriceSnapshot} * #{requestQuantity}
+        )
+
+    </insert>
+
 </mapper>
+

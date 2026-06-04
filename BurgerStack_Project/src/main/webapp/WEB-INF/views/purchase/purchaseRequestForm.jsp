@@ -7,6 +7,12 @@
 <meta charset="UTF-8">
 <title>발주 요청 페이지 조회</title>
 <jsp:include page="../common/header.jsp" />
+<style>
+        .disabled-row {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
 </head>
 <body>
 
@@ -34,7 +40,7 @@
             </button>
         </div>
 
-        <table class="table2">
+        <table class="table2 main-table">
             <thead>
                 <tr>
                     <th>선택</th>
@@ -48,29 +54,43 @@
             </thead>
 
             <tbody>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>양상추</td>
-                    <td>10000</td>
-                    <td>3</td>
-                    <td><input name="orderQuantity" type="number" value="0"></td>
-                    <td>250000</td>
-                    <td>판매중</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>토마토</td>
-                    <td>10000</td>
-                    <td>8</td>
-                    <td><input name="orderQuantity" type="number" value="0"></td>
-                    <td>80000</td>
-                    <td>판매중</td>
-                </tr>
+                <c:forEach var="m" items="${list}">
+                    <c:if test="${m.status ne '판매중'}">
+                        <tr class="item-row">
+                            <td>
+                                <input type="checkbox" name="materialId" class="row-check" value="${m.materialId}">
+                            </td>
+                            <td class="item-name">${m.materialName}</td>
+                            <td class="unit-price">${m.costPrice}</td>
+                            <td class="stock">${m.currentQuantity}</td>
+                            <td>
+                                <input class="qty-input" type="number"  name="orderQuantity" value="0" min="0">
+                            </td>
+                            <td class="total-price">0</td>
+                            <td class="status">${m.status}</td>
+                        </tr>
+                    </c:if>
+                    <c:if test="${m.status eq '판매중'}">
+                        <tr class="item-row">
+                            <td>
+                                <input type="checkbox" name="materialId" class="row-check" value="${m.materialId}">
+                            </td>
+                            <td class="item-name">${m.materialName}</td>
+                            <td class="unit-price">${m.costPrice}</td>
+                            <td class="stock">${m.currentQuantity}</td>
+                            <td>
+                                <input class="qty-input" type="number" name="orderQuantity" value="0" min="0">
+                            </td>
+                            <td class="total-price">0</td>
+                            <td class="status">${m.status}</td>
+                        </tr>
+                    </c:if>
+                </c:forEach>
                 <tr>
                     <td colspan="2">총 금액</td>
                     <td colspan="3"></td>
                     <td>
-                        330,000원
+                        <h3 class="main-total-amount">0원</h3>
                     </td>
                 </tr>
             </tbody>
@@ -81,7 +101,7 @@
         
 
         <div class="middle-area">
-            <button class="button-primary"> 목록 </button>
+            <button type="button" class="button-primary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
             <button type="submit" class="button-primary"> 결제 </button>
         </div>
 
@@ -90,7 +110,7 @@
                 주문리스트
             </jsp:attribute>
             <jsp:body>
-                <table class="table2">
+                <table class="table2" id="sidebar-order-list">
                     <thead>
                         <tr>
                             <th>선택</th>
@@ -121,7 +141,7 @@
                     <p style="padding: 2px; text-align: center;">
                         <h5>TOTAL</h5>
                     </p>
-                    <b><h3>330000원</h3></b>
+                    <b><h3 id="sidebar-total-amount">0원</h3></b>
                     <button class="button-primary"> 결제 </button>
                 </div>
                 
@@ -134,103 +154,131 @@
 
 
 <script>
-    $(document).ready(function() {
-    // 1. 주문수량 변경 이벤트 감지 (input 값이 바뀔 때)
-    $('input[name="orderQuantity"]').on('input change', function() {
-        let $quantityInput = $(this);
-        let $row = $quantityInput.closest('tr'); // 현재 행(row) 찾기
-        let $checkbox = $row.find('input[type="checkbox"]');
-        
-        let quantity = parseInt($quantityInput.val());
+        $(document).ready(function () {
 
-        // [유효성 검사] 0 미만이거나 숫자가 아니면 0으로 초기화
-        if (isNaN(quantity) || quantity < 0) {
-            quantity = 0;
-            $quantityInput.val(0);
-        }
+    // =========================
+    // 1. 수량 변경
+    // =========================
+    $('.qty-input').on('input', function () {
 
-        // [체크박스 자동 선택] 1 이상이면 체크, 0이면 체크 해제
-        if (quantity >= 1) {
-            $checkbox.prop('checked', true);
-        } else {
-            $checkbox.prop('checked', false);
-        }
+        let $row = $(this).closest('.item-row');
 
-        // 원가 정보를 바탕으로 구매가격 실시간 계산 (선택 사항)
-        let unitPrice = parseInt($row.find('.unit-price').text().replace(/[^0-9]/g, '')) || 0;
-        let totalPrice = unitPrice * quantity;
-        $row.find('.total-price').text(totalPrice); // 메인 테이블의 구매가격 업데이트
+        let qty = parseInt($(this).val()) || 0;
+        if (qty < 0) qty = 0;
 
-        // 사이드바 주문리스트 업데이트 함수 호출
-        updateSidebarOrderList();
+        let price = parseInt($row.find('.unit-price').text()) || 0;
+
+        let total = qty * price;
+
+        $row.find('.total-price').text(total);
+
+        // 체크 자동
+        $row.find('.row-check').prop('checked', qty > 0);
+
+        updateSidebar();
     });
 
-    // 2. 체크박스를 직접 클릭했을 때의 이벤트 처리
-    $('input[type="checkbox"]').on('change', function() {
-        let $checkbox = $(this);
-        let $row = $checkbox.closest('tr');
-        let $quantityInput = $row.find('input[name="orderQuantity"]');
-        
-        // 체크를 해제하면 수량을 0으로, 체크하면 최소 1로 설정
-        if (!$checkbox.is(':checked')) {
-            $quantityInput.val(0);
-        } else {
-            if (parseInt($quantityInput.val()) === 0) {
-                $quantityInput.val(1);
+
+    // =========================
+    // 2. 체크박스 변경
+    // =========================
+    $('.row-check').on('change', function () {
+
+        let $row = $(this).closest('.item-row');
+        let $qty = $row.find('.qty-input');
+
+        if ($(this).is(':checked')) {
+            if (parseInt($qty.val()) === 0) {
+                $qty.val(1);
             }
+        } else {
+            // ❗ 체크 해제 시 완전 초기화
+            $qty.val(0);
         }
-        
-        // 메인 테이블 구매가격 갱신 후 사이드바 업데이트
-        let unitPrice = parseInt($row.find('.unit-price').text().replace(/[^0-9]/g, '')) || 0;
-        let quantity = parseInt($quantityInput.val());
-        $row.find('.total-price').text(unitPrice * quantity);
 
-        updateSidebarOrderList();
+        let price = parseInt($row.find('.unit-price').text()) || 0;
+        let qty = parseInt($qty.val()) || 0;
+
+        $row.find('.total-price').text(price * qty);
+
+        updateSidebar();
     });
-});
 
-// 3. 사이드바(주문리스트) 및 최종 TOTAL 금액을 동적으로 갱신하는 함수
-function updateSidebarOrderList() {
-    let $sidebarTableBody = $('#sidebar-order-list tbody'); // 사이드바 테이블 body ID (구조에 맞게 수정 필요)
-    let totalSum = 0;
-    
-    // 기존 사이드바 목록 비우기
-    $sidebarTableBody.empty();
 
-    // 메인 테이블에서 체크박스가 선택된 행들만 순회
-    $('table.main-table tbody tr').each(function() {
-        let $row = $(this);
-        let isChecked = $row.find('input[type="checkbox"]').is(':checked');
-        let quantity = parseInt($row.find('input[name="orderQuantity"]').val()) || 0;
+    // =========================
+    // 3. 사이드바 업데이트
+    // =========================
+    function updateSidebar() {
 
-        if (isChecked && quantity > 0) {
-            let itemName = $row.find('.item-name').text().trim(); // 품목명
-            let purchasePrice = parseInt($row.find('.total-price').text().replace(/[^0-9]/g, '')) || 0; // 구매가격
-            
-            totalSum += purchasePrice;
+        let $tbody = $('#sidebar-order-list tbody');
+        $tbody.empty();
 
-            // 사이드바 테이블에 행 추가
-            let sidebarRow = `
-                <tr>
-                    <td><input type="checkbox" class="sidebar-item-check"></td>
-                    <td>${itemName}</td>
-                    <td>${quantity}</td>
-                    <td>${purchasePrice.toLocaleString()}원</td>
+        let total = 0;
+
+        $('.item-row').each(function () {
+
+            let $row = $(this);
+
+            let checked = $row.find('.row-check').is(':checked');
+            let qty = parseInt($row.find('.qty-input').val()) || 0;
+
+            if (!checked || qty <= 0) return;
+
+            let name = $row.find('.item-name').text();
+            let price = parseInt($row.find('.total-price').text()) || 0;
+
+            total += price;
+
+            // ✔ 사이드바 출력
+            $tbody.append(`
+                <tr class="sidebar-row">
+                    <td>
+                        <input type="checkbox" class="sidebar-check" checked>
+                    </td>
+                    <td>${name}</td>
+                    <td>${qty}</td>
+                    <td>${price.toLocaleString()}원</td>
                 </tr>
-            `;
-            $sidebarTableBody.append(sidebarRow);
-        }
+            `);
+        });
+
+        $('.main-total-amount').text(total.toLocaleString() + "원");
+        $('#sidebar-total-amount').text(total.toLocaleString() + "원");
+    }
+
+
+    // =========================
+    // 4. 사이드바 체크 이벤트 (핵심 추가)
+    // =========================
+    $(document).on('change', '.sidebar-check', function () {
+
+        let index = $(this).closest('tr').index();
+
+        let $mainRow = $('.item-row').filter(function () {
+            return $(this).find('.item-name').text() ===
+                   $(this).closest('tr').find('.item-name').text();
+        });
+
+        let name = $(this).closest('tr').find('td:nth-child(2)').text();
+
+        // 메인 row 찾기
+        $('.item-row').each(function () {
+
+            let $row = $(this);
+
+            if ($row.find('.item-name').text().trim() === name) {
+
+                // ❗ 동기화 핵심
+                $row.find('.row-check').prop('checked', false);
+                $row.find('.qty-input').val(0);
+                $row.find('.total-price').text(0);
+            }
+        });
+
+        updateSidebar();
     });
 
-    // 메인 화면 및 사이드바의 TOTAL 금액 업데이트
-    $('.main-total-amount').text(totalSum.toLocaleString() + "원");
-    $('#sidebar-total-amount').text(totalSum.toLocaleString() + "원");
-
-    /* [참고: 만약 백엔드 세션이나 장바구니 DB에 실시간 저장이 필요한 경우 Ajax 추가]
-    let orderData = [];
-    // 데이터를 배열로 추출하여 $.ajax() 로 서버에 전송하는 로직을 여기에 작성할 수 있습니다.
-    */
-}
+});
 </script>
 
 </body>
