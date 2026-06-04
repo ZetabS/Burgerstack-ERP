@@ -119,7 +119,7 @@
 		
 	<h2>점포 관리자 정보</h2>
 
-	<form id="revise" action="/burgerstack/owner/revise" method="post">
+	<form id="update" action="/burgerstack/owner/update" method="post">
 		
 		    <table>
 		        <tr>
@@ -129,7 +129,9 @@
 		
 		        <tr>
 		            <th>이름</th>
-		            <td id="userName"></td>
+		            <td>
+		            	<input type="text" id="userName">
+		            </td>
 		        </tr>
 		
 		        <tr>
@@ -159,7 +161,7 @@
 		    
 	</form>
 		    
-	<form id="change-password" action="/burgerstack/owner/changePassword" method="post">
+	<form id="update-password" action="/burgerstack/owner/updatePassword" method="post">
 		    
 			<h2>비밀번호 변경</h2>
 			
@@ -204,48 +206,6 @@
 		</div>
 	</form>
 	
-	
-	<!-- 
-			<div class="mypage-container">
-		
-		    <h2 class="mypage-title">점포 관리자 정보</h2>
-		
-		    <table class="info-table">
-		        <tr>
-		            <th>아이디</th>
-		            <td>${loginUser.loginId}</td>
-		        </tr>
-		
-		        <tr>
-		            <th>이름</th>
-		            <td>${loginUser.userName}</td>
-		        </tr>
-		
-		        <tr>
-		            <th>전화번호</th>
-		            <td>${loginUser.phone}</td>
-		        </tr>
-		
-		        <tr>
-		            <th>이메일</th>
-		            <td>${loginUser.email}</td>
-		        </tr>
-		    </table>
-		
-		    <div class="btn-area">
-		        <button class="btn"
-		                onclick="location.href='/burgerstack/user/updateForm'">
-		            정보 수정
-		        </button>
-		
-		        <button class="btn"
-		                onclick="location.href='/burgerstack/user/changePwdForm'">
-		            비밀번호 변경
-		        </button>
-		    </div>
-		
-		</div>
-		 -->
 </t:menubarBO>
 
 

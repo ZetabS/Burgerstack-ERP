@@ -8,6 +8,7 @@
 	<style>
 	#header{
     	text-align:center;
+    	padding-top : 30px;
 	}
 
 	#header img{
@@ -37,13 +38,21 @@
 		border:1px solid lightgray;
 	}
 
-	.loginbutton{
-		margin: auto;
-		border-radius: 10px;
-		border: 1px solid lightgray;
-		width: 300px;
-		background-color: coral;
-		color: white;
+	#loginbutton{
+	    display:block;
+	    width:300px;
+	    height:50px;
+	
+	    margin:20px auto;
+	
+	    border-radius:10px;
+	    border:1px solid lightgray;
+	
+	    background-color:coral;
+	    color:white;
+	
+	    font-size:18px;
+	    font-weight:bold;
 	}
 	label{
 		font-size:12px;
@@ -56,7 +65,15 @@
 	.footer{
 		width: 250px;
 		margin: auto;
-		text-align: left
+		text-align: left;
+		padding-top: 20px;
+		padding-bottom: 15px;
+	}
+	#loginMessage{
+	    text-align:center;
+	    color:red;
+	    font-size:14px;
+	    margin-top:10px;
 	}
 	</style>
 
@@ -80,9 +97,9 @@
 	<div>
 		<div  class="outer">
 			<div id="header">
-				<a>
-					<img src="/BurgerStack_Project/src/main/webapp/resources/images/BS_logo1.png" alt="">
-				</a>
+					<a>
+						<img src="/burgerstack/resources/images/BS_logo1.png">
+					</a>
 			</div>
 
 			<br><br>
@@ -96,7 +113,7 @@
 
 			<div class="login-area">
 			
-				<form id="login-form" action="/burgerstack/user/login" method="post">
+				<form id="login-form" action="/burgerstack/auth/login" method="post">
 					<table>
 						<tr id="login">
 							<th>아이디</th>
@@ -116,7 +133,7 @@
 								<label for="saveId">아이디 저장</label>
 							</th>
 							<td id="found">
-								<a href="">아이디 / 비밀번호 찾기</a>
+								<a href="/burgerstack/auth/loginErrorPage">아이디 / 비밀번호 찾기</a>
 							</td>
 						</tr>
 						
@@ -138,8 +155,6 @@
 			<br><br>
 
 		</div>
-			
-			<br><br>
 
 			<div class="footer">
 					문의<br>
@@ -156,7 +171,7 @@
 				e.preventDefault();
 				
 				$.ajax({
-				  url : "/burgerstack/user/login",
+				  url : "/burgerstack/auth/login",
 				  type : "post",
 				  data : { 
 					       loginId : $("#login-id-input").val(), 

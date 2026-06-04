@@ -25,4 +25,13 @@
 		)
    </insert>
    
+   <update id="update" parameterType="User">
+   		 UPDATE USERS	
+   			SET USER_NAME = #{userName}
+                , PHONE = #{phone} 
+                , EMAIL = #{email} 
+		  WHERE USER_NO = #{userNo}	
+   </update>
+   
+   
 </mapper>

@@ -1,5 +1,5 @@
 package com.kh.burgerstack.user;
 
-public class MyPageHOService {
+public class AdminDao {
 
 }

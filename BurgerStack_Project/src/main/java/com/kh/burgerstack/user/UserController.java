@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("user")
+@RequestMapping("auth")
 public class UserController {
 	
 	@Autowired
@@ -40,7 +40,7 @@ public class UserController {
 		if(result > 0) {
 		    session.setAttribute("alertMsg", "계정이 등록되었습니다.");
 		    
-		    return "redirect:/user/MyPageHO";
+		    return "redirect:/admin/MyPageHO";
 		} else {
 			model.addAttribute("errorMsg", "회원가입에 실패했습니다");
 			return "common/errorPage";

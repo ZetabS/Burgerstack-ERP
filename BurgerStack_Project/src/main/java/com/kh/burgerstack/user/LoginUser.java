@@ -18,6 +18,7 @@ public class LoginUser {
 	private Long userId;
 	private String loginId;
 	private String password;
+	private String userName;
 	private String role;
 	
 }

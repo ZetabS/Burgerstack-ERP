@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("user")
+@RequestMapping("auth")
 public class LoginController {
 
 	@Autowired
@@ -49,12 +49,12 @@ public class LoginController {
 		if("ADMIN".equals(loginUser.getRole())) {
 		    return Map.of(
 		            "success", true,
-		            "redirectUrl", "/burgerstack/user/dashboardHO");
+		            "redirectUrl", "/burgerstack/admin/dashboardHO");
 		}
 
 		
 		return Map.of("success", true,
-					  "redirectUrl","/burgerstack/user/dashboardBO");
+					  "redirectUrl","/burgerstack/owner/dashboardBO");
 	}
 	
 	@GetMapping("logout")
@@ -66,20 +66,10 @@ public class LoginController {
 		
 	}
 	
-//	@GetMapping("/mypage")
-//	public String mypage(Model model) {
-//		
-//	    User user = new User();
-//
-//	    user.setUserId("kangnamh");
-//	    user.setUserName("유종규");
-//	    user.setPhone("010-1111-2222");
-//	    user.setEmail("dbwhdrb1@gmail.com");
-//
-//	    model.addAttribute("loginUser", user);
-//
-//	    return "mypage";
-//	}
+	@GetMapping("loginErrorPage")
+	public String loginErrorPage() {
+		return "user/loginErrorPage";
+	}
 	
 	
 }
