@@ -8,46 +8,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.user.LoginUser;
-
-import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/store")
+@RequestMapping("admin/stores")
 public class StoreController {
 
     @Autowired
     private StoreService storeService;
 
-    @PostMapping("insertStore")
+    // 점포 등록 처리
+    @PostMapping("")
     public String insertStore(Store store,
-            String createStockYn) {
+                              String createStockYn) {
 
-        int result = storeService.insertStore(
-                store,
-                createStockYn);
+        int result = storeService.insertStore(store, createStockYn);
 
-        if (result > 0) {
-
-            return "redirect:/store/list";
-
+        if(result > 0) {
+            return "redirect:/admin/stores";
         } else {
-
             return "common/errorPage";
         }
     }
 
-    @GetMapping("/enroll")
+    // 점포 등록 화면
+    @GetMapping("new")
     public String storeEnrollForm() {
         return "store/storeEnrollForm";
     }
 
-    @GetMapping("/list")
+    // 점포 목록 조회
+    @GetMapping("")
     public String selectStoreList(
             PagingRequest pi,
             String status,
@@ -71,68 +66,48 @@ public class StoreController {
         model.addAttribute("pageInfo", pi.toPageInfo(count));
         model.addAttribute("list", list);
 
-        return "store/storeListView";
+        return "store/storeList";
     }
 
-    public StoreController(StoreService storeService) {
-
-        this.storeService = storeService;
-    }
-
-    @GetMapping("/detail")
-    public String selectStoreDetail(@RequestParam("storeId") Long storeId,
-            Model model,
-            HttpSession session) {
-
-        System.out.println("넘어온 storeId = " + storeId);
+ 
+    // 점포 상세 조회
+    @GetMapping("/{storeId}")
+    public String selectStoreDetail(@PathVariable("storeId") Long storeId,
+                                    Model model) {
 
         Store store = storeService.selectStoreDetail(storeId);
-        StoreManagerView manager = storeService.selectStoreManager(storeId);
 
-        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-
-        model.addAttribute("loginUser", loginUser);
         model.addAttribute("store", store);
-        model.addAttribute("manager", manager);
 
         return "store/storeDetail";
     }
 
-    // 수정
-    @PostMapping("/update")
-    public String updateStore(Store store,
-            HttpSession session) {
+    // 점포 수정 처리
+    @PostMapping("/{storeId}")
+    public String updateStore(@PathVariable("storeId") Long storeId,
+                              Store store) {
 
-        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        store.setStoreId(storeId);
 
-        if (loginUser == null
-                || !"ADMIN".equals(loginUser.getRole())) {
+        int result = storeService.updateStore(store);
 
-            return "redirect:/store/detail?storeId="
-                    + store.getStoreId();
+        if(result > 0) {
+            return "redirect:/admin/stores";
         }
 
-        storeService.updateStore(store);
-
-        return "redirect:/store/detail?storeId="
-                + store.getStoreId();
+        return "common/errorPage";
     }
 
-    // 삭제
-    @GetMapping("/delete")
-    public String deleteStore(@RequestParam Long storeId,
-            HttpSession session) {
+    @GetMapping("/{storeId}/status")
+    public String deleteStore(
+            @PathVariable("storeId") Long storeId) {
 
-        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        int result = storeService.deleteStore(storeId);
 
-        if (loginUser == null || !"ADMIN".equals(loginUser.getRole())) {
-
-            return "redirect:/store/detail?storeId=" + storeId;
+        if(result > 0) {
+            return "redirect:/admin/stores";
         }
 
-        storeService.deleteStore(storeId);
-
-        return "redirect:/store/list";
+        return "common/errorPage";
     }
-
 }

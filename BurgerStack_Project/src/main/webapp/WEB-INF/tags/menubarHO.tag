@@ -158,6 +158,21 @@ body{
     overflow-y:auto;
 }
 
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar a:visited {
+    color: white;
+}
+
+.sidebar a:hover {
+    color: white;
+    text-decoration: none;
+}
+
 .profile-box{
     padding:25px 20px;
     border-bottom:1px solid #444;
@@ -449,3 +464,4 @@ body{
 
 </body>
 </html>
+

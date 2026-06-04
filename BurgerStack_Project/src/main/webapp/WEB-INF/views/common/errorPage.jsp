@@ -13,7 +13,7 @@
 		
 
 	</div>
-	<jsp:include page="menubar.jsp" />
+	<jsp:include page="menubarHO.jsp" />
 
 	<br><br>
 	
