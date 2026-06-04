@@ -3,6 +3,8 @@ package com.kh.burgerstack.material;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.kh.burgerstack.file.StoredFile;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,4 +31,6 @@ public class Material {
 	private LocalDateTime createdAt;
 	private Long updatedBy;
 	private LocalDateTime updatedAt;
+	
+	private StoredFile storedFile;
 }
