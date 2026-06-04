@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.burgerstack.material.MaterialMapper">
+	<insert id="insert" parameterType="Material">
+		INSERT INTO MATERIALS(MATERIAL_ID
+		                    , MATERIAL_CODE
+		                    , MATERIAL_NAME
+		                    , MATERIAL_TYPE
+		                    , COST_PRICE
+		                    , SELLING_PRICE
+		                    , IMAGE_FILE_ID
+		                    , DETAILS
+		                    , CREATED_BY)
+		               VALUES(SEQ_MATERIAL.NEXTVAL
+		                    , #{materialType} || '-' || LPAD(SEQ_MATERIAL.CURRVAL, 3, '0')
+		                    , #{materialName}
+		                    , #{materialType}
+		                    , #{costPrice}
+		                    , #{sellingPrice}
+		                    , #{imageFileId}
+		                    , #{details}
+		                    , #{createdBy})
+	</insert>
+	
+	<!-- 임시 조회용 -->
+	<select id="selectMaterialList" resultType="Material">
+		SELECT MATERIAL_ID
+		     , MATERIAL_TYPE
+		     , MATERIAL_NAME
+	      FROM MATERIALS
+	     WHERE STATUS = 'ACTIVE'
+	     ORDER BY MATERIAL_TYPE, MATERIAL_NAME
+	</select>
+	
+	<!-- 파일 관련 클래스, 매퍼 완료되면
+		id="selectMaterialList"
+	
+	<select id="" resultType="Material">
+		SELECT MATERIAL_ID
+		     , MATERIAL_TYPE
+		     , MATERIAL_NAME
+		     , IMAGE_FILE_ID
+		     , STORAGE_PATH
+		     , STORED_NAME
+		     , MIME_TYPE
+		  FROM MATERIALS M
+		  LEFT OUTER JOIN FILES F ON (M.IMAGE_FILE_ID = F.FILE_ID)
+		WHERE M.STATUS != 'INACTIVE'
+		ORDER BY M.MATERIAL_TYPE, M.MATERIAL_NAME
+	</select>
+	 -->
+	
+	<!-- 상세조회용 -->
+	<select id="materialDetail" parameterType="long" resultType="Material">
+    	SELECT MATERIAL_NAME
+    		 , COST_PRICE
+	         , SELLING_PRICE
+	         , DETAILS
+	         , M.STATUS
+	         , CURRENT_QUANTITY
+	         , IMAGE_FILE_ID
+	      FROM MATERIALS M
+	      LEFT JOIN STORE_INVENTORIES USING (MATERIAL_ID)
+	     WHERE MATERIAL_ID = #{materialId}
+	       AND M.STATUS != 'INACTIVE'
+    </select>
+    
+    <!-- 자재 수정용 -->
+    <update id="updateMaterial" parameterType="Material">
+    	UPDATE MATERIALS
+		   SET MATERIAL_CODE = #{materialType} || SUBSTR(MATERIAL_CODE, 3)
+		     , MATERIAL_NAME = #{materialName}
+		     , MATERIAL_TYPE = #{materialType}
+		     , COST_PRICE    = #{costPrice}
+		     , SELLING_PRICE = #{sellingPrice}
+		     , IMAGE_FILE_ID = #{imageFileId}
+		     , DETAILS       = #{details}
+		     , UPDATED_BY    = #{updatedBy}
+		     , UPDATED_AT    = SYSDATE
+		 WHERE MATERIAL_ID   = #{materialId}
+		   AND STATUS 		!= 'INACTIVE'
+    </update>
+    
+    <!-- 자제 상세조회용 -->
+    <select id="selectMaterial" parameterType="long" resultType="Material">
+    	SELECT M.MATERIAL_ID
+		     , M.MATERIAL_CODE
+		     , M.MATERIAL_NAME
+		     , M.MATERIAL_TYPE
+		     , M.COST_PRICE
+		     , M.SELLING_PRICE
+		     , M.IMAGE_FILE_ID
+		     , M.DETAILS
+		     , M.STATUS
+		     , M.CREATED_BY
+		     , M.CREATED_AT
+		     , F.STORAGE_PATH
+		     , F.STORED_NAME
+		     , F.ORIGINAL_NAME
+		    FROM MATERIALS M
+		    LEFT OUTER JOIN FILES F ON M.IMAGE_FILE_ID = F.FILE_ID
+		    WHERE M.MATERIAL_ID = #{materialId}
+		      AND M.STATUS != 'INACTIVE'
+    </select>
+    
+    <!-- 자재 삭제용 -->
+    <update id="deleteMaterial" parameterType="long">
+    	UPDATE MATERIALS
+		   SET STATUS = 'INACTIVE'
+		 WHERE MATERIAL_ID   = #{materialId}
+		   AND STATUS != 'INACTIVE'
+    </update>
+</mapper>
