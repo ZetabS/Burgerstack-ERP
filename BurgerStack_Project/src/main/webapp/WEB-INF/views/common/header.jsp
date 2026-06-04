@@ -1,7 +1,8 @@
 <!-- 
       사용법
       <title>...</title>
-      <jsp:include page="../common/header.jsp" /> 복사 후 title 태그 밑에 붙이기
+      <%--<jsp:include page="../common/header.jsp" />--%> 복사 후 title 태그 밑에 붙이기
+      주석은 제거
 -->
 
 <!-- title 비어있을시 자동 삽입 -->
