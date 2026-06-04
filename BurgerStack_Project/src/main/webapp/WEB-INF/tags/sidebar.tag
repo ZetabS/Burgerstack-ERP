@@ -162,7 +162,7 @@
             </h2>
 
             <!-- 닫기 버튼 -->
-            <div class="close-btn" onclick="closeSidebar();">&times;</div>
+            <button class="close-btn" onclick="closeSidebar()">&times;</button>
         </div>
         <div class="drawer-content">
             <br>
