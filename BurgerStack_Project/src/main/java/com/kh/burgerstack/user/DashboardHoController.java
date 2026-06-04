@@ -10,6 +10,7 @@ public class DashboardHoController {
 
 	@GetMapping("dashboardHo")
 	public String dashboardHo() {
+		System.out.println("잘 호출 되나..?");
 		return "user/dashboardHo";
 	}
 }
