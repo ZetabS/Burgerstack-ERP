@@ -292,7 +292,7 @@ body{
 
         <div class="header-right">
             <span>관리자님 환영합니다.</span>
-            <button class="logout-btn">로그아웃</button>
+            <button class="logout-btn" onclick = "location.href = '/burgerstack/auth/logout' ">로그아웃</button>
         </div>
 
     </div>

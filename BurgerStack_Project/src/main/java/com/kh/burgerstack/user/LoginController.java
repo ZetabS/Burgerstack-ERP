@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("user")
+@RequestMapping("auth")
 public class LoginController {
 
 	@Autowired
@@ -69,7 +69,7 @@ public class LoginController {
 		
 		session.removeAttribute("loginUser");
 		
-		return "redirect:/user/loginForm";
+		return "redirect:login";
 		
 	}
 	
