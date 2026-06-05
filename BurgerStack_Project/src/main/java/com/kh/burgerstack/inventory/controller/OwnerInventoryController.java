@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class OwnerInventoryController {
     private final InventoryService inventoryService;
 
-    @GetMapping("")
+    @GetMapping
     public String list(
             InventorySearchCondition condition,
             InventoryListSort inventoryListSort,
@@ -37,12 +37,12 @@ public class OwnerInventoryController {
                 pagingRequest,
                 loginUser);
         model.addAttribute("view", inventoryListView);
-        return "inventory/inventoryListViewBO";
+        return "owner/inventories";
     }
 
     @GetMapping("/{inventoryId}/edit")
     public String adjustForm(@PathVariable Long inventoryId) {
-        return "";
+        return "owner/inventories/edit";
     }
 
     @PostMapping("/{inventoryId}")

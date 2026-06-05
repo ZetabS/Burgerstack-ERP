@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminInventoryController {
     private final InventoryService inventoryService;
 
-    @GetMapping("")
+    @GetMapping
     public String list(
             InventorySearchCondition condition,
             InventoryListSort inventoryListSort,
@@ -31,12 +31,12 @@ public class AdminInventoryController {
                 condition,
                 pagingRequest);
         model.addAttribute("view", inventoryListView);
-        return "inventory/inventoryListViewHO";
+        return "admin/inventories";
     }
 
     @GetMapping("/{inventoryId}/edit")
     public String adjustForm(@PathVariable Long inventoryId, Long quentity) {
-        return "";
+        return "admin/inventories/edit";
     }
 
     @PostMapping("/{inventoryId}")

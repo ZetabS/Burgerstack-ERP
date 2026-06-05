@@ -5,17 +5,18 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <jsp:include page="../common/header.jsp" />
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
     <title>Insert title here</title>
     <style></style>
   </head>
   <body>
-    <t:menubarBO>
+    <t:menubarHO>
       <h2>재고 목록</h2>
 
       <table class="table2">
         <thead>
           <tr>
+            <th>점포명</th>
             <th>자재명</th>
             <th>현재 수량</th>
             <th>안전재고 수량</th>
@@ -25,6 +26,7 @@
         <tbody>
           <c:forEach var="item" items="${view.list}">
             <tr>
+              <td>${item.storeName}</td>
               <td>${item.materialName}</td>
               <td>${item.currentQuantity}</td>
               <td>${item.safetyQuantity}</td>
@@ -33,6 +35,6 @@
         </tbody>
       </table>
       <t:pagination pageInfo="${pageInfo}"></t:pagination>
-    </t:menubarBO>
+    </t:menubarHO>
   </body>
 </html>
