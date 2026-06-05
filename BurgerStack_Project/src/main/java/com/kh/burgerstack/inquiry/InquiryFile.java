@@ -14,11 +14,12 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InquiryFile {
-
     private Long inquiryFileId;
-    private Long inquiryId;
-    private Long fileId;
+    private String originalName;
+    private String storedName;
+    private String storagePath;
     private String attachTarget;
-    private LocalDateTime deletedAt;
     private LocalDateTime createdAt;
+    private LocalDateTime deletedAt;
+    private Long inquiryId;
 }
