@@ -14,6 +14,7 @@ import com.kh.burgerstack.config.FileStoreProperties;
 @Component
 public class FileStore {
     private final Path root;
+    private final static String DEFAULT_PREFIX = "uploads";
 
     public FileStore(FileStoreProperties properties) {
         this.root = Path.of(properties.getRoot())
@@ -21,7 +22,30 @@ public class FileStore {
                 .normalize();
     }
 
-    public StoredFile store(MultipartFile multipartFile, long uploaderId) {
+    /**
+     * 기본 파일 경로에 파일을 저장하고 결과를 반환합니다.<br>
+     * <br>
+     * 파일 경로 prefix를 붙이고 싶다면<br>
+     * ```<br>
+     * fileStore.store(file, "material_upfiles");<br>
+     * ```<br>
+     * 를 사용하세요.<br>
+     *
+     * @param multipartFile
+     * @return StoredFile
+     */
+    public StoredFile store(MultipartFile multipartFile) {
+        return store(multipartFile, null);
+    }
+
+    /**
+     * 사용자가 지정한 경로에 파일을 저장하고 결과를 반환합니다.
+     *
+     * @param multipartFile
+     * @param prefix
+     * @return StoredFile
+     */
+    public StoredFile store(MultipartFile multipartFile, String prefix) {
         if (multipartFile == null || multipartFile.isEmpty()) {
             throw new IllegalArgumentException("업로드 파일이 비어 있습니다.");
         }
@@ -29,7 +53,7 @@ public class FileStore {
         String originalName = extractOriginalName(multipartFile);
         String extension = extractExtension(originalName);
         String storedName = generateStoredName(extension);
-        String storagePath = buildStoragePath(storedName);
+        String storagePath = buildStoragePath(storedName, prefix);
         Path targetPath = resolveStoragePath(storagePath);
 
         try {
@@ -42,7 +66,6 @@ public class FileStore {
                     .storagePath(storagePath)
                     .mimeType(multipartFile.getContentType())
                     .fileSize(multipartFile.getSize())
-                    .createdBy(uploaderId)
                     .build();
 
             return storedFile;
@@ -51,6 +74,11 @@ public class FileStore {
         }
     }
 
+    /**
+     * 저장된 파일을 삭제합니다.
+     *
+     * @param storedFile
+     */
     public void delete(StoredFile storedFile) {
         try {
             Files.deleteIfExists(resolveStoragePath(storedFile.getStoragePath()));
@@ -70,10 +98,19 @@ public class FileStore {
                 .toLowerCase();
     }
 
-    private String buildStoragePath(String storedName) {
+    private String buildStoragePath(String storedName, String prefix) {
         LocalDate now = LocalDate.now();
 
-        return "%04d/%02d/%02d/%s".formatted(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), storedName);
+        if (prefix == null || prefix.isBlank()) {
+            return "%s/%04d/%02d/%02d/%s".formatted(
+                    DEFAULT_PREFIX,
+                    now.getYear(),
+                    now.getMonthValue(),
+                    now.getDayOfMonth(),
+                    storedName);
+        }
+
+        return "%s/%04d/%02d/%02d/%s".formatted(prefix, storedName);
     }
 
     private String generateStoredName(String extension) {
