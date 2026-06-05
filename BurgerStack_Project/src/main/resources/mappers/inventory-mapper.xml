@@ -2,26 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.burgerstack.inventory.dao.InventoryMapper">
     <select id="findInventoryListItems" resultType="InventoryListItem">
-        /* id="findInventoryListItems" */
          SELECT *
-           FROM (    SELECT *
-                       FROM (    SELECT ROWNUM AS rn
-                                       ,temp.*
-                                   FROM (    SELECT STORE_ID
-                                                   ,MATERIAL_ID
-                                                   ,I.CURRENT_QUANTITY
-                                                   ,I.SAFETY_QUANTITY
-                                                   ,I.CREATED_BY
-                                                   ,I.CREATED_AT
-                                                   ,I.UPDATED_BY
-                                                   ,I.UPDATED_AT
-                                                   ,S.STORE_NAME
-                                                   ,M.MATERIAL_NAME
-                                               FROM STORE_INVENTORIES I
-                                               JOIN MATERIALS M
-                                              USING (MATERIAL_ID)
-                                               JOIN STORES S
-                                              USING (STORE_ID)
+           FROM (
+                  SELECT *
+                    FROM (
+                           SELECT ROWNUM AS rn, temp.*
+                             FROM (
+                                    SELECT I.STORE_INVENTORY_ID
+                                         , I.CURRENT_QUANTITY
+                                         , I.SAFETY_QUANTITY
+                                         , I.CREATED_AT
+                                         , I.UPDATED_AT
+                                         , S.STORE_NAME
+                                         , M.MATERIAL_NAME
+                                         , STORE_ID
+                                         , MATERIAL_ID
+                                      FROM STORE_INVENTORIES I
+                                      JOIN MATERIALS M
+                                     USING (MATERIAL_ID)
+                                      JOIN STORES S
+                                     USING (STORE_ID)
         <where>
             <if test="condition.storeId != null">
                 STORE_ID = #{condition.storeId}
@@ -39,12 +39,11 @@
                     AND CURRENT_QUANTITY &lt; SAFETY_QUANTITY
             </if>
         </where>
-                                            ORDER BY CREATED_AT DESC
-                                                   ,STORE_INVENTORY_ID DESC
-                                        ) temp
-                                  WHERE ROWNUM  &lt;= #{paging.endRow}
-                            )
-                      WHERE rn &gt;= #{paging.startRow}
+                                     ORDER BY CREATED_AT DESC, STORE_INVENTORY_ID DESC
+                                  ) temp
+                            WHERE ROWNUM  &lt;= #{paging.endRow}
+                         )
+                   WHERE rn &gt;= #{paging.startRow}
                 )
     </select>
 </mapper>
