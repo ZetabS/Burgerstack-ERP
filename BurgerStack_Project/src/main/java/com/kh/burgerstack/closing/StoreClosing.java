@@ -15,11 +15,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class StoreClosing {
-
     private Long storeClosingId;
-    private Long storeId;
     private LocalDate businessDate;
     private String closingMemo;
-    private Long closedBy;
     private LocalDateTime closedAt;
+    private Long storeId;
 }

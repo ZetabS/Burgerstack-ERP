@@ -1,9 +1,9 @@
 package com.kh.burgerstack.file;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -14,13 +14,11 @@ import com.kh.burgerstack.config.FileStoreProperties;
 @Component
 public class FileStore {
     private final Path root;
-    private final FileDao fileDao;
 
-    public FileStore(FileStoreProperties properties, FileDao fileDao) {
+    public FileStore(FileStoreProperties properties) {
         this.root = Path.of(properties.getRoot())
                 .toAbsolutePath()
                 .normalize();
-        this.fileDao = fileDao;
     }
 
     public StoredFile store(MultipartFile multipartFile, long uploaderId) {
@@ -46,25 +44,18 @@ public class FileStore {
                     .fileSize(multipartFile.getSize())
                     .createdBy(uploaderId)
                     .build();
-            try {
-                return fileDao.save(storedFile);
-            } catch (Exception e) {
-                Files.deleteIfExists(targetPath);
-                throw e;
-            }
+
+            return storedFile;
         } catch (Exception e) {
-            throw new FileStoreException("파일 저장에 실패했습니다.");
+            throw new FileException("파일 저장에 실패했습니다.");
         }
     }
 
-    public Optional<StoredFile> findById(long fileId) {
-        return fileDao.findById(fileId);
-    }
-
-    public void delete(long fileId) {
-        boolean success = fileDao.markDeleted(fileId);
-        if (!success) {
-            throw new FileStoreException("삭제할 파일을 찾을 수 없습니다.");
+    public void delete(StoredFile storedFile) {
+        try {
+            Files.deleteIfExists(resolveStoragePath(storedFile.getStoragePath()));
+        } catch (IOException e) {
+            throw new FileException("파일 삭제에 실패했습니다.");
         }
     }
 
@@ -112,7 +103,7 @@ public class FileStore {
         Path target = root.resolve(storagePath)
                 .normalize();
         if (!target.startsWith(root)) {
-            throw new FileStoreException("잘못된 파일 경로입니다.");
+            throw new FileException("잘못된 파일 경로입니다.");
         }
         return target;
     }

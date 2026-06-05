@@ -158,6 +158,21 @@ body{
     overflow-y:auto;
 }
 
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar a:visited {
+    color: white;
+}
+
+.sidebar a:hover {
+    color: white;
+    text-decoration: none;
+}
+
 .profile-box{
     padding:25px 20px;
     border-bottom:1px solid #444;
@@ -266,7 +281,7 @@ body{
 		* menubar.jsp 에 공통 코드 작업을 해볼 것!!
 		- 1회성 alert 기능
 		- script 태그 내에서는 JSP Action Tag 들이 사용 불가함!! (자바스크립트 영역이기 때문)
-	--%>
+	
 	<c:if test="${ not empty sessionScope.alertMsg }">
 		<script>
 			
@@ -278,6 +293,7 @@ body{
 		</script>
 		<c:remove var="alertMsg" scope="session" />
 	</c:if>
+    --%>
 <div class="wrap">
 
     <!-- HEADER -->
@@ -291,8 +307,8 @@ body{
         </div>
 
         <div class="header-right">
-            <span>관리자님 환영합니다.</span>
-            <button class="logout-btn">로그아웃</button>
+            <span>${sessionScope.loginUser.loginId}님 환영합니다.</span>
+            <button class="logout-btn" onclick = "location.href = '/burgerstack/auth/logout' ">로그아웃</button>
         </div>
 
     </div>
@@ -448,3 +464,4 @@ body{
 
 </body>
 </html>
+

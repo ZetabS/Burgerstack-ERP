@@ -14,21 +14,13 @@ import lombok.ToString;
 @Setter
 @ToString
 public class User {
-	
-			private Long userId;
-			private String loginId;
-			private String password;
-			private String userName;
-			private String phone;
-			private String email;
-			private String role;
-			private String status;
-			private Long createdBy;
-			private LocalDateTime createdAt;
-			private Long updatedBy;
-			private LocalDateTime updatedAt;
-
-			
+	private Long userNo;
+	private String userId;
+	private String password;
+	private String userName;
+	private String phone;
+	private String email;
+	private String role;
+	private String status;
+	private LocalDateTime createdAt;
 }
-
-	
