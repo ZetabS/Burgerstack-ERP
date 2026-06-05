@@ -94,10 +94,10 @@ public class AdminController {
 	@GetMapping("homebutton")
 	public String homeButton() {
 		
-		return "user/dashboardHO";
+		return "user/dashboardHP";
 	}
 	
-	@GetMapping("dashboardHO")
+	@GetMapping("dashboard")
 	public String dashboardHo() {
 		return "user/dashboardHO";
 	}

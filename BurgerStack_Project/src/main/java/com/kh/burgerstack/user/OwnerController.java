@@ -97,7 +97,7 @@ public class OwnerController {
 		return "user/dashboardBO";
 	}
 	
-	@GetMapping("dashboardBO")
+	@GetMapping("dashboard")
 	public String dashboardBo() {
 		return "user/dashboardBO";
 	}
