@@ -1,6 +1,7 @@
 package com.kh.burgerstack.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,9 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("owner")
 public class OwnerController {
+	
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	@Autowired
 	private OwnerService ownerService;
@@ -35,44 +39,57 @@ public class OwnerController {
 			mv.setViewName("redirect:/user/MyPageBO");
 			
 		}else {
-			
-			
-			
 			mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
-			
 		}
 		
-		
+		return mv;
 	}
 	
 	@PostMapping("updatePassword")
-	public String updatePassword() {
+	public String updatePassword(String currentPwd, String newPwd, 
+						String checkedPwd, HttpSession session) {
 		
+		User loginUser = (User)(session.getAttribute("loginUser"));
 		
-		return "user/MyPageBO";
+		if(bCryptPasswordEncoder.matches(currentPwd, loginUser.getPassword())) {
+			
+			session.setAttribute("alertMsg", "현재 비밀번호와 일치하지 않습니다.");
+			
+			return "redirect:/user/MyPageBO";
+		}
+
+		if(!newPwd.equals(checkedPwd)) {
+			
+			session.setAttribute("alertMsg", "새 비밀번호와 일치하지 않습니다. 비밀번호 확인을 다시 해주십시오.");
+			
+			return "redirect:/user/MyPageBO";
+			
+		}
+		
+		String encPwd = bCryptPasswordEncoder.encode(newPwd);
+		
+		User u = new User();
+		u.setUserId(loginUser.getUserId());
+		u.setPassword(encPwd);
+		
+		int result = ownerService.updatePassword(u);
+		
+		if(result > 0) {
+			
+			loginUser.setPassword(encPwd);
+			
+			session.setAttribute("loginUser", loginUser);
+			
+			session.setAttribute("alertMsg", "비밀번호가 변경되었습니다.");
+			
+		}else{
+			
+			session.setAttribute("errorMsg", "비밀번호 변경에 실패하였습니다.");
+			
+		}
+		
+		return "redirect:/user/MyPageBO";
 	}
-	
-//	@PostMapping("insertStoreOwner")
-//	public String insertStoreOwner(User u, Model model, HttpSession session) {
-//		
-//		String encPwd = bCryptPasswordEncoder.encode(u.getPassword());
-//		
-//		u.setPassword(
-//				bCryptPasswordEncoder.encode(u.getPassword())
-//		);
-//
-//		int result = userService.insertStoreOwner(u);
-//		
-//		if(result > 0) {
-//		    session.setAttribute("alertMsg", "계정이 등록되었습니다.");
-//		    
-//		    return "redirect:/admin/MyPageHO";
-//		} else {
-//			model.addAttribute("errorMsg", "회원가입에 실패했습니다");
-//			return "common/errorPage";
-//			
-//		}
-//    } 
 	
 	@GetMapping("homebutton")
 	public String homeButton() {
