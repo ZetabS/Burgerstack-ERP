@@ -17,19 +17,14 @@ import lombok.ToString;
 @Getter
 @ToString
 public class Material {
-
 	private Long materialId;
 	private String materialCode;
 	private String materialName;
 	private String materialType;
-	private BigDecimal costPrice;
-	private BigDecimal sellingPrice;
-	private Long imageFileId;
+	private BigDecimal supplyPrice;
 	private String details;
 	private String status;
-	private Long createdBy;
 	private LocalDateTime createdAt;
-	private Long updatedBy;
 	private LocalDateTime updatedAt;
 	
 	private StoredFile storedFile;

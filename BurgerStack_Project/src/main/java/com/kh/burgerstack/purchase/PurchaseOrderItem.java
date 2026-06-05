@@ -13,16 +13,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class PurchaseRequestItem {
-
-    private Long purchaseRequestItemId;
-    private Long purchaseRequestId;
-    private Long materialId;
-    private String materialNameSnapshot;
-    private BigDecimal unitPriceSnapshot;
+public class PurchaseOrderItem {
+    private Long purchaseOrderItemId;
     private Long requestQuantity;
     private Long approvedQuantity;
-    private String itemStatus;
     private String rejectReason;
-    private BigDecimal subtotalAmount;
+    private String materialNameSnapshot;
+    private BigDecimal supplyPriceSnapshot;
+    private Long materialId;
+    private Long purchaseOrderId;
 }
