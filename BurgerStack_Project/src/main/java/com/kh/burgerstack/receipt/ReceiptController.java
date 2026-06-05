@@ -55,21 +55,26 @@ public class ReceiptController {
 		return mv;
 	}
 
-	// @GetMapping("purchases")
-	// public String planned(PagingRequest pagingRequest, HttpServletRequest request, Model model) {
-	// 	PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest);
+		@GetMapping(value = "purchases", params = "status=APPROVED")
+		public String planned(PagingRequest pagingRequest,
+		                      HttpServletRequest request,
+		                      Model model) {
+	
+		    PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest);
+	
+		    if (pageInfo.isCurrentPageOutOfRange()) {
+		        return "redirect:/owner/purchases?status=APPROVED";
+		    }
+	
+		    model.addAttribute("pageInfo", pageInfo);
+	
+		    return "receipt/receiptPlanList";
+		}
 
-	// 	if (pageInfo.isCurrentPageOutOfRange()) {
-	// 		return "redirect:receipt/receiptPlanList"
-	// 				+ pageInfo.getLastAvailablePageQueryString(request.getQueryString());
-	// 	}
-
-	// 	model.addAttribute("pageInfo", pageInfo);
-
-	// 	// // > HashMap 이용해보기
-	// 	// HashMap<String, String> map = new HashMap<> ();
-	// 	// map.put("condition", condition);
-	// 	// map.put("keyword", keyword);
+	 	// // > HashMap 이용해보기
+	 	// HashMap<String, String> map = new HashMap<> ();
+	 	// map.put("condition", condition);
+	 	// map.put("keyword", keyword);
 
 	// 	// int searchCount = boardService.selectSearchCount(map);
 
