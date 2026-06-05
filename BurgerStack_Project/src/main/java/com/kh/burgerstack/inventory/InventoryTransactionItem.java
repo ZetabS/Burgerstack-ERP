@@ -12,11 +12,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InventoryTransactionItem {
-
     private Long inventoryTransactionItemId;
-    private Long inventoryTransactionId;
-    private Long materialId;
     private Long beforeQuantity;
-    private Long changeQuantity;
     private Long afterQuantity;
+    private Long inventoryTransactionId;
+    private Long storeInventoryId;
 }

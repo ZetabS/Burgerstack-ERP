@@ -1,4 +1,4 @@
-package com.kh.burgerstack.inquiry;
+package com.kh.burgerstack.material;
 
 import java.time.LocalDateTime;
 
@@ -13,13 +13,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Inquiry {
-    private Long inquiryId;
-    private String title;
-    private String content;
-    private String answerContent;
+public class MaterialFile {
+    private Long materialFileId;
+    private String originalName;
+    private String storedName;
+    private String storagePath;
     private LocalDateTime createdAt;
-    private LocalDateTime answeredAt;
     private LocalDateTime deletedAt;
-    private Long storeId;
+    private Long materialId;
 }

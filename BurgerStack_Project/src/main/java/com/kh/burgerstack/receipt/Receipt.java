@@ -14,12 +14,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class Receipt {
-
     private Long receiptId;
-    private Long purchaseRequestId;
-    private Long storeId;
     private String receiptMemo;
-    private Long receivedBy;
     private LocalDateTime receivedAt;
-
+    private Long purchaseOrderId;
 }
