@@ -24,7 +24,7 @@ public class InventoryService {
             InventorySearchCondition condition,
             PagingRequest pagingRequest,
             LoginUser loginUser) {
-        long storeId = storeDao.findStoreIdByOwnerUserId(loginUser.getUserNo());
+        long storeId = storeDao.findStoreIdByOwnerUserNo(loginUser.getUserNo());
         condition.setStoreId(storeId);
 
         ArrayList<StoreInventory> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
