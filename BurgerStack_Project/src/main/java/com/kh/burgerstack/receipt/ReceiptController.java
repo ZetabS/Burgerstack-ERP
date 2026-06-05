@@ -67,6 +67,10 @@ public class ReceiptController {
 		    }
 	
 		    model.addAttribute("pageInfo", pageInfo);
+		    
+		    // 입고 예정 발주 목록 조회
+		    model.addAttribute("list",
+		            receiptService.selectReceiptPlanList(pagingRequest));
 	
 		    return "receipt/receiptPlanList";
 		}

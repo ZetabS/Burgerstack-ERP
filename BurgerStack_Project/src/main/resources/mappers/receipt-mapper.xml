@@ -20,10 +20,22 @@
     </select>
 
     <!-- 입고 예정 목록 리스트 조회 -->
-    <select id="searchReceiptPlanList" resultType="Receipt">
-    
-    </select>
+    <select id="selectReceiptPlanList"
+        resultType="purchaseOrder">
 
+    SELECT
+          PURCHASE_ORDER_ID AS purchaseOrderId
+        , TOTAL_AMOUNT       AS totalAmount
+        , ORDER_MEMO         AS orderMemo
+        , STATUS             AS status
+        , CREATED_AT         AS createdAt
+        , UPDATED_AT         AS updatedAt
+        , STORE_ID           AS storeId
+    FROM PURCHASE_ORDERS
+    WHERE STATUS = 'APPROVED'
+    ORDER BY CREATED_AT DESC
+
+</select>
 	
 </mapper>
 
