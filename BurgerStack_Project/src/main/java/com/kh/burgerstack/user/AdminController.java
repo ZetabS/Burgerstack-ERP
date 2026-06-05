@@ -16,97 +16,95 @@ public class AdminController {
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
+
 	@Autowired
 	private AdminService adminService;
-	
+
 	@GetMapping("mypage")
 	public String MyPageHo() {
 		return "user/MyPageHO";
 	}
-	
+
 	@PostMapping("update")
-	public ModelAndView update(User u, ModelAndView mv ,HttpSession session) {
-		
+	public ModelAndView update(User u, ModelAndView mv, HttpSession session) {
+
 		int result = adminService.update(u);
-		
-		if(result > 0) {
-			
+
+		if (result > 0) {
+
 			session.setAttribute("User", u);
-			
+
 			session.setAttribute("alertMsg", "성공적으로 정보가 수정되었습니다.");
-			
-			mv.setViewName("redirect:/user/MyPageBO");
-			
-		}else {
+
+			mv.setViewName("redirect:/user/MyPageHO");
+
+		} else {
 			mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
 		}
-		
+
 		return mv;
 	}
-	
+
 	@PostMapping("updatePassword")
-	public String updatePassword(String currentPwd, String newPwd, 
-						String checkedPwd, HttpSession session) {
-		
-		User loginUser = (User)(session.getAttribute("loginUser"));
-		
-		if(bCryptPasswordEncoder.matches(currentPwd, loginUser.getPassword())) {
-			
+	public String updatePassword(String currentPwd, String newPwd, String checkedPwd, HttpSession session) {
+
+		User loginUser = (User) (session.getAttribute("loginUser"));
+
+		if (bCryptPasswordEncoder.matches(currentPwd, loginUser.getPassword())) {
+
 			session.setAttribute("alertMsg", "현재 비밀번호와 일치하지 않습니다.");
-			
+
 			return "redirect:/user/MyPageHO";
 		}
 
-		if(!newPwd.equals(checkedPwd)) {
-			
+		if (!newPwd.equals(checkedPwd)) {
+
 			session.setAttribute("alertMsg", "새 비밀번호와 일치하지 않습니다. 비밀번호 확인을 다시 해주십시오.");
-			
+
 			return "redirect:/user/MyPageHO";
-			
+
 		}
-		
+
 		String encPwd = bCryptPasswordEncoder.encode(newPwd);
-		
+
 		User u = new User();
 		u.setUserNo(loginUser.getUserNo());
 		u.setPassword(encPwd);
-		
+
 		int result = adminService.updatePassword(u);
-		
-		if(result > 0) {
-			
+
+		if (result > 0) {
+
 			loginUser.setPassword(encPwd);
-			
+
 			session.setAttribute("loginUser", loginUser);
-			
+
 			session.setAttribute("alertMsg", "비밀번호가 변경되었습니다.");
-			
-		}else{
-			
+
+		} else {
+
 			session.setAttribute("errorMsg", "비밀번호 변경에 실패하였습니다.");
-			
+
 		}
-		
+
 		return "redirect:/user/MyPageHO";
 	}
-	
+
 	@GetMapping("homebutton")
 	public String homeButton() {
-		
-		return "user/dashboardHP";
+
+		return "user/dashboardHO";
 	}
-	
+
 	@GetMapping("dashboard")
 	public String dashboardHo() {
 		return "user/dashboardHO";
 	}
+
 	@GetMapping("ownerList")
 	public String ownerList() {
-		
-		
+
 		return "user/OwnerList";
 	}
-	
-	
+
 }

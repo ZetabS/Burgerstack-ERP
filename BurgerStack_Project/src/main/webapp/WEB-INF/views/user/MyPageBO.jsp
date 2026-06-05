@@ -195,16 +195,12 @@
 			</div>
 		
 		</div>
-		
-	</form>
-	
-		<form id="home-button" action="/burgerstack/owner/homebutton" method="get">
+		</form>
 			<div class="home-btn-area">
-	    		<button type="submit" id="homeBtn">
+	    		<button type="submit" id="homeBtn" onclick="location.href = '/burgerstack/owner/dashboard'">
 			        홈으로
 			    </button>
 			</div>
-		</form>
 	
 </t:menubarBO>
 
