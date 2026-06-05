@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.inventory.dto.InventoryDetail;
 import com.kh.burgerstack.inventory.dto.InventoryListSort;
 import com.kh.burgerstack.inventory.dto.InventoryListView;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
@@ -31,11 +32,16 @@ public class AdminInventoryController {
                 condition,
                 pagingRequest);
         model.addAttribute("view", inventoryListView);
+        System.out.println(inventoryListView.getPageInfo());
         return "admin/inventories";
     }
 
     @GetMapping("/{inventoryId}/edit")
-    public String adjustForm(@PathVariable Long inventoryId, Long quentity) {
+    public String adjustForm(
+            @PathVariable Long inventoryId,
+            Model model) {
+        InventoryDetail detail = inventoryService.getInventoryDetailById(inventoryId);
+        model.addAttribute("detail", detail);
         return "admin/inventories/edit";
     }
 

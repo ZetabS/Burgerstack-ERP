@@ -11,7 +11,7 @@
   </head>
   <body>
     <t:menubarHO>
-      <h2>재고 목록</h2>
+      <h2>재고 조정(미완성)</h2>
 
       <table class="table2">
         <thead>
@@ -24,17 +24,14 @@
         </thead>
 
         <tbody>
-          <c:forEach var="item" items="${view.list}">
-            <tr>
-              <td>${item.storeName}</td>
-              <td>${item.materialName}</td>
-              <td>${item.currentQuantity}</td>
-              <td>${item.safetyQuantity}</td>
-            </tr>
-          </c:forEach>
+          <tr>
+            <td>${detail.storeName}</td>
+            <td>${detail.materialName}</td>
+            <td>${detail.currentQuantity}</td>
+            <td>${detail.safetyQuantity}</td>
+          </tr>
         </tbody>
       </table>
-      <t:pagination pageInfo="${pageInfo}"></t:pagination>
     </t:menubarHO>
   </body>
 </html>

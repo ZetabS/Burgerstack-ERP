@@ -6,9 +6,10 @@ import org.springframework.stereotype.Service;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.inventory.dao.InventoryDao;
+import com.kh.burgerstack.inventory.dto.InventoryDetail;
+import com.kh.burgerstack.inventory.dto.InventoryListItem;
 import com.kh.burgerstack.inventory.dto.InventoryListView;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
-import com.kh.burgerstack.inventory.vo.StoreInventory;
 import com.kh.burgerstack.store.StoreDao;
 import com.kh.burgerstack.user.LoginUser;
 
@@ -27,7 +28,7 @@ public class InventoryService {
         long storeId = storeDao.findStoreIdByOwnerUserNo(loginUser.getUserNo());
         condition.setStoreId(storeId);
 
-        ArrayList<StoreInventory> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
+        ArrayList<InventoryListItem> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
         return new InventoryListView(list, pagingRequest.toPageInfo(0));
     }
 
@@ -35,7 +36,13 @@ public class InventoryService {
             InventorySearchCondition condition,
             PagingRequest pagingRequest) {
 
-        ArrayList<StoreInventory> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
-        return new InventoryListView(list, pagingRequest.toPageInfo(0));
+        ArrayList<InventoryListItem> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
+        int totalCount = inventoryDao.count(condition);
+        System.out.println(totalCount);
+        return new InventoryListView(list, pagingRequest.toPageInfo(totalCount));
+    }
+
+    public InventoryDetail getInventoryDetailById(long inventoryId) {
+        return inventoryDao.getInventoryDetailById(inventoryId);
     }
 }
