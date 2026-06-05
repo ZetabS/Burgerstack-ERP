@@ -27,6 +27,9 @@ public class LoginInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
 
+        // System.out.println("================================");
+        // System.out.println("URI : " + request.getRequestURI());
+
         // 1. Session 객체 얻기
         HttpSession session = request.getSession();
 

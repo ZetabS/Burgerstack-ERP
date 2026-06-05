@@ -42,42 +42,31 @@ public class PurchaseService {
 
     @Transactional
     public void createPurchase(List<PurchaseRequestItemDto> items,
-                            PurchaseRequestDto requestDto,
-                            List<MaterialInventoryDto> materialList,
                             HttpSession session) {
 
-        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        LoginUser user = (LoginUser) session.getAttribute("loginUser");
 
-        requestDto.setStoreId(loginUser.getStoreId());   // ⭐ 핵심
-        requestDto.setCreatedBy(loginUser.getUserId());
-        requestDto.setRequestMemo("자동 발주");
+        // 1. total 계산
+        long total = 0;
 
-        purchaseDao.insertPurchaseRequest(requestDto, sqlSession);                        
-
-        // 1. 전체 금액 계산
-        Long total = (long)0;
-
-        for (int i = 0; i < items.size(); i++) {
-            total += items.get(i).getUnitPriceSnapshot()
-                    * items.get(i).getRequestQuantity();
+        for (PurchaseRequestItemDto item : items) {
+            total += item.getUnitPriceSnapshot() * item.getRequestQuantity();
         }
 
-        requestDto.setTotalAmount(total);
+        // 2. master 생성
+        PurchaseRequestDto request = new PurchaseRequestDto();
+        request.setStoreId(user.getStoreId());
+        request.setCreatedBy(user.getUserId());
+        request.setTotalAmount(total);
+        request.setRequestMemo("자동 발주");
 
-        // 2. MASTER INSERT
-        purchaseDao.insertPurchaseRequest(requestDto, sqlSession);
+        purchaseDao.insertPurchaseRequest(request, sqlSession);
 
-        Long requestId = requestDto.getPurchaseRequestId();
+        Long requestId = request.getPurchaseRequestId();
 
-        // 3. DETAIL INSERT
-        for (int i = 0; i < items.size(); i++) {
-
-            PurchaseRequestItemDto item = items.get(i);
-
+        // 3. detail insert
+        for (PurchaseRequestItemDto item : items) {
             item.setPurchaseRequestId(requestId);
-
-            item.setMaterialNameSnapshot(materialList.get(i).getMaterialName());
-
             purchaseDao.insertPurchaseRequestItem(item, sqlSession);
         }
     }

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -55,31 +56,31 @@
 
             <tbody>
                 <c:forEach var="m" items="${list}">
-                    <c:if test="${m.status ne '판매중'}">
-                        <tr class="item-row">
+                    <c:if test="${m.status ne 'ACTIVE'}">
+                        <tr class="item-row" data-id="${m.materialId}">
                             <td>
-                                <input type="checkbox" name="materialId" class="row-check" value="${m.materialId}">
+                                <input type="checkbox" class="row-check">
                             </td>
                             <td class="item-name">${m.materialName}</td>
                             <td class="unit-price">${m.costPrice}</td>
                             <td class="stock">${m.currentQuantity}</td>
                             <td>
-                                <input class="qty-input" type="number"  name="orderQuantity" value="0" min="0">
+                                <input type="number" class="qty-input" value="0" min="0">
                             </td>
                             <td class="total-price">0</td>
                             <td class="status">${m.status}</td>
                         </tr>
                     </c:if>
-                    <c:if test="${m.status eq '판매중'}">
-                        <tr class="item-row">
+                    <c:if test="${m.status eq 'ACTIVE'}">
+                        <tr class="item-row" data-id="${m.materialId}">
                             <td>
-                                <input type="checkbox" name="materialId" class="row-check" value="${m.materialId}">
+                                <input type="checkbox" class="row-check">
                             </td>
                             <td class="item-name">${m.materialName}</td>
                             <td class="unit-price">${m.costPrice}</td>
                             <td class="stock">${m.currentQuantity}</td>
                             <td>
-                                <input class="qty-input" type="number" name="orderQuantity" value="0" min="0">
+                                <input type="number" class="qty-input" value="0" min="0">
                             </td>
                             <td class="total-price">0</td>
                             <td class="status">${m.status}</td>
@@ -96,13 +97,15 @@
             </tbody>
         </table>
 
+        <input type="hidden" name="itemsJson" id="itemsJson">
+
         <br>
 
         
 
         <div class="middle-area">
             <button type="button" class="button-primary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
-            <button type="submit" class="button-primary"> 결제 </button>
+            <button type="submit" class="button-primary" onclick="buildJson()"> 결제 </button>
         </div>
 
         <t:sidebar>
@@ -121,19 +124,7 @@
                     </thead>
 
                     <tbody>
-                        <tr>
-                            <td><input type="checkbox"></td>
-                            <td>양상추</td>
-                            <td>25</td>
-                            <td>250000</td>
-                        </tr>
 
-                        <tr>
-                            <td><input type="checkbox"></td>
-                            <td>토마토</td>
-                            <td>8</td>
-                            <td>80000</td>
-                        </tr>
                     </tbody>
                 </table>
 
@@ -142,9 +133,8 @@
                         <h5>TOTAL</h5>
                     </p>
                     <b><h3 id="sidebar-total-amount">0원</h3></b>
-                    <button class="button-primary"> 결제 </button>
+                    <button class="button-primary" type="submit"> 결제 </button>
                 </div>
-                
             </jsp:body>
         </t:sidebar>
     </form>
@@ -224,8 +214,8 @@
 
             if (!checked || qty <= 0) return;
 
-            let name = $row.find('.item-name').text();
-            let price = parseInt($row.find('.total-price').text()) || 0;
+            let name = $row.find('.item-name').text().trim();
+            let price = parseInt($row.find('.unit-price').text()) || 0;
 
             total += price;
 
@@ -244,6 +234,8 @@
 
         $('.main-total-amount').text(total.toLocaleString() + "원");
         $('#sidebar-total-amount').text(total.toLocaleString() + "원");
+
+        $('#totalAmountInput').val(total);
     }
 
 
@@ -279,6 +271,28 @@
     });
 
 });
+
+function buildJson() {
+
+    let items = [];
+
+    $('.item-row').each(function () {
+
+        let checked = $(this).find('.row-check').is(':checked');
+        let qty = parseInt($(this).find('.qty-input').val()) || 0;
+
+        if (!checked || qty <= 0) return;
+
+        items.push({
+            materialId: $(this).data('id'),
+            materialNameSnapshot: $(this).find('.item-name').text().trim(),
+            unitPriceSnapshot: parseInt($(this).find('.unit-price').text()),
+            requestQuantity: parseInt($(this).find('.qty-input').val()) || 0
+        });
+    });
+
+    $('#itemsJson').val(JSON.stringify(items));
+}
 </script>
 
 </body>

@@ -14,11 +14,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
-import com.kh.burgerstack.purchase.dto.PurchaseRequestDto;
 import com.kh.burgerstack.purchase.dto.PurchaseRequestItemDto;
-import com.kh.burgerstack.user.LoginUser;
 
 import jakarta.servlet.http.HttpSession;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 
 
@@ -59,9 +59,9 @@ public class PurchaseController {
 
 
         // System.out.println(list);
-		for(PurchaseDto i : list) {
-			System.out.println(i);
-		}
+		// for(PurchaseDto i : list) {
+		// 	System.out.println(i);
+		// }
 
         // 2. Model에 담기
         mv.addObject("list", list);
@@ -75,34 +75,17 @@ public class PurchaseController {
 
     @PostMapping("purchases")
     public String createPurchase(
-            @RequestParam int[] materialId,
-            @RequestParam int[] orderQuantity,
+            @RequestParam String itemsJson,
             HttpSession session
-    ) {
+    ) throws Exception {
 
-        
+        ObjectMapper mapper = new ObjectMapper();
 
+        List<PurchaseRequestItemDto> items =
+                mapper.readValue(itemsJson,
+                        new TypeReference<List<PurchaseRequestItemDto>>() {});
 
-
-        List<PurchaseRequestItemDto> items = new ArrayList<>();
-
-        for (int i = 0; i < materialId.length; i++) {
-
-            if (orderQuantity[i] <= 0) continue;
-
-            PurchaseRequestItemDto dto = new PurchaseRequestItemDto();
-
-            dto.setMaterialId((long)materialId[i]);
-            dto.setRequestQuantity((long)orderQuantity[i]);
-            dto.setUnitPriceSnapshot((long)0); // 필요하면 DB에서 가져오기
-
-            items.add(dto);
-        }
-
-        PurchaseRequestDto requestDto = new PurchaseRequestDto();
-
-
-        purchaseService.createPurchase(items, requestDto, null, session);
+        purchaseService.createPurchase(items, session);
 
         return "redirect:/owner/purchases";
     }

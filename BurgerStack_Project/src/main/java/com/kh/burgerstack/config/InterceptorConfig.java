@@ -24,15 +24,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
          * 로그인 사용자만 접근 가능
          */
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns(
-                        "/",
-                        "/auth/login",
-                        "/resources/**",
-                        "/css/**",
-                        "/js/**",
-                        "/images/**"
-                );
+                .addPathPatterns("/owner/**");
 
         /*
          * 관리자만 접근 가능

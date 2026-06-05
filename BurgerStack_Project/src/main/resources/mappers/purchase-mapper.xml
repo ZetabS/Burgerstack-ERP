@@ -28,13 +28,7 @@
             /* 구매가격 */
             (M.COST_PRICE * NVL(I.CURRENT_QUANTITY, 0)) AS buyPrice,
 
-            /* =====================================
-            상태 = 본사 기준 + 판매 가능 여부만
-            ===================================== */
-            CASE
-                WHEN M.STATUS = 'ACTIVE' THEN '판매중'
-                ELSE '판매중지'
-            END AS status
+            M.STATUS AS status
 
         FROM MATERIALS M
 
@@ -78,7 +72,13 @@
 
     </select>
 
-    <insert id="insertPurchaseRequest" useGeneratedKeys="true" keyProperty="purchaseRequestId">
+    <insert id="insertPurchaseRequest">
+
+        <selectKey keyProperty="purchaseRequestId"
+                resultType="long"
+                order="BEFORE">
+            SELECT SEQ_PUR_REQ.NEXTVAL FROM DUAL
+        </selectKey>
 
         INSERT INTO PURCHASE_REQUESTS (
             PURCHASE_REQUEST_ID,
@@ -90,7 +90,7 @@
             CREATED_AT
         )
         VALUES (
-            SEQ_PUR_REQ.NEXTVAL,
+            #{purchaseRequestId},
             #{storeId},
             'REQUESTED',
             #{totalAmount},
