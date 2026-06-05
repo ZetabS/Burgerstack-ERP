@@ -118,7 +118,7 @@
 						<tr id="login">
 							<th>아이디</th>
 							<td>
-								<input type="text" name="loginId" id="login-id-input" required>
+								<input type="text" name="userId" id="user-id-input" required>
 							</td>
 						</tr>
 						<tr id="userPwd">
@@ -174,7 +174,7 @@
 				  url : "/burgerstack/auth/login",
 				  type : "post",
 				  data : { 
-					       loginId : $("#login-id-input").val(), 
+					       userId : $("#user-id-input").val(), 
 					       password : $("#password-input").val()
 					     },
 				  success : function(result){

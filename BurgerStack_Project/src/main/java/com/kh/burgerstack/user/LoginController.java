@@ -32,10 +32,10 @@ public class LoginController {
 	
 	@ResponseBody
 	@PostMapping("login")
-	public Map<String, Object> login(String loginId, String password,
+	public Map<String, Object> login(String userId, String password,
 									 HttpSession session) {
 		
-		LoginUser loginUser = loginService.login(loginId);
+		LoginUser loginUser = loginService.login(userId);
 		
 		if((loginUser == null)||
 				(!bCryptPasswordEncoder.matches(password, loginUser.getPassword()))) {

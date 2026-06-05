@@ -124,7 +124,7 @@
 		    <table>
 		        <tr>
 		            <th>아이디</th>
-		            <td id="loginId"></td>
+		            <td id="userId"></td>
 		        </tr>
 		
 		        <tr>
@@ -198,13 +198,13 @@
 		
 	</form>
 	
-	<form id="home-button" action="/burgerstack/owner/homebutton" method="get">
-		<div class="home-btn-area">
-    		<button type="submit" id="homeBtn">
-		        홈으로
-		    </button>
-		</div>
-	</form>
+		<form id="home-button" action="/burgerstack/owner/homebutton" method="get">
+			<div class="home-btn-area">
+	    		<button type="submit" id="homeBtn">
+			        홈으로
+			    </button>
+			</div>
+		</form>
 	
 </t:menubarBO>
 

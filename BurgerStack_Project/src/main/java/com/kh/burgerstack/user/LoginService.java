@@ -1,6 +1,5 @@
 package com.kh.burgerstack.user;
 
-import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,14 +7,11 @@ import org.springframework.stereotype.Service;
 public class LoginService {
 
 	@Autowired
-	private SqlSessionTemplate sqlSession;
-
-	@Autowired
 	private LoginDao loginDao;
 
-	public LoginUser login(String loginId) {
+	public LoginUser login(String userId) {
 
-		return loginDao.login(loginId);
+		return loginDao.login(userId);
 
 	}
 }

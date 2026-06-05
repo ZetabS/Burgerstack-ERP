@@ -97,7 +97,7 @@
                             <th width="20%">로그인 아이디</th>
                             <td>
                                 <input type="text"
-                                    name="loginId"
+                                    name="userId"
                                     class="form-control"
                                     required>
                             </td>

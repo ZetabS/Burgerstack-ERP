@@ -69,7 +69,7 @@ public class AdminController {
 		String encPwd = bCryptPasswordEncoder.encode(newPwd);
 		
 		User u = new User();
-		u.setUserId(loginUser.getUserId());
+		u.setUserNo(loginUser.getUserNo());
 		u.setPassword(encPwd);
 		
 		int result = adminService.updatePassword(u);
@@ -94,7 +94,7 @@ public class AdminController {
 	@GetMapping("homebutton")
 	public String homeButton() {
 		
-		return "user/dachboardHO";
+		return "user/dashboardHO";
 	}
 	
 	@GetMapping("dashboardHO")

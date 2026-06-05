@@ -1,7 +1,5 @@
 package com.kh.burgerstack.user;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +13,8 @@ import lombok.ToString;
 @ToString
 public class LoginUser {
 
-	private Long userId;
-	private String loginId;
+	private Long userNo;
+	private String userId;
 	private String password;
 	private String userName;
 	private String role;

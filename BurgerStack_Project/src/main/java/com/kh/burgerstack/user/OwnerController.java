@@ -69,7 +69,7 @@ public class OwnerController {
 		String encPwd = bCryptPasswordEncoder.encode(newPwd);
 		
 		User u = new User();
-		u.setUserId(loginUser.getUserId());
+		u.setUserNo(loginUser.getUserNo());
 		u.setPassword(encPwd);
 		
 		int result = ownerService.updatePassword(u);

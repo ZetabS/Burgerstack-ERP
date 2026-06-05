@@ -124,7 +124,7 @@
 		    <table>
 		        <tr>
 		            <th>아이디</th>
-		            <td id="loginId"></td>
+		            <td id="userId"></td>
 		        </tr>
 		
 		        <tr>
