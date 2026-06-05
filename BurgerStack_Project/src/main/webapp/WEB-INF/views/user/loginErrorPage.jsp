@@ -38,12 +38,19 @@
 	}
 
 	.login-button{
-		margin: auto;
-		border-radius: 10px;
-		border: 1px solid lightgray;
-		width: 300px;
-		background-color: coral;
-		color: white;
+	    width:300px;
+	    height:50px;
+	    border:none;
+	    border-radius:10px;
+	    background-color:coral;
+	    color:white;
+	    font-size:18px;
+	    font-weight:bold;
+	    cursor:pointer;
+	}
+	
+	.login-button:hover{
+	    background-color:#ff6b35;
 	}
 	label{
 		font-size:12px;
@@ -90,47 +97,52 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-	<div>
-		<div  class="outer">
-			<div id="header">
-				<a>
-					<img src="/BurgerStack_Project/src/main/webapp/resources/images/BS_logo1.png" alt="">
-				</a>
+	<form id="login-ErrorPage" action="loginErrorPage" method="get">
+		<div>
+			<div  class="outer">
+				<div id="header">
+					<a>
+						<img src="/burgerstack/resources/images/BS_logo1.png">
+					</a>
+				</div>
+	
+				<br><br>
+	
+				<div align="center" id="sign">
+					<h2>아이디 / 비밀번호 찾기</h2>
+				</div>
+	
+				<br><br>
+	
+	            <div class="footer">
+	                해당 지역 담당 FM에게 연락주세요.
+	            </div>
+	            <br><br>
+	
+				<div class="footer_1">
+	                    본사 문의 <br>
+				</div>
+	
+	            
+				<div class="footer_2">
+	                    02)1234-1234 <br>
+	                    burgerstack@gmail.com
+				</div>
+	
+				<br><br>
+	
+				<div align="center">
+				    <button type="button"
+				            class="login-button"
+				            onclick="location.href='/burgerstack/auth/login'">
+				        홈으로 돌아가기
+				    </button>
+				</div>
+	
 			</div>
-
-			<br><br>
-
-			<div align="center" id="sign">
-				<h2>아이디 / 비밀번호 찾기</h2>
-			</div>
-
-			<br><br>
-
-            <div class="footer">
-                해당 지역 담당 FM에게 연락주세요.
-            </div>
-            <br><br>
-
-			<div class="footer_1">
-                    본사 문의 <br>
-			</div>
-
-            
-			<div class="footer_2">
-                    02)1234-1234 <br>
-                    burgerstack@gmail.com
-			</div>
-
-			<br><br>
-
-			<div class="login-button" align="center" onclick="">
-				<h2>홈으로 돌아가기</h2>
-				<!-- <a href="" align="center"><h3>로그인</h3></a> -->
-			</div>
-
-		</div>
+				
 			
-		
-	</div>
+		</div>
+	</form>
 </body>
 </html>

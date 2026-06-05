@@ -10,7 +10,7 @@ public class LoginDao {
 	
 	private final UserMapper userMapper;
 
-	public LoginUser login(String loginId) {
-		return userMapper.login(loginId);
+	public LoginUser login(String userId) {
+		return userMapper.login(userId);
 	}
 }
