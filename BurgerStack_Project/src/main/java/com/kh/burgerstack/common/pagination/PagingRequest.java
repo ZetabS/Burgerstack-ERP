@@ -20,6 +20,8 @@ public class PagingRequest {
 	private final int size; // 페이지 크기(행 수)
 	private final int offset; // DB 조회를 위한 offset
 	private final int limit; // DB 조회를 위한 limit
+	private final int startRow; // DB 조회를 위한 startRow
+	private final int endRow; // DB 조회를 위한 endRow
 
 	// Spring이 생성자로 파라미터를 바인딩하도록 매핑
 	@ConstructorProperties({ "page", "size" })
@@ -28,6 +30,8 @@ public class PagingRequest {
 		this.size = normalizeSize(size);
 		this.offset = (getPage() - 1) * getSize();
 		this.limit = this.size;
+		this.startRow = (((getPage() - 1) * getSize()) + 1);
+		this.endRow = getPage() * getSize();
 	}
 
 	private static int normalizePage(Integer page) {

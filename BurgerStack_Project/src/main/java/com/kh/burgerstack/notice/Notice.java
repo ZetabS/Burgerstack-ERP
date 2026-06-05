@@ -14,13 +14,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Notice {
-
     private Long noticeId;
     private String title;
     private String content;
-    private LocalDateTime deletedAt;
-    private Long createdBy;
     private LocalDateTime createdAt;
-    private Long updatedBy;
-    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 }

@@ -15,6 +15,8 @@ import com.kh.burgerstack.store.StoreListRow;
 
 @Repository
 public class StoreDao {
+    @Autowired
+    private StoreMapper storeMapper;
 
 	@Autowired
 	private SqlSessionTemplate sqlSessionTemplate;
@@ -62,4 +64,8 @@ public class StoreDao {
 
 		return sqlSession.update("storeMapper.deleteStore", storeId);
 	}
+    public Long findStoreIdByOwnerUserId(Long OwnerUserId) {
+        return storeMapper.findStoreIdByOwnerUserId(OwnerUserId);
+    }
 }
+
