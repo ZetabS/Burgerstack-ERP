@@ -1,4 +1,4 @@
-package com.kh.burgerstack.inventory;
+package com.kh.burgerstack.inventory.dao;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
+import com.kh.burgerstack.inventory.vo.StoreInventory;
 
 import lombok.RequiredArgsConstructor;
 

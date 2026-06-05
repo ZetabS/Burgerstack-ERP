@@ -1,4 +1,4 @@
-package com.kh.burgerstack.inventory;
+package com.kh.burgerstack.inventory.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +11,7 @@ import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.inventory.dto.InventoryListSort;
 import com.kh.burgerstack.inventory.dto.InventoryListView;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
+import com.kh.burgerstack.inventory.service.InventoryService;
 import com.kh.burgerstack.user.LoginUser;
 
 import jakarta.servlet.http.HttpSession;

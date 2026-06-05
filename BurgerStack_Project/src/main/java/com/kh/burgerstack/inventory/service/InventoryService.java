@@ -1,12 +1,14 @@
-package com.kh.burgerstack.inventory;
+package com.kh.burgerstack.inventory.service;
 
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.inventory.dao.InventoryDao;
 import com.kh.burgerstack.inventory.dto.InventoryListView;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
+import com.kh.burgerstack.inventory.vo.StoreInventory;
 import com.kh.burgerstack.store.StoreDao;
 import com.kh.burgerstack.user.LoginUser;
 
@@ -22,7 +24,7 @@ public class InventoryService {
             InventorySearchCondition condition,
             PagingRequest pagingRequest,
             LoginUser loginUser) {
-        long storeId = storeDao.findStoreIdByOwnerUserId(loginUser.getUserId());
+        long storeId = storeDao.findStoreIdByOwnerUserId(loginUser.getUserNo());
         condition.setStoreId(storeId);
 
         ArrayList<StoreInventory> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
