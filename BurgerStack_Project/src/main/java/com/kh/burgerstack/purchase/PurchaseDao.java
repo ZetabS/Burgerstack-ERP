@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
-import com.kh.burgerstack.purchase.dto.PurchaseRequestDto;
-import com.kh.burgerstack.purchase.dto.PurchaseRequestItemDto;
+import com.kh.burgerstack.purchase.dto.PurchaseOrderDto;
+import com.kh.burgerstack.purchase.dto.PurchaseOrderItemDto;
 
 @Repository
 public class PurchaseDao {
@@ -29,17 +29,17 @@ public class PurchaseDao {
     // =========================
     // 발주 MASTER 생성
     // =========================
-    public int insertPurchaseRequest(PurchaseRequestDto dto, SqlSessionTemplate sqlSession){
+    public int insertPurchaseOrder(PurchaseOrderDto dto, SqlSessionTemplate sqlSession){
 
-        return sqlSession.insert("com.kh.burgerstack.purchase.PurchaseMapper.insertPurchaseRequest", dto);
+        return sqlSession.insert("com.kh.burgerstack.purchase.PurchaseMapper.insertPurchaseOrder", dto);
     }
 
     // =========================
     // 발주 DETAIL 생성
     // =========================
-    public int insertPurchaseRequestItem(PurchaseRequestItemDto dto, SqlSessionTemplate sqlSession){
+    public int insertPurchaseOrderItem(PurchaseOrderItemDto dto, SqlSessionTemplate sqlSession){
 
-        return sqlSession.insert("com.kh.burgerstack.purchase.PurchaseMapper.insertPurchaseRequestItem", dto);
+        return sqlSession.insert("com.kh.burgerstack.purchase.PurchaseMapper.insertPurchaseOrderItem", dto);
     }
 
 

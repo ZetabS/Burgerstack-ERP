@@ -14,14 +14,12 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class PurchaseDto {
-    
-    private Long purchaseRequestId;  // 발주 요청 ID
-    private Long storeId;            // 점포 ID
+
+    private Long purchaseOrderId;   // 발주 요청 ID
+    private Long storeId;           // 점포 ID
+    private Long totalAmount;       // 총 금액   
+    private String orderMemo;
     private String status;          // 상태
-    private BigDecimal totalAmount;        // 총 금액
-    private String requestMemo;     // 요청 메모
-    private Long createdBy;          // 등록자
     private String createdAt;       // 등록일
-    
     private String itemSummary;     // 품목 요약
 }

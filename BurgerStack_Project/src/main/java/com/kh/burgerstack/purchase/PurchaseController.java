@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
-import com.kh.burgerstack.purchase.dto.PurchaseRequestItemDto;
+import com.kh.burgerstack.purchase.dto.PurchaseOrderItemDto;
 
 import jakarta.servlet.http.HttpSession;
 import tools.jackson.core.type.TypeReference;
@@ -81,9 +81,9 @@ public class PurchaseController {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        List<PurchaseRequestItemDto> items =
+        List<PurchaseOrderItemDto> items =
                 mapper.readValue(itemsJson,
-                        new TypeReference<List<PurchaseRequestItemDto>>() {});
+                        new TypeReference<List<PurchaseOrderItemDto>>() {});
 
         purchaseService.createPurchase(items, session);
 

@@ -11,11 +11,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class PurchaseRequestDto {
-    
-    private Long purchaseRequestId;
-    private Long storeId;
-    private String requestMemo;
-    private Long createdBy;   // Long 맞춤
-    private Long totalAmount;
+public class PurchaseOrderItemDto {
+
+    private Long purchaseOrderId;
+    private Long materialId;
+    private String materialNameSnapshot;
+    private Long unitPriceSnapshot;
+    private Long requestQuantity;
 }
