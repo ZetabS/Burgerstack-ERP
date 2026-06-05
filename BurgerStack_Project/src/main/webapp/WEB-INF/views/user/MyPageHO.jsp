@@ -119,7 +119,7 @@
 	
 	<h1>관리자 마이페이지</h1>
 
-	<form id="revise" action="/burgerstack/admin/revise" method="post">
+	<form id="update" action="/burgerstack/admin/update" method="post">
 		
 		    <table>
 		        <tr>
@@ -159,7 +159,7 @@
 		    
 	</form>
 		    
-	<form id="change-password" action="/burgerstack/admin/changePassword" method="post">
+	<form id="update-password" action="/burgerstack/admin/updatePassword" method="post">
 		    
 			<h2>비밀번호 변경</h2>
 			

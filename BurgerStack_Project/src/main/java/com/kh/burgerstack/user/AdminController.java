@@ -101,5 +101,12 @@ public class AdminController {
 	public String dashboardHo() {
 		return "user/dashboardHO";
 	}
+	@GetMapping("ownerList")
+	public String ownerList() {
+		
+		
+		return "user/OwnerList";
+	}
+	
 	
 }
