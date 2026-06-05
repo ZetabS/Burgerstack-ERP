@@ -32,10 +32,10 @@ public class LoginController {
 	
 	@ResponseBody
 	@PostMapping("login")
-	public Map<String, Object> login(String loginId, String password,
+	public Map<String, Object> login(String userId, String password,
 									 HttpSession session) {
 		
-		LoginUser loginUser = loginService.login(loginId);
+		LoginUser loginUser = loginService.login(userId);
 		
 		if((loginUser == null)||
 				(!bCryptPasswordEncoder.matches(password, loginUser.getPassword()))) {
@@ -49,20 +49,13 @@ public class LoginController {
 		if("ADMIN".equals(loginUser.getRole())) {
 		    return Map.of(
 		            "success", true,
-		            "redirectUrl", "/burgerstack/user/dashboardHo");
+		            "redirectUrl", "/burgerstack/admin/dashboard");
 		}
 
 		
 		return Map.of("success", true,
-					  "redirectUrl","/burgerstack/user/dashboardBo");
+					  "redirectUrl","/burgerstack/owner/dashboard");
 	}
-	
-	@GetMapping("myPage")
-	public String myPage() {
-		
-		return "user/myPage";
-	}
-	
 	
 	@GetMapping("logout")
 	public String logoutMember(HttpSession session) {
@@ -73,20 +66,10 @@ public class LoginController {
 		
 	}
 	
-//	@GetMapping("/mypage")
-//	public String mypage(Model model) {
-//		
-//	    User user = new User();
-//
-//	    user.setUserId("kangnamh");
-//	    user.setUserName("유종규");
-//	    user.setPhone("010-1111-2222");
-//	    user.setEmail("dbwhdrb1@gmail.com");
-//
-//	    model.addAttribute("loginUser", user);
-//
-//	    return "mypage";
-//	}
+	@GetMapping("loginErrorPage")
+	public String loginErrorPage() {
+		return "user/loginErrorPage";
+	}
 	
 	
 }
