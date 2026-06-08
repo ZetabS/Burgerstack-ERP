@@ -10,7 +10,7 @@
     <style></style>
   </head>
   <body>
-    <t:menubarHO>
+    <t:menubarBO>
       <div class="container py-4">
         <h2 class="mb-4">재고 조정</h2>
 
@@ -63,6 +63,6 @@
           </div>
         </form>
       </div>
-    </t:menubarHO>
+    </t:menubarBO>
   </body>
 </html>

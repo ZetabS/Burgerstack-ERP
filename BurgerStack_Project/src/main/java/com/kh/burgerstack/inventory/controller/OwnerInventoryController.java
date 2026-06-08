@@ -33,13 +33,15 @@ public class OwnerInventoryController {
             HttpSession session,
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        condition.setStoreId(loginUser.getStoreId().intValue());
 
-        InventoryListView inventoryListView = inventoryService.getOwnerInventoryListView(
+        InventoryListView inventoryListView = inventoryService.getInventoryListView(
                 condition,
                 pagingRequest,
                 loginUser);
+
         model.addAttribute("view", inventoryListView);
-        return "owner/inventories";
+        return "owner/inventories/list";
     }
 
     @GetMapping("/{inventoryId}/edit")
@@ -48,9 +50,10 @@ public class OwnerInventoryController {
             Model model,
             HttpSession session) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-        InventoryDetail detail = inventoryService.getInventoryDetailById(
+
+        InventoryDetail detail = inventoryService.getInventoryDetail(
                 inventoryId,
-                loginUser.getStoreId().intValue());
+                loginUser);
 
         model.addAttribute("detail", detail);
         return "owner/inventories/edit";
@@ -63,7 +66,9 @@ public class OwnerInventoryController {
             HttpSession session,
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-        inventoryService.adjust(inventoryId, loginUser, inventoryAdjustRequest);
+
+        inventoryService.adjust(inventoryId, inventoryAdjustRequest, loginUser);
+
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
         return "redirect:/owner/inventories/" + inventoryId + "/edit";
     }

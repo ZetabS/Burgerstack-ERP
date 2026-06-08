@@ -30,19 +30,28 @@ public class AdminInventoryController {
             InventorySearchCondition condition,
             InventoryListSort inventoryListSort,
             PagingRequest pagingRequest,
+            HttpSession session,
             Model model) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
         InventoryListView inventoryListView = inventoryService.getInventoryListView(
                 condition,
-                pagingRequest);
+                pagingRequest,
+                loginUser);
+
         model.addAttribute("view", inventoryListView);
-        return "admin/inventories";
+        return "admin/inventories/list";
     }
 
     @GetMapping("/{inventoryId}/edit")
     public String adjustForm(
             @PathVariable Integer inventoryId,
+            HttpSession session,
             Model model) {
-        InventoryDetail detail = inventoryService.getInventoryDetailById(inventoryId);
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        InventoryDetail detail = inventoryService.getInventoryDetail(inventoryId, loginUser);
+
         model.addAttribute("detail", detail);
         return "admin/inventories/edit";
     }
@@ -53,9 +62,10 @@ public class AdminInventoryController {
             InventoryAdjustRequest inventoryAdjustRequest,
             HttpSession session,
             Model model) {
-        System.out.println("called");
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-        inventoryService.adjust(inventoryId, loginUser, inventoryAdjustRequest);
+
+        inventoryService.adjust(inventoryId, inventoryAdjustRequest, loginUser);
+
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
         return "redirect:/admin/inventories/" + inventoryId + "/edit";
     }
