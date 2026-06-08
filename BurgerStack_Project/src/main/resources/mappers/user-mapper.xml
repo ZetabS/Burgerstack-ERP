@@ -48,4 +48,32 @@
 		  WHERE USER_NO = #{userNo}	
    </update>
    
+   <select id="OwnerList" parameterType="User">
+   		SELECT USER_NO
+   			 , USER_ID
+   			 , USER_NAME
+   			 , PHONE
+   			 , EMAIL
+   			 , CREATED_AT
+   			 , STATUS
+   		  FROM USERS
+   		 WHERE ROLE = 'OWNER'
+   		 ORDER BY CREATED_AT DESC
+   </select>
+   
+   <select id="OwnerListDetail" parameterType="User">
+   		SELECT USER_ID
+   			 , USER_NAME
+   			 , PHONE
+   			 , EMAIL
+   			 , CREATED_AT
+   		 FROM USERS
+   		WHERE USER_ID = #{userId}
+   </select>
+   <update id="OwnerStatus" parameterType="User">
+   		UPDATE USERS
+   		   SET STATUS = #{status}
+   		 WHERE USER_ID = #{userId}
+   </update>
+   
 </mapper>

@@ -1,5 +1,7 @@
 package com.kh.burgerstack.user;
 
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,19 @@ public class AdminDao {
 	public int NewOwner(User u) {
 		return userMapper.NewOwner(u);
 	}
+
+	public List<User> OwnerList() {
+		return userMapper.OwnerList();
+	}
+
+	public User OwnerListDetail(String userId) {
+		return userMapper.OwnerListDetail(userId);
+	}
+
+	public int OwnerStatus(User u) {
+		return userMapper.OwnerStatus(u);
+	}
+
 
 
 }

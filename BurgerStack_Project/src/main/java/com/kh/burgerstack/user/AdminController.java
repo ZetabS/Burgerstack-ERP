@@ -1,10 +1,13 @@
 package com.kh.burgerstack.user;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,7 +33,6 @@ public class AdminController {
 	public String New() {
 		return "user/New";
 	}
-	
 	@PostMapping("users")
 	public String NewOwner(User u, Model model, HttpSession session) {
 			
@@ -55,7 +57,7 @@ public class AdminController {
 				
 			}
 	}
-
+	
 	@PostMapping("mypage")
 	public ModelAndView update(User u, ModelAndView mv, HttpSession session) {
 		
@@ -85,7 +87,7 @@ public class AdminController {
 	@PostMapping("updatePassword")
 	public String updatePassword(String currentPwd, String newPwd, String checkedPwd, HttpSession session) {
 
-		User loginUser = (User) (session.getAttribute("loginUser"));
+		User loginUser = (User)(session.getAttribute("loginUser"));
 
 		if (bCryptPasswordEncoder.matches(currentPwd, loginUser.getPassword())) {
 
@@ -139,10 +141,45 @@ public class AdminController {
 	}
 
 	@GetMapping("users")
-	public String ownerList() {
-
+	public String OwnerList(Model model) {
+		
+		List<User> ownerList = adminService.OwnerList();
+		
+		model.addAttribute("ownerList",ownerList);
 		
 		return "user/OwnerList";
 	}
+	
+	@GetMapping("users/{userId}")
+	public String OwnerListDetail(@PathVariable String userId, Model model) {
+		System.out.println("받은 userId = " + userId);
+		
+		User user = adminService.OwnerListDetail(userId);
+		
+		System.out.println("조회 결과 = " + user);
+		model.addAttribute("user", user);
+		
+		return "user/OwnerListDetail";
+	}
+	@GetMapping("users/{userId}/status")
+	public String OwnerStatus(User u, HttpSession session) {
+		
+		u.setStatus(((User)session.getAttribute("User")).getStatus());
+		
+		int result = adminService.OwnerStatus(u);
+		
+		if(result > 0) {
+			
+			session.setAttribute("User", u);
+			
+			session.setAttribute("alertMsg", "저장되었습니다.");
+			return "user/OwnerList";
+			
+		}else {
 
+			session.setAttribute("errorMsg", "저장에 실패하였습니다.");
+			return "common/errorPage";
+			
+		}
+	}
 }
