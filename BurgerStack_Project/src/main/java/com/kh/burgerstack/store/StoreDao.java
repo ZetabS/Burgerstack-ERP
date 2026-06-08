@@ -64,8 +64,8 @@ public class StoreDao {
 
 		return sqlSession.update("storeMapper.deleteStore", storeId);
 	}
-    public Long findStoreIdByOwnerUserId(Long OwnerUserId) {
-        return storeMapper.findStoreIdByOwnerUserId(OwnerUserId);
-    }
-}
 
+	public Long findStoreIdByOwnerUserNo(Long OwnerUserNo) {
+		return storeMapper.findStoreIdByOwnerUserNo(OwnerUserNo);
+	}
+}

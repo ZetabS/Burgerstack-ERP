@@ -27,10 +27,10 @@ public class MaterialController {
 	@Autowired
 	private MaterialService materialService;
 	@Autowired
+	
+	
+	
 	// private FileService fileService;
-	
-	
-	
 	/**
 	 * 자재 등록용 화면
 	 * @return

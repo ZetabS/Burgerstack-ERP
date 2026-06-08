@@ -307,7 +307,7 @@ body{
         </div>
 
         <div class="header-right">
-            <span>${sessionScope.loginUser.loginId}님 환영합니다.</span>
+            <span>${sessionScope.loginUser.userId}님 환영합니다.</span>
             <button class="logout-btn" onclick = "location.href = '/burgerstack/auth/logout' ">로그아웃</button>
         </div>
 
