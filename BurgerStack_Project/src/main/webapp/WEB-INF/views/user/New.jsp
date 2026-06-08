@@ -83,6 +83,22 @@
         border-top: none !important;
         border-bottom: none !important;
     }
+    .home-btn-area{
+    text-align: center;
+    margin-top: 30px;
+	}
+	
+	#homeBtn{
+	    width: 150px;
+	    height: 45px;
+	    border: none;
+	    border-radius: 8px;
+	    cursor: pointer;
+	    font-size: 16px;
+	}
+	#newOwner{
+		width: 1150px;
+	}
 </style>
 </head>
 <body>
@@ -90,7 +106,7 @@
 	<t:menubarHO>
 		<h3>계정 등록</h3>
                 <hr>
-                <form id="insert-StoreOwner" action="/burgerstack/admin/insertStoreOwner" method="post">
+                <form id="new" action="/burgerstack/admin/users" method="post">
 
                     <table class="table">
                         <tr>
@@ -142,17 +158,19 @@
                         </tr>
                     </table>
 
-                    <div class="text-center">
+					<div class="text-center" id="newOwner">
                         <button type="submit" class="btn btn-primary">
                             계정 등록
                         </button>
-
-                        <button type="reset" class="btn btn-secondary">
-                            초기화
-                        </button>
                     </div>
-
+		            <div class="home-btn-area">
+			    		<button type="button" id="homeBtn" onclick="location.href = '/burgerstack/admin/dashboard'">
+					        홈으로
+					    </button>
+					</div>
+					
                 </form>
+
 		
 	</t:menubarHO>
 

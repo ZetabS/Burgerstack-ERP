@@ -3,6 +3,7 @@ package com.kh.burgerstack.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,25 +22,61 @@ public class AdminController {
 	private AdminService adminService;
 
 	@GetMapping("mypage")
-	public String MyPageHo() {
+	public String MyPageHO() {
 		return "user/MyPageHO";
 	}
+	
+	@GetMapping("users/new")
+	public String New() {
+		return "user/New";
+	}
+	
+	@PostMapping("users")
+	public String NewOwner(User u, Model model, HttpSession session) {
+			
+	    System.out.println("===== 등록 요청 =====");
+	    System.out.println(u);
+		
+			String encPwd = bCryptPasswordEncoder.encode(u.getPassword());
+			
+			u.setPassword(
+					bCryptPasswordEncoder.encode(u.getPassword())
+			);
 
-	@PostMapping("update")
+			int result = adminService.NewOwner(u);
+			
+			if(result > 0) {
+			    session.setAttribute("alertMsg", "계정이 등록되었습니다.");
+			    
+			    return "redirect:/admin/dashboard";
+			} else {
+				model.addAttribute("errorMsg", "계정 등록에 실패했습니다");
+				return "common/errorPage";
+				
+			}
+	}
+
+	@PostMapping("mypage")
 	public ModelAndView update(User u, ModelAndView mv, HttpSession session) {
-
+		
+		u.setUserNo(((LoginUser)session.getAttribute("loginUser")).getUserNo());
+		
 		int result = adminService.update(u);
 
 		if (result > 0) {
-
+			
+			System.out.println("1");
+			
 			session.setAttribute("User", u);
 
 			session.setAttribute("alertMsg", "성공적으로 정보가 수정되었습니다.");
 
-			mv.setViewName("redirect:/user/MyPageHO");
+			mv.setViewName("redirect:/admin/dashboard");
 
 		} else {
+			System.out.println("2");
 			mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
+			mv.setViewName("common/mypage");
 		}
 
 		return mv;
@@ -54,14 +91,14 @@ public class AdminController {
 
 			session.setAttribute("alertMsg", "현재 비밀번호와 일치하지 않습니다.");
 
-			return "redirect:/user/MyPageHO";
+			return "redirect:/admin/mypage";
 		}
 
 		if (!newPwd.equals(checkedPwd)) {
 
 			session.setAttribute("alertMsg", "새 비밀번호와 일치하지 않습니다. 비밀번호 확인을 다시 해주십시오.");
 
-			return "redirect:/user/MyPageHO";
+			return "redirect:/admin/mypage";
 
 		}
 
@@ -87,7 +124,7 @@ public class AdminController {
 
 		}
 
-		return "redirect:/user/MyPageHO";
+		return "redirect:/admin/mypage";
 	}
 
 	@GetMapping("homebutton")
@@ -97,13 +134,14 @@ public class AdminController {
 	}
 
 	@GetMapping("dashboard")
-	public String dashboardHo() {
+	public String dashboardHO() {
 		return "user/dashboardHO";
 	}
 
-	@GetMapping("ownerList")
+	@GetMapping("users")
 	public String ownerList() {
 
+		
 		return "user/OwnerList";
 	}
 

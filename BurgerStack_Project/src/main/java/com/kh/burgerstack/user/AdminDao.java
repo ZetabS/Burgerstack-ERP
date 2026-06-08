@@ -1,6 +1,5 @@
 package com.kh.burgerstack.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -9,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminDao {
 
-	@Autowired
-	private UserMapper userMapper;
+	private final UserMapper userMapper;
 	
 	public int update(User u) {
 		return userMapper.update(u);
@@ -19,5 +17,9 @@ public class AdminDao {
 	public int updatePassword(User u) {
 		return userMapper.updatePassword(u);
 	}
+	public int NewOwner(User u) {
+		return userMapper.NewOwner(u);
+	}
+
 
 }

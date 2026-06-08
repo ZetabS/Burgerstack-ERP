@@ -17,6 +17,8 @@ public class LoginUser {
 	private String userId;
 	private String password;
 	private String userName;
+	private String phone;
+	private String email;
 	private String role;
 	
 }

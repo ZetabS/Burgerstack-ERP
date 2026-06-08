@@ -119,30 +119,29 @@
 	
 	<h1>관리자 마이페이지</h1>
 
-	<form id="update" action="/burgerstack/admin/update" method="post">
-		
+	<form id="update" action="/burgerstack/admin/mypage" method="post">		
 		    <table>
 		        <tr>
 		            <th>아이디</th>
-		            <td id="userId"></td>
+		            <td>${ sessionScope.loginUser.userId }</td>
 		        </tr>
 		
 		        <tr>
 		            <th>이름</th>
-		            <td id="userName"></td>
+		            <td>${ sessionScope.loginUser.userName }</td>
 		        </tr>
 		
 		        <tr>
 		            <th>전화번호</th>
 		            <td>
-		                <input type="text" id="phone">
+		                <input type="text" id="phone" name="phone" value="${ sessionScope.loginUser.phone }">
 		            </td>
 		        </tr>
 		
 		        <tr>
 		            <th>이메일</th>
 		            <td>
-		                <input type="text" id="email">
+		                <input type="text" id="email" name="email" value="${ sessionScope.loginUser.email }">
 		            </td>
 		        </tr>
 		    </table>
@@ -167,21 +166,21 @@
 			    <tr>
 			        <th>현재 비밀번호</th>
 			        <td>
-			            <input type="password" id="currentPwd">
+			            <input type="password" id="currentPwd" name="currentPwd">
 			        </td>
 			    </tr>
 			
 			    <tr>
 			        <th>새 비밀번호</th>
 			        <td>
-			            <input type="password" id="newPwd">
+			            <input type="password" id="newPwd" name="newPwd">
 			        </td>
 			    </tr>
 			
 			    <tr>
 			        <th>비밀번호 확인</th>
 			        <td>
-			            <input type="password" id="checkPwd">
+			            <input type="password" id="checkedPwd" name="checkedPwd">
 			        </td>
 			    </tr>
 			</table>

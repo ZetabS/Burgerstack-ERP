@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.burgerstack.user.UserMapper">
    <select id="login" parameterType="String" resultType="LoginUser">
-   	SELECT USER_NO, USER_ID, PASSWORD, ROLE
+   	SELECT USER_NO, USER_ID, PASSWORD, USER_NAME, PHONE, EMAIL, ROLE
 	  FROM USERS
 	 WHERE USER_ID = #{userId}
 	     AND STATUS = 'ACTIVE'
    </select>
    
-   <insert id="insertStoreOwner" parameterType="User">
+   <insert id="NewOwner" parameterType="User">
    		INSERT INTO USERS(USER_NO
                 , USER_ID
                 , PASSWORD
@@ -27,8 +27,7 @@
    
    <update id="update" parameterType="User">
    		 UPDATE USERS	
-   			SET USER_NAME = #{userName}
-                , PHONE = #{phone} 
+   			SET	PHONE = #{phone} 
                 , EMAIL = #{email} 
 		  WHERE USER_NO = #{userNo}	
    </update>

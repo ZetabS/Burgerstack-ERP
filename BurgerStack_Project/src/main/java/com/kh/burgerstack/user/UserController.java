@@ -17,37 +17,14 @@ public class UserController {
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
-	@Autowired
-	private UserService userService;
+
+	//private final UserService userService;
 	
 	@GetMapping("enrollForm")
 	public String storeOwnerEnrollForm() {
 		
 		return "user/userEnrollForm";
-	}
-	
-	@PostMapping("insertStoreOwner")
-	public String insertStoreOwner(User u, Model model, HttpSession session) {
-		
-		String encPwd = bCryptPasswordEncoder.encode(u.getPassword());
-		
-		u.setPassword(
-				bCryptPasswordEncoder.encode(u.getPassword())
-		);
-
-		int result = userService.insertStoreOwner(u);
-		
-		if(result > 0) {
-		    session.setAttribute("alertMsg", "계정이 등록되었습니다.");
-		    
-		    return "redirect:/admin/MyPageHO";
-		} else {
-			model.addAttribute("errorMsg", "회원가입에 실패했습니다");
-			return "common/errorPage";
-			
-		}
-    } 
-	
+	}	
 	
 	
 }
