@@ -35,7 +35,6 @@ public class AdminInventoryController {
                 condition,
                 pagingRequest);
         model.addAttribute("view", inventoryListView);
-        System.out.println(inventoryListView.getPageInfo());
         return "admin/inventories";
     }
 
@@ -54,6 +53,7 @@ public class AdminInventoryController {
             InventoryAdjustRequest inventoryAdjustRequest,
             HttpSession session,
             Model model) {
+        System.out.println("called");
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
         inventoryService.adjust(inventoryId, loginUser, inventoryAdjustRequest);
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");

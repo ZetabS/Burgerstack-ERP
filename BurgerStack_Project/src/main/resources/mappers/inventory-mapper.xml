@@ -95,7 +95,7 @@
     </select>
 
     <update id="updateQuantity">
-        UPDATE
+        UPDATE STORE_INVENTORIES
            SET CURRENT_QUANTITY = #{afterQuantity}
          WHERE STORE_INVENTORY_ID = #{storeInventoryId}
            AND CURRENT_QUANTITY = #{beforeQuantity}

@@ -14,7 +14,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InventoryDetail {
-    private Integer storeInventoryId;
+    private Integer inventoryId;
     private Integer currentQuantity;
     private Integer safetyQuantity;
     private LocalDateTime createdAt;

@@ -46,7 +46,6 @@ public class InventoryService {
 
         ArrayList<InventoryListItem> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
         int totalCount = inventoryDao.count(condition);
-        System.out.println(totalCount);
         return new InventoryListView(list, pagingRequest.toPageInfo(totalCount));
     }
 
@@ -72,6 +71,8 @@ public class InventoryService {
                 && inventory.getStoreId() != loginUser.getStoreId().intValue()) {
             throw new CustomException("재고를 찾을 수 없습니다.");
         }
+        System.out.println(inventory);
+        System.out.println(loginUser);
 
         inventoryDao.updateQuantity(
                 inventoryId,

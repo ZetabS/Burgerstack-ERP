@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.burgerstack.inventory.dao.InventoryTransactionMapper">
     <insert id="insert">
-        <selectKey keyProperty="inventoryTransactionId" order="BEFORE">
-            SELECT SEQ_INV_TX.NEXTVAL FROM DUAL;
+        <selectKey keyProperty="inventoryTransactionId" resultType="int" order="BEFORE">
+            SELECT SEQ_INV_TX.NEXTVAL FROM DUAL
         </selectKey>
-        INSERT INTO INVENTORT_TRANSACTIONS (
+        INSERT INTO INVENTORY_TRANSACTIONS (
               INVENTORY_TRANSACTION_ID
             , TRANSACTION_TYPE
             , REASON
@@ -28,12 +28,12 @@
 
     <select id="findById">
         SELECT *
-          FROM INVENTORT_TRANSACTIONS
+          FROM INVENTORY_TRANSACTIONS
          WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
     </select>
 
     <insert id="insertItems">
-        INSERT INTO INVENTORT_TRANSACTION_ITEMS (
+        INSERT INTO INVENTORY_TRANSACTION_ITEMS (
               INVENTORY_TRANSACTION_ITEM_ID
             , BEFORE_QUANTITY
             , AFTER_QUANTITY
@@ -44,7 +44,7 @@
         (
               SEQ_INV_TX_ITEM.NEXTVAL
             , #{item.beforeQuantity}
-            , #{item.afterQuentity}
+            , #{item.afterQuantity}
             , #{inventoryTransactionId}
             , #{item.storeInventoryId}
         )
@@ -53,7 +53,7 @@
 
     <select id="findItemsByTransactionId">
         SELECT *
-          FROM INVENTORT_TRANSACTION_ITEMS
+          FROM INVENTORY_TRANSACTION_ITEMS
          WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
     </select>
 </mapper>
