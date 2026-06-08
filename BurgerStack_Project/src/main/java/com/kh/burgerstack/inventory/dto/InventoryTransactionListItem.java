@@ -22,5 +22,4 @@ public class InventoryTransactionListItem {
     private String createdByName;
     private String storeName;
     private Integer storeId;
-
 }

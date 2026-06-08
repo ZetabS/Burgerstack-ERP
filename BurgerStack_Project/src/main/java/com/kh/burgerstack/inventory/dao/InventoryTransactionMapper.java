@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionDetail;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailItem;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionListItem;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionSearchCondition;
 import com.kh.burgerstack.inventory.vo.InventoryTransaction;
@@ -36,4 +37,6 @@ public interface InventoryTransactionMapper {
         public InventoryTransactionDetail getInventoryTransactionDetailById(
                         @Param("inventoryTransactionId") int inventoryTransactionId);
 
+        public List<InventoryTransactionDetailItem> findInventoryTransactionDetailItems(
+                        @Param("inventoryTransactionId") int inventoryTransactionId);
 }

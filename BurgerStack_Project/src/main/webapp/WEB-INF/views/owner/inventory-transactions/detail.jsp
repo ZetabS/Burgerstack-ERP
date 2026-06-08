@@ -1,67 +1,128 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<c:url var="backToList" value="/owner/inventory-transactions" />
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8" />
     <jsp:include page="/WEB-INF/views/common/header.jsp" />
-    <title>재고 조정</title>
+    <title>재고 변동 상세</title>
     <style></style>
   </head>
   <body>
     <t:menubarBO>
       <div class="container py-4">
-        <h2 class="mb-4">재고 조정</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="mb-0">재고 변동 상세</h2>
 
-        <form action="/burgerstack/owner/inventories/${detail.inventoryId}" method="post">
-          <div class="card mb-4">
-            <div class="card-header">재고 정보</div>
+          <a href="${backToList}" class="btn btn-secondary">목록</a>
+        </div>
 
-            <div class="card-body">
-              <div class="row mb-3">
-                <div class="col-sm-3 fw-bold">자재명</div>
-                <div class="col-sm-9">${detail.materialName}</div>
+        <div class="card mb-4">
+          <div class="card-header">기본 정보</div>
+
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-sm-3 font-weight-bold">변동 번호</div>
+
+              <div class="col-sm-9">${detail.inventoryTransactionId}</div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-3 font-weight-bold">변동 유형</div>
+
+              <div class="col-sm-9">${detail.transactionType}</div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-3 font-weight-bold">처리자</div>
+
+              <div class="col-sm-9">${detail.createdByName}</div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-3 font-weight-bold">처리 일시</div>
+
+              <div class="col-sm-9">${detail.createdAt}</div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-3 font-weight-bold">사유</div>
+
+              <div class="col-sm-9">
+                <c:out value="${detail.reason}" />
               </div>
+            </div>
 
-              <div class="row mb-3">
-                <div class="col-sm-3 fw-bold">현재 수량</div>
-                <div class="col-sm-9">${detail.currentQuantity}</div>
-              </div>
+            <div class="row">
+              <div class="col-sm-3 font-weight-bold">비고</div>
 
-              <div class="row">
-                <div class="col-sm-3 fw-bold">안전재고 수량</div>
-                <div class="col-sm-9">${detail.safetyQuantity}</div>
+              <div class="col-sm-9">
+                <c:choose>
+                  <c:when test="${empty detail.transactionMemo}">
+                    <span class="text-muted">-</span>
+                  </c:when>
+
+                  <c:otherwise>
+                    <c:out value="${detail.transactionMemo}" />
+                  </c:otherwise>
+                </c:choose>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="card mb-4">
-            <div class="card-header">조정 입력</div>
+        <div class="card mb-4">
+          <div class="card-header">변동 품목</div>
 
-            <div class="card-body">
-              <div class="mb-3">
-                <label for="afterQuantity" class="form-label">조정 후 수량</label>
-                <input type="number" class="form-control" id="afterQuantity" name="afterQuantity" value="${detail.currentQuantity}" min="0" required />
-              </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>자재명</th>
+                    <th class="text-right">변동 전 수량</th>
+                    <th class="text-right">변동 수량</th>
+                    <th class="text-right">변동 후 수량</th>
+                  </tr>
+                </thead>
 
-              <div class="mb-3">
-                <label for="reason" class="form-label">사유</label>
-                <input type="text" class="form-control" id="reason" name="reason" placeholder="예: 실사 오차, 폐기, 입고 누락" required />
-              </div>
+                <tbody>
+                  <c:forEach var="item" items="${detail.list}">
+                    <tr>
+                      <td>${item.materialName}</td>
 
-              <div class="mb-3">
-                <label for="transactionMemo" class="form-label">비고</label>
-                <textarea class="form-control" id="transactionMemo" name="transactionMemo" placeholder="추가 설명이 필요한 경우 입력하세요." rows="5"></textarea>
-              </div>
+                      <td class="text-right">${item.beforeQuantity}</td>
+
+                      <td class="text-right">
+                        <c:choose>
+                          <c:when test="${item.changedQuantity > 0}">
+                            <span class="text-success">+${item.changedQuantity}</span>
+                          </c:when>
+
+                          <c:when test="${item.changedQuantity < 0}">
+                            <span class="text-danger">${item.changedQuantity}</span>
+                          </c:when>
+
+                          <c:otherwise>
+                            <span class="text-muted">0</span>
+                          </c:otherwise>
+                        </c:choose>
+                      </td>
+
+                      <td class="text-right">${item.afterQuantity}</td>
+                    </tr>
+                  </c:forEach>
+                </tbody>
+              </table>
             </div>
           </div>
+        </div>
 
-          <div class="d-flex justify-content-end">
-            <a href="/burgerstack/owner/inventories" class="btn btn-secondary mr-2">목록</a>
-            <button type="submit" class="btn btn-primary">저장</button>
-          </div>
-        </form>
+        <div class="text-right">
+          <a href="${backToList}" class="btn btn-secondary">목록</a>
+        </div>
       </div>
     </t:menubarBO>
   </body>

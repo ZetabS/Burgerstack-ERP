@@ -1,6 +1,7 @@
 package com.kh.burgerstack.inventory.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,6 @@ public class InventoryTransactionDetail {
     private String createdByName;
     private String storeName;
     private Integer storeId;
+
+    private List<InventoryTransactionDetailItem> list;
 }

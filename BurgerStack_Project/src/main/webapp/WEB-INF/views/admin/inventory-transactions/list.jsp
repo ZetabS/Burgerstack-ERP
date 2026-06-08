@@ -16,11 +16,11 @@
       <table class="table2">
         <thead>
           <tr>
+            <th>변동 유형</th>
             <th>점포명</th>
-            <th>유형</th>
-            <th>변동일시</th>
+            <th>처리자</th>
+            <th>처리 일시</th>
             <th>사유</th>
-            <th>작업자</th>
           </tr>
         </thead>
 
@@ -28,11 +28,11 @@
           <c:forEach var="item" items="${view.list}">
             <c:url var="detail" value="/admin/inventory-transactions/${item.inventoryTransactionId}" />
             <tr class="clickable-row" data-href="${detail}">
-              <td>${item.storeName}</td>
               <td>${item.transactionType}</td>
+              <td>${item.storeName}</td>
+              <td>${item.createdByName}</td>
               <td>${item.createdAt}</td>
               <td>${item.reason}</td>
-              <td>${item.createdByName}</td>
             </tr>
           </c:forEach>
         </tbody>

@@ -86,7 +86,7 @@
                                   JOIN USERS U
                                   ON ( T.CREATED_BY = U.USER_NO )
                                   JOIN STORES S
-                                 USING (STORE_ID)
+                                 USING ( STORE_ID )
                         <where>
                             <if test="condition.storeId != null">
                                        STORE_ID = #{condition.storeId}
@@ -109,7 +109,7 @@
           JOIN USERS U
           ON ( T.CREATED_BY = U.USER_NO )
           JOIN STORES S
-         USING (STORE_ID)
+         USING ( STORE_ID )
         <where>
             <if test="condition.storeId != null">
                        STORE_ID = #{condition.storeId}
@@ -122,7 +122,10 @@
 
     <select id="getInventoryTransactionDetailById">
         SELECT INVENTORY_TRANSACTION_ID
-             , T.TRANSACTION_TYPE
+             , CASE WHEN TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
+                    WHEN TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
+                    WHEN TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
+                END AS TRANSACTION_TYPE
              , T.REASON
              , T.TRANSACTION_MEMO
              , T.CREATED_AT
@@ -134,7 +137,24 @@
           JOIN USERS U
           ON ( T.CREATED_BY = U.USER_NO )
           JOIN STORES S
-         USING (STORE_ID)
+         USING ( STORE_ID )
+         WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
+    </select>
+
+    <select id="findInventoryTransactionDetailItems">
+        SELECT INVENTORY_TRANSACTION_ITEM_ID
+             , BEFORE_QUANTITY
+             , AFTER_QUANTITY - BEFORE_QUANTITY AS CHANGED_QUANTITY
+             , AFTER_QUANTITY
+             , MATERIAL_NAME
+             , INVENTORY_TRANSACTION_ID
+             , STORE_INVENTORY_ID
+             , MATERIAL_ID
+          FROM INVENTORY_TRANSACTION_ITEMS
+          JOIN STORE_INVENTORIES
+         USING ( STORE_INVENTORY_ID )
+          JOIN MATERIALS
+         USING ( MATERIAL_ID )
          WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
     </select>
 </mapper>

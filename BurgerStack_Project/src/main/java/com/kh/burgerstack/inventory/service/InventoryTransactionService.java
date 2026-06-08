@@ -63,11 +63,12 @@ public class InventoryTransactionService {
             LoginUser loginUser) {
         InventoryTransactionDetail detail = inventoryTransactionDao
                 .getInventoryTransactionDetailById(inventoryTransactionId);
-
         if (!loginUser.isAdmin() && detail.getStoreId() != null
                 && detail.getStoreId() != loginUser.getStoreId().intValue()) {
             throw new CustomException("재고 변동 이력을 찾을 수 없습니다.");
         }
+        detail.setList(inventoryTransactionDao.findInventoryTransactionDetailItems(inventoryTransactionId));
+
         return detail;
     }
 

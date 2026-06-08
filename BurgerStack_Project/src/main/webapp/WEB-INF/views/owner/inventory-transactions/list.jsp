@@ -16,25 +16,33 @@
       <table class="table2">
         <thead>
           <tr>
-            <th>유형</th>
-            <th>변동일시</th>
+            <th>변동 유형</th>
+            <th>처리자</th>
+            <th>처리 일시</th>
             <th>사유</th>
-            <th>작업자</th>
           </tr>
         </thead>
 
         <tbody>
           <c:forEach var="item" items="${view.list}">
-            <tr>
+            <c:url var="detail" value="/owner/inventory-transactions/${item.inventoryTransactionId}" />
+            <tr class="clickable-row" data-href="${detail}">
               <td>${item.transactionType}</td>
+              <td>${item.createdByName}</td>
               <td>${item.createdAt}</td>
               <td>${item.reason}</td>
-              <td>${item.createdByName}</td>
             </tr>
           </c:forEach>
         </tbody>
       </table>
       <t:pagination pageInfo="${view.pageInfo}" />
     </t:menubarBO>
+    <script>
+      $(() => {
+        $(".clickable-row").click((e) => {
+          location.href = $(e.target).closest(".clickable-row").attr("data-href");
+        });
+      });
+    </script>
   </body>
 </html>

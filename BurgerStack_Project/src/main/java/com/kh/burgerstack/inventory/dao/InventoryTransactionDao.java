@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.CustomException;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionDetail;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailItem;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionListItem;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionSearchCondition;
 import com.kh.burgerstack.inventory.vo.InventoryTransaction;
@@ -60,5 +61,9 @@ public class InventoryTransactionDao {
 
     public InventoryTransactionDetail getInventoryTransactionDetailById(int inventoryTransactionId) {
         return inventoryTransactionMapper.getInventoryTransactionDetailById(inventoryTransactionId);
+    }
+
+    public List<InventoryTransactionDetailItem> findInventoryTransactionDetailItems(int inventoryTransactionId) {
+        return inventoryTransactionMapper.findInventoryTransactionDetailItems(inventoryTransactionId);
     }
 }
