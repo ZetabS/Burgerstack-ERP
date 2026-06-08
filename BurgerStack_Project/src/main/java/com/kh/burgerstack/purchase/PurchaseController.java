@@ -62,6 +62,7 @@ public class PurchaseController {
 		// for(PurchaseDto i : list) {
 		// 	System.out.println(i);
 		// }
+        
 
         // 2. Model에 담기
         mv.addObject("list", list);

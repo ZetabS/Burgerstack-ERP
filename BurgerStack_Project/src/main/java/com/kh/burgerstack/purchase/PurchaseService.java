@@ -46,6 +46,8 @@ public class PurchaseService {
 
         LoginUser user = (LoginUser) session.getAttribute("loginUser");
 
+        System.out.println("user : " + session.getAttribute("loginUser"));
+
         // 1. total 계산
         long total = 0;
 

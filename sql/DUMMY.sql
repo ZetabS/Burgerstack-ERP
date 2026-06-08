@@ -1,254 +1,650 @@
 -- GPT 작성 데이터 무결성 장담못함
 -- 테스트용으로만 사용할 것
 -- 더미데이터 초기화는 TableScript.sql 사용할 것
--- 260602
 
--- =====================================================
--- USERS (기존 2건 외 8건 추가)
--- =====================================================
+-- 260602 - 이창현
+-- 더미데이터 수정
 
-INSERT INTO USERS VALUES (SEQ_USER.NEXTVAL,'owner02','pw','김철수','010-1111-1111','[owner02@burgerstack.com](mailto:owner02@burgerstack.com)','OWNER','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO USERS VALUES (SEQ_USER.NEXTVAL,'owner03','pw','이영희','010-2222-2222','[owner03@burgerstack.com](mailto:owner03@burgerstack.com)','OWNER','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO USERS VALUES (SEQ_USER.NEXTVAL,'owner04','pw','박민수','010-3333-3333','[owner04@burgerstack.com](mailto:owner04@burgerstack.com)','OWNER','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO USERS VALUES (SEQ_USER.NEXTVAL,'owner05','pw','최지훈','010-4444-4444','[owner05@burgerstack.com](mailto:owner05@burgerstack.com)','OWNER','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO USERS VALUES (SEQ_USER.NEXTVAL,'owner06','pw','정수진','010-5555-5555','[owner06@burgerstack.com](mailto:owner06@burgerstack.com)','OWNER','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO USERS VALUES (SEQ_USER.NEXTVAL,'owner07','pw','강민호','010-6666-6666','[owner07@burgerstack.com](mailto:owner07@burgerstack.com)','OWNER','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO USERS VALUES (SEQ_USER.NEXTVAL,'owner08','pw','한지민','010-7777-7777','[owner08@burgerstack.com](mailto:owner08@burgerstack.com)','OWNER','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO USERS VALUES (SEQ_USER.NEXTVAL,'owner09','pw','윤서준','010-8888-8888','[owner09@burgerstack.com](mailto:owner09@burgerstack.com)','OWNER','ACTIVE',1,SYSDATE,NULL,NULL);
+-- 260608 - 이창현
+-- 테이블 스크립트 업데이트에 따른 더미데이터 수정
+-- 테이블스크립트에 더미 데이터 포함되있어 유저, 점포 더미데이터 삭제
 
--- =====================================================
--- STORES (10건)
--- OWNER_USER_ID = 2~10
--- =====================================================
 
-INSERT INTO STORES VALUES (SEQ_STORE.NEXTVAL,'STORE001','강남점','02-1111-1111','서울 강남구',2,'OPEN',1,SYSDATE,NULL,NULL);
-INSERT INTO STORES VALUES (SEQ_STORE.NEXTVAL,'STORE002','잠실점','02-1111-1112','서울 송파구',3,'OPEN',1,SYSDATE,NULL,NULL);
-INSERT INTO STORES VALUES (SEQ_STORE.NEXTVAL,'STORE003','홍대점','02-1111-1113','서울 마포구',4,'OPEN',1,SYSDATE,NULL,NULL);
-INSERT INTO STORES VALUES (SEQ_STORE.NEXTVAL,'STORE004','신촌점','02-1111-1114','서울 서대문구',5,'OPEN',1,SYSDATE,NULL,NULL);
-INSERT INTO STORES VALUES (SEQ_STORE.NEXTVAL,'STORE005','건대점','02-1111-1115','서울 광진구',6,'OPEN',1,SYSDATE,NULL,NULL);
-INSERT INTO STORES VALUES (SEQ_STORE.NEXTVAL,'STORE006','수원점','031-111-1111','경기 수원시',7,'OPEN',1,SYSDATE,NULL,NULL);
-INSERT INTO STORES VALUES (SEQ_STORE.NEXTVAL,'STORE007','분당점','031-111-1112','경기 성남시',8,'OPEN',1,SYSDATE,NULL,NULL);
-INSERT INTO STORES VALUES (SEQ_STORE.NEXTVAL,'STORE008','인천점','032-111-1111','인천 남동구',9,'OPEN',1,SYSDATE,NULL,NULL);
-INSERT INTO STORES VALUES (SEQ_STORE.NEXTVAL,'STORE009','대전점','042-111-1111','대전 서구',10,'OPEN',1,SYSDATE,NULL,NULL);
+--------------------------------------------------------
+-- MATERIALS 60건
+--------------------------------------------------------
+BEGIN
+    FOR I IN 1..60 LOOP
 
--- =====================================================
--- FILES (10건)
--- =====================================================
+        INSERT INTO MATERIALS (
+            MATERIAL_ID,
+            MATERIAL_CODE,
+            MATERIAL_NAME,
+            MATERIAL_TYPE,
+            SUPPLY_PRICE,
+            DETAILS,
+            STATUS,
+            CREATED_AT,
+            UPDATED_AT
+        )
+        VALUES (
+            SEQ_MATERIAL.NEXTVAL,
+            'MAT' || LPAD(I, 3, '0'),
+            '자재' || I,
+            CASE MOD(I,5)
+                WHEN 0 THEN '육류'
+                WHEN 1 THEN '채소'
+                WHEN 2 THEN '소스'
+                WHEN 3 THEN '음료'
+                ELSE '포장재'
+            END,
+            500 + (I * 100),
+            '더미 자재 데이터 ' || I,
+            'ACTIVE',
+            SYSDATE - MOD(I,30),
+            NULL
+        );
 
-INSERT INTO FILES VALUES (SEQ_FILE.NEXTVAL,'bun.jpg','bun_1.jpg','/upload/materials','image/jpeg',12000,NULL,1,SYSDATE);
-INSERT INTO FILES VALUES (SEQ_FILE.NEXTVAL,'patty.jpg','patty_1.jpg','/upload/materials','image/jpeg',15000,NULL,1,SYSDATE);
-INSERT INTO FILES VALUES (SEQ_FILE.NEXTVAL,'cheese.jpg','cheese_1.jpg','/upload/materials','image/jpeg',11000,NULL,1,SYSDATE);
-INSERT INTO FILES VALUES (SEQ_FILE.NEXTVAL,'lettuce.jpg','lettuce_1.jpg','/upload/materials','image/jpeg',9000,NULL,1,SYSDATE);
-INSERT INTO FILES VALUES (SEQ_FILE.NEXTVAL,'tomato.jpg','tomato_1.jpg','/upload/materials','image/jpeg',9500,NULL,1,SYSDATE);
-INSERT INTO FILES VALUES (SEQ_FILE.NEXTVAL,'onion.jpg','onion_1.jpg','/upload/materials','image/jpeg',9200,NULL,1,SYSDATE);
-INSERT INTO FILES VALUES (SEQ_FILE.NEXTVAL,'pickle.jpg','pickle_1.jpg','/upload/materials','image/jpeg',8800,NULL,1,SYSDATE);
-INSERT INTO FILES VALUES (SEQ_FILE.NEXTVAL,'bacon.jpg','bacon_1.jpg','/upload/materials','image/jpeg',10200,NULL,1,SYSDATE);
-INSERT INTO FILES VALUES (SEQ_FILE.NEXTVAL,'egg.jpg','egg_1.jpg','/upload/materials','image/jpeg',10400,NULL,1,SYSDATE);
-INSERT INTO FILES VALUES (SEQ_FILE.NEXTVAL,'sauce.jpg','sauce_1.jpg','/upload/materials','image/jpeg',9700,NULL,1,SYSDATE);
+    END LOOP;
+END;
+/
 
--- =====================================================
--- MATERIALS (10건)
--- =====================================================
+--------------------------------------------------------
+-- MATERIAL_FILES 60건
+--------------------------------------------------------
+BEGIN
 
-INSERT INTO MATERIALS VALUES (SEQ_MATERIAL.NEXTVAL,'MAT001','참깨번','BUN',500,1000,1,'참깨 번','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO MATERIALS VALUES (SEQ_MATERIAL.NEXTVAL,'MAT002','비프패티','PATTY',2000,3500,2,'소고기 패티','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO MATERIALS VALUES (SEQ_MATERIAL.NEXTVAL,'MAT003','체다치즈','CHEESE',300,700,3,'체다 치즈','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO MATERIALS VALUES (SEQ_MATERIAL.NEXTVAL,'MAT004','양상추','VEGETABLE',200,500,4,'양상추','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO MATERIALS VALUES (SEQ_MATERIAL.NEXTVAL,'MAT005','토마토','VEGETABLE',250,600,5,'토마토','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO MATERIALS VALUES (SEQ_MATERIAL.NEXTVAL,'MAT006','양파','VEGETABLE',150,400,6,'양파','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO MATERIALS VALUES (SEQ_MATERIAL.NEXTVAL,'MAT007','피클','VEGETABLE',100,300,7,'피클','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO MATERIALS VALUES (SEQ_MATERIAL.NEXTVAL,'MAT008','베이컨','TOPPING',800,1500,8,'베이컨','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO MATERIALS VALUES (SEQ_MATERIAL.NEXTVAL,'MAT009','계란후라이','TOPPING',500,1000,9,'계란','ACTIVE',1,SYSDATE,NULL,NULL);
-INSERT INTO MATERIALS VALUES (SEQ_MATERIAL.NEXTVAL,'MAT010','마요네즈','SAUCE',100,300,10,'마요네즈','ACTIVE',1,SYSDATE,NULL,NULL);
+    FOR I IN 1..60 LOOP
 
--- =====================================================
--- STORE_INVENTORIES (10건)
--- =====================================================
+        INSERT INTO MATERIAL_FILES (
+            MATERIAL_FILE_ID,
+            ORIGINAL_NAME,
+            STORED_NAME,
+            STORAGE_PATH,
+            CREATED_AT,
+            DELETED_AT,
+            MATERIAL_ID
+        )
+        VALUES (
+            SEQ_MAT_FILE.NEXTVAL,
+            'material_' || I || '.jpg',
+            LOWER(RAWTOHEX(SYS_GUID())) || '.jpg',
+            '/upload/material',
+            SYSDATE,
+            NULL,
+            I
+        );
 
-INSERT INTO STORE_INVENTORIES VALUES (SEQ_STORE_INV.NEXTVAL,1,1,100,20,1,SYSDATE,NULL,NULL);
-INSERT INTO STORE_INVENTORIES VALUES (SEQ_STORE_INV.NEXTVAL,1,2,80,20,1,SYSDATE,NULL,NULL);
-INSERT INTO STORE_INVENTORIES VALUES (SEQ_STORE_INV.NEXTVAL,1,3,120,30,1,SYSDATE,NULL,NULL);
-INSERT INTO STORE_INVENTORIES VALUES (SEQ_STORE_INV.NEXTVAL,1,4,150,30,1,SYSDATE,NULL,NULL);
-INSERT INTO STORE_INVENTORIES VALUES (SEQ_STORE_INV.NEXTVAL,1,5,90,20,1,SYSDATE,NULL,NULL);
-INSERT INTO STORE_INVENTORIES VALUES (SEQ_STORE_INV.NEXTVAL,2,1,100,20,1,SYSDATE,NULL,NULL);
-INSERT INTO STORE_INVENTORIES VALUES (SEQ_STORE_INV.NEXTVAL,2,2,80,20,1,SYSDATE,NULL,NULL);
-INSERT INTO STORE_INVENTORIES VALUES (SEQ_STORE_INV.NEXTVAL,2,3,120,30,1,SYSDATE,NULL,NULL);
-INSERT INTO STORE_INVENTORIES VALUES (SEQ_STORE_INV.NEXTVAL,2,4,150,30,1,SYSDATE,NULL,NULL);
-INSERT INTO STORE_INVENTORIES VALUES (SEQ_STORE_INV.NEXTVAL,2,5,90,20,1,SYSDATE,NULL,NULL);
+    END LOOP;
 
--- =====================================================
--- PURCHASE_REQUESTS (10건)
--- =====================================================
+END;
+/
 
-INSERT INTO PURCHASE_REQUESTS VALUES (SEQ_PUR_REQ.NEXTVAL, 1, 'REQUESTED', 15000, '1번점 발주1', 2, SYSDATE, NULL, NULL);
-INSERT INTO PURCHASE_REQUESTS VALUES (SEQ_PUR_REQ.NEXTVAL, 2, 'APPROVED', 20000, '2번점 발주', 3, SYSDATE, NULL, NULL);
-INSERT INTO PURCHASE_REQUESTS VALUES (SEQ_PUR_REQ.NEXTVAL, 3, 'REQUESTED', 18000, '홍대점 발주', 4, SYSDATE, NULL, NULL);
-INSERT INTO PURCHASE_REQUESTS VALUES (SEQ_PUR_REQ.NEXTVAL, 4, 'REJECTED', 12000, '신촌점 발주', 5, SYSDATE, NULL, NULL);
-INSERT INTO PURCHASE_REQUESTS VALUES (SEQ_PUR_REQ.NEXTVAL, 5, 'APPROVED', 22000, '건대점 발주', 6, SYSDATE, NULL, NULL);
-INSERT INTO PURCHASE_REQUESTS VALUES (SEQ_PUR_REQ.NEXTVAL, 6, 'REQUESTED', 30000, '수원점 발주', 7, SYSDATE, NULL, NULL);
-INSERT INTO PURCHASE_REQUESTS VALUES (SEQ_PUR_REQ.NEXTVAL, 7, 'APPROVED', 27000, '분당점 발주', 8, SYSDATE, NULL, NULL);
-INSERT INTO PURCHASE_REQUESTS VALUES (SEQ_PUR_REQ.NEXTVAL, 8, 'REQUESTED', 25000, '인천점 발주', 9, SYSDATE, NULL, NULL);
-INSERT INTO PURCHASE_REQUESTS VALUES (SEQ_PUR_REQ.NEXTVAL, 9, 'APPROVED', 19000, '대전점 발주', 10, SYSDATE, NULL, NULL);
-INSERT INTO PURCHASE_REQUESTS VALUES (SEQ_PUR_REQ.NEXTVAL, 1, 'REQUESTED', 21000, '강남점 추가발주', 2, SYSDATE, NULL, NULL);
+--------------------------------------------------------
+-- STORE_INVENTORIES 60건
+--
+-- STORE 1 : MATERIAL 1~20
+-- STORE 2 : MATERIAL 21~40
+-- STORE 3 : MATERIAL 41~60
+--
+-- UNIQUE(STORE_ID,MATERIAL_ID) 충돌 없음
+--------------------------------------------------------
+BEGIN
 
--- =====================================================
--- PURCHASE_REQUEST_ITEMS (10건)
--- =====================================================
+    FOR I IN 1..20 LOOP
 
-INSERT INTO PURCHASE_REQUEST_ITEMS VALUES (SEQ_PUR_REQ_ITEM.NEXTVAL, 1, 1, '참깨번', 500, 20, 0, 'REQUESTED', NULL, 10000);
-INSERT INTO PURCHASE_REQUEST_ITEMS VALUES (SEQ_PUR_REQ_ITEM.NEXTVAL, 1, 2, '비프패티', 2000, 3, 0, 'REQUESTED', NULL, 6000);
-INSERT INTO PURCHASE_REQUEST_ITEMS VALUES (SEQ_PUR_REQ_ITEM.NEXTVAL, 2, 3, '체다치즈', 300, 10, 10, 'APPROVED', NULL, 3000);
-INSERT INTO PURCHASE_REQUEST_ITEMS VALUES (SEQ_PUR_REQ_ITEM.NEXTVAL, 2, 4, '양상추', 200, 15, 15, 'APPROVED', NULL, 3000);
-INSERT INTO PURCHASE_REQUEST_ITEMS VALUES (SEQ_PUR_REQ_ITEM.NEXTVAL, 3, 5, '토마토', 250, 10, 0, 'REQUESTED', NULL, 2500);
-INSERT INTO PURCHASE_REQUEST_ITEMS VALUES (SEQ_PUR_REQ_ITEM.NEXTVAL, 3, 6, '양파', 150, 10, 0, 'REQUESTED', NULL, 1500);
-INSERT INTO PURCHASE_REQUEST_ITEMS VALUES (SEQ_PUR_REQ_ITEM.NEXTVAL, 4, 7, '피클', 100, 10, 0, 'REJECTED', '재고 충분', 1000);
-INSERT INTO PURCHASE_REQUEST_ITEMS VALUES (SEQ_PUR_REQ_ITEM.NEXTVAL, 5, 8, '베이컨', 800, 5, 5, 'APPROVED', NULL, 4000);
-INSERT INTO PURCHASE_REQUEST_ITEMS VALUES (SEQ_PUR_REQ_ITEM.NEXTVAL, 6, 9, '계란후라이', 500, 10, 0, 'REQUESTED', NULL, 5000);
-INSERT INTO PURCHASE_REQUEST_ITEMS VALUES (SEQ_PUR_REQ_ITEM.NEXTVAL, 7, 10, '마요네즈', 100, 20, 20, 'APPROVED', NULL, 2000);
+        INSERT INTO STORE_INVENTORIES (
+            STORE_INVENTORY_ID,
+            CURRENT_QUANTITY,
+            SAFETY_QUANTITY,
+            CREATED_AT,
+            UPDATED_AT,
+            STORE_ID,
+            MATERIAL_ID
+        )
+        VALUES (
+            SEQ_STORE_INV.NEXTVAL,
+            100 + I,
+            30,
+            SYSDATE,
+            NULL,
+            1,
+            I
+        );
 
--- =====================================================
--- PURCHASE_REQUEST_HISTORIES (10건)
--- =====================================================
+    END LOOP;
 
-INSERT INTO PURCHASE_REQUEST_HISTORIES VALUES (SEQ_PUR_REQ_HIST.NEXTVAL, 1, NULL, 'REQUESTED', '생성', 2, SYSDATE);
-INSERT INTO PURCHASE_REQUEST_HISTORIES VALUES (SEQ_PUR_REQ_HIST.NEXTVAL, 2, 'REQUESTED', 'APPROVED', '승인', 1, SYSDATE);
-INSERT INTO PURCHASE_REQUEST_HISTORIES VALUES (SEQ_PUR_REQ_HIST.NEXTVAL, 3, NULL, 'REQUESTED', NULL, 4, SYSDATE);
-INSERT INTO PURCHASE_REQUEST_HISTORIES VALUES (SEQ_PUR_REQ_HIST.NEXTVAL, 4, 'REQUESTED', 'REJECTED', '재고 충분', 1, SYSDATE);
-INSERT INTO PURCHASE_REQUEST_HISTORIES VALUES (SEQ_PUR_REQ_HIST.NEXTVAL, 5, 'REQUESTED', 'APPROVED', NULL, 1, SYSDATE);
-INSERT INTO PURCHASE_REQUEST_HISTORIES VALUES (SEQ_PUR_REQ_HIST.NEXTVAL, 6, NULL, 'REQUESTED', NULL, 7, SYSDATE);
-INSERT INTO PURCHASE_REQUEST_HISTORIES VALUES (SEQ_PUR_REQ_HIST.NEXTVAL, 7, 'REQUESTED', 'APPROVED', NULL, 1, SYSDATE);
-INSERT INTO PURCHASE_REQUEST_HISTORIES VALUES (SEQ_PUR_REQ_HIST.NEXTVAL, 8, NULL, 'REQUESTED', NULL, 9, SYSDATE);
-INSERT INTO PURCHASE_REQUEST_HISTORIES VALUES (SEQ_PUR_REQ_HIST.NEXTVAL, 9, 'REQUESTED', 'APPROVED', NULL, 1, SYSDATE);
-INSERT INTO PURCHASE_REQUEST_HISTORIES VALUES (SEQ_PUR_REQ_HIST.NEXTVAL, 10, NULL, 'REQUESTED', NULL, 2, SYSDATE);
+    FOR I IN 21..40 LOOP
 
--- =====================================================
--- RECEIPTS (10건)
--- =====================================================
+        INSERT INTO STORE_INVENTORIES (
+            STORE_INVENTORY_ID,
+            CURRENT_QUANTITY,
+            SAFETY_QUANTITY,
+            CREATED_AT,
+            UPDATED_AT,
+            STORE_ID,
+            MATERIAL_ID
+        )
+        VALUES (
+            SEQ_STORE_INV.NEXTVAL,
+            100 + I,
+            30,
+            SYSDATE,
+            NULL,
+            2,
+            I
+        );
 
-INSERT INTO RECEIPTS VALUES (SEQ_RECEIPT.NEXTVAL, 1, 1, '입고완료', 1, SYSDATE);
-INSERT INTO RECEIPTS VALUES (SEQ_RECEIPT.NEXTVAL, 2, 2, '정상입고', 1, SYSDATE);
-INSERT INTO RECEIPTS VALUES (SEQ_RECEIPT.NEXTVAL, 3, 3, '입고', 1, SYSDATE);
-INSERT INTO RECEIPTS VALUES (SEQ_RECEIPT.NEXTVAL, 4, 4, '부분입고', 1, SYSDATE);
-INSERT INTO RECEIPTS VALUES (SEQ_RECEIPT.NEXTVAL, 5, 5, '입고', 1, SYSDATE);
-INSERT INTO RECEIPTS VALUES (SEQ_RECEIPT.NEXTVAL, 6, 6, '입고', 1, SYSDATE);
-INSERT INTO RECEIPTS VALUES (SEQ_RECEIPT.NEXTVAL, 7, 7, '입고', 1, SYSDATE);
-INSERT INTO RECEIPTS VALUES (SEQ_RECEIPT.NEXTVAL, 8, 8, '입고', 1, SYSDATE);
-INSERT INTO RECEIPTS VALUES (SEQ_RECEIPT.NEXTVAL, 9, 9, '입고', 1, SYSDATE);
-INSERT INTO RECEIPTS VALUES (SEQ_RECEIPT.NEXTVAL, 10, 1, '입고', 1, SYSDATE);
+    END LOOP;
 
--- =====================================================
--- RECEIPT_ITEMS (10건)
--- =====================================================
+    FOR I IN 41..60 LOOP
 
-INSERT INTO RECEIPT_ITEMS VALUES (SEQ_RECEIPT_ITEM.NEXTVAL, 1, 1, 1, 20, 20, 0, '정상');
-INSERT INTO RECEIPT_ITEMS VALUES (SEQ_RECEIPT_ITEM.NEXTVAL, 2, 2, 2, 3, 3, 0, '정상');
-INSERT INTO RECEIPT_ITEMS VALUES (SEQ_RECEIPT_ITEM.NEXTVAL, 3, 3, 3, 10, 10, 0, NULL);
-INSERT INTO RECEIPT_ITEMS VALUES (SEQ_RECEIPT_ITEM.NEXTVAL, 4, 4, 4, 15, 14, 1, '파손');
-INSERT INTO RECEIPT_ITEMS VALUES (SEQ_RECEIPT_ITEM.NEXTVAL, 5, 5, 5, 10, 10, 0, NULL);
-INSERT INTO RECEIPT_ITEMS VALUES (SEQ_RECEIPT_ITEM.NEXTVAL, 6, 6, 6, 10, 10, 0, NULL);
-INSERT INTO RECEIPT_ITEMS VALUES (SEQ_RECEIPT_ITEM.NEXTVAL, 7, 7, 7, 10, 10, 0, NULL);
-INSERT INTO RECEIPT_ITEMS VALUES (SEQ_RECEIPT_ITEM.NEXTVAL, 8, 8, 8, 5, 5, 0, NULL);
-INSERT INTO RECEIPT_ITEMS VALUES (SEQ_RECEIPT_ITEM.NEXTVAL, 9, 9, 9, 10, 10, 0, NULL);
-INSERT INTO RECEIPT_ITEMS VALUES (SEQ_RECEIPT_ITEM.NEXTVAL, 10, 10, 10, 20, 20, 0, NULL);
+        INSERT INTO STORE_INVENTORIES (
+            STORE_INVENTORY_ID,
+            CURRENT_QUANTITY,
+            SAFETY_QUANTITY,
+            CREATED_AT,
+            UPDATED_AT,
+            STORE_ID,
+            MATERIAL_ID
+        )
+        VALUES (
+            SEQ_STORE_INV.NEXTVAL,
+            100 + I,
+            30,
+            SYSDATE,
+            NULL,
+            3,
+            I
+        );
 
--- =====================================================
--- STORE_CLOSINGS (10건)
--- =====================================================
+    END LOOP;
 
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 1, SYSDATE, '정상마감', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 2, SYSDATE, '재고확인', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 3, SYSDATE, '정산', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 4, SYSDATE, '정상', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 5, SYSDATE, '마감', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 6, SYSDATE, '마감', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 7, SYSDATE, '정산', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 8, SYSDATE, '정상', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 9, SYSDATE, '마감', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 1, SYSDATE, '추가마감', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 1, SYSDATE, '정상마감', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 2, SYSDATE, '재고확인', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 3, SYSDATE, '정산', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 4, SYSDATE, '정상', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 5, SYSDATE, '마감', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 6, SYSDATE, '마감', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 7, SYSDATE, '정산', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 8, SYSDATE, '정상', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 9, SYSDATE, '마감', 1, SYSDATE);
-INSERT INTO STORE_CLOSINGS VALUES (SEQ_STORE_CLS.NEXTVAL, 1, SYSDATE, '추가마감', 1, SYSDATE);
+END;
+/
 
--- =====================================================
--- STORE_CLOSING_ITEMS (10건)
--- =====================================================
 
-INSERT INTO STORE_CLOSING_ITEMS VALUES (SEQ_STORE_CLS_ITEM.NEXTVAL, 1, 1, 100, 98, 2, 0, NULL);
-INSERT INTO STORE_CLOSING_ITEMS VALUES (SEQ_STORE_CLS_ITEM.NEXTVAL, 2, 2, 80, 80, 0, 0, NULL);
-INSERT INTO STORE_CLOSING_ITEMS VALUES (SEQ_STORE_CLS_ITEM.NEXTVAL, 3, 3, 120, 119, 1, 0, NULL);
-INSERT INTO STORE_CLOSING_ITEMS VALUES (SEQ_STORE_CLS_ITEM.NEXTVAL, 4, 4, 150, 150, 0, 0, NULL);
-INSERT INTO STORE_CLOSING_ITEMS VALUES (SEQ_STORE_CLS_ITEM.NEXTVAL, 5, 5, 90, 88, 2, 0, NULL);
-INSERT INTO STORE_CLOSING_ITEMS VALUES (SEQ_STORE_CLS_ITEM.NEXTVAL, 6, 6, 100, 100, 0, 0, NULL);
-INSERT INTO STORE_CLOSING_ITEMS VALUES (SEQ_STORE_CLS_ITEM.NEXTVAL, 7, 7, 70, 70, 0, 0, NULL);
-INSERT INTO STORE_CLOSING_ITEMS VALUES (SEQ_STORE_CLS_ITEM.NEXTVAL, 8, 8, 60, 60, 0, 0, NULL);
-INSERT INTO STORE_CLOSING_ITEMS VALUES (SEQ_STORE_CLS_ITEM.NEXTVAL, 9, 9, 50, 49, 1, 0, NULL);
-INSERT INTO STORE_CLOSING_ITEMS VALUES (SEQ_STORE_CLS_ITEM.NEXTVAL, 10, 1, 100, 100, 0, 0, NULL);
 
--- =====================================================
--- INVENTORY_TRANSACTIONS (10건)
--- =====================================================
+-- 입력 중간 점검
+-- COMMIT;
 
-INSERT INTO INVENTORY_TRANSACTIONS VALUES (SEQ_INV_TX.NEXTVAL, 1, 'RECEIPT', 1, '입고 반영', 1, SYSDATE);
-INSERT INTO INVENTORY_TRANSACTIONS VALUES (SEQ_INV_TX.NEXTVAL, 2, 'RECEIPT', 2, '입고', 1, SYSDATE);
-INSERT INTO INVENTORY_TRANSACTIONS VALUES (SEQ_INV_TX.NEXTVAL, 3, 'STORE_CLOSING', 3, '마감 반영', 1, SYSDATE);
-INSERT INTO INVENTORY_TRANSACTIONS VALUES (SEQ_INV_TX.NEXTVAL, 4, 'ADJUSTMENT', 4, '조정', 1, SYSDATE);
-INSERT INTO INVENTORY_TRANSACTIONS VALUES (SEQ_INV_TX.NEXTVAL, 5, 'RECEIPT', 5, '입고', 1, SYSDATE);
-INSERT INTO INVENTORY_TRANSACTIONS VALUES (SEQ_INV_TX.NEXTVAL, 6, 'STORE_CLOSING', 6, '마감', 1, SYSDATE);
-INSERT INTO INVENTORY_TRANSACTIONS VALUES (SEQ_INV_TX.NEXTVAL, 7, 'RECEIPT', 7, '입고', 1, SYSDATE);
-INSERT INTO INVENTORY_TRANSACTIONS VALUES (SEQ_INV_TX.NEXTVAL, 8, 'ADJUSTMENT', 8, '조정', 1, SYSDATE);
-INSERT INTO INVENTORY_TRANSACTIONS VALUES (SEQ_INV_TX.NEXTVAL, 9, 'RECEIPT', 9, '입고', 1, SYSDATE);
-INSERT INTO INVENTORY_TRANSACTIONS VALUES (SEQ_INV_TX.NEXTVAL, 10, 'STORE_CLOSING', 10, '마감', 1, SYSDATE);
+-- SELECT COUNT(*) FROM MATERIALS;
+-- 60
 
--- =====================================================
--- INVENTORY_TRANSACTION_ITEMS (10건)
--- =====================================================
+-- SELECT COUNT(*) FROM MATERIAL_FILES;
+-- 60
 
-INSERT INTO INVENTORY_TRANSACTION_ITEMS VALUES (SEQ_INV_TX_ITEM.NEXTVAL, 1, 1, 100, -20, 80);
-INSERT INTO INVENTORY_TRANSACTION_ITEMS VALUES (SEQ_INV_TX_ITEM.NEXTVAL, 2, 2, 80, -10, 70);
-INSERT INTO INVENTORY_TRANSACTION_ITEMS VALUES (SEQ_INV_TX_ITEM.NEXTVAL, 3, 3, 70, -5, 65);
-INSERT INTO INVENTORY_TRANSACTION_ITEMS VALUES (SEQ_INV_TX_ITEM.NEXTVAL, 4, 4, 150, -10, 140);
-INSERT INTO INVENTORY_TRANSACTION_ITEMS VALUES (SEQ_INV_TX_ITEM.NEXTVAL, 5, 5, 90, -20, 70);
-INSERT INTO INVENTORY_TRANSACTION_ITEMS VALUES (SEQ_INV_TX_ITEM.NEXTVAL, 6, 6, 60, -5, 55);
-INSERT INTO INVENTORY_TRANSACTION_ITEMS VALUES (SEQ_INV_TX_ITEM.NEXTVAL, 7, 7, 80, -10, 70);
-INSERT INTO INVENTORY_TRANSACTION_ITEMS VALUES (SEQ_INV_TX_ITEM.NEXTVAL, 8, 8, 70, -10, 60);
-INSERT INTO INVENTORY_TRANSACTION_ITEMS VALUES (SEQ_INV_TX_ITEM.NEXTVAL, 9, 9, 90, -20, 70);
-INSERT INTO INVENTORY_TRANSACTION_ITEMS VALUES (SEQ_INV_TX_ITEM.NEXTVAL, 10, 10, 100, -30, 70);
+-- SELECT COUNT(*) FROM STORE_INVENTORIES;
+-- 60
 
--- =====================================================
--- NOTICES (10건)
--- =====================================================
+--------------------------------------------------------
+-- PURCHASE_ORDERS 20건
+--------------------------------------------------------
+BEGIN
 
-INSERT INTO NOTICES VALUES (SEQ_NOTICE.NEXTVAL,'공지1','내용1',NULL,1,SYSDATE,NULL,NULL);
-INSERT INTO NOTICES VALUES (SEQ_NOTICE.NEXTVAL,'공지2','내용2',NULL,1,SYSDATE,NULL,NULL);
-INSERT INTO NOTICES VALUES (SEQ_NOTICE.NEXTVAL,'공지3','내용3',NULL,1,SYSDATE,NULL,NULL);
-INSERT INTO NOTICES VALUES (SEQ_NOTICE.NEXTVAL,'공지4','내용4',NULL,1,SYSDATE,NULL,NULL);
-INSERT INTO NOTICES VALUES (SEQ_NOTICE.NEXTVAL,'공지5','내용5',NULL,1,SYSDATE,NULL,NULL);
-INSERT INTO NOTICES VALUES (SEQ_NOTICE.NEXTVAL,'공지6','내용6',NULL,1,SYSDATE,NULL,NULL);
-INSERT INTO NOTICES VALUES (SEQ_NOTICE.NEXTVAL,'공지7','내용7',NULL,1,SYSDATE,NULL,NULL);
-INSERT INTO NOTICES VALUES (SEQ_NOTICE.NEXTVAL,'공지8','내용8',NULL,1,SYSDATE,NULL,NULL);
-INSERT INTO NOTICES VALUES (SEQ_NOTICE.NEXTVAL,'공지9','내용9',NULL,1,SYSDATE,NULL,NULL);
-INSERT INTO NOTICES VALUES (SEQ_NOTICE.NEXTVAL,'공지10','내용10',NULL,1,SYSDATE,NULL,NULL);
+    FOR I IN 1..20 LOOP
 
--- =====================================================
--- INQUIRIES (10건)
--- =====================================================
+        INSERT INTO PURCHASE_ORDERS (
+            PURCHASE_ORDER_ID,
+            TOTAL_AMOUNT,
+            ORDER_MEMO,
+            STATUS,
+            CREATED_AT,
+            UPDATED_AT,
+            STORE_ID
+        )
+        VALUES (
+            SEQ_PUR_REQ.NEXTVAL,
+            100000 + (I * 5000),
+            '더미 발주 ' || I,
+            CASE MOD(I,5)
+                WHEN 0 THEN 'REQUESTED'
+                WHEN 1 THEN 'APPROVED'
+                WHEN 2 THEN 'PARTIALLY_APPROVED'
+                WHEN 3 THEN 'REJECTED'
+                ELSE 'RECEIVED'
+            END,
+            SYSDATE - I,
+            NULL,
+            MOD(I-1,3)+1
+        );
 
-INSERT INTO INQUIRIES VALUES (SEQ_INQ.NEXTVAL,1,'문의1','내용', 'WAITING', NULL, NULL, NULL, NULL, 2, SYSDATE, NULL, NULL);
-INSERT INTO INQUIRIES VALUES (SEQ_INQ.NEXTVAL,2,'문의2','내용', 'WAITING', NULL, NULL, NULL, NULL, 3, SYSDATE, NULL, NULL);
-INSERT INTO INQUIRIES VALUES (SEQ_INQ.NEXTVAL,3,'문의3','내용', 'ANSWERED', '답변', 1, SYSDATE, NULL, 4, SYSDATE, NULL, NULL);
-INSERT INTO INQUIRIES VALUES (SEQ_INQ.NEXTVAL,4,'문의4','내용', 'WAITING', NULL, NULL, NULL, NULL, 5, SYSDATE, NULL, NULL);
-INSERT INTO INQUIRIES VALUES (SEQ_INQ.NEXTVAL,5,'문의5','내용', 'WAITING', NULL, NULL, NULL, NULL, 6, SYSDATE, NULL, NULL);
-INSERT INTO INQUIRIES VALUES (SEQ_INQ.NEXTVAL,6,'문의6','내용', 'ANSWERED', '답변', 1, SYSDATE, NULL, 7, SYSDATE, NULL, NULL);
-INSERT INTO INQUIRIES VALUES (SEQ_INQ.NEXTVAL,7,'문의7','내용', 'WAITING', NULL, NULL, NULL, NULL, 8, SYSDATE, NULL, NULL);
-INSERT INTO INQUIRIES VALUES (SEQ_INQ.NEXTVAL,8,'문의8','내용', 'WAITING', NULL, NULL, NULL, NULL, 9, SYSDATE, NULL, NULL);
-INSERT INTO INQUIRIES VALUES (SEQ_INQ.NEXTVAL,9,'문의9','내용', 'WAITING', NULL, NULL, NULL, NULL, 10, SYSDATE, NULL, NULL);
-INSERT INTO INQUIRIES VALUES (SEQ_INQ.NEXTVAL,10,'문의10','내용', 'WAITING', NULL, NULL, NULL, NULL, 2, SYSDATE, NULL, NULL);
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- PURCHASE_ORDER_ITEMS 40건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO PURCHASE_ORDER_ITEMS (
+            PURCHASE_ORDER_ITEM_ID,
+            REQUEST_QUANTITY,
+            APPROVED_QUANTITY,
+            REJECT_REASON,
+            MATERIAL_NAME_SNAPSHOT,
+            SUPPLY_PRICE_SNAPSHOT,
+            MATERIAL_ID,
+            PURCHASE_ORDER_ID
+        )
+        VALUES (
+            SEQ_PUR_REQ_ITEM.NEXTVAL,
+            50,
+            50,
+            NULL,
+            '자재' || ((I*2)-1),
+            1000,
+            ((I*2)-1),
+            I
+        );
+
+        INSERT INTO PURCHASE_ORDER_ITEMS (
+            PURCHASE_ORDER_ITEM_ID,
+            REQUEST_QUANTITY,
+            APPROVED_QUANTITY,
+            REJECT_REASON,
+            MATERIAL_NAME_SNAPSHOT,
+            SUPPLY_PRICE_SNAPSHOT,
+            MATERIAL_ID,
+            PURCHASE_ORDER_ID
+        )
+        VALUES (
+            SEQ_PUR_REQ_ITEM.NEXTVAL,
+            30,
+            30,
+            NULL,
+            '자재' || (I*2),
+            1200,
+            (I*2),
+            I
+        );
+
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- PURCHASE_ORDER_HISTORIES 20건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO PURCHASE_ORDER_HISTORIES (
+            PURCHASE_ORDER_HISTORY_ID,
+            TO_STATUS,
+            REASON,
+            CREATED_AT,
+            CREATED_BY,
+            PURCHASE_ORDER_ID
+        )
+        VALUES (
+            SEQ_PUR_REQ_HIST.NEXTVAL,
+            'APPROVED',
+            '자동 생성 이력',
+            SYSDATE - I,
+            1,
+            I
+        );
+
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- RECEIPTS 20건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO RECEIPTS (
+            RECEIPT_ID,
+            RECEIPT_MEMO,
+            RECEIVED_AT,
+            PURCHASE_ORDER_ID
+        )
+        VALUES (
+            SEQ_RECEIPT.NEXTVAL,
+            '정상 입고',
+            SYSDATE - I,
+            I
+        );
+
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- RECEIPT_ITEMS 40건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..40 LOOP
+
+        INSERT INTO RECEIPT_ITEMS (
+            RECEIPT_ITEM_ID,
+            RECEIVED_QUANTITY,
+            DEFECT_QUANTITY,
+            RECEIPT_ITEM_MEMO,
+            RECEIPT_ID,
+            PURCHASE_ORDER_ITEM_ID
+        )
+        VALUES (
+            SEQ_RECEIPT_ITEM.NEXTVAL,
+            95,
+            5,
+            '정상 입고 처리',
+            CEIL(I/2),
+            I
+        );
+
+    END LOOP;
+
+END;
+/
+
+
+
+-- 중간점검
+-- COMMIT;
+
+-- SELECT COUNT(*) FROM PURCHASE_ORDERS;
+-- 20
+
+-- SELECT COUNT(*) FROM PURCHASE_ORDER_ITEMS;
+-- 40
+
+-- SELECT COUNT(*) FROM PURCHASE_ORDER_HISTORIES;
+-- 20
+
+-- SELECT COUNT(*) FROM RECEIPTS;
+-- 20
+
+-- SELECT COUNT(*) FROM RECEIPT_ITEMS;
+-- 40
+
+--------------------------------------------------------
+-- STORE_CLOSINGS 20건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO STORE_CLOSINGS (
+            STORE_CLOSING_ID,
+            BUSINESS_DATE,
+            CLOSING_MEMO,
+            CLOSED_AT,
+            STORE_ID
+        )
+        VALUES (
+            SEQ_STORE_CLS.NEXTVAL,
+            DATE '2025-01-01' + I,
+            '일일 마감 ' || I,
+            SYSDATE - I,
+            MOD(I-1,3)+1
+        );
+
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- STORE_CLOSING_ITEMS 20건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO STORE_CLOSING_ITEMS (
+            STORE_CLOSING_ITEM_ID,
+            SYSTEM_QUANTITY,
+            PHYSICAL_QUANTITY,
+            DISPOSAL_QUANTITY,
+            CLOSING_ITEM_MEMO,
+            MATERIAL_NAME_SNAPSHOT,
+            STORE_CLOSING_ID,
+            STORE_INVENTORY_ID
+        )
+        VALUES (
+            SEQ_STORE_CLS_ITEM.NEXTVAL,
+            100,
+            98,
+            2,
+            '마감 처리',
+            '자재' || I,
+            I,
+            I
+        );
+
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- INVENTORY_TRANSACTIONS 20건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO INVENTORY_TRANSACTIONS (
+            INVENTORY_TRANSACTION_ID,
+            TRANSACTION_TYPE,
+            REASON,
+            TRANSACTION_MEMO,
+            CREATED_AT,
+            CREATED_BY,
+            STORE_ID,
+            RECEIPT_ID,
+            STORE_CLOSING_ID
+        )
+        VALUES (
+            SEQ_INV_TX.NEXTVAL,
+            'RECEIPT',
+            '입고 처리',
+            '자동 생성',
+            SYSDATE - I,
+            1,
+            MOD(I-1,3)+1,
+            I,
+            NULL
+        );
+
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- INVENTORY_TRANSACTION_ITEMS 20건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO INVENTORY_TRANSACTION_ITEMS (
+            INVENTORY_TRANSACTION_ITEM_ID,
+            BEFORE_QUANTITY,
+            AFTER_QUANTITY,
+            INVENTORY_TRANSACTION_ID,
+            STORE_INVENTORY_ID
+        )
+        VALUES (
+            SEQ_INV_TX_ITEM.NEXTVAL,
+            100,
+            150,
+            I,
+            I
+        );
+
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- NOTICES 20건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO NOTICES (
+            NOTICE_ID,
+            TITLE,
+            CONTENT,
+            CREATED_AT,
+            DELETED_AT
+        )
+        VALUES (
+            SEQ_NOTICE.NEXTVAL,
+            '공지사항 ' || I,
+            '공지사항 내용 ' || I,
+            SYSDATE - I,
+            NULL
+        );
+
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- NOTICE_FILES 20건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO NOTICE_FILES (
+            NOTICE_FILE_ID,
+            ORIGINAL_NAME,
+            STORED_NAME,
+            STORAGE_PATH,
+            CREATED_AT,
+            DELETED_AT,
+            NOTICE_ID
+        )
+        VALUES (
+            SEQ_NOTICE_FILE.NEXTVAL,
+            'notice_' || I || '.pdf',
+            LOWER(RAWTOHEX(SYS_GUID())) || '.pdf',
+            '/upload/notice',
+            SYSDATE,
+            NULL,
+            I
+        );
+
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- INQUIRIES 20건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO INQUIRIES (
+            INQUIRY_ID,
+            TITLE,
+            CONTENT,
+            ANSWER_CONTENT,
+            CREATED_AT,
+            ANSWERED_AT,
+            DELETED_AT,
+            STORE_ID
+        )
+        VALUES (
+            SEQ_INQ.NEXTVAL,
+            '문의사항 ' || I,
+            '문의 내용 ' || I,
+            '답변 내용 ' || I,
+            SYSDATE - I,
+            SYSDATE - I + 1,
+            NULL,
+            MOD(I-1,3)+1
+        );
+
+    END LOOP;
+
+END;
+/
+
+--------------------------------------------------------
+-- INQUIRY_FILES 20건
+--------------------------------------------------------
+BEGIN
+
+    FOR I IN 1..20 LOOP
+
+        INSERT INTO INQUIRY_FILES (
+            INQUIRY_FILE_ID,
+            ORIGINAL_NAME,
+            STORED_NAME,
+            STORAGE_PATH,
+            ATTACH_TARGET,
+            CREATED_AT,
+            DELETED_AT,
+            INQUIRY_ID
+        )
+        VALUES (
+            SEQ_INQ_FILE.NEXTVAL,
+            'inquiry_' || I || '.jpg',
+            LOWER(RAWTOHEX(SYS_GUID())) || '.jpg',
+            '/upload/inquiry',
+            CASE
+                WHEN MOD(I,2)=0 THEN 'A'
+                ELSE 'Q'
+            END,
+            SYSDATE,
+            NULL,
+            I
+        );
+
+    END LOOP;
+
+END;
+/
+
+
+-- COMMIT
 
 COMMIT;
+
+-- 최종 점검
+SELECT COUNT(*) FROM MATERIALS;
+SELECT COUNT(*) FROM MATERIAL_FILES;
+SELECT COUNT(*) FROM STORE_INVENTORIES;
+
+SELECT COUNT(*) FROM PURCHASE_ORDERS;
+SELECT COUNT(*) FROM PURCHASE_ORDER_ITEMS;
+SELECT COUNT(*) FROM PURCHASE_ORDER_HISTORIES;
+
+SELECT COUNT(*) FROM RECEIPTS;
+SELECT COUNT(*) FROM RECEIPT_ITEMS;
+
+SELECT COUNT(*) FROM STORE_CLOSINGS;
+SELECT COUNT(*) FROM STORE_CLOSING_ITEMS;
+
+SELECT COUNT(*) FROM INVENTORY_TRANSACTIONS;
+SELECT COUNT(*) FROM INVENTORY_TRANSACTION_ITEMS;
+
+SELECT COUNT(*) FROM NOTICES;
+SELECT COUNT(*) FROM NOTICE_FILES;
+
+SELECT COUNT(*) FROM INQUIRIES;
+SELECT COUNT(*) FROM INQUIRY_FILES;

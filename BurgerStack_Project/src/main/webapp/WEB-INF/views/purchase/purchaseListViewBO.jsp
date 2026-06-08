@@ -37,7 +37,7 @@
                         매장명 : ${sessionScope.loginUser.storeId}
                     </td>
                     <td>
-                        매장 담당자 : ${sessionScope.loginUser.loginId}
+                        매장 담당자 : ${sessionScope.loginUser.userId}
                     </td>
                 </tr>
             </table>
@@ -57,7 +57,7 @@
             <tbody> 
                 <c:forEach var="p" items="${list}">
                     <tr>
-                        <td>${p.purchaseRequestId}</td>
+                        <td>${p.purchaseOrderId}</td>
                         <td>
                             <c:choose>
                                 <c:when test="${p.status eq 'REQUESTED'}">
