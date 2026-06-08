@@ -9,9 +9,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.store.StoreListRow;
 
 @Repository
 public class StoreDao {
@@ -72,10 +70,29 @@ public class StoreDao {
 		
 		return 0;
 	}
-}
+
 
 	public Long findStoreIdByOwnerUserNo(Long OwnerUserNo) {
 		return storeMapper.findStoreIdByOwnerUserNo(OwnerUserNo);
+	}
+	
+	public Store selectStoreByOwnerUserNo(SqlSession sqlSession,
+				            			  Long ownerUserNo) {
+				
+		return sqlSession.selectOne(
+				"storeMapper.selectStoreByOwnerUserNo",
+				ownerUserNo
+		);
+	}
+	
+	public List<StoreListRow> selectOwnerStoreList(
+	        SqlSession sqlSession,
+	        String status) {
+
+	    return sqlSession.selectList(
+	            "storeMapper.selectOwnerStoreList",
+	            status
+	    );
 	}
 }
 

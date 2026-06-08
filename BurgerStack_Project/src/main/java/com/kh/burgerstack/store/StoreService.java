@@ -63,4 +63,20 @@ public class StoreService {
 
         return storeDao.deleteStore(sqlSession, storeId);
     }
+    
+    public Store selectStoreByOwnerUserNo(Long ownerUserNo) {
+
+        return storeDao.selectStoreByOwnerUserNo(
+                sqlSession,
+                ownerUserNo
+        );
+    }
+    
+    public List<StoreListRow> selectOwnerStoreList(String status) {
+
+        return storeDao.selectOwnerStoreList(
+                sqlSession,
+                status
+        );
+    }
 }

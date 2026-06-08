@@ -9,24 +9,147 @@
 <head>
 <meta charset="UTF-8">
 <jsp:include page="../common/header.jsp" />
+<style>
+.page-title {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 28px;
+}
+
+.search-area {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.search-area select,
+.search-area input {
+    height: 36px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+}
+
+.search-area button {
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    padding: 0 14px;
+    background: #ff6b00;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.search-area button:hover {
+    background: #e45f00;
+}
+
+.info-box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    font-size: 15px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+.table thead th {
+    background: #f8fafc;
+    color: #374151;
+    font-weight: 700;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 2px solid #d1d5db;
+    padding: 14px 12px;
+}
+
+.table tbody td,
+.table tbody th {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 14px 12px;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background: #fff7ed;
+}
+
+.table a {
+    color: #ff6b00;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.table a:hover {
+    text-decoration: underline;
+}
+
+.total-row th,
+.total-row td {
+    background: #f9fafb;
+    font-weight: 700;
+}
+
+.total-price {
+    color: #ff6b00;
+    font-size: 17px;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    background: #fff7ed;
+}
+
+.status-badge {
+	    display:inline-block;
+	    padding:5px 10px;
+	    border-radius:20px;
+	    background:#dcfce7;
+	    color:#166534;
+	    font-size:13px;
+	    font-weight:600;
+	}
+	
+	.table tbody tr:hover{
+    background:#fff7ed;
+    cursor:pointer;
+}
+
+.table-guide{
+    font-size:13px;
+    color:#888;
+    margin-bottom:15px;
+}
+</style>
 </head>
 <body>
+
     <t:menubarBO>
         <h2>입고 이력</h2>
+        
+        <p class="table-guide">
+	        행을 클릭하면 상세 정보를 확인할 수 있습니다.
+	    </p>
 
         <!-- 검색 -->
         <div class="search-area" align="right">
-            <select name="dateType" id="dateType">
-                <option value="">전체</option>
-                <option value="requestDate">요청일</option>
-                <option value="receivedAt">입고 완료일</option>
-            </select>
-
-            <input type="date" name="startDate">
-            ~
-            <input type="date" name="endDate">
-
-            <input type="text" name="keyword" placeholder="검색어 입력">
+		    <input type="date" name="startDate">
+		    
+		    <input type="date" name="endDate">
+		
+		    <input type="text" name="keyword" placeholder="입고번호, 발주번호 검색">
 
             <button type="button" onclick="alert('검색 기능은 나중에 연결')">
                 <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png"
@@ -42,30 +165,31 @@
                     <th>발주번호</th>
                     <th>입고 메모</th>
                     <th>입고 완료일</th>
-                    <th>상세</th>
                 </tr>
             </thead>
 
             <tbody>
                 <c:forEach var="r" items="${list}">
-                    <tr>
-                        <td>${r.receiptId}</td>
-                        <td>${r.purchaseOrderId}</td>
-                        <td>${r.receiptMemo}</td>
-                        <td>${r.receivedAt}</td>
-                        <td>
-                            <a href="${pageContext.request.contextPath}/owner/receipts/${r.receiptId}">
-                                상세보기
-                            </a>
-                        </td>
-                    </tr>
-                </c:forEach>
-
+			    <tr class="clickable-row"
+			        onclick="location.href='${pageContext.request.contextPath}/owner/receipts/${r.receiptId}'">
+			        <td>${r.receiptId}</td>
+			        <td>${r.purchaseOrderId}</td>
+			        <td>
+						<span class="status-badge">
+						    ${r.receiptMemo}
+						</span>
+					</td>
+			        <td>
+			            ${r.receivedAt.toString().replace('T',' ').substring(0,19)}
+			        </td>
+			    </tr>
+			</c:forEach>
+                   
                 <c:if test="${empty list}">
-                    <tr>
-                        <td colspan="5">입고 이력이 없습니다.</td>
-                    </tr>
-                </c:if>
+			        <tr>
+			            <td colspan="4" align="center">입고 이력이 없습니다.</td>
+			        </tr>
+			    </c:if>
             </tbody>
         </table>
 
