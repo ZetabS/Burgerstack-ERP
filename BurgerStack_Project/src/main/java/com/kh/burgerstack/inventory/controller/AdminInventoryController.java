@@ -38,7 +38,7 @@ public class AdminInventoryController {
 
     @GetMapping("/{inventoryId}/edit")
     public String adjustForm(
-            @PathVariable Long inventoryId,
+            @PathVariable Integer inventoryId,
             Model model) {
         InventoryDetail detail = inventoryService.getInventoryDetailById(inventoryId);
         model.addAttribute("detail", detail);
@@ -46,7 +46,7 @@ public class AdminInventoryController {
     }
 
     @PostMapping("/{inventoryId}")
-    public String adjust(@PathVariable Long inventoryId, Long quentity) {
+    public String adjust(@PathVariable Integer inventoryId, Integer quentity) {
         return "";
     }
 }

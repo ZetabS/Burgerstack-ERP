@@ -25,7 +25,7 @@ public class InventoryService {
             InventorySearchCondition condition,
             PagingRequest pagingRequest,
             LoginUser loginUser) {
-        long storeId = storeDao.findStoreIdByOwnerUserNo(loginUser.getUserNo());
+        int storeId = storeDao.findStoreIdByOwnerUserNo(loginUser.getUserNo()).intValue();
         condition.setStoreId(storeId);
 
         ArrayList<InventoryListItem> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
@@ -42,7 +42,7 @@ public class InventoryService {
         return new InventoryListView(list, pagingRequest.toPageInfo(totalCount));
     }
 
-    public InventoryDetail getInventoryDetailById(long inventoryId) {
+    public InventoryDetail getInventoryDetailById(int inventoryId) {
         return inventoryDao.getInventoryDetailById(inventoryId);
     }
 }

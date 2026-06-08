@@ -41,12 +41,12 @@ public class OwnerInventoryController {
     }
 
     @GetMapping("/{inventoryId}/edit")
-    public String adjustForm(@PathVariable Long inventoryId) {
+    public String adjustForm(@PathVariable Integer inventoryId) {
         return "owner/inventories/edit";
     }
 
     @PostMapping("/{inventoryId}")
-    public String adjust(@PathVariable Long inventoryId) {
+    public String adjust(@PathVariable Integer inventoryId) {
         return "";
     }
 }

@@ -12,8 +12,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InventorySearchCondition {
-    private Long storeId;
-    private Long materialId;
+    private Integer storeId;
+    private Integer materialId;
     private String materialName;
     private String materialType;
     private Boolean belowSafetyStock;

@@ -22,7 +22,7 @@ public class InventoryDao {
         return inventoryMapper.findInventoryListItems(condition, pagingRequest);
     }
 
-    public InventoryDetail getInventoryDetailById(long inventoryId) {
+    public InventoryDetail getInventoryDetailById(int inventoryId) {
         return inventoryMapper.getInventoryDetailById(inventoryId);
     }
 

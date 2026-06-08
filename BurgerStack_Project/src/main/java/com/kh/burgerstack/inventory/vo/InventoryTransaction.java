@@ -14,13 +14,13 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InventoryTransaction {
-    private Long inventoryTransactionId;
+    private Integer inventoryTransactionId;
     private String transactionType;
     private String reason;
     private String transactionMemo;
     private LocalDateTime createdAt;
-    private Long createdBy;
-    private Long storeId;
-    private Long receiptId;
-    private Long storeClosingId;
+    private Integer createdBy;
+    private Integer storeId;
+    private Integer receiptId;
+    private Integer storeClosingId;
 }

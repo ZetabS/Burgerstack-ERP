@@ -14,13 +14,13 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InventoryDetail {
-    private Long storeInventoryId;
-    private Long currentQuantity;
-    private Long safetyQuantity;
+    private Integer storeInventoryId;
+    private Integer currentQuantity;
+    private Integer safetyQuantity;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String storeName;
     private String materialName;
-    private Long storeId;
-    private Long materialId;
+    private Integer storeId;
+    private Integer materialId;
 }

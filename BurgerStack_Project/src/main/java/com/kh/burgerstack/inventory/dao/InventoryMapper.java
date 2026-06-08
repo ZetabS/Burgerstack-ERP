@@ -19,5 +19,5 @@ public interface InventoryMapper {
 
     public int count(@Param("condition") InventorySearchCondition condition);
 
-    public InventoryDetail getInventoryDetailById(@Param("storeInventoryId") long storeInventoryId);
+    public InventoryDetail getInventoryDetailById(@Param("storeInventoryId") int storeInventoryId);
 }
