@@ -9,13 +9,10 @@
     <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
     <mapper namespace="com.kh.burgerstack.store.StoreMapper">
-    <select id="findStoreIdByOwnerUserId" >
-        /* id="findStoreIdByOwnerUserId" */
+    <select id="findStoreIdByOwnerUserNo" >
          SELECT STORE_ID
            FROM STORES
-           JOIN USERS
-            ON  (OWNER_USER_ID = USER_ID)
-          WHERE USER_ID = #{ownerUserId}
+          WHERE OWNER_USER_NO = #{ownerUserNo}
             AND STATUS = 'OPEN'
     </select>
 </mapper>

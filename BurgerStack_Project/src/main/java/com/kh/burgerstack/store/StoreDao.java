@@ -74,3 +74,8 @@ public class StoreDao {
 	}
 }
 
+	public Long findStoreIdByOwnerUserNo(Long OwnerUserNo) {
+		return storeMapper.findStoreIdByOwnerUserNo(OwnerUserNo);
+	}
+}
+

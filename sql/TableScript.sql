@@ -31,7 +31,8 @@
       - 문의사항 파일
    9. 데이터 시딩
       - 관리자 계정
-      - 점주 1 계정
+      - 점주 계정 1, 2, 3
+      - 점포 1, 2, 3
    ========================================================= */
 
 
@@ -807,8 +808,83 @@ INSERT INTO USERS (
          , 'owner01'
          , '$2a$10$lDCgUXLq5qKbDY0NIs/JvuwH6flkRDSL0Hjwjw0Jo/lfDWd0FBSOO' -- pass01
          , '홍길동'
-         , '010-1234-5678'
+         , '010-8635-3654'
          , 'gd.hong@burgerstack.com' );
+
+-- 점포 1
+INSERT INTO STORES (
+    STORE_ID
+    , STORE_CODE
+    , STORE_NAME
+    , PHONE
+    , ADDRESS
+    , OWNER_USER_NO
+) VALUES ( SEQ_STORE.NEXTVAL
+         , 'DUMMY_STORE_01'
+         , '버거스택 강남점'
+         , '010-9620-8465'
+         , '서울특별시 강남구'
+         , 2 );
+
+-- 점주 계정 2
+INSERT INTO USERS (
+    USER_NO
+    , USER_ID
+    , PASSWORD
+    , USER_NAME
+    , PHONE
+    , EMAIL
+) VALUES ( SEQ_USER.NEXTVAL
+         , 'owner02'
+         , '$2a$10$lDCgUXLq5qKbDY0NIs/JvuwH6flkRDSL0Hjwjw0Jo/lfDWd0FBSOO' -- pass01
+         , '박길동'
+         , '010-4659-5678'
+         , 'gdpack@burgerstack.com' );
+
+-- 점포 2
+INSERT INTO STORES (
+    STORE_ID
+    , STORE_CODE
+    , STORE_NAME
+    , PHONE
+    , ADDRESS
+    , OWNER_USER_NO
+) VALUES ( SEQ_STORE.NEXTVAL
+         , 'DUMMY_STORE_02'
+         , '버거스택 동대문점'
+         , '010-7635-2854'
+         , '서울특별시 동대문구'
+         , 3 );
+
+-- 점주 계정 3
+INSERT INTO USERS (
+    USER_NO
+    , USER_ID
+    , PASSWORD
+    , USER_NAME
+    , PHONE
+    , EMAIL
+) VALUES ( SEQ_USER.NEXTVAL
+         , 'owner03'
+         , '$2a$10$lDCgUXLq5qKbDY0NIs/JvuwH6flkRDSL0Hjwjw0Jo/lfDWd0FBSOO' -- pass01
+         , '송길동'
+         , '010-3580-3965'
+         , 'song_gd@burgerstack.com' );
+
+-- 점포 3
+INSERT INTO STORES (
+    STORE_ID
+    , STORE_CODE
+    , STORE_NAME
+    , PHONE
+    , ADDRESS
+    , OWNER_USER_NO
+) VALUES ( SEQ_STORE.NEXTVAL
+         , 'DUMMY_STORE_03'
+         , '버거스택 종로점'
+         , '010-2367-6457'
+         , '서울특별시 종로구'
+         , 4 );
 
 
 -- 커밋

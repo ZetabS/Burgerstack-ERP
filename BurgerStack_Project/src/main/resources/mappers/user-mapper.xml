@@ -2,10 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.burgerstack.user.UserMapper">
    <select id="login" parameterType="String" resultType="LoginUser">
-   	SELECT USER_NO, USER_ID, PASSWORD, ROLE
-	  FROM USERS
-	 WHERE USER_ID = #{userId}
-	     AND STATUS = 'ACTIVE'
+    SELECT U.USER_NO,
+           U.USER_ID,
+           U.PASSWORD,
+           U.USER_NAME,
+           U.ROLE,
+           S.STORE_ID,
+           S.STORE_NAME
+    FROM USERS U
+    LEFT JOIN STORES S
+           ON S.OWNER_USER_NO = U.USER_NO
+    WHERE U.USER_ID = #{userId}
+	  AND U.STATUS = 'ACTIVE'
    </select>
    
    <insert id="insertStoreOwner" parameterType="User">

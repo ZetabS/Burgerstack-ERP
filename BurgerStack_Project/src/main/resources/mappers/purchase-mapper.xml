@@ -1,30 +1,130 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.kh.burgerstack.purchase.PurchaseMapper">
 
-	<!-- <resultMap id="purchaseReqeustResultSet" type="purchaseReqeust">
+<!-- 자재 조회 -->
+<select id="searchMaterialsList"
+        resultType="com.kh.burgerstack.purchase.dto.MaterialInventoryDto">
 
-		<id column="MATERIAL_NAME" property="materialName" />
-		<result column="COST_PRICE" property="costPrice" />
-		<result column="CURRENT_QUANTITY" property="currentQuantity" />
-		<result column="STATUS" property="status" />
-		
-	</resultMap> -->
+    SELECT
+        M.MATERIAL_ID        AS materialId,
+        M.MATERIAL_NAME      AS materialName,
+        M.SUPPLY_PRICE       AS costPrice,
 
-    <select id="searchMaterialsList"
-            resultType="com.kh.burgerstack.purchase.dto.MaterialInventoryDto">
+        NVL(I.CURRENT_QUANTITY,0) AS currentQuantity,
 
+        (M.SUPPLY_PRICE * NVL(I.CURRENT_QUANTITY,0)) AS buyPrice,
+
+        M.STATUS AS status
+
+    FROM MATERIALS M
+
+    LEFT JOIN STORE_INVENTORIES I
+        ON M.MATERIAL_ID = I.MATERIAL_ID
+        AND I.STORE_ID = #{storeId}
+
+    ORDER BY M.MATERIAL_NAME
+
+</select>
+
+
+<!-- 발주 목록 -->
+<select id="searchPurchaseList"
+        resultType="com.kh.burgerstack.purchase.dto.PurchaseDto">
+
+    SELECT
+        PO.PURCHASE_ORDER_ID AS purchaseOrderId,
+        PO.STORE_ID          AS storeId,
+        PO.STATUS            AS status,
+        PO.TOTAL_AMOUNT      AS totalAmount,
+        PO.ORDER_MEMO        AS orderMemo,
+        TO_CHAR(PO.CREATED_AT,'YYYY.MM.DD') AS createdAt,
+
+        (
             SELECT
-                M.MATERIAL_NAME AS materialName,
-                M.COST_PRICE AS costPrice,
-                I.CURRENT_QUANTITY AS currentQuantity,
-                (M.COST_PRICE * I.CURRENT_QUANTITY) AS buyPrice,
-                M.STATUS AS status
-            FROM MATERIALS M
-            JOIN STORE_INVENTORIES I
-                ON M.MATERIAL_ID = I.MATERIAL_ID
-            WHERE I.STORE_ID = 1
+                MIN(POI.MATERIAL_NAME_SNAPSHOT)
+                || ' 외 '
+                || (COUNT(*) - 1)
+                || '건'
+            FROM PURCHASE_ORDER_ITEMS POI
+            WHERE POI.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+        ) AS itemSummary
 
-    </select>
+    FROM PURCHASE_ORDERS PO
+
+    ORDER BY PO.PURCHASE_ORDER_ID DESC
+
+</select>
+
+
+<!-- 발주 MASTER 등록 -->
+<insert id="insertPurchaseOrder">
+
+    <selectKey
+            keyProperty="purchaseOrderId"
+            resultType="long"
+            order="BEFORE">
+
+        SELECT SEQ_PUR_REQ.NEXTVAL
+        FROM DUAL
+
+    </selectKey>
+
+    INSERT INTO PURCHASE_ORDERS (
+
+        PURCHASE_ORDER_ID,
+        TOTAL_AMOUNT,
+        ORDER_MEMO,
+        STATUS,
+        STORE_ID,
+        CREATED_AT
+
+    )
+    VALUES (
+
+        #{purchaseOrderId},
+        #{totalAmount},
+        #{orderMemo},
+        'REQUESTED',
+        #{storeId},
+        SYSDATE
+
+    )
+
+</insert>
+
+
+<!-- 발주 DETAIL 등록 -->
+<insert id="insertPurchaseOrderItem">
+
+    INSERT INTO PURCHASE_ORDER_ITEMS (
+
+        PURCHASE_ORDER_ITEM_ID,
+        REQUEST_QUANTITY,
+        APPROVED_QUANTITY,
+        MATERIAL_NAME_SNAPSHOT,
+        SUPPLY_PRICE_SNAPSHOT,
+        MATERIAL_ID,
+        PURCHASE_ORDER_ID
+
+    )
+    VALUES (
+
+        SEQ_PUR_REQ_ITEM.NEXTVAL,
+        #{requestQuantity},
+        0,
+        #{materialNameSnapshot},
+        #{unitPriceSnapshot},
+        #{materialId},
+        #{purchaseOrderId}
+
+    )
+
+</insert>
 
 </mapper>
+

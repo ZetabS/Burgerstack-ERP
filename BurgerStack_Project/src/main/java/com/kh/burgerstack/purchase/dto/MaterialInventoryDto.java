@@ -15,6 +15,8 @@ import lombok.ToString;
 @ToString
 public class MaterialInventoryDto {
 
+    private Long materialId;
+
     private String materialName;
 
     private BigDecimal costPrice;
