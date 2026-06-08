@@ -17,4 +17,14 @@ public class InventoryTransactionItem {
     private Integer afterQuantity;
     private Integer inventoryTransactionId;
     private Integer storeInventoryId;
+
+    public InventoryTransactionItem(
+            Integer beforeQuantity,
+            Integer afterQuantity,
+            Integer storeInventoryId) {
+        this.beforeQuantity = beforeQuantity;
+        this.afterQuantity = afterQuantity;
+        this.storeInventoryId = storeInventoryId;
+    }
+
 }

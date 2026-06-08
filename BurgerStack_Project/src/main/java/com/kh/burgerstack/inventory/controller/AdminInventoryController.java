@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.inventory.dto.InventoryAdjustRequest;
 import com.kh.burgerstack.inventory.dto.InventoryDetail;
 import com.kh.burgerstack.inventory.dto.InventoryListSort;
 import com.kh.burgerstack.inventory.dto.InventoryListView;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
 import com.kh.burgerstack.inventory.service.InventoryService;
+import com.kh.burgerstack.user.LoginUser;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -46,7 +49,14 @@ public class AdminInventoryController {
     }
 
     @PostMapping("/{inventoryId}")
-    public String adjust(@PathVariable Integer inventoryId, Integer quentity) {
-        return "";
+    public String adjust(
+            @PathVariable Integer inventoryId,
+            InventoryAdjustRequest inventoryAdjustRequest,
+            HttpSession session,
+            Model model) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        inventoryService.adjust(inventoryId, loginUser, inventoryAdjustRequest);
+        model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
+        return "redirect:/admin/inventories/" + inventoryId + "/edit";
     }
 }
