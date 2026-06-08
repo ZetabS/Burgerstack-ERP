@@ -2,22 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ReceiptMapper">
 
-	<!-- 입고예정목록 총 갯수를 구하는 쿼리문 -->
-	<select id="getHistoryTotalCount" resultType="_int">
-		SELECT COUNT(*)
-          FROM PURCHASE_REQUESTS
+	<!-- 입고 예정 목록 총 갯수 -->
+	<select id="getPlanTotalCount" resultType="_int">
+	    SELECT COUNT(*)
+	    FROM PURCHASE_ORDERS
+	    WHERE STATUS = 'APPROVED'
+	</select>
         <!-- 
         WHERE STATUS = 'REQUESTED'
         AND STORE_ID = #{storeId} 
         -->
-	</select>
+
 
     <!-- 입고 이력 목록 총 갯수를 구하는 쿼리문 -->
-    <select id="getPlanTotalCount" resultType="_int">
-        SELECT COUNT(*)
-          FROM RECEIPTS
-         <!-- WHERE STORE_ID = #{storeId} -->
-    </select>
+	<select id="getHistoryTotalCount" resultType="_int">
+	    SELECT COUNT(*)
+	    FROM RECEIPTS
+	</select>
 
     <!-- 입고 예정 목록 리스트 조회 -->
     <select id="selectReceiptPlanList"
@@ -36,6 +37,41 @@
     ORDER BY CREATED_AT DESC
 
 </select>
+
+	<!-- 입고 이력 목록 조회 -->
+	<select id="selectReceiptList"
+            resultType="com.kh.burgerstack.receipt.Receipt">
+
+        SELECT
+            RECEIPT_ID AS receiptId,
+            RECEIPT_MEMO AS receiptMemo,
+            RECEIVED_AT AS receivedAt,
+            PURCHASE_ORDER_ID AS purchaseOrderId
+        FROM RECEIPTS
+        ORDER BY RECEIPT_ID DESC
+
+    </select>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 </mapper>
 

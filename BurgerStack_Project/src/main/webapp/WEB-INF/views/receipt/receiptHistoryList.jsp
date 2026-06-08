@@ -2,6 +2,8 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,85 +16,61 @@
 
         <!-- 검색 -->
         <div class="search-area" align="right">
-            <select name="status" id="purchaseStatus">
-                <option>전체</option>
-                <option>요청일</option>
-                <option>입고 완료일</option>
+            <select name="dateType" id="dateType">
+                <option value="">전체</option>
+                <option value="requestDate">요청일</option>
+                <option value="receivedAt">입고 완료일</option>
             </select>
-            <input type="date">
+
+            <input type="date" name="startDate">
             ~
-            <input type="date">
-            <input type="text" placeholder="검색어 입력">
-            <button type="button" onclick="alert('클릭!')">
-                <img src="..\..\resources\images\BS_logo2.png" style="width: 16px;"/>
+            <input type="date" name="endDate">
+
+            <input type="text" name="keyword" placeholder="검색어 입력">
+
+            <button type="button" onclick="alert('검색 기능은 나중에 연결')">
+                <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png"
+                     style="width: 16px;"/>
                 검색
-            </button>                
+            </button>
         </div>
-	
-        <div class="receipt-info">
-            <table>
-                <tr>
-                    <td>
-                        매장명 : ${requestScope.storeId}
-                    </td>
-                    <td>
-                        매장 담당자 : ${requestScope.receivedBy}
-                    </td>
-                </tr>
-            </table>
-            
-        </div>
+
         <table class="table">
             <thead>
                 <tr>
                     <th>입고번호</th>
-                    <th>품목요약</th>
-                    <th>총액</th>
-                    <th>요청일</th>
+                    <th>발주번호</th>
+                    <th>입고 메모</th>
                     <th>입고 완료일</th>
-                    <th>승인 담당자</th>
+                    <th>상세</th>
                 </tr>
             </thead>
-            
-            <tbody>   
-                <tr>
-                    <td>${requestScope.receipts.receiptId}</td>
-                    <td>토마토 외 5건</td>
-                    <td>150,000</td>
-                    <td>${requestScope.receipts.receivedAT}</td>
-                    <td>${requestScope.purchaseRequests.updatedAT}</td>
-                    <td>${requestScope.receipts.receivedBy}</td>
-                </tr>                
-                <tr>
-                    <td>1113</td>
-                    <td>토마토 외 2건</td>
-                    <td>150,000</td>
-                    <td>2026.02.25</td>
-                    <td>2026.02.25</td>
-                    <td>점장</td>
-                </tr>
-                
-                <tr>
-                    <td>1114</td>
-                    <td>토마토 외 5건</td>
-                    <td>150,000</td>
-                    <td>2026.02.25</td>
-                    <td>2026.02.27</td>
-                    <td>점장</td>
-                </tr>          
+
+            <tbody>
+                <c:forEach var="r" items="${list}">
+                    <tr>
+                        <td>${r.receiptId}</td>
+                        <td>${r.purchaseOrderId}</td>
+                        <td>${r.receiptMemo}</td>
+                        <td>${r.receivedAt}</td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/owner/receipts/${r.receiptId}">
+                                상세보기
+                            </a>
+                        </td>
+                    </tr>
+                </c:forEach>
+
+                <c:if test="${empty list}">
+                    <tr>
+                        <td colspan="5">입고 이력이 없습니다.</td>
+                    </tr>
+                </c:if>
             </tbody>
-        
-        
         </table>
 
         <ui:pagination pageInfo="${pageInfo}"></ui:pagination>
 
-	</t:menubarBO>
-
-    <script>
-
-        
-    </script>
-
+    </t:menubarBO>
 </body>
 </html>

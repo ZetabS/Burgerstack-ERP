@@ -67,5 +67,10 @@ public class StoreDao {
     public Long findStoreIdByOwnerUserId(Long OwnerUserId) {
         return storeMapper.findStoreIdByOwnerUserId(OwnerUserId);
     }
+
+	public long findStoreIdByOwnerUserId(String userId) {
+		
+		return 0;
+	}
 }
 

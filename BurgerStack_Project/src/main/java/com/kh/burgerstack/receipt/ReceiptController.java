@@ -1,9 +1,12 @@
 package com.kh.burgerstack.receipt;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -16,91 +19,74 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("owner")
 public class ReceiptController {
 
-	@Autowired
-	private ReceiptService receiptService;
+    @Autowired
+    private ReceiptService receiptService;
 
-	@GetMapping("purchases/{purchaseId}/receipt")
-	public ModelAndView checkForm(ModelAndView mv) {
+    // 입고 검수 등록 화면
+    @GetMapping("purchases/{purchaseId}/receipt")
+    public ModelAndView checkForm(@PathVariable Long purchaseId,
+                                  ModelAndView mv) {
 
-		// 우선 응답페이지를 만들어서 띄워보기
-		mv.setViewName("receipt/receiptCheckForm");
-		// > /WEB-INF/views/receipt/receiptForm.jsp
+        mv.addObject("purchaseId", purchaseId);
+        mv.setViewName("receipt/receiptCheckForm");
 
-		return mv;
-	}
+        return mv;
+    }
 
-	@GetMapping("receipts")
-	public String history(PagingRequest pagingRequest, HttpServletRequest request, Model model) {
-		PageInfo pageInfo = receiptService.getHistoryPageInfo(pagingRequest);
+    // 입고 이력 목록 조회
+    @GetMapping("receipts")
+    public String history(PagingRequest pagingRequest,
+                          HttpServletRequest request,
+                          Model model) {
 
-		if (pageInfo.isCurrentPageOutOfRange()) {
-			return "redirect:receipt/receiptPlanList"
-					+ pageInfo.getLastAvailablePageQueryString(request.getQueryString());
-		}
+        PageInfo pageInfo = receiptService.getHistoryPageInfo(pagingRequest);
 
-		model.addAttribute("pageInfo", pageInfo);
+        if (pageInfo.isCurrentPageOutOfRange()) {
+            return "redirect:/owner/receipts"
+                    + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
+        }
 
-		// 우선 응답페이지를 만들어서 띄워보기
-		return "receipt/receiptHistoryList";
-		// > /WEB-INF/views/receipt/receiptHistoryList.jsp
-	}
+        model.addAttribute("pageInfo", pageInfo);
 
-	@GetMapping("receipts/{receiptId}")
-	public ModelAndView historyDetail(ModelAndView mv) {
+        List<Receipt> list = receiptService.selectReceiptList();
+        model.addAttribute("list", list);
 
-		// 우선 응답페이지를 만들어서 띄워보기
-		mv.setViewName("receipt/receiptHistoryDetail");
-		// > /WEB-INF/views/receipt/receiptHistoryDetail.jsp
+        return "receipt/receiptHistoryList";
+    }
 
-		return mv;
-	}
+    // 입고 이력 상세 조회
+    @GetMapping("receipts/{receiptId}")
+    public ModelAndView historyDetail(@PathVariable Long receiptId,
+                                      ModelAndView mv) {
 
-		@GetMapping(value = "purchases", params = "status=APPROVED")
-		public String planned(PagingRequest pagingRequest,
-		                      HttpServletRequest request,
-		                      Model model) {
-	
-		    PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest);
-	
-		    if (pageInfo.isCurrentPageOutOfRange()) {
-		        return "redirect:/owner/purchases?status=APPROVED";
-		    }
-	
-		    model.addAttribute("pageInfo", pageInfo);
-		    
-		    // 입고 예정 발주 목록 조회
-		    model.addAttribute("list",
-		            receiptService.selectReceiptPlanList(pagingRequest));
-	
-		    return "receipt/receiptPlanList";
-		}
+        mv.addObject("receiptId", receiptId);
+        mv.setViewName("receipt/receiptHistoryDetail");
 
-	 	// // > HashMap 이용해보기
-	 	// HashMap<String, String> map = new HashMap<> ();
-	 	// map.put("condition", condition);
-	 	// map.put("keyword", keyword);
+        return mv;
+    }
 
-	// 	// int searchCount = boardService.selectSearchCount(map);
+    // 입고 예정 목록 조회
+    @GetMapping(value = "purchases", params = "status=APPROVED")
+    public String planned(PagingRequest pagingRequest,
+                          HttpServletRequest request,
+                          Model model) {
 
-	// 	// // 위의 searchCount, currentPage, pageLimit, boardLimit 를 가지고
-	// 	// // maxPage, startPage, endPage 를 계산해서 구해야함!
-	// 	// // > 그리고 이걸 모두 Page info
-	// 	// PageInfo pi = Pagination.getPageInfo(searchCount, currentPage, pageLimit,
-	// 	// boardLimit);
+        PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest);
 
-	// 	// // 위의 HashMap 과 PageInfo 둘 다 넘기면서 검색용 쿼리문을 실행해서 결과를 받아야함!
-	// 	// ArrayList<Receipt> list = receiptService.searchReceiptPlanList();
-	// 	// System.out.println(list);
-	// 	// for(Receipt r : list) {
-	// 	// System.out.println(r);
-	// 	// }
+        if (pageInfo.isCurrentPageOutOfRange()) {
+            return "redirect:/owner/purchases?status=APPROVED";
+        }
 
-	// 	// 우선 응답페이지를 만들어서 띄워보기
-	// 	return "receipt/receiptPlanList";
-	// 	// mv.setViewName("receipt/receiptPlanList");
-	// 	// > /WEB-INF/views/receipt/receiptPlanList.jsp
+        model.addAttribute("pageInfo", pageInfo);
 
-	// 	// return mv;
-	// }
+        model.addAttribute("list",
+                receiptService.selectReceiptPlanList(pagingRequest));
 
+        return "receipt/receiptPlanList";
+    }
+    
+    
+    
+    
+    
 }

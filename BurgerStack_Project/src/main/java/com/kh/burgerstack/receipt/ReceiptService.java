@@ -28,12 +28,24 @@ public class ReceiptService {
         return pagingRequest.toPageInfo(receiptDao.getPlanTotalCount(sqlSession));
     }
 
-    public ArrayList<Receipt> searchReceiptPlanList() {
-
-        return receiptDao.searchReceiptPlanList(sqlSession);
-    }
+    
     
     public List<PurchaseOrder> selectReceiptPlanList(PagingRequest pagingRequest) {
         return receiptDao.selectReceiptPlanList(sqlSession, pagingRequest);
     }
+    
+    public List<Receipt> selectReceiptList() {
+        return receiptDao.selectReceiptList();
+    }
+    
+    
+    
+    
 }
+
+
+
+
+
+
+
