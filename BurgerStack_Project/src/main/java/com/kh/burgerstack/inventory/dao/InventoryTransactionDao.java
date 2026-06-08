@@ -4,9 +4,14 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.CustomException;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionDetail;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionListItem;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionSearchCondition;
 import com.kh.burgerstack.inventory.vo.InventoryTransaction;
 import com.kh.burgerstack.inventory.vo.InventoryTransactionItem;
+import com.kh.burgerstack.user.LoginUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,5 +45,20 @@ public class InventoryTransactionDao {
             throw new CustomException("재고 변동 이력을 추가할 수 없습니다.");
         }
         return inventoryTransactionMapper.findItemsByTransactionId(inventoryTransactionId);
+    }
+
+    public List<InventoryTransactionListItem> findInventoryTransactionListItems(
+            InventoryTransactionSearchCondition condition,
+            PagingRequest pagingRequest,
+            LoginUser loginUser) {
+        return inventoryTransactionMapper.findInventoryTransactionListItems(condition, pagingRequest);
+    }
+
+    public int count(InventoryTransactionSearchCondition condition) {
+        return inventoryTransactionMapper.count(condition);
+    }
+
+    public InventoryTransactionDetail getInventoryTransactionDetailById(int inventoryTransactionId) {
+        return inventoryTransactionMapper.getInventoryTransactionDetailById(inventoryTransactionId);
     }
 }

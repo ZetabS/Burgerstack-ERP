@@ -56,4 +56,85 @@
           FROM INVENTORY_TRANSACTION_ITEMS
          WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
     </select>
+
+    <select id="findInventoryTransactionListItems">
+        SELECT INVENTORY_TRANSACTION_ID
+             , CASE WHEN TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
+                    WHEN TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
+                    WHEN TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
+                END AS TRANSACTION_TYPE
+             , REASON
+             , CREATED_AT
+             , CREATED_BY
+             , CREATED_BY_NAME
+             , STORE_NAME
+             , STORE_ID
+          FROM (
+                SELECT *
+                  FROM (
+                        SELECT ROWNUM AS rn, temp.*
+                          FROM (
+                                SELECT INVENTORY_TRANSACTION_ID
+                                     , T.TRANSACTION_TYPE
+                                     , T.REASON
+                                     , T.CREATED_AT
+                                     , T.CREATED_BY
+                                     , U.USER_NAME AS CREATED_BY_NAME
+                                     , S.STORE_NAME
+                                     , STORE_ID
+                                  FROM INVENTORY_TRANSACTIONS T
+                                  JOIN USERS U
+                                  ON ( T.CREATED_BY = U.USER_NO )
+                                  JOIN STORES S
+                                 USING (STORE_ID)
+                        <where>
+                            <if test="condition.storeId != null">
+                                       STORE_ID = #{condition.storeId}
+                            </if>
+                            <if test="condition.transactionType != null and condition.transactionType != ''">
+                                   AND TRANSACTION_TYPE = #{condition.transactionType}
+                            </if>
+                        </where>
+                                 ORDER BY T.CREATED_AT DESC, T.INVENTORY_TRANSACTION_ID
+                                ) temp
+                         WHERE ROWNUM  &lt;= #{paging.endRow}
+                        )
+                 WHERE rn &gt;= #{paging.startRow}
+                )
+    </select>
+
+    <select id="count">
+        SELECT COUNT(*)
+          FROM INVENTORY_TRANSACTIONS T
+          JOIN USERS U
+          ON ( T.CREATED_BY = U.USER_NO )
+          JOIN STORES S
+         USING (STORE_ID)
+        <where>
+            <if test="condition.storeId != null">
+                       STORE_ID = #{condition.storeId}
+            </if>
+            <if test="condition.transactionType != null and condition.transactionType != ''">
+                   AND TRANSACTION_TYPE = #{condition.transactionType}
+            </if>
+        </where>
+    </select>
+
+    <select id="getInventoryTransactionDetailById">
+        SELECT INVENTORY_TRANSACTION_ID
+             , T.TRANSACTION_TYPE
+             , T.REASON
+             , T.TRANSACTION_MEMO
+             , T.CREATED_AT
+             , T.CREATED_BY
+             , U.USER_NAME AS CREATED_BY_NAME
+             , S.STORE_NAME
+             , STORE_ID
+          FROM INVENTORY_TRANSACTIONS T
+          JOIN USERS U
+          ON ( T.CREATED_BY = U.USER_NO )
+          JOIN STORES S
+         USING (STORE_ID)
+         WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
+    </select>
 </mapper>
