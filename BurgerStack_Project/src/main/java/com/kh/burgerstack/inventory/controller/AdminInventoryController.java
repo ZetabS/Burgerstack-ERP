@@ -1,4 +1,4 @@
-package com.kh.burgerstack.inventory;
+package com.kh.burgerstack.inventory.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -6,12 +6,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.inventory.dto.InventoryDetail;
 import com.kh.burgerstack.inventory.dto.InventoryListSort;
 import com.kh.burgerstack.inventory.dto.InventoryListView;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
+import com.kh.burgerstack.inventory.service.InventoryService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminInventoryController {
     private final InventoryService inventoryService;
 
-    @GetMapping("")
+    @GetMapping
     public String list(
             InventorySearchCondition condition,
             InventoryListSort inventoryListSort,
@@ -31,12 +32,17 @@ public class AdminInventoryController {
                 condition,
                 pagingRequest);
         model.addAttribute("view", inventoryListView);
-        return "inventory/inventoryListViewHO";
+        System.out.println(inventoryListView.getPageInfo());
+        return "admin/inventories";
     }
 
     @GetMapping("/{inventoryId}/edit")
-    public String adjustForm(@PathVariable Long inventoryId, Long quentity) {
-        return "";
+    public String adjustForm(
+            @PathVariable Long inventoryId,
+            Model model) {
+        InventoryDetail detail = inventoryService.getInventoryDetailById(inventoryId);
+        model.addAttribute("detail", detail);
+        return "admin/inventories/edit";
     }
 
     @PostMapping("/{inventoryId}")

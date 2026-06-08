@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,10 +34,10 @@
             <table>
                 <tr>
                     <td>
-                        매장명 : ${requestScope.receiveId}
+                        매장명 : ${sessionScope.loginUser.storeId}
                     </td>
                     <td>
-                        매장 담당자 : ${requestScope.receiveDate}
+                        매장 담당자 : ${sessionScope.loginUser.userId}
                     </td>
                 </tr>
             </table>
@@ -53,15 +54,29 @@
                 </tr>
             </thead>
             
-            <tbody>
-                <tr>
-                    <td>${requestScope.receipts.receiptId}</td>
-                    <td>${requestScope.purchaseRequests.status}</td>
-                    <td>토마토 외 5건</td>
-                    <td>150,000</td>
-                    <td>${requestScope.receipts.receivedAT}</td>
-                    <td>${requestScope.purchaseRequests.updatedAT}</td>
-                </tr>  
+            <tbody> 
+                <c:forEach var="p" items="${list}">
+                    <tr>
+                        <td>${p.purchaseOrderId}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${p.status eq 'REQUESTED'}">
+                                    요청중
+                                </c:when>
+                                <c:when test="${p.status eq 'APPROVED'}">
+                                    승인
+                                </c:when>
+                                <c:otherwise>
+                                    반려
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>${p.itemSummary}</td>
+                        <td>${p.totalAmount}</td>
+                        <td>${p.createdAt}</td>
+                    </tr>
+                </c:forEach>
+
                 <tr>
                     <td>1111</td>
                     <td>배송중</td>

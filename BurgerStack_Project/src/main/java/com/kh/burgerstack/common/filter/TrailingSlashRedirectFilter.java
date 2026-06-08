@@ -18,10 +18,13 @@ public class TrailingSlashRedirectFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-
+        String contextPath = request.getContextPath();
         String uri = request.getRequestURI();
 
-        if (uri.length() > 1 && uri.endsWith("/")) {
+        boolean isContextRoot = uri.equals(contextPath + "/")
+                || uri.equals("/");
+
+        if (!isContextRoot && uri.endsWith("/")) {
             String queryString = request.getQueryString();
             String redirectUri = uri.substring(0, uri.length() - 1);
 

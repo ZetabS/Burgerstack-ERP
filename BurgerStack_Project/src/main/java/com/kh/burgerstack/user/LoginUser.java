@@ -20,5 +20,8 @@ public class LoginUser {
 	private String phone;
 	private String email;
 	private String role;
+
+	private Long storeId;
+	private String storeName;
 	
 }
