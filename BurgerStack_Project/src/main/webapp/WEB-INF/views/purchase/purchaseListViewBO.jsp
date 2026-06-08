@@ -8,6 +8,11 @@
 <meta charset="UTF-8">
 <title>발주 목록 조회</title>
 <jsp:include page="../common/header.jsp" />
+<style>
+    table.table2 tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+</style>
 </head>
 <body>
 	<t:menubarBO>
@@ -34,10 +39,10 @@
             <table>
                 <tr>
                     <td>
-                        매장명 : ${sessionScope.loginUser.storeId}
+                        <b>매장명 :</b> ${sessionScope.loginUser.storeName}
                     </td>
                     <td>
-                        매장 담당자 : ${sessionScope.loginUser.userId}
+                        <b>매장 담당자 :</b> ${sessionScope.loginUser.userName}
                     </td>
                 </tr>
             </table>
@@ -56,7 +61,8 @@
             
             <tbody> 
                 <c:forEach var="p" items="${list}">
-                    <tr>
+                    <tr style="cursor:pointer;"
+                        onclick="location.href='${pageContext.request.contextPath}/owner/purchases/${p.purchaseOrderId}'">
                         <td>${p.purchaseOrderId}</td>
                         <td>
                             <c:choose>
@@ -66,8 +72,17 @@
                                 <c:when test="${p.status eq 'APPROVED'}">
                                     승인
                                 </c:when>
+                                <c:when test="${p.status eq 'CANCELED'}">
+                                    발주취소
+                                </c:when>
+                                <c:when test="${p.status eq 'REJECTED'}">
+                                    발주취소
+                                </c:when>
+                                <c:when test="${p.status eq 'PARTIALLY_APPROVED'}">
+                                    부분승인
+                                </c:when>
                                 <c:otherwise>
-                                    반려
+                                    배송중
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -75,23 +90,7 @@
                         <td>${p.totalAmount}</td>
                         <td>${p.createdAt}</td>
                     </tr>
-                </c:forEach>
-
-                <tr>
-                    <td>1111</td>
-                    <td>배송중</td>
-                    <td>토마토 외 5건</td>
-                    <td>150,000</td>
-                    <td>2026.02.25</td>
-                </tr>
-                
-                <tr>
-                    <td>1112</td>
-                    <td>요청중</td>
-                    <td>토마토 외 5건</td>
-                    <td>150,000</td>
-                    <td>2026.02.25</td>
-                </tr>      
+                </c:forEach>      
             </tbody>
         </table>
         <br>

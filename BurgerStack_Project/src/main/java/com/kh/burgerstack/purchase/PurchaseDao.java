@@ -1,12 +1,14 @@
 package com.kh.burgerstack.purchase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
+import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderItemDto;
 
@@ -44,9 +46,27 @@ public class PurchaseDao {
 
 
 
+    public List<PurchaseOrderDetailDto> selectPurchaseOrderDetail(Long purchaseOrderId, SqlSessionTemplate sqlSession) {
+        return sqlSession.selectList(
+            "com.kh.burgerstack.purchase.PurchaseMapper.selectPurchaseOrderDetail",
+            purchaseOrderId
+        );
+    }
 
+    public PurchaseDto selectPurchase(Long id, SqlSessionTemplate sqlSession) {
+        return sqlSession.selectOne("com.kh.burgerstack.purchase.PurchaseMapper.selectPurchase", id);
+    }
 
+    public void deletePurchaseItems(Long id, SqlSessionTemplate sqlSession) {
+        sqlSession.delete("com.kh.burgerstack.purchase.PurchaseMapper.deletePurchaseItems", id);
+    }
 
+    public void updateTotalAmount(Long id, SqlSessionTemplate sqlSession) {
+        sqlSession.update("com.kh.burgerstack.purchase.PurchaseMapper.updateTotalAmount", id);
+    }
 
+    public int cancelPurchase(SqlSessionTemplate sqlSession, Long purchaseOrderId) {
+        return sqlSession.update("com.kh.burgerstack.purchase.PurchaseMapper.cancelPurchase", purchaseOrderId);
+    }
 }
 

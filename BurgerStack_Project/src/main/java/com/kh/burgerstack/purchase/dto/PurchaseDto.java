@@ -1,6 +1,6 @@
 package com.kh.burgerstack.purchase.dto;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,4 +22,7 @@ public class PurchaseDto {
     private String status;          // 상태
     private String createdAt;       // 등록일
     private String itemSummary;     // 품목 요약
+
+    private List<PurchaseOrderDetailDto> items;
+    private Long materialId;
 }

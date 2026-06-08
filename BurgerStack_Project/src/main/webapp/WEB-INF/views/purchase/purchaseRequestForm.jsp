@@ -56,36 +56,19 @@
 
             <tbody>
                 <c:forEach var="m" items="${list}">
-                    <c:if test="${m.status ne 'ACTIVE'}">
-                        <tr class="item-row" data-id="${m.materialId}">
-                            <td>
-                                <input type="checkbox" class="row-check">
-                            </td>
-                            <td class="item-name">${m.materialName}</td>
-                            <td class="unit-price">${m.costPrice}</td>
-                            <td class="stock">${m.currentQuantity}</td>
-                            <td>
-                                <input type="number" class="qty-input" value="0" min="0">
-                            </td>
-                            <td class="total-price">0</td>
-                            <td class="status">${m.status}</td>
-                        </tr>
-                    </c:if>
-                    <c:if test="${m.status eq 'ACTIVE'}">
-                        <tr class="item-row" data-id="${m.materialId}">
-                            <td>
-                                <input type="checkbox" class="row-check">
-                            </td>
-                            <td class="item-name">${m.materialName}</td>
-                            <td class="unit-price">${m.costPrice}</td>
-                            <td class="stock">${m.currentQuantity}</td>
-                            <td>
-                                <input type="number" class="qty-input" value="0" min="0">
-                            </td>
-                            <td class="total-price">0</td>
-                            <td class="status">${m.status}</td>
-                        </tr>
-                    </c:if>
+                    <tr class="item-row ${m.status eq 'ACTIVE' ? '' : 'disabled-row'}" data-id="${m.materialId}">
+                        <td>
+                            <input type="checkbox" class="row-check">
+                        </td>
+                        <td class="item-name">${m.materialName}</td>
+                        <td class="unit-price">${m.costPrice}</td>
+                        <td class="stock">${m.currentQuantity}</td>
+                        <td>
+                            <input type="number" class="qty-input" value="0" min="0">
+                        </td>
+                        <td class="total-price">0</td>
+                        <td class="status">${m.status}</td>
+                    </tr>
                 </c:forEach>
                 <tr>
                     <td colspan="2">총 금액</td>
@@ -108,6 +91,8 @@
             <button type="submit" class="button-primary" onclick="buildJson()"> 결제 </button>
         </div>
 
+
+        <!-- 사이드 바 -->
         <t:sidebar>
             <jsp:attribute name="sidebarTitle">
                 주문리스트
@@ -134,9 +119,11 @@
                     </p>
                     <b><h3 id="sidebar-total-amount">0원</h3></b>
                     <button class="button-primary" type="submit"> 결제 </button>
+                    
                 </div>
             </jsp:body>
         </t:sidebar>
+
     </form>
     
 
@@ -217,7 +204,7 @@
             let name = $row.find('.item-name').text().trim();
             let price = parseInt($row.find('.unit-price').text()) || 0;
 
-            total += price;
+            total += price * qty;
 
             // ✔ 사이드바 출력
             $tbody.append(`
@@ -293,6 +280,7 @@ function buildJson() {
 
     $('#itemsJson').val(JSON.stringify(items));
 }
+
 </script>
 
 </body>

@@ -16,6 +16,6 @@ public class PurchaseOrderItemDto {
     private Long purchaseOrderId;
     private Long materialId;
     private String materialNameSnapshot;
-    private Long unitPriceSnapshot;
+    private Long supplyPriceSnapshot;
     private Long requestQuantity;
 }

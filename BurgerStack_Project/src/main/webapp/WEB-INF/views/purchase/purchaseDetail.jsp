@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,155 +43,30 @@
                 <th><input type="checkbox"></th>
                 <th>품목</th>
                 <th>원가</th>
-                <th>재고</th>
+                <th>현 재고</th>
                 <th>주문수량</th>
                 <th>구매가격</th>
             </tr>
         </thead>
 
         <tbody>
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>발주된</td>
-                <td>10000</td>
-                <td>442</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
+            <c:forEach var="item" items="${list}">
+                <tr class="item-row ${item.status eq 'REQUESTED' ? '' : 'disabled-row'}">
+                    <td><input type="checkbox"></td>
 
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>품목만</td>
-                <td>10000</td>
-                <td>214</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
+                    <td>${item.materialName}</td>
 
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>거기서</td>
-                <td>10000</td>
-                <td>0</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
+                    <td>${item.supplyPriceSnapshot}</td>
 
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>수정할거선택수정</td>
-                <td>10000</td>
-                <td>3</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
+                    <td>${item.currentQuantity}</td>
 
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>사각 버거 박스 B</td>
-                <td>10000</td>
-                <td>11</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
+                    <td>
+                        <input type="number" value="${item.requestQuantity}" disabled>
+                    </td>
 
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>양상추</td>
-                <td>10000</td>
-                <td>442</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
-
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>양상추</td>
-                <td>10000</td>
-                <td>132</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
-
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>양상추</td>
-                <td>10000</td>
-                <td>234</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
-
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>양상추</td>
-                <td>10000</td>
-                <td>111</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
-
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>양상추</td>
-                <td>10000</td>
-                <td>2</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
-
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>트리플체다치즈</td>
-                <td>10000</td>
-                <td>423</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
-
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>양상추</td>
-                <td>10000</td>
-                <td>334</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
-
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>양상추</td>
-                <td>10000</td>
-                <td>223</td>
-                <td>
-                    <input type="number" value="20">
-                </td>
-                <td>200000</td>
-            </tr>
+                    <td>${item.totalPrice}</td>
+                </tr>
+            </c:forEach>
         </tbody>
     </table>
 
@@ -199,17 +75,37 @@
     <div class="bottom-area" >
         <div class="total-price-area">
             <div>총 결제금액</div>
-            <h2>14,200,000 원</h2>
+            <c:set var="total" value="0"/>
+            <c:forEach var="item" items="${list}">
+                <c:set var="total" value="${total + item.totalPrice}"/>
+            </c:forEach>
+            <h2>${total} 원</h2>
         </div>
 
-        <div class="button-group">
-            <button class="button-secondary">수정</button>
-            <button class="button-danger">취소 요청</button>
+        <div class="button-group" style="display:flex; gap:10px; align-items:center;">
+            <button type="button" class="button-primary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
+            <c:choose>
+                <c:when test="${list[0].status eq 'REQUESTED'}">
+                    <button class="button-primary" onclick="location.href='${pageContext.request.contextPath}/owner/purchases/${list[0].purchaseOrderId}/edit'">
+                        수정
+                    </button>
+                    <form action="${pageContext.request.contextPath}/owner/purchases/${list[0].purchaseOrderId}/cancel"
+                    method="post">
+
+                        <button class="button-danger" type="submit"
+                                onclick="return confirm('발주를 취소하시겠습니까?')">
+                            발주 취소
+                        </button>
+
+                    </form>
+                </c:when>
+                <c:otherwise>
+                    <button class="button-secondary" disabled>수정 불가</button>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
-
 </t:menubarBO>
-
 
 </body>
 </html>

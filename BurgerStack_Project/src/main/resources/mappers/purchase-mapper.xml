@@ -102,7 +102,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <insert id="insertPurchaseOrderItem">
 
     INSERT INTO PURCHASE_ORDER_ITEMS (
-
         PURCHASE_ORDER_ITEM_ID,
         REQUEST_QUANTITY,
         APPROVED_QUANTITY,
@@ -110,21 +109,77 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SUPPLY_PRICE_SNAPSHOT,
         MATERIAL_ID,
         PURCHASE_ORDER_ID
-
     )
     VALUES (
-
         SEQ_PUR_REQ_ITEM.NEXTVAL,
         #{requestQuantity},
         0,
         #{materialNameSnapshot},
-        #{unitPriceSnapshot},
+        #{supplyPriceSnapshot},
         #{materialId},
         #{purchaseOrderId}
-
     )
 
 </insert>
+
+<select id="selectPurchaseOrderDetail" 
+        resultType="com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto">
+    SELECT
+        P.PURCHASE_ORDER_ID,
+        P.STATUS,
+        M.MATERIAL_ID,
+        M.MATERIAL_NAME,
+        I.SUPPLY_PRICE_SNAPSHOT,
+        INV.CURRENT_QUANTITY,
+        I.REQUEST_QUANTITY,
+        (I.REQUEST_QUANTITY * I.SUPPLY_PRICE_SNAPSHOT) AS TOTAL_PRICE
+    FROM PURCHASE_ORDERS P
+    JOIN PURCHASE_ORDER_ITEMS I
+        ON P.PURCHASE_ORDER_ID = I.PURCHASE_ORDER_ID
+    JOIN MATERIALS M
+        ON I.MATERIAL_ID = M.MATERIAL_ID
+    JOIN STORE_INVENTORIES INV
+        ON INV.MATERIAL_ID = M.MATERIAL_ID
+       AND INV.STORE_ID = P.STORE_ID
+    WHERE P.PURCHASE_ORDER_ID = #{purchaseOrderId}
+</select>
+
+<!-- MASTER 조회 -->
+<select id="selectPurchase" resultType="com.kh.burgerstack.purchase.dto.PurchaseDto">
+    SELECT
+        PURCHASE_ORDER_ID,
+        STATUS,
+        TOTAL_AMOUNT,
+        ORDER_MEMO,
+        STORE_ID,
+        CREATED_AT
+    FROM PURCHASE_ORDERS
+    WHERE PURCHASE_ORDER_ID = #{id}
+</select>
+
+<!-- ITEM 삭제 -->
+<delete id="deletePurchaseItems">
+    DELETE FROM PURCHASE_ORDER_ITEMS
+    WHERE PURCHASE_ORDER_ID = #{id}
+</delete>
+
+<!-- TOTAL 금액 재계산 -->
+<update id="updateTotalAmount">
+    UPDATE PURCHASE_ORDERS P
+    SET TOTAL_AMOUNT =
+    (
+        SELECT NVL(SUM(REQUEST_QUANTITY * SUPPLY_PRICE_SNAPSHOT),0)
+        FROM PURCHASE_ORDER_ITEMS
+        WHERE PURCHASE_ORDER_ID = P.PURCHASE_ORDER_ID
+    )
+    WHERE PURCHASE_ORDER_ID = #{id}
+</update>
+
+<update id="cancelPurchase">
+    UPDATE PURCHASE_ORDERS
+    SET STATUS = 'CANCELED'
+    WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
+</update>
 
 </mapper>
 

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
+import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderItemDto;
 import com.kh.burgerstack.user.LoginUser;
@@ -46,20 +47,20 @@ public class PurchaseService {
 
         LoginUser user = (LoginUser) session.getAttribute("loginUser");
 
-        System.out.println("user : " + session.getAttribute("loginUser"));
+        // System.out.println("user : " + session.getAttribute("loginUser"));
 
         // 1. total 계산
         long total = 0;
 
         for (PurchaseOrderItemDto item : items) {
-            total += item.getUnitPriceSnapshot() * item.getRequestQuantity();
+            total += item.getSupplyPriceSnapshot() * item.getRequestQuantity();
         }
 
         // 2. master 생성
         PurchaseOrderDto request = new PurchaseOrderDto();
         request.setStoreId(user.getStoreId());
         request.setTotalAmount(total);
-        request.setOrderMemo("자동 발주");
+        request.setOrderMemo("수동 발주");
 
         purchaseDao.insertPurchaseOrder(request, sqlSession);
 
@@ -72,4 +73,88 @@ public class PurchaseService {
         }
     }
 
+    public List<PurchaseOrderDetailDto> getPurchaseOrderDetail(Long purchaseOrderId) {
+
+        PurchaseDto purchase = purchaseDao.selectPurchase(purchaseOrderId, sqlSession);
+
+        List<PurchaseOrderDetailDto> items =
+                purchaseDao.selectPurchaseOrderDetail(purchaseOrderId, sqlSession);
+
+        purchase.setItems(items);
+
+        return purchaseDao.selectPurchaseOrderDetail(purchaseOrderId, sqlSession);
+    }
+
+    public PurchaseDto getPurchaseForEdit(Long purchaseOrderId) {
+
+        PurchaseDto purchase = purchaseDao.selectPurchase(purchaseOrderId, sqlSession);
+
+        List<PurchaseOrderDetailDto> items =
+                purchaseDao.selectPurchaseOrderDetail(purchaseOrderId, sqlSession);
+
+        purchase.setItems(items);
+
+        return purchase;
+    }
+
+
+    @Transactional
+    public void updatePurchase(Long purchaseOrderId,
+                            List<PurchaseOrderItemDto> items,
+                            HttpSession session) {
+
+        LoginUser user = (LoginUser) session.getAttribute("loginUser");
+
+        
+        if (user == null) {
+            throw new RuntimeException("로그인 필요");
+        }
+
+        PurchaseDto origin = purchaseDao.selectPurchase(purchaseOrderId, sqlSession);
+        
+        // 1. total 계산
+        long total = 0;
+
+        for (PurchaseOrderItemDto item : items) {
+
+            long price = item.getSupplyPriceSnapshot();
+            long qty = item.getRequestQuantity();
+
+            total += price * qty;
+        }
+
+
+
+        // 🔥 상태 체크 (REQUESTED만 수정 가능)
+        if (!"REQUESTED".equals(origin.getStatus())) {
+            throw new IllegalStateException("수정 불가 상태입니다.");
+        }
+
+        // 1. 기존 ITEM 삭제
+        purchaseDao.deletePurchaseItems(purchaseOrderId, sqlSession);
+
+        // 2. 새 ITEM 등록
+        for (PurchaseOrderItemDto item : items) {
+            item.setPurchaseOrderId(purchaseOrderId);
+            purchaseDao.insertPurchaseOrderItem(item, sqlSession);
+        }
+
+         // TOTAL 재계산
+        purchaseDao.updateTotalAmount(purchaseOrderId, sqlSession);
+    }
+
+    @Transactional
+    public void cancelPurchase(Long purchaseOrderId, HttpSession session) {
+
+        LoginUser user = (LoginUser) session.getAttribute("loginUser");
+
+        PurchaseDto origin = purchaseDao.selectPurchase(purchaseOrderId, sqlSession);
+
+        // 이미 취소/완료 상태면 막기
+        if (!"REQUESTED".equals(origin.getStatus())) {
+            throw new IllegalStateException("취소 불가 상태입니다.");
+        }
+
+        purchaseDao.cancelPurchase(sqlSession, purchaseOrderId);
+    }
 }
