@@ -1,6 +1,8 @@
 package com.kh.burgerstack.user;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -23,8 +25,15 @@ public class AdminDao {
 		return userMapper.NewOwner(u);
 	}
 
-	public List<User> OwnerList() {
-		return userMapper.OwnerList();
+	public List<User> OwnerList(String status,
+            String keyword) {
+
+		Map<String, String> param = new HashMap<>();
+	
+		param.put("status", status);
+		param.put("keyword", keyword);
+	
+		return userMapper.OwnerList(param);
 	}
 
 	public User OwnerListDetail(String userId) {

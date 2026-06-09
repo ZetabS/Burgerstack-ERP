@@ -141,13 +141,21 @@ public class AdminController {
 	}
 
 	@GetMapping("users")
-	public String OwnerList(Model model) {
-		
-		List<User> ownerList = adminService.OwnerList();
-		
-		model.addAttribute("ownerList",ownerList);
-		
-		return "user/OwnerList";
+	public String OwnerList(String status,
+	                        String keyword,
+	                        Model model) {
+
+	    System.out.println("status = " + status);
+	    System.out.println("keyword = " + keyword);
+
+	    List<User> ownerList =
+	            adminService.OwnerList(status, keyword);
+
+	    System.out.println("조회건수 = " + ownerList.size());
+
+	    model.addAttribute("ownerList", ownerList);
+
+	    return "user/OwnerList";
 	}
 	
 	@GetMapping("users/{userId}")
