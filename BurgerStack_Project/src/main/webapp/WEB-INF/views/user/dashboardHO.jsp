@@ -11,9 +11,9 @@
 </head>
 <body>
 
-<t:menubarHO>
+<t:layout>
 <h1>관리자 대시보드</h1>
-</t:menubarHO>
+</t:layout>
 
 
 </body>

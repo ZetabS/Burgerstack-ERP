@@ -15,7 +15,7 @@
 </style>
 </head>
 <body>
-	<t:menubarBO>
+	<t:layout>
         <h2>발주 목록</h2>
 
         <!-- 검색 -->
@@ -98,7 +98,7 @@
         </table>
         <br>
         <t:pagination pageInfo="${pageInfo}"></t:pagination>
-	</t:menubarBO>
+	</t:layout>
 	
 
 </body>

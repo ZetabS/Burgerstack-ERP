@@ -99,7 +99,7 @@
 
 <body>
 
-<t:menubarBO>
+<t:layout>
 
 <section class="detail-card">
 
@@ -172,7 +172,7 @@
 
 </section>
 
-</t:menubarBO>
+</t:layout>
 
 </body>
 </html>

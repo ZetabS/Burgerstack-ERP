@@ -11,9 +11,9 @@
 </head>
 <body>
 
-<t:menubarBO>
+<t:layout>
 <h1>점주 대시보드</h1>
-</t:menubarBO>
+</t:layout>
 
 
 </body>

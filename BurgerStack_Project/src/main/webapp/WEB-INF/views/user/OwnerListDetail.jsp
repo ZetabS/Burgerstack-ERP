@@ -75,7 +75,7 @@ input {
 </head>
 <body>
 
-	<t:menubarHO>
+	<t:layout>
 		<h1 id="title" align="center">점주 계정 상세조회</h1>
 
 		<form id="OwnerListDetail"
@@ -132,7 +132,7 @@ input {
 				
 				</div>
 		</form>
-	</t:menubarHO>
+	</t:layout>
 
 </body>
 </html>

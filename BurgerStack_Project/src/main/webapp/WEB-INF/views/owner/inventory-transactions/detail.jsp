@@ -11,7 +11,7 @@
     <style></style>
   </head>
   <body>
-    <t:menubarBO>
+    <t:layout>
       <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h2 class="mb-0">재고 변동 상세</h2>
@@ -124,7 +124,7 @@
           <a href="${backToList}" class="back-to-list-btn btn btn-secondary">목록으로</a>
         </div>
       </div>
-    </t:menubarBO>
+    </t:layout>
     <script>
       $(".back-to-list-btn").on("click", (e) => {
         const listUrl = sessionStorage.getItem("inventoryTransactionListUrl");

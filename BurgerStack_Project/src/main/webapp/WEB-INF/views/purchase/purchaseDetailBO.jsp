@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<t:menubarBO>
+<t:layout>
 
     <h2>발주 목록 상세 보기</h2>
 
@@ -105,7 +105,7 @@
             </c:choose>
         </div>
     </div>
-</t:menubarBO>
+</t:layout>
 
 </body>
 </html>

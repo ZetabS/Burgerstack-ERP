@@ -139,7 +139,7 @@
 </head>
 <body>
 
-<t:menubarHO>
+<t:layout>
 
     <h2>입고 이력 상세 보기</h2>
 
@@ -233,7 +233,7 @@
         </tbody>
     </table>
 
-</t:menubarHO>
+</t:layout>
 
 		<script>
 		function filterMaterialType(type) {
