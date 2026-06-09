@@ -12,9 +12,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InventoryListItem {
-    private Long inventoryId;
-    private Long currentQuantity;
-    private Long safetyQuantity;
+    private Integer inventoryId;
+    private Integer currentQuantity;
+    private Integer safetyQuantity;
     private String storeName;
     private String materialName;
 }

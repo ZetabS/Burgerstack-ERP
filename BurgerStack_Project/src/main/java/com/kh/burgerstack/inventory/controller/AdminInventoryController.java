@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.inventory.dto.InventoryAdjustRequest;
 import com.kh.burgerstack.inventory.dto.InventoryDetail;
 import com.kh.burgerstack.inventory.dto.InventoryListSort;
 import com.kh.burgerstack.inventory.dto.InventoryListView;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
 import com.kh.burgerstack.inventory.service.InventoryService;
+import com.kh.burgerstack.user.LoginUser;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -27,26 +30,43 @@ public class AdminInventoryController {
             InventorySearchCondition condition,
             InventoryListSort inventoryListSort,
             PagingRequest pagingRequest,
+            HttpSession session,
             Model model) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
         InventoryListView inventoryListView = inventoryService.getInventoryListView(
                 condition,
-                pagingRequest);
+                pagingRequest,
+                loginUser);
+
         model.addAttribute("view", inventoryListView);
-        System.out.println(inventoryListView.getPageInfo());
-        return "admin/inventories";
+        return "admin/inventories/list";
     }
 
     @GetMapping("/{inventoryId}/edit")
     public String adjustForm(
-            @PathVariable Long inventoryId,
+            @PathVariable Integer inventoryId,
+            HttpSession session,
             Model model) {
-        InventoryDetail detail = inventoryService.getInventoryDetailById(inventoryId);
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        InventoryDetail detail = inventoryService.getInventoryDetail(inventoryId, loginUser);
+
         model.addAttribute("detail", detail);
         return "admin/inventories/edit";
     }
 
     @PostMapping("/{inventoryId}")
-    public String adjust(@PathVariable Long inventoryId, Long quentity) {
-        return "";
+    public String adjust(
+            @PathVariable Integer inventoryId,
+            InventoryAdjustRequest inventoryAdjustRequest,
+            HttpSession session,
+            Model model) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        inventoryService.adjust(inventoryId, inventoryAdjustRequest, loginUser);
+
+        model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
+        return "redirect:/admin/inventories/" + inventoryId + "/edit";
     }
 }
