@@ -1375,7 +1375,3 @@ INSERT INTO STORE_INVENTORIES (
 
 -- 커밋
 COMMIT;
-
-SELECT table_name
-FROM user_tables
-WHERE table_name = 'INVENTORY_TRANSACTIONS';
