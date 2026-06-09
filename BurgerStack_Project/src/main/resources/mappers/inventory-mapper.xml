@@ -33,12 +33,12 @@
                                    AND MATERIAL_ID = #{condition.materialId}
                             </if>
                             <if test="condition.materialName != null and condition.materialName != ''">
-                                   AND M.MATERIAL_NAME = #{condition.materialName}
+                                   AND M.MATERIAL_NAME LIKE '%' || #{condition.materialName} || '%'
                             </if>
                             <if test="condition.materialType != null and condition.materialType != ''">
                                    AND M.MATERIAL_TYPE = #{condition.materialType}
                             </if>
-                            <if test="condition.belowSafetyStock != null and cnodition.belowSafetyStock">
+                            <if test="condition.belowSafetyStock != null and condition.belowSafetyStock">
                                    AND I.CURRENT_QUANTITY &lt; I.SAFETY_QUANTITY
                             </if>
                         </where>
@@ -65,12 +65,12 @@
                     AND MATERIAL_ID = #{condition.materialId}
             </if>
             <if test="condition.materialName != null and condition.materialName != ''">
-                    AND M.MATERIAL_NAME = #{condition.materialName}
+                    AND M.MATERIAL_NAME LIKE '%' || #{condition.materialName} || '%'
             </if>
             <if test="condition.materialType != null and condition.materialType != ''">
                     AND M.MATERIAL_TYPE = #{condition.materialType}
             </if>
-            <if test="condition.belowSafetyStock != null and cnodition.belowSafetyStock">
+            <if test="condition.belowSafetyStock != null and condition.belowSafetyStock">
                     AND I.CURRENT_QUANTITY &lt; I.SAFETY_QUANTITY
             </if>
         </where>

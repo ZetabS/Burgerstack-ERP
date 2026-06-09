@@ -16,7 +16,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h2 class="mb-0">재고 변동 상세</h2>
 
-          <a href="${backToList}" class="btn btn-secondary">목록</a>
+          <a href="${backToList}" class="back-to-list-btn btn btn-secondary">목록으로</a>
         </div>
 
         <div class="card mb-4">
@@ -127,9 +127,18 @@
         </div>
 
         <div class="text-right">
-          <a href="${backToList}" class="btn btn-secondary">목록</a>
+          <a href="${backToList}" class="back-to-list-btn btn btn-secondary">목록으로</a>
         </div>
       </div>
     </t:menubarHO>
+    <script>
+      $("#back-to-list").on("click", (e) => {
+        const listUrl = sessionStorage.getItem("inventoryTransactionListUrl");
+        if (listUrl) {
+          e.preventDefault();
+          window.location.href = listUrl;
+        }
+      });
+    </script>
   </body>
 </html>
