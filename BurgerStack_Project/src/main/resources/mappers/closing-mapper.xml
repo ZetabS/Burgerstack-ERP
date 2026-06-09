@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="closingMapper">
+
+    <!-- 점주 마감 목록 -->
+    <select id="selectOwnerClosingList"
+            parameterType="long"
+            resultType="com.kh.burgerstack.closing.StoreClosing">
+
+        SELECT
+            STORE_CLOSING_ID AS storeClosingId,
+            BUSINESS_DATE AS businessDate,
+            CLOSING_MEMO AS closingMemo,
+            CLOSED_AT AS closedAt,
+            STORE_ID AS storeId
+        FROM STORE_CLOSINGS
+        WHERE STORE_ID = #{storeId}
+        ORDER BY BUSINESS_DATE DESC
+
+    </select>
+
+    <!-- 관리자 마감 목록 -->
+    <select id="selectAdminClosingList"
+            resultType="com.kh.burgerstack.closing.StoreClosing">
+
+        SELECT
+            STORE_CLOSING_ID AS storeClosingId,
+            BUSINESS_DATE AS businessDate,
+            CLOSING_MEMO AS closingMemo,
+            CLOSED_AT AS closedAt,
+            STORE_ID AS storeId
+        FROM STORE_CLOSINGS
+        ORDER BY BUSINESS_DATE DESC
+
+    </select>
+    
+    <!-- 마감 상세 조회 -->
+	<select id="selectClosing"
+	        parameterType="long"
+	        resultType="com.kh.burgerstack.closing.StoreClosing">
+	
+	    SELECT
+	        STORE_CLOSING_ID AS storeClosingId,
+	        BUSINESS_DATE AS businessDate,
+	        CLOSING_MEMO AS closingMemo,
+	        CLOSED_AT AS closedAt,
+	        STORE_ID AS storeId
+	    FROM STORE_CLOSINGS
+	    WHERE STORE_CLOSING_ID = #{closingId}
+	
+	</select>
+
+
+	<!-- 마감 상세 자재 목록 -->
+	<select id="selectClosingItemList"
+	        parameterType="long"
+	        resultType="com.kh.burgerstack.closing.StoreClosingItem">
+	
+	    SELECT
+	        STORE_CLOSING_ITEM_ID AS storeClosingItemId,
+	        SYSTEM_QUANTITY AS systemQuantity,
+	        PHYSICAL_QUANTITY AS physicalQuantity,
+	        DISPOSAL_QUANTITY AS disposalQuantity,
+	        CLOSING_ITEM_MEMO AS closingItemMemo,
+	        MATERIAL_NAME_SNAPSHOT AS materialNameSnapshot,
+	        STORE_CLOSING_ID AS storeClosingId,
+	        STORE_INVENTORY_ID AS storeInventoryId
+	    FROM STORE_CLOSING_ITEMS
+	    WHERE STORE_CLOSING_ID = #{closingId}
+	    ORDER BY STORE_CLOSING_ITEM_ID
+	
+	</select>
+    
+    <select id="selectClosingInventoryList"
+	        parameterType="long"
+	        resultType="com.kh.burgerstack.closing.ClosingInventory">
+	
+	    SELECT
+	        SI.STORE_INVENTORY_ID AS storeInventoryId,
+	        SI.CURRENT_QUANTITY AS currentQuantity,
+	        SI.MATERIAL_ID AS materialId,
+	        M.MATERIAL_NAME AS materialName
+	    FROM STORE_INVENTORIES SI
+	    JOIN MATERIALS M
+	        ON SI.MATERIAL_ID = M.MATERIAL_ID
+	    WHERE SI.STORE_ID = #{storeId}
+	    ORDER BY M.MATERIAL_NAME
+	
+	</select>
+    
+    <insert id="insertClosing"
+	        parameterType="com.kh.burgerstack.closing.StoreClosing">
+	
+	    <selectKey keyProperty="storeClosingId"
+	               resultType="long"
+	               order="BEFORE">
+	        SELECT SEQ_STORE_CLS.NEXTVAL
+	        FROM DUAL
+	    </selectKey>
+	
+	    INSERT INTO STORE_CLOSINGS
+	    (
+	        STORE_CLOSING_ID,
+	        BUSINESS_DATE,
+	        CLOSING_MEMO,
+	        CLOSED_AT,
+	        STORE_ID
+	    )
+	    VALUES
+	    (
+	        #{storeClosingId},
+	        #{businessDate},
+	        #{closingMemo},
+	        SYSDATE,
+	        #{storeId}
+	    )
+	
+	</insert>
+	
+	
+	<insert id="insertClosingItem"
+	        parameterType="com.kh.burgerstack.closing.StoreClosingItem">
+	
+	    <selectKey keyProperty="storeClosingItemId"
+	               resultType="long"
+	               order="BEFORE">
+	        SELECT SEQ_STORE_CLS_ITEM.NEXTVAL
+	        FROM DUAL
+	    </selectKey>
+	
+	    INSERT INTO STORE_CLOSING_ITEMS
+	    (
+	        STORE_CLOSING_ITEM_ID,
+	        SYSTEM_QUANTITY,
+	        PHYSICAL_QUANTITY,
+	        DISPOSAL_QUANTITY,
+	        CLOSING_ITEM_MEMO,
+	        MATERIAL_NAME_SNAPSHOT,
+	        STORE_CLOSING_ID,
+	        STORE_INVENTORY_ID
+	    )
+	    VALUES
+	    (
+	        #{storeClosingItemId},
+	        #{systemQuantity},
+	        #{physicalQuantity},
+	        #{disposalQuantity},
+	        #{closingItemMemo},
+	        #{materialNameSnapshot},
+	        #{storeClosingId},
+	        #{storeInventoryId}
+	    )
+	
+	</insert>
+    
+    <update id="updateInventoryQuantity">
+
+	    UPDATE STORE_INVENTORIES
+	       SET CURRENT_QUANTITY = #{quantity},
+	           UPDATED_AT = SYSDATE
+	     WHERE STORE_INVENTORY_ID = #{storeInventoryId}
+	
+	</update>
+	    
+    <select id="selectAdminClosingListByStoreId"
+	        parameterType="long"
+	        resultType="com.kh.burgerstack.closing.StoreClosing">
+	
+	    SELECT
+	        STORE_CLOSING_ID AS storeClosingId,
+	        BUSINESS_DATE AS businessDate,
+	        CLOSING_MEMO AS closingMemo,
+	        CLOSED_AT AS closedAt,
+	        STORE_ID AS storeId
+	    FROM STORE_CLOSINGS
+	    WHERE STORE_ID = #{storeId}
+	    ORDER BY BUSINESS_DATE DESC
+	
+	</select>
+    
+    
+    
+    
+
+</mapper>
