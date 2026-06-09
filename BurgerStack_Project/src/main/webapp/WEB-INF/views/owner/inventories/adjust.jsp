@@ -14,7 +14,7 @@
       <div class="container py-4">
         <h2 class="mb-4">재고 조정</h2>
 
-        <form action="/burgerstack/owner/inventories/${detail.inventoryId}" method="post">
+        <form action="/burgerstack/owner/inventories/${detail.inventoryId}/adjust" method="post">
           <div class="card mb-4">
             <div class="card-header">재고 정보</div>
 

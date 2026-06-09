@@ -44,7 +44,7 @@ public class OwnerInventoryController {
         return "owner/inventories/list";
     }
 
-    @GetMapping("/{inventoryId}/edit")
+    @GetMapping("/{inventoryId}/adjust")
     public String adjustForm(
             @PathVariable Integer inventoryId,
             Model model,
@@ -56,10 +56,10 @@ public class OwnerInventoryController {
                 loginUser);
 
         model.addAttribute("detail", detail);
-        return "owner/inventories/edit";
+        return "owner/inventories/adjust";
     }
 
-    @PostMapping("/{inventoryId}")
+    @PostMapping("/{inventoryId}/adjust")
     public String adjust(
             @PathVariable Integer inventoryId,
             InventoryAdjustRequest inventoryAdjustRequest,

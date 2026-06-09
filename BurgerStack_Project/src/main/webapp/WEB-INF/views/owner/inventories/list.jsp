@@ -50,7 +50,7 @@
               <td>${item.currentQuantity}</td>
               <td>${item.safetyQuantity}</td>
               <td>
-                <c:url var="adjustUrl" value="/owner/inventories/${item.inventoryId}/edit" />
+                <c:url var="adjustUrl" value="/owner/inventories/${item.inventoryId}/adjust" />
                 <a href="${adjustUrl}" class="btn btn-sm btn-outline-primary">조정</a>
               </td>
             </tr>

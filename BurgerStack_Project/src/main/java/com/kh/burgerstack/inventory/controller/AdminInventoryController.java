@@ -43,7 +43,7 @@ public class AdminInventoryController {
         return "admin/inventories/list";
     }
 
-    @GetMapping("/{inventoryId}/edit")
+    @GetMapping("/{inventoryId}/adjust")
     public String adjustForm(
             @PathVariable Integer inventoryId,
             HttpSession session,
@@ -53,10 +53,10 @@ public class AdminInventoryController {
         InventoryDetail detail = inventoryService.getInventoryDetail(inventoryId, loginUser);
 
         model.addAttribute("detail", detail);
-        return "admin/inventories/edit";
+        return "admin/inventories/adjust";
     }
 
-    @PostMapping("/{inventoryId}")
+    @PostMapping("/{inventoryId}/adjust")
     public String adjust(
             @PathVariable Integer inventoryId,
             InventoryAdjustRequest inventoryAdjustRequest,
