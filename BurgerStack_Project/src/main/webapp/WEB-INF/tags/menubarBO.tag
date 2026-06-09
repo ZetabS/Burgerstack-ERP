@@ -316,7 +316,7 @@ body{
 				    </div>
 				
 				    <ul class="submenu">
-				        <a href="${pageContext.request.contextPath}/owner/store">
+				        <a href="/burgerstack/owner/store">
 				            <li>점포 상세 정보 조회</li>
 				        </a>
 				    </ul>
@@ -440,3 +440,4 @@ body{
 
 </body>
 </html>
+

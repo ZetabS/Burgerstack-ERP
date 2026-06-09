@@ -11,11 +11,12 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class PurchaseOrderItemDto {
+public class PurchaseSearchDto {
+    
+    private String status;
+    private Long storeId;
+    private String keyword;
 
-    private Long purchaseOrderId;
-    private Long materialId;
-    private String materialNameSnapshot;
-    private Long supplyPriceSnapshot;
-    private Long requestQuantity;
+    private boolean isAdmin;
+
 }

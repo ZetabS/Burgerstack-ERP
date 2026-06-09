@@ -15,7 +15,7 @@
 </style>
 </head>
 <body>
-	<t:menubarBO>
+	<t:menubarHO>
         <h2>발주 목록</h2>
 
         <!-- 검색 -->
@@ -39,10 +39,10 @@
             <table>
                 <tr>
                     <td>
-                        <b>매장명 :</b> ${sessionScope.loginUser.storeName}
+                        <!-- <b>매장명 :</b> ${sessionScope.loginUser.storeName} -->
                     </td>
                     <td>
-                        <b>매장 담당자 :</b> ${sessionScope.loginUser.userName}
+                        <!-- <b>매장 담당자 :</b> ${sessionScope.loginUser.userName} -->
                     </td>
                 </tr>
             </table>
@@ -52,6 +52,7 @@
             <thead>
                 <tr>
                     <th>발주번호</th>
+                    <th>점포명</th>
                     <th>상태</th>
                     <th>품목요약</th>
                     <th>총액</th>
@@ -62,8 +63,9 @@
             <tbody> 
                 <c:forEach var="p" items="${list}">
                     <tr style="cursor:pointer;"
-                        onclick="location.href='${pageContext.request.contextPath}/owner/purchases/${p.purchaseOrderId}'">
+                        onclick="location.href='${pageContext.request.contextPath}/admin/purchases/${p.purchaseOrderId}'">
                         <td>${p.purchaseOrderId}</td>
+                        <td>${p.storeName}</td>
                         <td>
                             <c:choose>
                                 <c:when test="${p.status eq 'REQUESTED'}">
@@ -98,7 +100,7 @@
         </table>
         <br>
         <t:pagination pageInfo="${pageInfo}"></t:pagination>
-	</t:menubarBO>
+	</t:menubarHO>
 	
 
 </body>
