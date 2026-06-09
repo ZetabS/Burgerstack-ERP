@@ -8,30 +8,34 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class MaterialDao {
 
-	@Autowired
-	private MaterialMapper materialMapper;
+    @Autowired
+    private MaterialMapper materialMapper;
 
-	public int materialInsert(Material m) {
-		return materialMapper.insert(m);
-	} //materialInsert
-	
-	public ArrayList<Material> selectMaterialList() {
-		return materialMapper.selectMaterialList();
-	} //selectMaterialList
+    public int materialInsert(Material m) {
+        return materialMapper.insert(m);
+    }
 
-	public Material materialDetail(Long materialId) {
-		return materialMapper.materialDetail(materialId);
-	} //materialDetail
-	
-	public int updateMaterial(Material m) {
-		return materialMapper.updateMaterial(m);
-	}
-	
-	public Material selectMaterial(Long finalMaterialId) {
-		return materialMapper.selectMaterial(finalMaterialId);
-	}
-	
-	public int deleteMaterial(Long materialId) {
-		return materialMapper.deleteMaterial(materialId);
-	}
+    public int materialFileInsert(MaterialFile materialFile) {
+        return materialMapper.materialFileInsert(materialFile);
+    }
+
+    public ArrayList<Material> selectMaterialList() {
+        return materialMapper.selectMaterialList();
+    }
+
+    public Material materialDetail(Long materialId) {
+        return materialMapper.materialDetail(materialId);
+    }
+
+    public int updateMaterial(Material m) {
+        return materialMapper.updateMaterial(m);
+    }
+
+    public Material selectMaterial(Long finalMaterialId) {
+        return materialMapper.selectMaterial(finalMaterialId);
+    }
+
+    public int deleteMaterial(Long materialId) {
+        return materialMapper.deleteMaterial(materialId);
+    }
 }

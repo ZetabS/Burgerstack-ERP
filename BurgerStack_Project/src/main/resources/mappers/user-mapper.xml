@@ -81,9 +81,25 @@
    			 , PHONE
    			 , EMAIL
    			 , CREATED_AT
+   			 , STATUS
    		 FROM USERS
    		WHERE USER_ID = #{userId}
    </select>
+   <update id="OwnerUpdate" parameterType="User">
+   		UPDATE USERS
+   			SET USER_ID = #{userId}
+   			  , USER_NAME = #{userName}
+   			  , PHONE = #{phone}
+   			  , EMAIL = #{email}
+   			  , STATUS = #{status}
+   			  
+   			<if test="password != null">
+   			  , PASSWORD = #{password}	
+   			</if>
+   			  
+   		 WHERE USER_ID = #{userId}
+   </update>
+   
    <update id="OwnerStatus" parameterType="User">
    		UPDATE USERS
    		   SET STATUS = #{status}

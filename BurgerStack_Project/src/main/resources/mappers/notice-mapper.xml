@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.burgerstack.notice.NoticeMapper">
+	<!-- 게시글 수 조회용 -->
+	<select id="selectNoticeCount" parameterType="Notice" resultType="_int">
+		SELECT COUNT(*)
+		  FROM NOTICES
+		 WHERE DELETED_AT IS NULL
+	</select>
+	<!-- 전체조회용 -->
+	<select id="selectNoticeList" resultType="Notice">
+    SELECT NOTICE_ID  AS noticeId
+         , TITLE      AS title
+         , CREATED_AT AS createdAt
+      FROM (
+          SELECT ROWNUM AS rn
+               , NOTICE_ID
+               , TITLE
+               , CREATED_AT
+            FROM (
+                SELECT NOTICE_ID
+                     , TITLE
+                     , CREATED_AT
+                  FROM NOTICES
+                 WHERE DELETED_AT IS NULL
+                 ORDER BY CREATED_AT DESC
+            )
+           WHERE ROWNUM &lt;= #{offset} + #{limit}
+      )
+     WHERE rn &gt; #{offset}
+</select>
+	
+</mapper>
