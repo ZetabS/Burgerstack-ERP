@@ -39,6 +39,7 @@
             <th>자재명</th>
             <th>현재 수량</th>
             <th>안전재고 수량</th>
+            <th>안전재고 조정</th>
             <th>조정</th>
           </tr>
         </thead>
@@ -49,6 +50,10 @@
               <td>${item.materialName}</td>
               <td>${item.currentQuantity}</td>
               <td>${item.safetyQuantity}</td>
+              <td>
+                <c:url var="editUrl" value="/owner/inventories/${item.inventoryId}/edit" />
+                <a href="${editUrl}" class="btn btn-sm btn-outline-primary">안전재고 조정</a>
+              </td>
               <td>
                 <c:url var="adjustUrl" value="/owner/inventories/${item.inventoryId}/adjust" />
                 <a href="${adjustUrl}" class="btn btn-sm btn-outline-primary">조정</a>

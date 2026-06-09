@@ -96,4 +96,22 @@ public class InventoryService {
                 null,
                 list));
     }
+
+    @Transactional
+    public void changeSafeQuantity(
+            int inventoryId,
+            int safetyQuantity,
+            LoginUser loginUser) {
+        StoreInventory inventory = inventoryDao.findById(inventoryId);
+
+        if (!loginUser.isAdmin() && inventory.getStoreId() != loginUser.getStoreId().intValue()) {
+            throw new CustomException("재고를 찾을 수 없습니다.");
+        }
+
+        if (inventory.getSafetyQuantity() == safetyQuantity) {
+            throw new CustomException("변경 전과 후의 안전재고 수량이 동일합니다.");
+        }
+
+        inventoryDao.updateSafetyQuantity(inventoryId, safetyQuantity, inventory.getSafetyQuantity());
+    }
 }

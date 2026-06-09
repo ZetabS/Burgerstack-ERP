@@ -46,4 +46,17 @@ public class InventoryDao {
             int storeInventoryId) {
         return inventoryMapper.findById(storeInventoryId);
     }
+
+    public void updateSafetyQuantity(
+            int storeInventoryId,
+            int safetyQuantity,
+            int currentSafetyQuantity) {
+        int result = inventoryMapper.updateSafetyQuantity(
+                storeInventoryId,
+                safetyQuantity,
+                currentSafetyQuantity);
+        if (result <= 0) {
+            throw new CustomException("안전재고 수량을 조정할 수 없습니다.");
+        }
+    }
 }

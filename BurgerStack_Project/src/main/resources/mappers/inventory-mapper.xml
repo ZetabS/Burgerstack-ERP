@@ -107,4 +107,10 @@
          WHERE STORE_INVENTORY_ID = #{storeInventoryId}
     </select>
 
+    <update id="updateSafetyQuantity">
+        UPDATE STORE_INVENTORIES
+           SET SAFETY_QUANTITY = #{safetyQuantity}
+         WHERE STORE_INVENTORY_ID = #{storeInventoryId}
+           AND SAFETY_QUANTITY = #{currentSafetyQuantity}
+    </update>
 </mapper>
