@@ -161,25 +161,52 @@ public class AdminController {
 		
 		return "user/OwnerListDetail";
 	}
-	@GetMapping("users/{userId}/status")
-	public String OwnerStatus(User u, HttpSession session) {
+	@GetMapping("users/{userId}/edit")
+	public String OwnerListEdit(
+	        @PathVariable String userId,
+	        Model model) {
+
+	    User user = adminService.OwnerListDetail(userId);
+
+	    model.addAttribute("user", user);
+
+	    return "user/OwnerListEdit";
+	}
+	@PostMapping("users/{userId}")
+	public String OwnerUpdate(@PathVariable String userId, User user, HttpSession session) {
 		
-		u.setStatus(((User)session.getAttribute("User")).getStatus());
+		user.setUserId(userId);
 		
-		int result = adminService.OwnerStatus(u);
+		if(user.getPassword() != null &&
+				!user.getPassword().trim().isEmpty()){
+				
+			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+			
+		}else{
+			user.setPassword(null);
+		}
+		
+		int result = adminService.OwnerUpdate(user);
 		
 		if(result > 0) {
-			
-			session.setAttribute("User", u);
-			
-			session.setAttribute("alertMsg", "저장되었습니다.");
-			return "user/OwnerList";
-			
-		}else {
-
-			session.setAttribute("errorMsg", "저장에 실패하였습니다.");
-			return "common/errorPage";
-			
+	        session.setAttribute("alertMsg", "점주 정보가 수정되었습니다.");
+	        return "redirect:/admin/users/" + userId;
 		}
+		return"common/errorPage";
+	}
+	
+	@PostMapping("users/{userId}/status")
+	public String OwnerStatus(@PathVariable String userId, String status) {
+		System.out.println(userId);
+		System.out.println(status);
+		
+		User u = new User();
+		u.setUserId(userId);
+		u.setStatus(status);
+		
+		adminService.OwnerStatus(u);
+		
+		return "resirect:/admin/users/" + userId;
+		
 	}
 }

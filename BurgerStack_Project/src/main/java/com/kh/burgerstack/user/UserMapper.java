@@ -20,4 +20,6 @@ public interface UserMapper {
 	public User OwnerListDetail(String userId);
 
 	public int OwnerStatus(User u);
+
+	public int OwnerUpdate(User user);
 }

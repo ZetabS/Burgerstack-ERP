@@ -42,4 +42,8 @@ public class AdminService {
 		return adminDao.OwnerStatus(u);
 	}
 
+	public int OwnerUpdate(User user) {
+		return adminDao.OwnerUpdate(user);
+	}
+
 }

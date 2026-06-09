@@ -35,6 +35,10 @@ public class AdminDao {
 		return userMapper.OwnerStatus(u);
 	}
 
+	public int OwnerUpdate(User user) {
+		return userMapper.OwnerUpdate(user);
+	}
+
 
 
 }

@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<style type="text/css">
+<style>
 #title {
 	padding-top: 30px;
 	font-weight: 1000;
@@ -75,61 +75,60 @@ input {
 <body>
 
 	<t:menubarHO>
-		<h1 id="title" align="center">점주 계정 상세조회</h1>
+		<h1 id="title" align="center">점주 계정 수정 페이지</h1>
 
-		<form id="OwnerListDetail"
-			action="/burgerstack/admin/users/${user.userId}" method="get">
+		<form action="/burgerstack/admin/users/${user.userId}" method="post">
 			<table>
 				<tr>
 					<th>아이디</th>
-					<td>${user.userId}</td>
+					<td><input type="text" name="userId" value="${user.userId}">
+					</td>
+				</tr>
+				<tr>
+					<th>비밀번호</th>
+					<td><input type="password" name="password"
+						placeholder="변경할 비밀번호 입력"></td>
 				</tr>
 				<tr>
 					<th>이름</th>
-					<td>${user.userName}</td>
+					<td><input type="text" name="userName"
+						value="${user.userName}"></td>
 				</tr>
 				<tr>
-					<th>연락처</th>
-					<td>${user.phone}</td>
+					<th>전화번호</th>
+					<td><input type="text" name="phone" value="${user.phone}">
+					</td>
 				</tr>
 				<tr>
 					<th>이메일</th>
-					<td>${user.email}</td>
+					<td><input type="email" name="email" value="${user.email}">
+					</td>
 				</tr>
 				<tr>
-					<th>등록일</th>
-					<td>${user.createdAt}</td>
+					<th>등록일시</th>
+					<td><input type="text" value="${user.createdAt}" readonly>
+					</td>
 				</tr>
 				<tr>
-				    <th>상태</th>
-				    <td>
-				        <c:choose>
-				            <c:when test="${user.status eq 'ACTIVE'}">
-				                사용중
-				            </c:when>
-				            <c:otherwise>
-				                정지
-				            </c:otherwise>
-				        </c:choose>
-				    </td>
+					<th>상태</th>
+					<td>
+						<div class="status-box">
+							<label> <input type="radio" name="status" value="ACTIVE"
+								${user.status eq 'ACTIVE' ? 'checked' : ''} checked> 사용중
+							</label> <label> <input type="radio" name="status"
+								value="INACTIVE" ${user.status eq 'INACTIVE' ? 'checked' : ''}>
+								정지
+							</label>
+						</div>
+					</td>
 				</tr>
-				
 			</table>
-				<div class="btn-area">
-				
-				    <button type="button"
-				            id="saveBtn"
-				            onclick="location.href='/burgerstack/admin/users/${user.userId}/edit'">
-				        수정
-				    </button>
-				
-				    <button type="button"
-				            id="homeBtn"
-				            onclick="location.href='/burgerstack/admin/users'">
-				        목록
-				    </button>
-				
-				</div>
+			<div class="btn-area">
+				<button type="submit" id="saveBtn">저장</button>
+				<button type="button" id="cancelBtn"
+					onclick="location.href='/burgerstack/admin/users/${user.userId}'">
+					취소</button>
+			</div>
 		</form>
 	</t:menubarHO>
 
