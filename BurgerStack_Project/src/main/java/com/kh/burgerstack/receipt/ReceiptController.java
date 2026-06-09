@@ -13,6 +13,7 @@ import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class ReceiptController {
@@ -68,7 +69,8 @@ public class ReceiptController {
                                       HttpServletRequest request,
                                       ModelAndView mv) {
 
-        mv.addObject("receiptId", receiptId);
+        mv.addObject("receipt", receiptService.selectReceiptDetail(receiptId));
+        mv.addObject("itemList", receiptService.selectReceiptItemDetailList(receiptId));
 
         if (request.getRequestURI().contains("/admin/")) {
             mv.setViewName("receipt/adminReceiptHistoryDetail");
@@ -98,4 +100,20 @@ public class ReceiptController {
 
         return "receipt/receiptPlanList";
     }
+    
+	 // 발주 입고 처리 - 점주
+	    @PostMapping("/owner/purchases/{purchaseId}/receipt")
+	    public String processReceipt(@PathVariable Long purchaseId,
+	                                 ReceiptForm form) {
+	
+	        Long createdBy = 1L; // 로그인 붙기 전 임시 사용자 ID
+	
+	        receiptService.processReceipt(purchaseId, form, createdBy);
+	
+	        return "redirect:/owner/receipts";
+    }
+    
+    
+    
+    
 }

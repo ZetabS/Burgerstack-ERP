@@ -44,4 +44,66 @@ public class ReceiptDao {
     public List<Receipt> selectReceiptList() {
         return sqlSession.selectList("ReceiptMapper.selectReceiptList");
     }
+    
+    public Long selectStoreIdByPurchaseOrderId(Long purchaseOrderId) {
+        return sqlSession.selectOne("ReceiptMapper.selectStoreIdByPurchaseOrderId", purchaseOrderId);
+    }
+
+    public int insertReceipt(Receipt receipt) {
+        return sqlSession.insert("ReceiptMapper.insertReceipt", receipt);
+    }
+
+    public int insertReceiptItem(ReceiptItem item) {
+        return sqlSession.insert("ReceiptMapper.insertReceiptItem", item);
+    }
+
+    public int insertInventoryTransaction(ReceiptTransactionParam param) {
+        return sqlSession.insert("ReceiptMapper.insertInventoryTransaction", param);
+    }
+
+    public Long selectCurrentQuantity(Long storeId, Long purchaseOrderItemId) {
+        ReceiptInventoryParam param =
+                new ReceiptInventoryParam(storeId, purchaseOrderItemId, 0L);
+
+        Long result = sqlSession.selectOne("ReceiptMapper.selectCurrentQuantity", param);
+
+        if (result == null) {
+            return 0L;
+        }
+
+        return result;
+    }
+
+    public int increaseStoreInventory(ReceiptInventoryParam param) {
+        return sqlSession.update("ReceiptMapper.increaseStoreInventory", param);
+    }
+
+    public Long selectStoreInventoryId(Long storeId, Long purchaseOrderItemId) {
+        ReceiptInventoryParam param =
+                new ReceiptInventoryParam(storeId, purchaseOrderItemId, 0L);
+
+        return sqlSession.selectOne("ReceiptMapper.selectStoreInventoryId", param);
+    }
+
+    public int insertInventoryTransactionItem(ReceiptTransactionItemParam param) {
+        return sqlSession.insert("ReceiptMapper.insertInventoryTransactionItem", param);
+    }
+
+    public int updatePurchaseOrderStatus(Long purchaseOrderId) {
+        return sqlSession.update("ReceiptMapper.updatePurchaseOrderStatus", purchaseOrderId);
+    }
+    
+    
+    public Receipt selectReceiptDetail(Long receiptId) {
+        return sqlSession.selectOne("ReceiptMapper.selectReceiptDetail", receiptId);
+    }
+
+    public List<ReceiptItemDetail> selectReceiptItemDetailList(Long receiptId) {
+        return sqlSession.selectList("ReceiptMapper.selectReceiptItemDetailList", receiptId);
+    }
+    
+    
+    
+    
+    
 }
