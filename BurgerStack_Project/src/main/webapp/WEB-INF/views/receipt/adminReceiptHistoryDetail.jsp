@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>   
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -128,11 +128,8 @@
 	    min-height: auto !important;
 	}
 	
-	.receipt-info{
-	    display:flex;
-	    gap:50px;
-	    font-size:16px;
-	    font-weight:500;
+	.receive-info {
+	    margin-bottom: 20px;
 	}
 	
 	.table {
@@ -141,84 +138,104 @@
 </style>
 </head>
 <body>
-    <t:menubarBO>
-        <h2>입고 이력 상세 보기</h2>
 
-        <!-- 검색 -->
-        <div class="search-area" align="right">
-            <select id="materialType" onchange="filterMaterialType(this.value)">
-			    <option value="">자재 유형</option>
-			    <option value="냉장">냉장</option>
-			    <option value="냉동">냉동</option>
-			</select>
-            <input type="text" placeholder="검색어 입력">
-            <button type="button" onclick="alert('클릭!')">
-                <img src="..\..\resources\images\BS_logo2.png" style="width: 16px;"/>
-                검색
-            </button>                
-        </div>
-	
-        <div class="receipt-info">
-		    <span>입고 번호 : ${receipt.receiptId}</span>
-		    <span>발주 번호 : ${receipt.purchaseOrderId}</span>
-		    <span>입고 메모 : ${receipt.receiptMemo}</span>
-		</div>
-		            
-        </div>
-	        <table class="table">
-	    <thead>
-	        <tr>
-	            <th>자재 코드</th>
-	            <th>자재명</th>
-	            <th>자재 유형</th>
-	            <th>단가</th>
-	            <th>요청 수량</th>
-	            <th>실수령 수량</th>
-	            <th>불량 수량</th>
-	            <th>불량 사유</th>
-	            <th>금액</th>
-	        </tr>
-	    </thead>
-	
-	    <tbody>
-	        <c:set var="totalPrice" value="0" />
-	
-	        <c:forEach var="item" items="${itemList}">
-	            <tr data-type="${item.materialType}">
-	                <td>${item.materialCode}</td>
-	                <td>${item.materialName}</td>
-	                <td>${item.materialType}</td>
-	                <td>${item.supplyPrice}</td>
-	                <td>${item.requestQuantity}</td>
-	                <td>${item.receivedQuantity}</td>
-	                <td>${item.defectQuantity}</td>
-	                <td>
-	                    <c:choose>
-	                        <c:when test="${empty item.receiptItemMemo}">
-	                            -
-	                        </c:when>
-	                        <c:otherwise>
-	                            ${item.receiptItemMemo}
-	                        </c:otherwise>
-	                    </c:choose>
-	                </td>
-	                <td class="price">${item.amount}</td>
-	            </tr>
-	
-	            <c:set var="totalPrice" value="${totalPrice + item.amount}" />
-	        </c:forEach>
-	
-	        <tr class="total-row">
-	            <th>총금액</th>
-	            <td colspan="8" align="right">
-	                <span id="totalPrice" class="total-price">${totalPrice}원</span>
-	            </td>
-	        </tr>
-	    </tbody>
-	</table>
-	</t:menubarBO>
-	
-	<script>
+<t:menubarHO>
+
+    <h2>입고 이력 상세 보기</h2>
+
+    <div class="search-area" align="right">
+
+        <select id="materialType" onchange="filterMaterialType(this.value)">
+		    <option value="">자재 유형</option>
+		    <option value="냉장">냉장</option>
+		    <option value="냉동">냉동</option>
+		</select>
+
+        <input type="text" placeholder="검색어 입력">
+
+        <button type="button" onclick="filterMaterialType()">
+            <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png"
+                 style="width:16px;">
+            검색
+        </button>
+
+    </div>
+
+    <div class="receive-info">
+        <table>
+            <tr>
+                <td>입고 번호 : ${receiptId}</td>
+                <td>승인 담당자 : -</td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>자재 코드</th>
+                <th>자재명</th>
+                <th>자재 유형</th>
+                <th>단가</th>
+                <th>요청 수량</th>
+                <th>실수령 수량</th>
+                <th>불량 수량</th>
+                <th>불량 사유</th>
+                <th>금액</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr id="row1" data-type="냉장">
+                <td>FF133</td>
+                <td>토마토</td>
+                <td>냉장</td>
+                <td>640</td>
+                <td>10</td>
+                <td>10</td>
+                <td>0</td>
+                <td>-</td>
+                <td class="price">6400</td>
+            </tr>
+
+            <tr id="row2" data-type="냉장">
+                <td>FF123</td>
+                <td>양상추</td>
+                <td>냉장</td>
+                <td>640</td>
+                <td>10</td>
+                <td>12</td>
+                <td>0</td>
+                <td>-</td>
+                <td class="price">6400</td>
+            </tr>
+
+            <tr id="row3" data-type="냉동">
+                <td>ICE121</td>
+                <td>레귤러 번</td>
+                <td>냉동</td>
+                <td>500</td>
+                <td>10</td>
+                <td>8</td>
+                <td>2</td>
+                <td>변질</td>
+                <td class="price">4000</td>
+            </tr>
+
+            <tr>
+			    <th>총금액</th>
+			    <td colspan="8" align="right">
+			        <span id="totalPrice">16800원</span>
+			    </td>
+			</tr>
+
+        </tbody>
+    </table>
+
+</t:menubarHO>
+
+		<script>
 		function filterMaterialType(type) {
 		
 		    if(type === undefined){

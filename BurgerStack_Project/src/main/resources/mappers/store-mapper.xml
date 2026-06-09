@@ -10,7 +10,7 @@
 	        resultType="int">
 	    SELECT COUNT(*)
 	    FROM USERS
-	    WHERE USER_ID = #{ownerUserId}
+	    WHERE USER_ID = #{ownerUserNo}
 	      AND USER_ROLE = 'OWNER'
 	</select>
 
@@ -32,7 +32,7 @@
 	        STORE_NAME,
 	        PHONE,
 	        ADDRESS,
-	        OWNER_USER_ID,
+	        OWNER_USER_No,
 	        STATUS,
 	        CREATED_BY,
 	        CREATED_AT
@@ -44,7 +44,7 @@
 	        #{storeName},
 	        #{phone},
 			#{address},
-	        #{ownerUserId},
+	        #{ownerUserNo},
 	        'OPEN',
 	        1,
 	        SYSDATE
@@ -129,7 +129,7 @@
 	        STORE_NAME AS storeName,
 	        PHONE AS phone,
 			ADDRESS AS address,
-	        OWNER_USER_ID AS ownerUserId,
+	        OWNER_USER_NO AS ownerUserNo,
 			STATUS AS status
 	    FROM STORES
 	    WHERE STORE_ID = #{storeId}
@@ -176,5 +176,45 @@
 	    WHERE STORE_ID = #{storeId}
 	
 	</delete>
+	
+	<select id="selectStoreByOwnerUserNo"
+        parameterType="long"
+        resultType="com.kh.burgerstack.store.Store">
+
+    SELECT
+        STORE_ID AS storeId,
+        STORE_CODE AS storeCode,
+        STORE_NAME AS storeName,
+        PHONE AS phone,
+        ADDRESS AS address,
+        OWNER_USER_NO AS ownerUserNo,
+        STATUS AS status
+    FROM STORES
+    WHERE OWNER_USER_NO = #{ownerUserNo}
+
+</select>
+
+	<select id="selectOwnerStoreList"
+        parameterType="string"
+        resultType="com.kh.burgerstack.store.StoreListRow">
+
+    SELECT
+        STORE_ID AS storeId,
+        STORE_CODE AS storeCode,
+        STORE_NAME AS storeName,
+        PHONE AS phone,
+        ADDRESS AS address,
+        STATUS AS status,
+        CREATED_AT AS createdAt
+    FROM STORES
+    WHERE 1 = 1
+
+    <if test="_parameter != null and _parameter != ''">
+        AND STATUS = #{status}
+    </if>
+
+    ORDER BY STORE_ID DESC
+
+</select>
 
 </mapper>

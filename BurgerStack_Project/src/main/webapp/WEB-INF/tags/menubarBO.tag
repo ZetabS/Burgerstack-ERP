@@ -309,15 +309,19 @@ body{
             <div class="menu">
 
                 <!-- 점포 관리 -->
-                <div class="menu-item">
-                    <div class="menu-title">
-                        점포 관리
-                    </div>
+                <div class="menu-item active">
 
-                    <ul class="submenu" >
-                        <a href="/burgerstack/owner/store"><li>입고 예정 목록</li></a>
-                    </ul>
-                </div>
+				    <div class="menu-title">
+				        점포 관리
+				    </div>
+				
+				    <ul class="submenu">
+				        <a href="${pageContext.request.contextPath}/owner/store">
+				            <li>점포 상세 정보 조회</li>
+				        </a>
+				    </ul>
+				
+				</div>
 
                 <!-- 입고 관리 -->
                 <div class="menu-item">
