@@ -9,7 +9,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>점주 계정 목록 조회</title>
+<title>문의사항 목록 조회</title>
 
 <style>
 
@@ -69,40 +69,35 @@
 </head>
 <body>
 
-<t:menubarHO>
+<t:menubarBO>
 
     <h1>점주 계정 목록 조회</h1>
 
     <div class="content">
 
-		<form action="/burgerstack/admin/users" method="get">
-		
-		    <div class="search-area">
-		
-		        <select name="status">
-		            <option value="">전체상태</option>
-		            <option value="ACTIVE">사용중</option>
-		            <option value="INACTIVE">정지</option>
-		        </select>
-		
-		        <input type="text"
-		               name="keyword"
-		               placeholder="아이디 또는 이름 검색">
-		
-		        <button type="submit">검색</button>
-		
-		    </div>
-		
-		</form>
+        <div class="search-area">
+
+            <select name="status">
+                <option value="">전체상태</option>
+                <option value="ACTIVE">답변 완료</option>
+                <option value="INACTIVE">미답변</option>
+            </select>
+
+            <input type="text"
+                   name="keyword"
+                   placeholder="아이디 또는 이름 검색">
+
+            <button>검색</button>
+
+        </div>
 		<table>
 			    <colgroup>
 			        <col style="width:7%">
 			        <col style="width:13%">
-			        <col style="width:10%">
+			        <col style="width:30%">
 			        <col style="width:15%">
-			        <col style="width:25%">
+			        <col style="width:15%">
 			        <col style="width:20%">
-			        <col style="width:10%">
 			    </colgroup>
             <thead>
                 <tr>
@@ -112,7 +107,6 @@
                     <th>연락처</th>
                     <th>이메일</th>
                     <th>등록일</th>
-                    <th>상태</th>
                 </tr>
             </thead>
 
@@ -155,16 +149,17 @@
                                     <c:choose>
 
                                         <c:when test="${u.status eq 'ACTIVE'}">
-                                            사용중
+                                            답변 완료
                                         </c:when>
 
                                         <c:otherwise>
-                                            정지
+                                            미답변
                                         </c:otherwise>
 
                                     </c:choose>
                                 </td>
-
+                                
+								<td>${u.createdAt}</td>
                             </tr>
 
                         </c:forEach>
@@ -179,7 +174,7 @@
 
     </div>
 
-</t:menubarHO>
+</t:menubarBO>
 
 </body>
 </html>

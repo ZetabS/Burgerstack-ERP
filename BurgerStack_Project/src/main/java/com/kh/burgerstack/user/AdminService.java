@@ -29,9 +29,10 @@ public class AdminService {
 	
 	}
 
-	public List<User> OwnerList() {
-		
-		return adminDao.OwnerList();
+	public List<User> OwnerList(String status,
+            String keyword) {
+
+		return adminDao.OwnerList(status, keyword);
 	}
 
 	public User OwnerListDetail(String userId) {
