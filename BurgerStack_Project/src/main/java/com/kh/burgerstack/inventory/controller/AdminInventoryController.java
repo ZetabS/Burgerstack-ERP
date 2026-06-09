@@ -67,6 +67,6 @@ public class AdminInventoryController {
         inventoryService.adjust(inventoryId, inventoryAdjustRequest, loginUser);
 
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
-        return "redirect:/admin/inventories/" + inventoryId + "/edit";
+        return "redirect:/admin/inventories";
     }
 }
