@@ -309,7 +309,7 @@ body{
             <div class="menu">
 
                 <!-- 점포 관리 -->
-                <div class="menu-item active">
+                <div class="menu-item">
 
 				    <div class="menu-title">
 				        점포 관리
