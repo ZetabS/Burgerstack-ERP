@@ -60,6 +60,7 @@
       <t:pagination pageInfo="${pageInfo}"></t:pagination>
     </t:menubarBO>
     <script>
+      sessionStorage.setItem("inventoryListUrl", window.location.pathname + window.location.search);
       $(() => {
         $("#material-type-option").on("change", () => $("form").submit());
         $("#below-safety-checkbox").on("change", () => $("form").submit());

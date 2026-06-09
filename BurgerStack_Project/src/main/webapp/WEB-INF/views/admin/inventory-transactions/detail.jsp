@@ -132,7 +132,7 @@
       </div>
     </t:menubarHO>
     <script>
-      $("#back-to-list").on("click", (e) => {
+      $(".back-to-list-btn").on("click", (e) => {
         const listUrl = sessionStorage.getItem("inventoryTransactionListUrl");
         if (listUrl) {
           e.preventDefault();

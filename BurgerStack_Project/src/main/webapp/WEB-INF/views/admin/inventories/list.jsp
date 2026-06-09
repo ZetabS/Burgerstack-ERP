@@ -69,6 +69,7 @@
       <t:pagination pageInfo="${view.pageInfo}" />
     </t:menubarHO>
     <script>
+      sessionStorage.setItem("inventoryListUrl", window.location.pathname + window.location.search);
       $(() => {
         $("#store-option").on("change", () => $("form").submit());
         $("#material-type-option").on("change", () => $("form").submit());

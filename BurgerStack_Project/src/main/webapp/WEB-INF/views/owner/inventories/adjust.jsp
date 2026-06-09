@@ -58,11 +58,20 @@
           </div>
 
           <div class="d-flex justify-content-end">
-            <a href="/burgerstack/owner/inventories" class="btn btn-secondary mr-2">목록</a>
-            <button type="submit" class="btn btn-primary">저장</button>
+            <a href="/burgerstack/owner/inventories" class="btn btn-secondary mr-2 back-to-list-btn">목록으로</a>
+            <button type="submit" class="btn btn-primary">조정</button>
           </div>
         </form>
       </div>
     </t:menubarBO>
+    <script>
+      $(".back-to-list-btn").on("click", (e) => {
+        const listUrl = sessionStorage.getItem("inventoryListUrl");
+        if (listUrl) {
+          e.preventDefault();
+          window.location.href = listUrl;
+        }
+      });
+    </script>
   </body>
 </html>
