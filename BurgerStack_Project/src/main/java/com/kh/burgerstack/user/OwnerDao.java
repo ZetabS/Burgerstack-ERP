@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OwnerDao {
 	
-	private UserMapper userMapper;
+	private final UserMapper userMapper;
 	
 	public int update(User u) {
 		

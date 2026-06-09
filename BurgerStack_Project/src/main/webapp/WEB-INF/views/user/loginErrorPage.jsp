@@ -97,7 +97,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-	<form id="login-ErrorPage" action="loginErrorPage" method="get">
+	<form id="login-ErrorPage" action="/burgerstack/auth/loginErrorPage" method="get">
 		<div>
 			<div  class="outer">
 				<div id="header">

@@ -8,11 +8,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserDao {
 
-	private final UserMapper userMapper;
-	
-	public int insertStoreOwner(User u) {
-		
-		return userMapper.insertStoreOwner(u);
-	}
-
+	//private final UserMapper userMapper;
 }
