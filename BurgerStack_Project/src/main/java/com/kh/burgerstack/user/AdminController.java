@@ -194,19 +194,4 @@ public class AdminController {
 		}
 		return"common/errorPage";
 	}
-	
-	@PostMapping("users/{userId}/status")
-	public String OwnerStatus(@PathVariable String userId, String status) {
-		System.out.println(userId);
-		System.out.println(status);
-		
-		User u = new User();
-		u.setUserId(userId);
-		u.setStatus(status);
-		
-		adminService.OwnerStatus(u);
-		
-		return "resirect:/admin/users/" + userId;
-		
-	}
 }
