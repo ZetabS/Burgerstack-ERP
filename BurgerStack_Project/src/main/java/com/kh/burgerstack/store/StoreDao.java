@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
 
+import com.kh.burgerstack.store.dto.StoreOption;
+
 @Repository
 public class StoreDao {
     @Autowired
@@ -93,6 +95,10 @@ public class StoreDao {
 	            "storeMapper.selectOwnerStoreList",
 	            status
 	    );
+	}
+
+	public List<StoreOption> getStoreOptions() {
+		return storeMapper.getStoreOptions();
 	}
 }
 

@@ -149,7 +149,6 @@ COMMENT ON COLUMN USERS.CREATED_AT IS
 
 -- 점포
 CREATE TABLE STORES (
-
     STORE_ID      NUMBER NOT NULL
     , STORE_CODE    VARCHAR2(30) NOT NULL
     , STORE_NAME    VARCHAR2(100) NOT NULL
@@ -202,8 +201,18 @@ CREATE TABLE MATERIALS (
     , UPDATED_AT    DATE
     , CONSTRAINT PK_MATERIALS PRIMARY KEY ( MATERIAL_ID )
     , CONSTRAINT UK_MATERIALS_CODE UNIQUE ( MATERIAL_CODE )
+    , CONSTRAINT CK_MATERIALS_TYPE
+        CHECK ( MATERIAL_TYPE IN ( 'AF', 'RF', 'FF', 'PK', 'KW', 'ET' ) )
     , CONSTRAINT CK_MATERIALS_STATUS CHECK ( STATUS IN ( 'ACTIVE', 'INACTIVE' ) )
 );
+
+-- 자재 유형
+-- 'AF' 상온식품
+-- 'RF' 냉장식품
+-- 'FF' 냉동식품
+-- 'PK' 포장재
+-- 'KW' 주방용품
+-- 'ET' 기타
 
 CREATE SEQUENCE SEQ_MATERIAL START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
@@ -899,7 +908,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-001'
          , '참깨번'
-         , 'FOOD'
+         , 'AF'
          , 1000 );
 
 INSERT INTO MATERIALS (
@@ -911,7 +920,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-002'
          , '비프패티'
-         , 'FOOD'
+         , 'AF'
          , 2000 );
 
 INSERT INTO MATERIALS (
@@ -923,7 +932,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-003'
          , '체다치즈'
-         , 'FOOD'
+         , 'AF'
          , 300 );
 
 INSERT INTO MATERIALS (
@@ -935,7 +944,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-004'
          , '양상추'
-         , 'FOOD'
+         , 'AF'
          , 200 );
 
 INSERT INTO MATERIALS (
@@ -947,7 +956,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-005'
          , '토마토'
-         , 'FOOD'
+         , 'AF'
          , 250 );
 
 INSERT INTO MATERIALS (
@@ -959,7 +968,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-006'
          , '양파'
-         , 'FOOD'
+         , 'AF'
          , 150 );
 
 INSERT INTO MATERIALS (
@@ -971,7 +980,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-007'
          , '피클'
-         , 'FOOD'
+         , 'AF'
          , 100 );
 
 INSERT INTO MATERIALS (
@@ -983,7 +992,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-008'
          , '베이컨'
-         , 'FOOD'
+         , 'AF'
          , 800 );
 
 INSERT INTO MATERIALS (
@@ -995,7 +1004,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-009'
          , '계란'
-         , 'FOOD'
+         , 'AF'
          , 500 );
 
 INSERT INTO MATERIALS (
@@ -1007,7 +1016,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-010'
          , '마요네즈'
-         , 'FOOD'
+         , 'AF'
          , 100 );
 
 INSERT INTO STORE_INVENTORIES (
@@ -1375,7 +1384,3 @@ INSERT INTO STORE_INVENTORIES (
 
 -- 커밋
 COMMIT;
-
-SELECT table_name
-FROM user_tables
-WHERE table_name = 'INVENTORY_TRANSACTIONS';

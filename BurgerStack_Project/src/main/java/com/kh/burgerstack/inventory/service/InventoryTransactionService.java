@@ -14,6 +14,8 @@ import com.kh.burgerstack.inventory.dto.InventoryTransactionListItem;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionListView;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionSearchCondition;
 import com.kh.burgerstack.inventory.vo.InventoryTransaction;
+import com.kh.burgerstack.store.StoreDao;
+import com.kh.burgerstack.store.dto.StoreOption;
 import com.kh.burgerstack.user.LoginUser;
 
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,10 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class InventoryTransactionService {
-    private final InventoryTransactionDao inventoryTransactionDao;
     private static final List<String> TRANSACTION_TYPE = List.of("RECEIPT", "STORE_CLOSING", "ADJUSTMENT");
+
+    private final InventoryTransactionDao inventoryTransactionDao;
+    private final StoreDao storeDao;
 
     @Transactional
     public InventoryTransaction createTransaction(InventoryTransactionCreateCommand command) {
@@ -54,8 +58,13 @@ public class InventoryTransactionService {
                 pagingRequest,
                 loginUser);
         int totalCount = inventoryTransactionDao.count(condition);
+        List<StoreOption> storeOptions = storeDao.getStoreOptions();
 
-        return new InventoryTransactionListView(list, pagingRequest.toPageInfo(totalCount));
+        return new InventoryTransactionListView(
+                list,
+                storeOptions,
+                condition,
+                pagingRequest.toPageInfo(totalCount));
     }
 
     public InventoryTransactionDetail getInventoryTransactionDetail(

@@ -16,17 +16,17 @@
 <nav aria-label="페이지네이션">
   <ul class="pagination justify-content-center js-pagination">
     <li class="page-item ${pageInfo.hasPrevious ? '' : 'disabled'}">
-      <a class="page-link" href="${ uri:applyPagination(pageContext.request.queryString, pageInfo.previousPage, pageInfo.pageSize) }"> 이전 </a>
+      <a class="page-link" href="${ uri:applyPagination(pageContext.request.queryString, pageInfo.previousPage, pageInfo.size) }"> 이전 </a>
     </li>
 
     <c:forEach var="pageNo" begin="${pageInfo.startPage}" end="${pageInfo.endPage}">
-      <li class="page-item ${pageNo eq pageInfo.currentPage ? 'active' : ''}">
-        <a class="page-link" href="${ uri:applyPagination(pageContext.request.queryString, pageNo, pageInfo.pageSize) }"> ${pageNo} </a>
+      <li class="page-item ${pageNo eq pageInfo.page ? 'active' : ''}">
+        <a class="page-link" href="${ uri:applyPagination(pageContext.request.queryString, pageNo, pageInfo.size) }"> ${pageNo} </a>
       </li>
     </c:forEach>
 
     <li class="page-item ${pageInfo.hasNext ? '' : 'disabled'}">
-      <a class="page-link" href="${ uri:applyPagination(pageContext.request.queryString, pageInfo.nextPage, pageInfo.pageSize) }"> 다음 </a>
+      <a class="page-link" href="${ uri:applyPagination(pageContext.request.queryString, pageInfo.nextPage, pageInfo.size) }"> 다음 </a>
     </li>
   </ul>
 </nav>
