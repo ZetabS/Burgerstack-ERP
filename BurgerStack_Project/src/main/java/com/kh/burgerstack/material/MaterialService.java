@@ -15,27 +15,32 @@ public class MaterialService {
     @Transactional
     public int materialInsert(Material m) {
         return materialDao.materialInsert(m);
-    } //materialInsert
-    
+    }
+
+    @Transactional
+    public int materialFileInsert(MaterialFile materialFile) {
+        return materialDao.materialFileInsert(materialFile);
+    }
+
     public ArrayList<Material> selectMaterialList() {
-    	return materialDao.selectMaterialList();
-    } //selectMaterialList
-    
+        return materialDao.selectMaterialList();
+    }
+
     public Material materialDetail(Long materialId) {
-    	return materialDao.materialDetail(materialId);
-    } //materialDetail
-    
+        return materialDao.materialDetail(materialId);
+    }
+
     @Transactional
     public int updateMaterial(Material m) {
-    	return materialDao.updateMaterial(m);
+        return materialDao.updateMaterial(m);
     }
-    
+
     public Material selectMaterial(Long finalMaterialId) {
-		return materialDao.selectMaterial(finalMaterialId);
-	}
-    
+        return materialDao.selectMaterial(finalMaterialId);
+    }
+
     @Transactional
     public int deleteMaterial(Long materialId) {
-    	return materialDao.deleteMaterial(materialId);
+        return materialDao.deleteMaterial(materialId);
     }
 }

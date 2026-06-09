@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -46,7 +46,7 @@
             <hr>
             <c:choose>
                 <c:when test="${not empty material}">
-                    <!-- 수정 모드일 때: 변수명이 정확한지 확인 (예: materialId) -->
+                    <!-- 수정 모드일 때 -->
                     <c:url var="formAction" value="/admin/materials/${material.materialId}" />
                 </c:when>
                 <c:otherwise>
@@ -62,23 +62,28 @@
 
                 <input type="hidden" name="createdBy" value="1">
 
-                <div id="img-area" onclick="" align="center">
-                    <div id="imagePreviewContainer" onclick="document.getElementById('fileInput').click();" style="width: 300px; height: 300px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin: 0 auto 20px;">
+                <div id="img-area" align="center">
+                    <div id="imagePreviewContainer" onclick="document.getElementById('fileInput').click();" 
+                        style="width: 300px; height: 300px; border: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin: 0 auto 20px; position: relative; background-color: #fff;">
                         
-                        <span id="uploadText" style="color: #888; ${not empty material.imageFileId ? 'display:none;' : ''}">
+                        <!-- 등록된 사진 없을 때(수정/신규) -->
+                        <span id="uploadText" style="color: #888; text-align: center; ${not empty material.materialFiles ? 'display: none;' : 'display: block;'}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#888888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-plus-icon lucide-image-plus"><path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/></svg>
                             <br>
                             클릭해서 사진 등록
                         </span>
                         
-                        <img id="imagePreview" 
-                             src="${not empty material.imageFileId ? pageContext.request.contextPath.concat('/resources/images/').concat(material.imageFileId) : ''}" 
-                             alt="자재 이미지" 
-                             style="width: 100%; height: 100%; object-fit: cover; ${not empty material.imageFileId ? 'display:block;' : 'display:none;'}">
+                        <!-- 등록된 사진 있을 때(수정) -->
+                        <img id="imagePreview"
+                            src="${not empty material.materialFiles
+                                    ? pageContext.request.contextPath.concat('/material-files/').concat(material.materialFiles[0].storedName)
+                                    : ''}"
+                            alt="자재 이미지"
+                            style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; ${not empty material.materialFiles ? 'display: block;' : 'display: none;'}">
                     </div>
                     <input type="file" id="fileInput" name="materialImage"
-                           accept="image/*" style="display: none;"
-                           onchange="previewImage(this)">
+                        accept="image/*" style="display: none;"
+                        onchange="previewImage(this)">
                 </div>
 
                 <hr>
@@ -106,15 +111,9 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>원가</th>
+                            <th>공급가</th>
                             <td>
-                                <input type="text" name="costPrice" value="${material.costPrice}" required>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>판매가</th>
-                            <td>
-                                <input type="text" name="sellingPrice" value="${material.sellingPrice}">
+                                <input type="text" name="supplyPrice" value="${material.supplyPrice}" required>
                             </td>
                         </tr>
                         <tr>

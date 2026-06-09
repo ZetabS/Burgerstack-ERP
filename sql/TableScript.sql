@@ -100,7 +100,9 @@ DROP SEQUENCE SEQ_STORE;
 DROP TABLE USERS CASCADE CONSTRAINTS;
 DROP SEQUENCE SEQ_USER;
 
-
+-- (구) 파일
+DROP TABLE FILES;
+DROP SEQUENCE SEQ_FILE;
 -- =========================================================
 -- 2. 기준 / 공통
 -- =========================================================

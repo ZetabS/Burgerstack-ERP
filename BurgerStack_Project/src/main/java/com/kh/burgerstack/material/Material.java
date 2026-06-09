@@ -2,8 +2,7 @@ package com.kh.burgerstack.material;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-import com.kh.burgerstack.file.StoredFile;
+import java.util.ArrayList;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +25,15 @@ public class Material {
 	private String status;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-	
-	private StoredFile storedFile;
+	private ArrayList<MaterialFile> materialFiles;
+
+    private String imageFileId;
+    
+    // 목록/상세 조회 시 이미지 편의 접근용
+    public MaterialFile getRepresentativeFile() {
+        if (materialFiles != null && !materialFiles.isEmpty()) {
+            return materialFiles.get(0);
+        }
+        return null;
+    }
 }

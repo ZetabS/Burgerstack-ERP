@@ -139,6 +139,7 @@
         font-size: 28px;
         cursor: pointer;
         color: #64748B;
+        padding-right : 20px;
     }
 
     .close-btn:hover {

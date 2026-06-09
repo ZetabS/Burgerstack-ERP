@@ -110,7 +110,13 @@ public class FileStore {
                     storedName);
         }
 
-        return "%s/%04d/%02d/%02d/%s".formatted(prefix, storedName);
+        return "%s/%04d/%02d/%02d/%s".formatted(
+                prefix,
+                now.getYear(),
+                now.getMonthValue(),
+                now.getDayOfMonth(),
+                storedName);
+
     }
 
     private String generateStoredName(String extension) {

@@ -5,104 +5,188 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>자재 목록 전체 조회</title>
+    <title>BurgerStack</title>
     <style>
-        .all-list { margin: auto; padding: 15px; width: 80%; }
-        .category-section { margin-bottom: 40px; }
-        .category-title { margin: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        .product-grid { display: flex; flex-wrap: wrap; gap: 20px; padding: 0 20px; }
+        .all-list {
+            margin: auto; padding: 15px; width: 80%;
+        }
+        .category-section {
+            margin-bottom: 40px;
+        }
+        .category-title {
+            margin: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px;
+        }
         
-        /* 💡 만약 레이아웃 템플릿에에 따라 사이드바가 안 보일 때를 대비한 안전장치 CSS */
-        aside.open, .sidebar.open, #detailDrawer.open {
+        /* 이미지 카드 그리드 배치 보완 */
+        .product-grid { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+            padding: 0 20px; 
+        }
+        
+        /* 이미지 카드 디자인 */
+        .product-grid .img-wrap {
+            width: 200px;
+            height: 240px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 8px 10px 10px 10px;
+            background-color: #fff;
+            text-align: center;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .product-grid .img-wrap:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .product-grid .img-wrap b {
+            font-size: 13px;
+            line-height: 1.3;
+            color: #1e293b;
+            display: block;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+        .product-grid .img-wrap br {
+           display: none !important;
+        }
+
+        /* 사진 가득 차게 고정 */
+        .product-grid .img-wrap img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: auto;
+        }
+        
+        aside.open, .sidebar.open, #detailDrawer.open,
+        aside.active, .sidebar.active, #detailDrawer.active {
             display: block !important;
             transform: translateX(0) !important;
             right: 0 !important;
+            z-index: 9999 !important;
+        }
+        .material-info-p {
+            font-size: 15px;
+            color: #4a5568;
+            line-height: 2;
+        }
+        .material-info-p strong {
+            display: inline-block;
+            width: 75px;
+            color: #1e293b;
         }
     </style>
 </head>
 <body> 
-
-    <!-- 💡 현재 UI가 관리자 메뉴바인 <t:menubarHO>를 바라보고 있습니다. 
-         만약 점주 전용 메뉴바 태그(예: <t:menubarJO> 등)가 따로 있다면 이 태그명을 꼭 변경해 주세요! -->
+    <!-- 관리자용 메뉴바 -->
     <t:menubarBO>
-        <!-- 우측 상세 정보 사이드바(드로어) -->
+        <!-- 상세정보 사이드바 -->
         <t:sidebar>
             <jsp:attribute name="sidebarTitle">
                 <span id="drawerSidebarTitle">자재 상세 정보</span>
             </jsp:attribute>
             <jsp:body>
                 <br>
-                <img id="drawerImage"
-                     src=""
-                     alt="자재 이미지"
-                     onerror="this.src='${pageContext.request.contextPath}/resources/images/BS_logo1.svg'"
-                     style="display: none; width: 60%; margin: 0 auto; border-radius: 8px; border: 1px solid #ddd; padding: 5px;">
-                
+                <div id="drawerImageWrapper" style="display: none; width: 210px; height: 210px; margin: 0 auto; border-radius: 8px; border: 1px solid #dddddd; overflow: hidden; background-color: #ffffff;">
+                    <img id="drawerImage"
+                        src=""
+                        alt="자재 이미지"
+                        onerror="this.src='${pageContext.request.contextPath}/resources/images/BS_logo1.svg'"
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
                 <br>
                 
-                <div class="drawer-info-wrap" style="width: 80%; margin: 0 auto; color: #4a5568; line-height: 1.8; font-size: 15px;">
+                <div class="drawer-info-wrap" style="width: 80%; margin: 0 auto;">
                 
                     <hr style="margin: 15px 0; border-top: 1px solid #e2e8f0;">
                     
-                    <div id="drawerDetails" style="background-color: #f8fafc; padding: 10px; border-radius: 6px; font-style: italic; color: #64748b; min-height: 40px;">
-                        <!-- AJAX 데이터 주입 구역 -->
-                    </div>
+                    <!-- 공급가, 상태 정보 영역 -->
+                    <p class="material-info-p">
+                        <strong>공급가 :</strong> <span id="drawerSupplyPrice" style="color: #65a30d; font-weight: bold;">0</span>원<br>
+                        <strong>상태 :</strong> <span id="drawerStatus" class="badge">상태 정보</span>
+                    </p>
+                    
                     <hr style="margin: 15px 0; border-top: 1px solid #e2e8f0;">
                     
-                    <!-- 가격, 재고 및 상태 정보 (status) -->
-                    <div>
-                        <p>
-                            <strong>재고 :</strong> <span id="drawerStock" style="color: #ff7a00; font-weight: bold;">10 ea</span><br>
-                            <strong>원가 :</strong> <span id="drawerCostPrice" style="color: #65a30d; font-weight: bold;">0</span>원<br>
-                            <strong>판매가 :</strong> <span id="drawerSellingPrice" style="color: #2563eb; font-weight: bold;">0</span>원<br>
-                            <strong>상태 :</strong> <span id="drawerStatus" class="badge">상태 정보</span>
-                        </p>
+                    <!-- 상세정보 타이틀 및 본문 영역 -->
+                    <p class="material-info-p" style="margin-bottom: 5px;"><strong>상세정보 :</strong></p>
+                    <div id="drawerDetails" style="background-color: #f8fafc; padding: 12px; border-radius: 6px; color: #64748b; min-height: 60px; font-size: 14px; white-space: pre-wrap; word-break: break-all;">
+                        <!-- 데이터 주입 구역 -->
                     </div>
                 </div>
             </jsp:body>
         </t:sidebar>
 
-        <!-- 본문 리스트 영역 -->
+        <!-- 전체 목록 리스트 영역 -->
         <div class="all-list">
-            <h1>자재 목록 상세 조회</h1>
+            <h1>자재 목록 조회</h1>
+            <br>
 
-            <div class="category-section">
-                <c:forEach var="m" items="${materials}" varStatus="status">
-                    <c:if test="${status.first || m.materialType != materials[status.index - 1].materialType}">
-                        <c:if test="${!status.first}"></div></div><div class="category-section"></c:if>
+            <c:forEach var="targetType" items="AF,RF,FF,PK,KW,ET">
+                
+                <c:set var="hasItem" value="false" />
+                <c:forEach var="check" items="${materials}">
+                    <c:if test="${check.materialType eq targetType}">
+                        <c:set var="hasItem" value="true" />
+                    </c:if>
+                </c:forEach>
+                
+                <c:if var="displaySection" test="${hasItem}">
+                    <div class="category-section">
                         <h2 class="category-title">
                             <c:choose>
-                                <c:when test="${m.materialType eq 'RF'}">냉장식품</c:when>
-                                <c:when test="${m.materialType eq 'FF'}">냉동식품</c:when>
-                                <c:when test="${m.materialType eq 'AF'}">상온식품</c:when>
-                                <c:when test="${m.materialType eq 'PK'}">포장재</c:when>
-                                <c:when test="${m.materialType eq 'KW'}">주방용품</c:when>
+                                <c:when test="${targetType eq 'AF'}">상온식품</c:when>
+                                <c:when test="${targetType eq 'RF'}">냉장식품</c:when>
+                                <c:when test="${targetType eq 'FF'}">냉동식품</c:when>
+                                <c:when test="${targetType eq 'PK'}">포장재</c:when>
+                                <c:when test="${targetType eq 'KW'}">주방용품</c:when>
                                 <c:otherwise>기타</c:otherwise>
                             </c:choose>
                         </h2>
+                        
                         <div class="product-grid">
-                    </c:if>
-
-                    <div class="img-wrap" onclick="MaterialDrawer.getDetail('${m.materialId}', '${m.materialName}')" style="cursor: pointer;">
-                        <b>${m.materialName}</b><br>
-                        <c:choose>
-                            <c:when test="${empty m.imageFileId}">
-                                <img src="${pageContext.request.contextPath}/resources/images/BS_logo1.svg" alt="${m.materialName}">
-                            </c:when>
-                            <c:otherwise>
-                                <img src="${pageContext.request.contextPath}/files/${m.imageFileId}" alt="${m.materialName}">
-                            </c:otherwise>
-                        </c:choose>
+                            <c:forEach var="m" items="${materials}">
+                                <c:if test="${m.materialType eq targetType}">
+                                    <div class="img-wrap" onclick="MaterialDrawer.getDetail('${m.materialId}', '${m.materialName}')" style="cursor: pointer;">
+                                        <b>${m.materialName}</b><br>
+                                        <c:choose>
+                                            <c:when test="${not empty m.materialFiles}">
+                                                <img src="${pageContext.request.contextPath}/material-files/${m.materialFiles[0].storedName}"
+                                                    alt="${m.materialName}">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <img src="${pageContext.request.contextPath}/resources/images/BS_logo1.svg"
+                                                    alt="${m.materialName}">
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </c:if>
+                            </c:forEach>
+                        </div>
                     </div>
-                </c:forEach>
-                </div></div>
+                </c:if>
+                
+            </c:forEach>
         </div>
     </t:menubarBO>
 
     <script>
-        /**
-         * 자재 드로어 및 이벤트를 관리하는 모듈 객체
-         */
         const MaterialDrawer = {
             contextPath: "",
 
@@ -113,63 +197,69 @@
             getDetail: function(materialId, name) {
                 if (name) {
                     const titleEl = document.getElementById('drawerSidebarTitle');
-                    if (titleEl) titleEl.innerText = name;
+                    if (titleEl) titleEl.innerHTML = name;
                 }
 
-                // 💡 [수정] AJAX 요청 경로를 점주용 경로(owner/materials)로 전면 수정했습니다.
                 $.ajax({
-                    url: this.contextPath + "/owner/materials/detail",
+                    // ⭐️ 점장용 컨트롤러 주소로 완벽하게 꽂아줍니다!
+                    url: "${pageContext.request.contextPath}/owner/materials/detail",
                     type: "GET",
                     data: { materialId: materialId },
-                    dataType: "json",
+                    dataType: "json", 
                     success: (data) => {
                         this.bindData(data);
                         this.open();
                     },
                     error: (xhr, status, error) => {
-                        alert("자재 정보를 실시간으로 가져오는데 실패했습니다.");
+                        alert("자재 정보를 가져오는데 실패했습니다. (Error: " + xhr.status + ")");
                         console.error(error);
                     }
                 });
             },
 
             bindData: function(data) {
+                // 1. 이미지
                 const imgEl = document.getElementById('drawerImage');
-                if (imgEl) {
-                    const fallback = this.contextPath + "/resources/images/" + 'BS_logo1.svg';
-                    imgEl.src = data.imageFileId ? this.contextPath + '/files/' + data.imageFileId : fallback;
-                    imgEl.style.display = 'block';
+                const wrapperEl = document.getElementById('drawerImageWrapper');
+                
+                if (imgEl && wrapperEl) {
+                    const fallback = this.contextPath + "/resources/images/BS_logo1.svg";
+                    if (data.materialFiles && data.materialFiles.length > 0) {
+                        const firstFile = data.materialFiles[0];
+                        imgEl.src = this.contextPath + '/material-files/' + firstFile.storedName;
+                    } else {
+                        imgEl.src = fallback;
+                    }
+                    
+                    wrapperEl.style.display = 'block';
                 }
 
-                if(document.getElementById('drawerCostPrice')) {
-                    document.getElementById('drawerCostPrice').innerText = data.costPrice ? Number(data.costPrice).toLocaleString() : '0';
-                }
-                if(document.getElementById('drawerSellingPrice')) {
-                    document.getElementById('drawerSellingPrice').innerText = data.sellingPrice ? Number(data.sellingPrice).toLocaleString() : '0';
-                }
-
-                if(document.getElementById('drawerDetails')) {
-                    document.getElementById('drawerDetails').innerText = data.details ? data.details : '등록된 자재 설명이 없습니다.';
+                // 2. 공급가
+                const supplyPriceEl = document.getElementById('drawerSupplyPrice');
+                if (supplyPriceEl) {
+                    supplyPriceEl.innerHTML = data.supplyPrice ? Number(data.supplyPrice).toLocaleString() : '0';
                 }
 
+                // 3. 상태
                 const statusEl = document.getElementById('drawerStatus');
                 if (statusEl) {
-                    if (data.status === 'Y' || data.status === 'ACTIVE' || data.status === '판매중') {
-                        statusEl.innerText = '판매중';
+                    if (data.status === 'ACTIVE') {
+                        statusEl.innerHTML = '판매중';
                         statusEl.className = 'badge badge-success';
                     } else {
-                        statusEl.innerText = data.status ? data.status : '중단';
+                        statusEl.innerHTML = data.status ? data.status : '중단';
                         statusEl.className = 'badge badge-danger';
                     }
                 }
 
-                if(document.getElementById('drawerStock')) {
-                    document.getElementById('drawerStock').innerText = data.currentQuantity ? data.currentQuantity + ' ea' : '0 ea';
+                // 4. 상세정보
+                const detailsEl = document.getElementById('drawerDetails');
+                if (detailsEl) {
+                    detailsEl.innerHTML = data.details ? data.details : '등록된 자재 설명이 없습니다.';
                 }
             },
 
             open: function() {
-                // 💡 점주 메뉴바 환경에 맞춰 스크립트가 유연하게 요소를 열 수 있도록 보완한 open 로직
                 if (typeof openSidebar === 'function') {
                     openSidebar();
                 } else {
@@ -178,7 +268,7 @@
                                  || document.querySelector('.sidebar');
                     if(drawer) {
                         drawer.classList.add('open');
-                        drawer.style.display = 'block';
+                        drawer.classList.add('active');
                     }
                 }
             }
