@@ -71,5 +71,38 @@ public class PurchaseDao {
     public int cancelPurchase(SqlSessionTemplate sqlSession, Long purchaseOrderId) {
         return sqlSession.update("com.kh.burgerstack.purchase.PurchaseMapper.cancelPurchase", purchaseOrderId);
     }
+
+    public void updateApprovedQuantity(
+            Long purchaseOrderId,
+            int materialId,
+            int approvedQuantity,
+            String rejectReason,
+            SqlSessionTemplate sqlSession) {
+
+        Map<String, Object> param = new HashMap<>();
+
+        param.put("purchaseOrderId", purchaseOrderId);
+        param.put("materialId", materialId);
+        param.put("approvedQuantity", approvedQuantity);
+        param.put("rejectReason", rejectReason);
+
+        sqlSession.update(
+                "com.kh.burgerstack.purchase.PurchaseMapper.updateApprovedQuantity",
+                param);
+    }
+
+    public void updatePurchaseStatus(
+            Long purchaseOrderId,
+            String status,
+            SqlSessionTemplate sqlSession) {
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("purchaseOrderId", purchaseOrderId);
+        param.put("status", status);
+
+        sqlSession.update(
+                "com.kh.burgerstack.purchase.PurchaseMapper.updatePurchaseStatus",
+                param);
+    }
 }
 

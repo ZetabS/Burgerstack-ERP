@@ -39,6 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     SELECT
         PO.PURCHASE_ORDER_ID AS purchaseOrderId,
         PO.STORE_ID          AS storeId,
+        S.STORE_NAME          AS storeName,
         PO.STATUS            AS status,
         PO.TOTAL_AMOUNT      AS totalAmount,
         PO.ORDER_MEMO        AS orderMemo,
@@ -54,13 +55,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             WHERE POI.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
         ) AS itemSummary
 
-    FROM PURCHASE_ORDERS PO
+    FROM PURCHASE_ORDERS PO, STORES S
 
     <where>
 
+        PO.STORE_ID = S.STORE_ID
         <!-- 점주만 스토어 제한 -->
         <if test="!isAdmin and storeId != null">
-            PO.STORE_ID = #{storeId}
+            AND PO.STORE_ID = #{storeId}
         </if>
 
         <!-- 상태 필터 (관리자/점주 공통 사용 가능) -->
@@ -189,10 +191,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE PURCHASE_ORDER_ID = #{id}
 </update>
 
+<!-- 발주 상태 변경 -->
 <update id="cancelPurchase">
     UPDATE PURCHASE_ORDERS
-    SET STATUS = 'CANCELED'
+    SET STATUS =
+        <choose>
+            <when test="isAdmin">
+                'REQUESTED'
+            </when>
+            <otherwise>
+                'CANCELED'
+            </otherwise>
+        </choose>
     WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
+</update>
+
+<update id="updateApprovedQuantity">
+
+    UPDATE PURCHASE_ORDER_ITEMS
+       SET APPROVED_QUANTITY = #{approvedQuantity}
+         , REJECT_REASON = #{rejectReason}
+     WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
+       AND MATERIAL_ID = #{materialId}
+
+</update>
+
+<update id="updatePurchaseStatus">
+
+    UPDATE PURCHASE_ORDERS
+       SET STATUS = #{status}
+     WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
+
 </update>
 
 </mapper>

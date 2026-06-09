@@ -8,6 +8,12 @@
 <meta charset="UTF-8">
 <title>발주 목록 상세 조회</title>
 <jsp:include page="../common/header.jsp" />
+<style>
+    .purchase-info {
+        text-align: left;
+        width: 200px;
+    }
+</style>
 </head>
 <body>
 
@@ -17,25 +23,31 @@
 
     <br>
 
-
-    <!-- 검색 -->
-    <div class="search-area">
-        <button class="file-export">
-            파일로 내보내기 (.xlsx, .pdf)
-        </button>
-        <select>
-            <option>필터링1</option>
-            <option>재고 부족</option>
-            <option>정상 재고</option>
-        </select>
-
-        <div class="search-box">
-            <input type="text" placeholder="검색어 입력">
-            <button class="search-btn">  
-                    <!-- <img src="resources/images/search.png" alt="검색"> -->
+    <div class="contentTop" style="display: flex;">
+        <div class="purchase-info">
+            <div><b>발주번호 :</b> ${list[0].purchaseOrderId}</div>
+            <div><b>발주상태 :</b> ${list[0].status}</div>
+        </div>
+        <!-- 검색 -->
+        <div class="search-area">
+            <button class="file-export">
+                파일로 내보내기 (.xlsx, .pdf)
             </button>
+            <select>
+                <option>필터링1</option>
+                <option>재고 부족</option>
+                <option>정상 재고</option>
+            </select>
+
+            <div class="search-box">
+                <input type="text" placeholder="검색어 입력">
+                <button class="search-btn">  
+                        <!-- <img src="resources/images/search.png" alt="검색"> -->
+                </button>
+            </div>
         </div>
     </div>
+
 
     <table class="table2">
         <thead>
@@ -83,20 +95,25 @@
         </div>
 
         <div class="button-group" style="display:flex; gap:10px; align-items:center;">
-            <button type="button" class="button-primary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
+            <button type="button" class="button-secondary" onclick="location.href = '${pageContext.request.contextPath}/admin/purchases'"> 목록 </button>
             <c:choose>
                 <c:when test="${list[0].status eq 'REQUESTED'}">
-                    <button class="button-primary" onclick="location.href='${pageContext.request.contextPath}/owner/purchases/${list[0].purchaseOrderId}/edit'">
-                        수정
+                    <button class="button-primary" onclick="location.href='${pageContext.request.contextPath}/admin/purchases/${list[0].purchaseOrderId}/approve'">
+                        발주 결재
                     </button>
-                    <form action="${pageContext.request.contextPath}/owner/purchases/${list[0].purchaseOrderId}/cancel"
-                    method="post">
-
+                </c:when>
+                <c:when test="${list[0].status eq 'CANCELED'}">
+                    <button class="button-primary" disabled>
+                        발주 취소됨
+                    </button>
+                </c:when>
+                <c:when test="${list[0].status eq 'PARTIALLY_APPROVED' || list[0].status eq 'APPROVED'}">
+                    <button class="button-secondary" disabled>결재 처리됨</button>
+                    <form action="${pageContext.request.contextPath}/admin/purchases/${list[0].purchaseOrderId}/cancel" method="post">
                         <button class="button-danger" type="submit"
                                 onclick="return confirm('발주를 취소하시겠습니까?')">
                             발주 취소
                         </button>
-
                     </form>
                 </c:when>
                 <c:otherwise>

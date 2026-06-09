@@ -88,7 +88,7 @@
 
         <div class="middle-area">
             <button type="button" class="button-primary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
-            <button type="submit" class="button-primary" onclick="buildJson()"> 결제 </button>
+            <button type="submit" class="button-primary" onclick="submitOrder()"> 결제 </button>
         </div>
 
 
@@ -118,7 +118,7 @@
                         <h5>TOTAL</h5>
                     </p>
                     <b><h3 id="sidebar-total-amount">0원</h3></b>
-                    <button class="button-primary" type="submit"> 결제 </button>
+                    <button class="button-primary" onclick="submitOrder()"> 결제 </button>
                     
                 </div>
             </jsp:body>
@@ -279,6 +279,18 @@ function buildJson() {
     });
 
     $('#itemsJson').val(JSON.stringify(items));
+}
+
+function submitOrder() {
+    buildJson();
+
+    let json = $('#itemsJson').val();
+    if (!json || json === "[]") {
+        alert("선택된 항목이 없습니다.");
+        return;
+    }
+
+    $('form').submit();
 }
 
 </script>

@@ -52,6 +52,7 @@
             <thead>
                 <tr>
                     <th>발주번호</th>
+                    <th>점포명</th>
                     <th>상태</th>
                     <th>품목요약</th>
                     <th>총액</th>
@@ -64,10 +65,14 @@
                     <tr style="cursor:pointer;"
                         onclick="location.href='${pageContext.request.contextPath}/admin/purchases/${p.purchaseOrderId}'">
                         <td>${p.purchaseOrderId}</td>
+                        <td>${p.storeName}</td>
                         <td>
                             <c:choose>
                                 <c:when test="${p.status eq 'REQUESTED'}">
                                     요청중
+                                </c:when>
+                                <c:when test="${p.status eq 'PARTIALLY_APPROVED'}">
+                                    부분승인
                                 </c:when>
                                 <c:when test="${p.status eq 'APPROVED'}">
                                     승인
@@ -76,10 +81,10 @@
                                     발주취소
                                 </c:when>
                                 <c:when test="${p.status eq 'REJECTED'}">
-                                    발주취소
+                                    반려
                                 </c:when>
-                                <c:when test="${p.status eq 'PARTIALLY_APPROVED'}">
-                                    부분승인
+                                <c:when test="${p.status eq 'RECEIVED'}">
+                                    입고완료
                                 </c:when>
                                 <c:otherwise>
                                     배송중

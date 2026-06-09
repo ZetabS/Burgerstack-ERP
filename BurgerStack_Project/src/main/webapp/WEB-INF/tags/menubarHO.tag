@@ -362,7 +362,7 @@ body{
                     </div>
 
                     <ul class="submenu">
-                        <a href="/burgerstack/admin/inventories/{inventoryId}/edit"><li>점포 재고 조정</li></a>
+                        <%--<a href="/burgerstack/admin/inventories/{inventoryId}/edit"><li>점포 재고 조정</li></a>--%>
                         <a href="/burgerstack/admin/inventories"><li>재고 목록 조회</li></a>
                         <a href="/burgerstack/admin/inventory-transactions?storeId={storeId}"><li>점포별 재고 변동 이력 조회</li></a>
                         <a href="/burgerstack/admin/receipts"><li>입고 이력 조회</li></a>

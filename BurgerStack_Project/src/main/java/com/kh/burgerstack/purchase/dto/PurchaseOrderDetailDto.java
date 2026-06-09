@@ -1,5 +1,7 @@
 package com.kh.burgerstack.purchase.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,8 +15,11 @@ public class PurchaseOrderDetailDto {
     private int supplyPriceSnapshot;
     private int currentQuantity;
     private int requestQuantity;
+    private int approvedQuantity;
     private int totalPrice;
 
-    private String Status;
+    private LocalDateTime createdAt;
+
+    private String status;
 
 }

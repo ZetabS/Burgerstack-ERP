@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
+import com.kh.burgerstack.purchase.dto.PurchaseApprovalRequestDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderItemDto;
@@ -74,34 +75,33 @@ public class PurchaseControllerHO {
 
     // 발주 승인 처리 페이지
     @GetMapping("purchases/{id}/approve")
-    public ModelAndView purchaseApproveForm(
+    public ModelAndView processPurchase(
             @PathVariable("id") Long purchaseOrderId,
-            ModelAndView mv
-    ) {
+            ModelAndView mv) {
 
-        List<PurchaseOrderDetailDto> detail =
-            purchaseService.getPurchaseOrderDetail(purchaseOrderId);
+        List<PurchaseOrderDetailDto> list =
+                purchaseService.getPurchaseOrderDetail(purchaseOrderId);
 
-        mv.addObject("list", detail);
-        mv.setViewName("purchase/purchaseDetailHO");
+        mv.addObject("purchaseOrderId", purchaseOrderId);
+        mv.addObject("list", list);
+
+        mv.setViewName("purchase/purchaseApproveForm");
 
         return mv;
     }
 
-    // 발주 승인 처리 페이지
+    // 요청 발주 처리
     @PostMapping("purchases/{id}/approve")
-    public ModelAndView purchaseApprove(
+    public String processPurchase(
             @PathVariable("id") Long purchaseOrderId,
-            ModelAndView mv
+            PurchaseApprovalRequestDto request
     ) {
 
-        List<PurchaseOrderDetailDto> detail =
-            purchaseService.getPurchaseOrderDetail(purchaseOrderId);
+        purchaseService.processPurchase(
+                purchaseOrderId,
+                request.getItems());
 
-        mv.addObject("list", detail);
-        mv.setViewName("purchase/purchaseDetailHO");
-
-        return mv;
+        return "redirect:/admin/purchases/" + purchaseOrderId;
     }
 
     // 취소 처리

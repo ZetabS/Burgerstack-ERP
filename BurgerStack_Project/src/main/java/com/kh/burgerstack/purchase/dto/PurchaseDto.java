@@ -17,6 +17,7 @@ public class PurchaseDto {
 
     private Long purchaseOrderId;   // 발주 요청 ID
     private Long storeId;           // 점포 ID
+    private String storeName;       // 점포명
     private Long totalAmount;       // 총 금액   
     private String orderMemo;
     private String status;          // 상태

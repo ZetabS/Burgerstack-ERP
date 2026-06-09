@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
+import com.kh.burgerstack.purchase.dto.PurchaseApprovalItemDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDto;
@@ -169,11 +170,69 @@ public class PurchaseService {
 
         PurchaseDto origin = purchaseDao.selectPurchase(purchaseOrderId, sqlSession);
 
-        // 이미 취소/완료 상태면 막기
-        if (!"REQUESTED".equals(origin.getStatus())) {
+        // 1. 이미 취소된 경우
+        if ("CANCELED".equals(origin.getStatus())) {
+            throw new IllegalStateException("이미 취소된 주문입니다.");
+        }
+
+        boolean isAdmin = "ADMIN".equals(user.getRole());
+
+        // 2. 일반 유저는 REQUESTED만 가능
+        if (!isAdmin && !"REQUESTED".equals(origin.getStatus())) {
             throw new IllegalStateException("취소 불가 상태입니다.");
         }
 
+        // 3. 취소 처리
         purchaseDao.cancelPurchase(sqlSession, purchaseOrderId);
+    }
+
+
+    @Transactional
+    public void processPurchase(
+            Long purchaseOrderId,
+            List<PurchaseApprovalItemDto> items) {
+
+        boolean allApproved = true;
+        boolean allRejected = true;
+
+        for(PurchaseApprovalItemDto item : items){
+
+            purchaseDao.updateApprovedQuantity(
+                    purchaseOrderId,
+                    item.getMaterialId(),
+                    item.getApprovedQuantity(),
+                    item.getRejectReason(),
+                    sqlSession);
+
+            if(item.getApprovedQuantity()
+                    < item.getRequestQuantity()){
+
+                allApproved = false;
+            }
+
+            if(item.getApprovedQuantity() > 0){
+                allRejected = false;
+            }
+        }
+
+        String status;
+
+        if(allApproved){
+
+            status = "APPROVED";
+
+        }else if(allRejected){
+
+            status = "REJECTED";
+
+        }else{
+
+            status = "PARTIALLY_APPROVED";
+        }
+
+        purchaseDao.updatePurchaseStatus(
+                purchaseOrderId,
+                status,
+                sqlSession);
     }
 }
