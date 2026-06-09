@@ -3,6 +3,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
 <!DOCTYPE html>
 <html>
@@ -51,7 +52,18 @@
     .user-link:hover{
         color:green;
     }
-
+	table{
+	    width:100%;
+	    border-collapse:collapse;
+	    table-layout:fixed;
+	}
+	
+	th,
+	table th,
+	table td{
+	    text-align:center !important;
+	    vertical-align:middle !important;
+	}
 </style>
 
 </head>
@@ -78,9 +90,16 @@
             <button>검색</button>
 
         </div>
-
-        <table>
-
+		<table>
+			    <colgroup>
+			        <col style="width:7%">
+			        <col style="width:13%">
+			        <col style="width:10%">
+			        <col style="width:15%">
+			        <col style="width:25%">
+			        <col style="width:20%">
+			        <col style="width:10%">
+			    </colgroup>
             <thead>
                 <tr>
                     <th>번호</th>
@@ -106,19 +125,19 @@
                     </c:when>
 
                     <c:otherwise>
-
+                    
                         <c:forEach var="u" items="${ownerList}">
 
                             <tr>
 
                                 <td>${u.userNo}</td>
 
-                                <td>
-                                    <a class="user-link"
-                                       href="ownerDetail.ad?userNo=${u.userNo}">
-                                        ${u.userId}
-                                    </a>
-                                </td>
+								<td>
+								    <a class="user-link"
+								       href="/burgerstack/admin/users/${u.userId}">
+								        ${u.userId}
+								    </a>
+								</td>
 
                                 <td>${u.userName}</td>
 
@@ -126,11 +145,7 @@
 
                                 <td>${u.email}</td>
 
-                                <td>
-                                    <fmt:formatDate
-                                        value="${u.createdAt}"
-                                        pattern="yyyy-MM-dd"/>
-                                </td>
+                                <td>${u.createdAt}</td>
 
                                 <td>
                                     <c:choose>

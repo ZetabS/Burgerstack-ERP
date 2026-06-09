@@ -6,6 +6,8 @@
            U.USER_ID,
            U.PASSWORD,
            U.USER_NAME,
+           U.PHONE,
+           U.EMAIL,                   
            U.ROLE,
            S.STORE_ID,
            S.STORE_NAME
@@ -16,7 +18,7 @@
 	  AND U.STATUS = 'ACTIVE'
    </select>
    
-   <insert id="insertStoreOwner" parameterType="User">
+   <insert id="NewOwner" parameterType="User">
    		INSERT INTO USERS(USER_NO
                 , USER_ID
                 , PASSWORD
@@ -35,8 +37,7 @@
    
    <update id="update" parameterType="User">
    		 UPDATE USERS	
-   			SET USER_NAME = #{userName}
-                , PHONE = #{phone} 
+   			SET	PHONE = #{phone} 
                 , EMAIL = #{email} 
 		  WHERE USER_NO = #{userNo}	
    </update>
@@ -45,6 +46,50 @@
    		 UPDATE USERS	
    			SET PASSWORD = #{password}
 		  WHERE USER_NO = #{userNo}	
+   </update>
+   
+   <select id="OwnerList" parameterType="User">
+   		SELECT USER_NO
+   			 , USER_ID
+   			 , USER_NAME
+   			 , PHONE
+   			 , EMAIL
+   			 , CREATED_AT
+   			 , STATUS
+   		  FROM USERS
+   		 WHERE ROLE = 'OWNER'
+   		 ORDER BY CREATED_AT DESC
+   </select>
+   
+   <select id="OwnerListDetail" parameterType="User">
+   		SELECT USER_ID
+   			 , USER_NAME
+   			 , PHONE
+   			 , EMAIL
+   			 , CREATED_AT
+   			 , STATUS
+   		 FROM USERS
+   		WHERE USER_ID = #{userId}
+   </select>
+   <update id="OwnerUpdate" parameterType="User">
+   		UPDATE USERS
+   			SET USER_ID = #{userId}
+   			  , USER_NAME = #{userName}
+   			  , PHONE = #{phone}
+   			  , EMAIL = #{email}
+   			  , STATUS = #{status}
+   			  
+   			<if test="password != null">
+   			  , PASSWORD = #{password}	
+   			</if>
+   			  
+   		 WHERE USER_ID = #{userId}
+   </update>
+   
+   <update id="OwnerStatus" parameterType="User">
+   		UPDATE USERS
+   		   SET STATUS = #{status}
+   		 WHERE USER_ID = #{userId}
    </update>
    
 </mapper>

@@ -17,9 +17,18 @@ public class LoginUser {
 	private String userId;
 	private String password;
 	private String userName;
+	private String phone;
+	private String email;
 	private String role;
 
 	private Long storeId;
 	private String storeName;
-	
+
+	public boolean isAdmin() {
+		return role.equals("ADMIN");
+	}
+
+	public boolean isOwner() {
+		return role.equals("OWNER");
+	}
 }

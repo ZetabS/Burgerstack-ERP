@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.inventory.dto.InventoryAdjustRequest;
+import com.kh.burgerstack.inventory.dto.InventoryDetail;
 import com.kh.burgerstack.inventory.dto.InventoryListSort;
 import com.kh.burgerstack.inventory.dto.InventoryListView;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
@@ -31,22 +33,43 @@ public class OwnerInventoryController {
             HttpSession session,
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        condition.setStoreId(loginUser.getStoreId().intValue());
 
-        InventoryListView inventoryListView = inventoryService.getOwnerInventoryListView(
+        InventoryListView inventoryListView = inventoryService.getInventoryListView(
                 condition,
                 pagingRequest,
                 loginUser);
+
         model.addAttribute("view", inventoryListView);
-        return "owner/inventories";
+        return "owner/inventories/list";
     }
 
     @GetMapping("/{inventoryId}/edit")
-    public String adjustForm(@PathVariable Long inventoryId) {
+    public String adjustForm(
+            @PathVariable Integer inventoryId,
+            Model model,
+            HttpSession session) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        InventoryDetail detail = inventoryService.getInventoryDetail(
+                inventoryId,
+                loginUser);
+
+        model.addAttribute("detail", detail);
         return "owner/inventories/edit";
     }
 
     @PostMapping("/{inventoryId}")
-    public String adjust(@PathVariable Long inventoryId) {
-        return "";
+    public String adjust(
+            @PathVariable Integer inventoryId,
+            InventoryAdjustRequest inventoryAdjustRequest,
+            HttpSession session,
+            Model model) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        inventoryService.adjust(inventoryId, inventoryAdjustRequest, loginUser);
+
+        model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
+        return "redirect:/owner/inventories/" + inventoryId + "/edit";
     }
 }

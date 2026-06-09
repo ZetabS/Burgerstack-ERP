@@ -49,6 +49,7 @@
                  WHERE rn &gt;= #{paging.startRow}
                 )
     </select>
+
     <select id="count">
         SELECT COUNT(*)
           FROM STORE_INVENTORIES I
@@ -74,6 +75,7 @@
             </if>
         </where>
     </select>
+
     <select id="getInventoryDetailById">
         SELECT STORE_INVENTORY_ID AS inventoryId
              , I.CURRENT_QUANTITY
@@ -91,4 +93,18 @@
          USING (STORE_ID)
          WHERE STORE_INVENTORY_ID = #{storeInventoryId}
     </select>
+
+    <update id="updateQuantity">
+        UPDATE STORE_INVENTORIES
+           SET CURRENT_QUANTITY = #{afterQuantity}
+         WHERE STORE_INVENTORY_ID = #{storeInventoryId}
+           AND CURRENT_QUANTITY = #{beforeQuantity}
+    </update>
+
+    <select id="findById">
+        SELECT *
+          FROM STORE_INVENTORIES
+         WHERE STORE_INVENTORY_ID = #{storeInventoryId}
+    </select>
+
 </mapper>

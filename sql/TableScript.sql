@@ -100,7 +100,9 @@ DROP SEQUENCE SEQ_STORE;
 DROP TABLE USERS CASCADE CONSTRAINTS;
 DROP SEQUENCE SEQ_USER;
 
-
+-- (구) 파일
+DROP TABLE FILES;
+DROP SEQUENCE SEQ_FILE;
 -- =========================================================
 -- 2. 기준 / 공통
 -- =========================================================
@@ -885,6 +887,490 @@ INSERT INTO STORES (
          , '010-2367-6457'
          , '서울특별시 종로구'
          , 4 );
+
+
+-- 자재 더미 데이터
+INSERT INTO MATERIALS (
+    MATERIAL_ID
+    , MATERIAL_CODE
+    , MATERIAL_NAME
+    , MATERIAL_TYPE
+    , SUPPLY_PRICE
+) VALUES ( SEQ_MATERIAL.NEXTVAL
+         , 'DM-001'
+         , '참깨번'
+         , 'FOOD'
+         , 1000 );
+
+INSERT INTO MATERIALS (
+    MATERIAL_ID
+    , MATERIAL_CODE
+    , MATERIAL_NAME
+    , MATERIAL_TYPE
+    , SUPPLY_PRICE
+) VALUES ( SEQ_MATERIAL.NEXTVAL
+         , 'DM-002'
+         , '비프패티'
+         , 'FOOD'
+         , 2000 );
+
+INSERT INTO MATERIALS (
+    MATERIAL_ID
+    , MATERIAL_CODE
+    , MATERIAL_NAME
+    , MATERIAL_TYPE
+    , SUPPLY_PRICE
+) VALUES ( SEQ_MATERIAL.NEXTVAL
+         , 'DM-003'
+         , '체다치즈'
+         , 'FOOD'
+         , 300 );
+
+INSERT INTO MATERIALS (
+    MATERIAL_ID
+    , MATERIAL_CODE
+    , MATERIAL_NAME
+    , MATERIAL_TYPE
+    , SUPPLY_PRICE
+) VALUES ( SEQ_MATERIAL.NEXTVAL
+         , 'DM-004'
+         , '양상추'
+         , 'FOOD'
+         , 200 );
+
+INSERT INTO MATERIALS (
+    MATERIAL_ID
+    , MATERIAL_CODE
+    , MATERIAL_NAME
+    , MATERIAL_TYPE
+    , SUPPLY_PRICE
+) VALUES ( SEQ_MATERIAL.NEXTVAL
+         , 'DM-005'
+         , '토마토'
+         , 'FOOD'
+         , 250 );
+
+INSERT INTO MATERIALS (
+    MATERIAL_ID
+    , MATERIAL_CODE
+    , MATERIAL_NAME
+    , MATERIAL_TYPE
+    , SUPPLY_PRICE
+) VALUES ( SEQ_MATERIAL.NEXTVAL
+         , 'DM-006'
+         , '양파'
+         , 'FOOD'
+         , 150 );
+
+INSERT INTO MATERIALS (
+    MATERIAL_ID
+    , MATERIAL_CODE
+    , MATERIAL_NAME
+    , MATERIAL_TYPE
+    , SUPPLY_PRICE
+) VALUES ( SEQ_MATERIAL.NEXTVAL
+         , 'DM-007'
+         , '피클'
+         , 'FOOD'
+         , 100 );
+
+INSERT INTO MATERIALS (
+    MATERIAL_ID
+    , MATERIAL_CODE
+    , MATERIAL_NAME
+    , MATERIAL_TYPE
+    , SUPPLY_PRICE
+) VALUES ( SEQ_MATERIAL.NEXTVAL
+         , 'DM-008'
+         , '베이컨'
+         , 'FOOD'
+         , 800 );
+
+INSERT INTO MATERIALS (
+    MATERIAL_ID
+    , MATERIAL_CODE
+    , MATERIAL_NAME
+    , MATERIAL_TYPE
+    , SUPPLY_PRICE
+) VALUES ( SEQ_MATERIAL.NEXTVAL
+         , 'DM-009'
+         , '계란'
+         , 'FOOD'
+         , 500 );
+
+INSERT INTO MATERIALS (
+    MATERIAL_ID
+    , MATERIAL_CODE
+    , MATERIAL_NAME
+    , MATERIAL_TYPE
+    , SUPPLY_PRICE
+) VALUES ( SEQ_MATERIAL.NEXTVAL
+         , 'DM-010'
+         , '마요네즈'
+         , 'FOOD'
+         , 100 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 120
+         , 30
+         , 1
+         , 1 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 80
+         , 20
+         , 1
+         , 2 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 100
+         , 25
+         , 1
+         , 3 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 60
+         , 20
+         , 1
+         , 4 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 55
+         , 20
+         , 1
+         , 5 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 70
+         , 20
+         , 1
+         , 6 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 90
+         , 25
+         , 1
+         , 7 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 40
+         , 15
+         , 1
+         , 8 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 50
+         , 15
+         , 1
+         , 9 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 110
+         , 30
+         , 1
+         , 10 );
+
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 95
+         , 30
+         , 2
+         , 1 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 45
+         , 20
+         , 2
+         , 2 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 70
+         , 25
+         , 2
+         , 3 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 35
+         , 20
+         , 2
+         , 4 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 30
+         , 20
+         , 2
+         , 5 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 42
+         , 20
+         , 2
+         , 6 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 65
+         , 25
+         , 2
+         , 7 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 18
+         , 15
+         , 2
+         , 8 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 22
+         , 15
+         , 2
+         , 9 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 75
+         , 30
+         , 2
+         , 10 );
+
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 150
+         , 30
+         , 3
+         , 1 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 110
+         , 20
+         , 3
+         , 2 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 130
+         , 25
+         , 3
+         , 3 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 85
+         , 20
+         , 3
+         , 4 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 78
+         , 20
+         , 3
+         , 5 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 95
+         , 20
+         , 3
+         , 6 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 105
+         , 25
+         , 3
+         , 7 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 70
+         , 15
+         , 3
+         , 8 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 65
+         , 15
+         , 3
+         , 9 );
+
+INSERT INTO STORE_INVENTORIES (
+    STORE_INVENTORY_ID
+    , CURRENT_QUANTITY
+    , SAFETY_QUANTITY
+    , STORE_ID
+    , MATERIAL_ID
+) VALUES ( SEQ_STORE_INV.NEXTVAL
+         , 140
+         , 30
+         , 3
+         , 10 );
 
 
 -- 커밋

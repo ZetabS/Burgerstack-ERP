@@ -1,6 +1,7 @@
 package com.kh.burgerstack.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -9,8 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminService {
 
-	@Autowired
-	private AdminDao adminDao;
+	private final AdminDao adminDao;
 	
 	public int update(User u) {
 		
@@ -20,6 +20,30 @@ public class AdminService {
 	public int updatePassword(User u) {
 		
 		return adminDao.updatePassword(u);
+	}
+
+	public int NewOwner(User u) {
+		
+		return adminDao.NewOwner(u);
+		
+	
+	}
+
+	public List<User> OwnerList() {
+		
+		return adminDao.OwnerList();
+	}
+
+	public User OwnerListDetail(String userId) {
+		return adminDao.OwnerListDetail(userId);
+	}
+
+	public int OwnerStatus(User u) {
+		return adminDao.OwnerStatus(u);
+	}
+
+	public int OwnerUpdate(User user) {
+		return adminDao.OwnerUpdate(user);
 	}
 
 }

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OwnerService {
 	
-	private OwnerDao ownerDao;
+	private final OwnerDao ownerDao;
 	
 	public int update(User u) {
 		

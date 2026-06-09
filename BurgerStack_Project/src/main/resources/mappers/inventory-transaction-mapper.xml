@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.burgerstack.inventory.dao.InventoryTransactionMapper">
+    <insert id="insert">
+        <selectKey keyProperty="inventoryTransactionId" resultType="int" order="BEFORE">
+            SELECT SEQ_INV_TX.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO INVENTORY_TRANSACTIONS (
+              INVENTORY_TRANSACTION_ID
+            , TRANSACTION_TYPE
+            , REASON
+            , TRANSACTION_MEMO
+            , CREATED_BY
+            , STORE_ID
+            , RECEIPT_ID
+            , STORE_CLOSING_ID
+        ) VALUES (
+              #{inventoryTransactionId}
+            , #{transactionType}
+            , #{reason}
+            , #{transactionMemo}
+            , #{createdBy}
+            , #{storeId}
+            , #{receiptId}
+            , #{storeClosingId}
+        )
+    </insert>
+
+    <select id="findById">
+        SELECT *
+          FROM INVENTORY_TRANSACTIONS
+         WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
+    </select>
+
+    <insert id="insertItems">
+        INSERT INTO INVENTORY_TRANSACTION_ITEMS (
+              INVENTORY_TRANSACTION_ITEM_ID
+            , BEFORE_QUANTITY
+            , AFTER_QUANTITY
+            , INVENTORY_TRANSACTION_ID
+            , STORE_INVENTORY_ID
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+        (
+              SEQ_INV_TX_ITEM.NEXTVAL
+            , #{item.beforeQuantity}
+            , #{item.afterQuantity}
+            , #{inventoryTransactionId}
+            , #{item.storeInventoryId}
+        )
+        </foreach>
+    </insert>
+
+    <select id="findItemsByTransactionId">
+        SELECT *
+          FROM INVENTORY_TRANSACTION_ITEMS
+         WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
+    </select>
+
+    <select id="findInventoryTransactionListItems">
+        SELECT INVENTORY_TRANSACTION_ID
+             , CASE WHEN TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
+                    WHEN TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
+                    WHEN TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
+                END AS TRANSACTION_TYPE
+             , REASON
+             , CREATED_AT
+             , CREATED_BY
+             , CREATED_BY_NAME
+             , STORE_NAME
+             , STORE_ID
+          FROM (
+                SELECT *
+                  FROM (
+                        SELECT ROWNUM AS rn, temp.*
+                          FROM (
+                                SELECT INVENTORY_TRANSACTION_ID
+                                     , T.TRANSACTION_TYPE
+                                     , T.REASON
+                                     , T.CREATED_AT
+                                     , T.CREATED_BY
+                                     , U.USER_NAME AS CREATED_BY_NAME
+                                     , S.STORE_NAME
+                                     , STORE_ID
+                                  FROM INVENTORY_TRANSACTIONS T
+                                  JOIN USERS U
+                                  ON ( T.CREATED_BY = U.USER_NO )
+                                  JOIN STORES S
+                                 USING ( STORE_ID )
+                        <where>
+                            <if test="condition.storeId != null">
+                                       STORE_ID = #{condition.storeId}
+                            </if>
+                            <if test="condition.transactionType != null and condition.transactionType != ''">
+                                   AND TRANSACTION_TYPE = #{condition.transactionType}
+                            </if>
+                        </where>
+                                 ORDER BY T.CREATED_AT DESC, T.INVENTORY_TRANSACTION_ID
+                                ) temp
+                         WHERE ROWNUM  &lt;= #{paging.endRow}
+                        )
+                 WHERE rn &gt;= #{paging.startRow}
+                )
+    </select>
+
+    <select id="count">
+        SELECT COUNT(*)
+          FROM INVENTORY_TRANSACTIONS T
+          JOIN USERS U
+          ON ( T.CREATED_BY = U.USER_NO )
+          JOIN STORES S
+         USING ( STORE_ID )
+        <where>
+            <if test="condition.storeId != null">
+                       STORE_ID = #{condition.storeId}
+            </if>
+            <if test="condition.transactionType != null and condition.transactionType != ''">
+                   AND TRANSACTION_TYPE = #{condition.transactionType}
+            </if>
+        </where>
+    </select>
+
+    <select id="getInventoryTransactionDetailById">
+        SELECT INVENTORY_TRANSACTION_ID
+             , CASE WHEN TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
+                    WHEN TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
+                    WHEN TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
+                END AS TRANSACTION_TYPE
+             , T.REASON
+             , T.TRANSACTION_MEMO
+             , T.CREATED_AT
+             , T.CREATED_BY
+             , U.USER_NAME AS CREATED_BY_NAME
+             , S.STORE_NAME
+             , STORE_ID
+          FROM INVENTORY_TRANSACTIONS T
+          JOIN USERS U
+          ON ( T.CREATED_BY = U.USER_NO )
+          JOIN STORES S
+         USING ( STORE_ID )
+         WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
+    </select>
+
+    <select id="findInventoryTransactionDetailItems">
+        SELECT INVENTORY_TRANSACTION_ITEM_ID
+             , BEFORE_QUANTITY
+             , AFTER_QUANTITY - BEFORE_QUANTITY AS CHANGED_QUANTITY
+             , AFTER_QUANTITY
+             , MATERIAL_NAME
+             , INVENTORY_TRANSACTION_ID
+             , STORE_INVENTORY_ID
+             , MATERIAL_ID
+          FROM INVENTORY_TRANSACTION_ITEMS
+          JOIN STORE_INVENTORIES
+         USING ( STORE_INVENTORY_ID )
+          JOIN MATERIALS
+         USING ( MATERIAL_ID )
+         WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
+    </select>
+</mapper>

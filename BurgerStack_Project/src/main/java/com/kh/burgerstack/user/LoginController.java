@@ -65,12 +65,10 @@ public class LoginController {
 		return "redirect:login";
 		
 	}
-	
 	@GetMapping("loginErrorPage")
-	public String loginErrorPage() {
+	public String userErrorPage() {
 		return "user/loginErrorPage";
 	}
-	
 	
 }
 

@@ -8,14 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 
-	private final UserDao userDao;
-	
-	public int insertStoreOwner(User u) {
-		
-		return userDao.insertStoreOwner(u);
-		
-	
-	}
+	//private final UserDao userDao;
 
 
 }
