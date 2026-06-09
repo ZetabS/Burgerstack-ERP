@@ -56,6 +56,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     FROM PURCHASE_ORDERS PO
 
+    <where>
+
+        <!-- 점주만 스토어 제한 -->
+        <if test="!isAdmin and storeId != null">
+            PO.STORE_ID = #{storeId}
+        </if>
+
+        <!-- 상태 필터 (관리자/점주 공통 사용 가능) -->
+        <if test="status != null and status != ''">
+            AND PO.STATUS = #{status}
+        </if>
+
+    </where>
+
     ORDER BY PO.PURCHASE_ORDER_ID DESC
 
 </select>

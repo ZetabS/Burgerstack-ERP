@@ -315,7 +315,7 @@ body{
                     </div>
 
                     <ul class="submenu" >
-                        <a href="/burgerstack/owner/store"><li>입고 예정 목록</li></a>
+                        <a href="/burgerstack/owner/store"><li>점포 상세 정보 조회</li></a>
                     </ul>
                 </div>
 

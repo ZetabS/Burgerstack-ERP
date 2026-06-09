@@ -13,6 +13,7 @@ import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderItemDto;
+import com.kh.burgerstack.purchase.dto.PurchaseSearchDto;
 import com.kh.burgerstack.user.LoginUser;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,21 +27,36 @@ public class PurchaseService {
     @Autowired
     private PurchaseDao purchaseDao;
 
+    
     public ArrayList<MaterialInventoryDto> searchMaterialsList(HttpSession session) {
 
 
-    LoginUser loginUser =(LoginUser) session.getAttribute("loginUser");
+        LoginUser loginUser =(LoginUser) session.getAttribute("loginUser");
 
-        return purchaseDao.searchMaterialsList(
-            sqlSession,
-            loginUser.getStoreId()
-        );
+        return purchaseDao.searchMaterialsList(sqlSession,loginUser.getStoreId());
     }
 
-    public ArrayList<PurchaseDto> searchPurchaseList() {
-        return purchaseDao.searchPurchaseList(sqlSession);
+    //발주 목록 조회
+    public ArrayList<PurchaseDto> searchPurchaseList(
+        PurchaseSearchDto condition, 
+        HttpSession session) {
+
+        // 로그인 세션 값 불러오기
+        LoginUser loginUser =(LoginUser) session.getAttribute("loginUser");
+
+        // 검색 조건 설정
+        condition.setStoreId(loginUser.getStoreId());
+
+        if (loginUser.getRole().equals("ADMIN")) {
+            condition.setAdmin(true);
+            return purchaseDao.searchPurchaseList(sqlSession, condition);
+        }
+
+        condition.setAdmin(false);
+        return purchaseDao.searchPurchaseList(sqlSession, condition);
     }
 
+    // 발주 요청 처리
     @Transactional
     public void createPurchase(List<PurchaseOrderItemDto> items,
                             HttpSession session) {
@@ -73,6 +89,7 @@ public class PurchaseService {
         }
     }
 
+    // 상세조회
     public List<PurchaseOrderDetailDto> getPurchaseOrderDetail(Long purchaseOrderId) {
 
         PurchaseDto purchase = purchaseDao.selectPurchase(purchaseOrderId, sqlSession);
@@ -85,6 +102,7 @@ public class PurchaseService {
         return purchaseDao.selectPurchaseOrderDetail(purchaseOrderId, sqlSession);
     }
 
+    // 발주 수정
     public PurchaseDto getPurchaseForEdit(Long purchaseOrderId) {
 
         PurchaseDto purchase = purchaseDao.selectPurchase(purchaseOrderId, sqlSession);
@@ -98,6 +116,7 @@ public class PurchaseService {
     }
 
 
+    // 발주 수정 처리
     @Transactional
     public void updatePurchase(Long purchaseOrderId,
                             List<PurchaseOrderItemDto> items,

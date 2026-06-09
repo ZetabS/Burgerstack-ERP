@@ -1,7 +1,9 @@
 package com.kh.burgerstack.purchase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,6 +13,7 @@ import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderItemDto;
+import com.kh.burgerstack.purchase.dto.PurchaseSearchDto;
 
 @Repository
 public class PurchaseDao {
@@ -23,9 +26,9 @@ public class PurchaseDao {
         return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchMaterialsList", storeId);
     }
 
-    public ArrayList<PurchaseDto> searchPurchaseList(SqlSessionTemplate sqlSession) {
+    public ArrayList<PurchaseDto> searchPurchaseList(SqlSessionTemplate sqlSession, PurchaseSearchDto condition) {
 
-        return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseList");
+        return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseList", condition);
     }
 
     // =========================

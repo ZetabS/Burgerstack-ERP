@@ -37,7 +37,7 @@
 
             <input type="text" placeholder="검색어 입력">
             <button class="search-btn">  
-                    <img src="" alt="검색"/>
+                    <!-- <img src="" alt="검색"/> -->
             </button>
         </div>
 
@@ -273,7 +273,7 @@ function buildJson() {
         items.push({
             materialId: $(this).data('id'),
             materialNameSnapshot: $(this).find('.item-name').text().trim(),
-            unitPriceSnapshot: parseInt($(this).find('.unit-price').text()),
+            supplyPriceSnapshot: parseInt($(this).find('.unit-price').text()),
             requestQuantity: parseInt($(this).find('.qty-input').val()) || 0
         });
     });

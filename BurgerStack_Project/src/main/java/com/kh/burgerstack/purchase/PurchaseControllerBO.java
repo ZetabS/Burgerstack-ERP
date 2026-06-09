@@ -17,17 +17,23 @@ import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderItemDto;
-import com.kh.burgerstack.user.LoginUser;
+import com.kh.burgerstack.purchase.dto.PurchaseSearchDto;
 
 import jakarta.servlet.http.HttpSession;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 
+/*
+* ==================
+*   점주 컨트롤러
+* ==================
+*/
+
 
 @Controller
 @RequestMapping("owner")
-public class PurchaseController {
+public class PurchaseControllerBO {
 
     @Autowired
     private PurchaseService purchaseService;
@@ -56,11 +62,14 @@ public class PurchaseController {
 
     // 발주 목록
     @GetMapping("purchases")
-    public ModelAndView purchaseList(ModelAndView mv){
+    public ModelAndView purchaseList(
+        ModelAndView mv,
+        PurchaseSearchDto condition, 
+        HttpSession session){
 
 
         // 1. 발주 목록 조회
-        ArrayList<PurchaseDto> list = purchaseService.searchPurchaseList();
+        ArrayList<PurchaseDto> list = purchaseService.searchPurchaseList(condition, session);
 
 
         // System.out.println(list);
@@ -108,7 +117,7 @@ public class PurchaseController {
             purchaseService.getPurchaseOrderDetail(purchaseOrderId);
 
         mv.addObject("list", detail);
-        mv.setViewName("purchase/purchaseDetail");
+        mv.setViewName("purchase/purchaseDetailBO");
 
         return mv;
     }
