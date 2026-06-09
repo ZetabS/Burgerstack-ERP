@@ -899,7 +899,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-001'
          , '참깨번'
-         , 'FOOD'
+         , 'INGREDIENT'
          , 1000 );
 
 INSERT INTO MATERIALS (
@@ -911,7 +911,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-002'
          , '비프패티'
-         , 'FOOD'
+         , 'INGREDIENT'
          , 2000 );
 
 INSERT INTO MATERIALS (
@@ -923,7 +923,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-003'
          , '체다치즈'
-         , 'FOOD'
+         , 'INGREDIENT'
          , 300 );
 
 INSERT INTO MATERIALS (
@@ -935,7 +935,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-004'
          , '양상추'
-         , 'FOOD'
+         , 'INGREDIENT'
          , 200 );
 
 INSERT INTO MATERIALS (
@@ -947,7 +947,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-005'
          , '토마토'
-         , 'FOOD'
+         , 'INGREDIENT'
          , 250 );
 
 INSERT INTO MATERIALS (
@@ -959,7 +959,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-006'
          , '양파'
-         , 'FOOD'
+         , 'INGREDIENT'
          , 150 );
 
 INSERT INTO MATERIALS (
@@ -971,7 +971,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-007'
          , '피클'
-         , 'FOOD'
+         , 'INGREDIENT'
          , 100 );
 
 INSERT INTO MATERIALS (
@@ -983,7 +983,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-008'
          , '베이컨'
-         , 'FOOD'
+         , 'INGREDIENT'
          , 800 );
 
 INSERT INTO MATERIALS (
@@ -995,7 +995,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-009'
          , '계란'
-         , 'FOOD'
+         , 'INGREDIENT'
          , 500 );
 
 INSERT INTO MATERIALS (
@@ -1007,7 +1007,7 @@ INSERT INTO MATERIALS (
 ) VALUES ( SEQ_MATERIAL.NEXTVAL
          , 'DM-010'
          , '마요네즈'
-         , 'FOOD'
+         , 'INGREDIENT'
          , 100 );
 
 INSERT INTO STORE_INVENTORIES (
