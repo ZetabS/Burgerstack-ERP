@@ -17,8 +17,8 @@ import lombok.ToString;
 public class PageInfo {
 	private static final int BLOCK_SIZE = 10; // 블록 크기, 페이지네이션 바에서 보이는 총 페이지 개수
 
-	private final int currentPage; // 현재 페이지
-	private final int pageSize; // 페이지 크기(행 개수)
+	private final int page; // 현재 페이지
+	private final int size; // 페이지 크기(행 개수)
 	private final int totalCount; // 전체 행 수
 	private final int totalPages; // 전체 페이지 수
 
@@ -29,16 +29,16 @@ public class PageInfo {
 	private final boolean hasPrevious; // 이전 페이지 존재 여부
 	private final boolean hasNext; // 다음 페이지 존재 여부
 
-	private PageInfo(int currentPage, int pageSize, int totalCount) {
-		this.currentPage = currentPage;
-		this.pageSize = pageSize;
+	private PageInfo(int page, int size, int totalCount) {
+		this.page = page;
+		this.size = size;
 		this.totalCount = totalCount;
 
 		int blockOffset = (int) ((BLOCK_SIZE - 1) / 2);
-		this.totalPages = (totalCount + pageSize - 1) / pageSize;
+		this.totalPages = (totalCount + size - 1) / size;
 
-		this.startPage = Math.max(currentPage - blockOffset - 1, 1);
-		this.endPage = Math.min(Math.max(startPage + BLOCK_SIZE - 1, currentPage + blockOffset), totalPages);
+		this.startPage = Math.max(page - blockOffset - 1, 1);
+		this.endPage = Math.min(Math.max(startPage + BLOCK_SIZE - 1, page + blockOffset), totalPages);
 
 		this.hasPrevious = startPage > 1;
 		this.hasNext = endPage < totalPages;
@@ -60,9 +60,9 @@ public class PageInfo {
 	 * @return PageInfo : 생성된 PageInfo 객체
 	 */
 	public static PageInfo of(PagingRequest request, int totalCount) {
-		int currentPage = request.getPage();
-		int pageSize = request.getSize();
-		return new PageInfo(currentPage, pageSize, totalCount);
+		int page = request.getPage();
+		int size = request.getSize();
+		return new PageInfo(page, size, totalCount);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class PageInfo {
 	 * @return 초과했다면 true, 아니면 false
 	 */
 	public boolean isCurrentPageOutOfRange() {
-		return totalPages > 0 && currentPage > totalPages;
+		return totalPages > 0 && page > totalPages;
 	}
 
 	/**
@@ -91,6 +91,6 @@ public class PageInfo {
 	 * @return 리다이렉트할 새 querystring
 	 */
 	public String getLastAvailablePageQueryString(String queryString) {
-		return QueryStringUtils.applyPagination(queryString, getLastAvailablePage(), pageSize);
+		return QueryStringUtils.applyPagination(queryString, getLastAvailablePage(), size);
 	}
 }
