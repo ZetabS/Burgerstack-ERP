@@ -29,8 +29,12 @@
 
         <select id="material-type-option" name="materialType" class="form-control mr-3">
           <option value="">유형 선택</option>
-          <option value="INGREDIENT" ${view.condition.materialType eq 'INGREDIENT' ? 'selected' : ''}>식자재</option>
-          <option value="CONSUMABLE" ${view.condition.materialType eq 'CONSUMABLE' ? 'selected' : ''}>소모품</option>
+          <option value="AF" ${view.condition.materialType eq 'AF' ? 'selected' : ''}>상온식품</option>
+          <option value="RF" ${view.condition.materialType eq 'RF' ? 'selected' : ''}>냉장식품</option>
+          <option value="FF" ${view.condition.materialType eq 'FF' ? 'selected' : ''}>냉동식품</option>
+          <option value="PK" ${view.condition.materialType eq 'PK' ? 'selected' : ''}>포장재</option>
+          <option value="KW" ${view.condition.materialType eq 'KW' ? 'selected' : ''}>주방용품</option>
+          <option value="ET" ${view.condition.materialType eq 'ET' ? 'selected' : ''}>기타</option>
         </select>
 
         <div class="form-check mr-3">
