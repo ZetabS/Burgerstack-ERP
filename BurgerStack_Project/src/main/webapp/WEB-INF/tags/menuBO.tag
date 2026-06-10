@@ -15,7 +15,7 @@
     <div class="layout__menu-title">입고 관리</div>
 
     <ul class="layout__submenu">
-      <li><a href="/burgerstack/owner/purchases?status=APPROVED">입고 예정 목록</a></li>
+      <li><a href="/burgerstack/owner/receipts/planned">입고 예정 목록</a></li>
       <li><a href="/burgerstack/owner/receipts">입고 이력 목록</a></li>
     </ul>
   </div>
