@@ -8,8 +8,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<t:menubarHO>
+	<t:layout>
 		
-	</t:menubarHO>
+	</t:layout>
 </body>
 </html>

@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<t:menubarHO>
+<t:layout>
 
     <h2>발주 목록 상세 보기(관리자)</h2>
 
@@ -125,7 +125,7 @@
             </c:choose>
         </div>
     </div>
-</t:menubarHO>
+</t:layout>
 
 </body>
 </html>

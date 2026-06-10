@@ -21,7 +21,7 @@
 </style>
 </head>
 <body>
-    <t:menubarBO>
+    <t:layout>
         <h2>발주 처리</h2>
 
         <div class="content-top">
@@ -130,7 +130,7 @@
         </form>
         
 
-	</t:menubarBO>
+	</t:layout>
 
     <script>
         // 불량수량 입력창의 값이 변경될 때마다 실행

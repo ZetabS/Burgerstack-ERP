@@ -11,7 +11,7 @@
     <style></style>
   </head>
   <body>
-    <t:menubarBO>
+    <t:layout>
       <div class="d-flex justify-content-between mb-3">
         <h2>재고 목록</h2>
         <a href="${inventoryListUrl}" class="btn btn-secondary">초기화</a>
@@ -67,7 +67,7 @@
         </tbody>
       </table>
       <t:pagination pageInfo="${pageInfo}"></t:pagination>
-    </t:menubarBO>
+    </t:layout>
     <script>
       sessionStorage.setItem("inventoryListUrl", window.location.pathname + window.location.search);
       $(() => {

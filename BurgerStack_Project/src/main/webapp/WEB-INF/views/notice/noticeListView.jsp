@@ -67,7 +67,7 @@ table tbody tr td:nth-child(3) {
 </style>
 </head>
 <body>
-    <t:menubarHO>
+    <t:layout>
 
         
         <div class="content-container">
@@ -100,7 +100,7 @@ table tbody tr td:nth-child(3) {
         </div>
         <br>
         <t:pagination pageInfo="${pageInfo}"/>
-    </t:menubarHO>
+    </t:layout>
     <script>
 
     </script>

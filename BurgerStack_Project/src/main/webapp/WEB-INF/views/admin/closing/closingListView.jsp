@@ -98,7 +98,7 @@
 
 <body>
 
-<t:menubarHO>
+<t:layout>
 
 <section class="list-card">
 
@@ -160,7 +160,7 @@
 
 </section>
 
-</t:menubarHO>
+</t:layout>
 
 </body>
 </html>

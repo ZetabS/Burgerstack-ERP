@@ -22,7 +22,7 @@
 </style>
 </head>
 <body>
-	<t:menubarBO>
+	<t:layout>
         <h2>발주 목록</h2>
 
         <div class="content-top">
@@ -146,7 +146,7 @@
         </table>
         <br>
         <t:pagination pageInfo="${pageInfo}"></t:pagination>
-	</t:menubarBO>
+	</t:layout>
 	
     <script>
         function autoSearch() {

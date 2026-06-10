@@ -82,7 +82,7 @@ public class ReceiptController {
     }
 
     // 입고 예정 목록 조회 - 점주
-    @GetMapping(value = "/owner/purchases", params = "status=APPROVED")
+    @GetMapping("/owner/receipts/planned")
     public String planned(PagingRequest pagingRequest,
                           HttpServletRequest request,
                           Model model) {
@@ -90,7 +90,7 @@ public class ReceiptController {
         PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest);
 
         if (pageInfo.isCurrentPageOutOfRange()) {
-            return "redirect:/owner/purchases?status=APPROVED";
+            return "redirect:/owner/receipts/planned";
         }
 
         model.addAttribute("pageInfo", pageInfo);

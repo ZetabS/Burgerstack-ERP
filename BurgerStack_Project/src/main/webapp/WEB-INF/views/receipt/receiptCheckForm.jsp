@@ -16,7 +16,7 @@
 </head>
 
 	<body>
-	<t:menubarBO>
+	<t:layout>
 	
 	    <h2>입고 처리</h2>
 	
@@ -163,7 +163,7 @@
 	        <button type="submit">저장</button>
 	    </form>
 	
-	</t:menubarBO>
+	</t:layout>
 	
 	<script>
 	    // 불량수량 입력창의 값이 변경될 때마다 실행

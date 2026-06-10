@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<t:menubarBO>
+<t:layout>
 
     <h2>발주 요청 페이지</h2>
     
@@ -127,7 +127,7 @@
     </form>
     
 
-</t:menubarBO>
+</t:layout>
 
 
 <script>

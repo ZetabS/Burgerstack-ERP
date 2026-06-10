@@ -136,7 +136,7 @@
 </head>
 <body>
 
-    <t:menubarBO>
+    <t:layout>
         <h2>입고 이력</h2>
         
         <p class="table-guide">
@@ -195,6 +195,6 @@
 
         <ui:pagination pageInfo="${pageInfo}"></ui:pagination>
 
-    </t:menubarBO>
+    </t:layout>
 </body>
 </html>
