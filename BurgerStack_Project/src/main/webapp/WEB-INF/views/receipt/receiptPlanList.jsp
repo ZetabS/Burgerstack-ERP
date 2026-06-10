@@ -9,7 +9,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<jsp:include page="../common/header.jsp" />
 </head>
 
 <body>

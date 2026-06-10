@@ -7,7 +7,6 @@
 <head>
 <meta charset="UTF-8">
 <title>발주 요청 페이지 조회</title>
-<jsp:include page="../common/header.jsp" />
 <style>
         .disabled-row {
         opacity: 0.5;

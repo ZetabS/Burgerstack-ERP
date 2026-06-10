@@ -6,7 +6,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<jsp:include page="../common/header.jsp" />
 <style>
     table input{
         width: 50px;
