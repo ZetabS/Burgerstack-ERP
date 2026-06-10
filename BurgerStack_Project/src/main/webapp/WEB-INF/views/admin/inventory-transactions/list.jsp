@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<c:url var="inventoryTransactionListUrl" value="/admin/inventory-transactions" />
 <!DOCTYPE html>
 <html>
   <head>
@@ -10,8 +11,30 @@
     <style></style>
   </head>
   <body>
-    <t:menubarHO>
-      <h2>재고 변동 이력 목록</h2>
+    <t:layout>
+      <div class="d-flex justify-content-between mb-3">
+        <h2>재고 변동 이력 목록</h2>
+        <a href="${inventoryTransactionListUrl}" class="btn btn-secondary">초기화</a>
+      </div>
+
+      <form class="d-flex justify-content-between mb-3 text-nowrap" action="${inventoryTransactionListUrl}" method="get">
+        <input type="hidden" name="page" value="1" />
+        <input type="hidden" name="size" value="${view.pageInfo.size}" />
+
+        <select id="store-option" name="storeId" class="form-control mr-3">
+          <option value="">점포 선택</option>
+          <c:forEach var="option" items="${view.storeOptions}">
+            <option value="${option.storeId}" ${option.storeId eq view.condition.storeId ? 'selected' : ''}>${option.storeName}</option>
+          </c:forEach>
+        </select>
+
+        <select id="transaction-type-option" name="transactionType" class="form-control mr-3">
+          <option value="">유형 선택</option>
+          <option value="RECEIPT" ${view.condition.transactionType eq 'RECEIPT' ? 'selected' : ''}>입고</option>
+          <option value="STORE_CLOSING" ${view.condition.transactionType eq 'STORE_CLOSING' ? 'selected' : ''}>마감</option>
+          <option value="ADJUSTMENT" ${view.condition.transactionType eq 'ADJUSTMENT' ? 'selected' : ''}>조정</option>
+        </select>
+      </form>
 
       <table class="table2">
         <thead>
@@ -38,9 +61,12 @@
         </tbody>
       </table>
       <t:pagination pageInfo="${view.pageInfo}" />
-    </t:menubarHO>
+    </t:layout>
     <script>
+      sessionStorage.setItem("inventoryTransactionListUrl", window.location.pathname + window.location.search);
       $(() => {
+        $("#store-option").on("change", () => $("form").submit());
+        $("#transaction-type-option").on("change", () => $("form").submit());
         $(".clickable-row").click((e) => {
           location.href = $(e.target).closest(".clickable-row").attr("data-href");
         });

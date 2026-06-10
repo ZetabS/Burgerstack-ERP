@@ -15,4 +15,11 @@
           WHERE OWNER_USER_NO = #{ownerUserNo}
             AND STATUS = 'OPEN'
     </select>
+
+    <select id="getStoreOptions">
+        SELECT STORE_ID
+             , STORE_NAME
+          FROM STORES
+         WHERE STATUS = 'OPEN'
+    </select>
 </mapper>

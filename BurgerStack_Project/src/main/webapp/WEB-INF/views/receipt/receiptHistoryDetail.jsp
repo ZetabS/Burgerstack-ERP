@@ -6,7 +6,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<jsp:include page="../common/header.jsp" />
 <style>
 	.page-title {
 	    font-size: 30px;
@@ -141,7 +140,7 @@
 </style>
 </head>
 <body>
-    <t:menubarBO>
+    <t:layout>
         <h2>입고 이력 상세 보기</h2>
 
         <!-- 검색 -->
@@ -216,7 +215,7 @@
 	        </tr>
 	    </tbody>
 	</table>
-	</t:menubarBO>
+	</t:layout>
 	
 	<script>
 		function filterMaterialType(type) {

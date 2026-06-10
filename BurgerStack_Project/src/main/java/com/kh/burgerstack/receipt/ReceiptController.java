@@ -83,16 +83,15 @@ public class ReceiptController {
     }
 
     // 입고 예정 목록 조회 - 점주
-    @GetMapping(value = "/owner/purchases", params = "status")
-    public String planned(@RequestParam(required = false, defaultValue = "ALL") String status,
-                          PagingRequest pagingRequest,
+    @GetMapping("/owner/receipts/planned")
+    public String planned(PagingRequest pagingRequest,
                           HttpServletRequest request,
                           Model model) {
 
         PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest, status);
 
         if (pageInfo.isCurrentPageOutOfRange()) {
-            return "redirect:/owner/purchases?status=" + status;
+            return "redirect:/owner/receipts/planned";
         }
 
         model.addAttribute("pageInfo", pageInfo);

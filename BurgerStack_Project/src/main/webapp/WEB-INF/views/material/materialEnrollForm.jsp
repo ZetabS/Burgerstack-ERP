@@ -37,7 +37,7 @@
 </style>
 </head>
 <body> 
-    <t:menubarHO>
+    <t:layout>
         <div class="outer">
             <br>
             <h2 style="padding-left : 20px;">
@@ -144,7 +144,7 @@
                 <br>
             </form>
         </div>
-    </t:menubarHO>
+    </t:layout>
     <script>
         function previewImage(input) {
             const file = input.files[0];

@@ -69,27 +69,31 @@
 </head>
 <body>
 
-<t:menubarHO>
+<t:layout>
 
     <h1>점주 계정 목록 조회</h1>
 
     <div class="content">
 
-        <div class="search-area">
-
-            <select name="status">
-                <option value="">전체상태</option>
-                <option value="ACTIVE">사용중</option>
-                <option value="INACTIVE">정지</option>
-            </select>
-
-            <input type="text"
-                   name="keyword"
-                   placeholder="아이디 또는 이름 검색">
-
-            <button>검색</button>
-
-        </div>
+		<form action="/burgerstack/admin/users" method="get">
+		
+		    <div class="search-area">
+		
+		        <select name="status">
+		            <option value="">전체상태</option>
+		            <option value="ACTIVE">사용중</option>
+		            <option value="INACTIVE">정지</option>
+		        </select>
+		
+		        <input type="text"
+		               name="keyword"
+		               placeholder="아이디 또는 이름 검색">
+		
+		        <button type="submit">검색</button>
+		
+		    </div>
+		
+		</form>
 		<table>
 			    <colgroup>
 			        <col style="width:7%">
@@ -175,7 +179,7 @@
 
     </div>
 
-</t:menubarHO>
+</t:layout>
 
 </body>
 </html>

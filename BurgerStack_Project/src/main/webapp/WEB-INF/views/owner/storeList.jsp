@@ -129,7 +129,7 @@
 </head>
 
 <body>
-<t:menubarBO>
+<t:layout>
 
     <main class="store-list-wrap">
 
@@ -213,6 +213,6 @@
 
     </main>
 
-</t:menubarBO>
+</t:layout>
 </body>
 </html>

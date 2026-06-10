@@ -130,7 +130,7 @@
 
 <body>
 
-<t:menubarHO>
+<t:layout>
 
     <section class="list-card">
 
@@ -240,7 +240,7 @@
 
     </div>
 
-</t:menubarHO>
+</t:layout>
 
 </body>
 </html>

@@ -190,5 +190,6 @@
 			
 		});
 	</script>
+    <t:alertify />
 </body>
 </html>

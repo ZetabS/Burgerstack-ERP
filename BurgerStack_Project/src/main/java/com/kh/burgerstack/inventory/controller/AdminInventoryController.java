@@ -43,7 +43,7 @@ public class AdminInventoryController {
         return "admin/inventories/list";
     }
 
-    @GetMapping("/{inventoryId}/edit")
+    @GetMapping("/{inventoryId}/adjust")
     public String adjustForm(
             @PathVariable Integer inventoryId,
             HttpSession session,
@@ -53,10 +53,10 @@ public class AdminInventoryController {
         InventoryDetail detail = inventoryService.getInventoryDetail(inventoryId, loginUser);
 
         model.addAttribute("detail", detail);
-        return "admin/inventories/edit";
+        return "admin/inventories/adjust";
     }
 
-    @PostMapping("/{inventoryId}")
+    @PostMapping("/{inventoryId}/adjust")
     public String adjust(
             @PathVariable Integer inventoryId,
             InventoryAdjustRequest inventoryAdjustRequest,
@@ -67,6 +67,6 @@ public class AdminInventoryController {
         inventoryService.adjust(inventoryId, inventoryAdjustRequest, loginUser);
 
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
-        return "redirect:/admin/inventories/" + inventoryId + "/edit";
+        return "redirect:/admin/inventories";
     }
 }

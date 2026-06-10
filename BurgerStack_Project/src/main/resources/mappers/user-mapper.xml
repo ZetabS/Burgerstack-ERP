@@ -48,18 +48,32 @@
 		  WHERE USER_NO = #{userNo}	
    </update>
    
-   <select id="OwnerList" parameterType="User">
-   		SELECT USER_NO
-   			 , USER_ID
-   			 , USER_NAME
-   			 , PHONE
-   			 , EMAIL
-   			 , CREATED_AT
-   			 , STATUS
-   		  FROM USERS
-   		 WHERE ROLE = 'OWNER'
-   		 ORDER BY CREATED_AT DESC
-   </select>
+	<select id="OwnerList" parameterType="map" resultType="User">
+	
+	    SELECT USER_NO
+	         , USER_ID
+	         , USER_NAME
+	         , PHONE
+	         , EMAIL
+	         , CREATED_AT
+	         , STATUS
+	      FROM USERS
+	     WHERE ROLE = 'OWNER'
+	
+	    <if test="status != null and status != ''">
+	        AND STATUS = #{status}
+	    </if>
+	
+	    <if test="keyword != null and keyword != ''">
+	        AND (
+	                USER_ID LIKE '%' || #{keyword} || '%'
+	             OR USER_NAME LIKE '%' || #{keyword} || '%'
+	            )
+	    </if>
+	
+	     ORDER BY CREATED_AT DESC
+	
+	</select>
    
    <select id="OwnerListDetail" parameterType="User">
    		SELECT USER_ID

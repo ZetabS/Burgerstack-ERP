@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,19 +8,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-
-	<div>
-
+	<t:layout>
 		
-
-	</div>
-	<jsp:include page="menubarHO.jsp" />
-
-	<br><br>
-	
-	<h1 align="center" style="color : red;">
-		${ requestScope.errorMsg }
-	</h1>
-
+	</t:layout>
 </body>
 </html>
