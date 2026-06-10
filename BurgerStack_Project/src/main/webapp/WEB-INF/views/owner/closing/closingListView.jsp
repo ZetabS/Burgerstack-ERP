@@ -79,7 +79,7 @@
 
 <body>
 
-<t:menubarBO>
+<t:layout>
 
 <c:if test="${not empty msg}">
     <script>
@@ -131,7 +131,7 @@
 
 </section>
 
-</t:menubarBO>
+</t:layout>
 
 </body>
 </html>

@@ -115,7 +115,7 @@ input:focus {
 </head>
 <body>
 
-	<t:menubarBO>
+	<t:layout>
 
 		<div class="mypage-container">
 
@@ -188,7 +188,7 @@ input:focus {
 					홈으로</button>
 			</div>
 		</div>
-	</t:menubarBO>
+	</t:layout>
 
 
 </body>

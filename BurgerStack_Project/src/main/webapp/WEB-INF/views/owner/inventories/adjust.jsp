@@ -10,7 +10,7 @@
     <style></style>
   </head>
   <body>
-    <t:menubarBO>
+    <t:layout>
       <div class="container py-4">
         <h2 class="mb-4">재고 조정</h2>
 
@@ -63,7 +63,7 @@
           </div>
         </form>
       </div>
-    </t:menubarBO>
+    </t:layout>
     <script>
       $(".back-to-list-btn").on("click", (e) => {
         const listUrl = sessionStorage.getItem("inventoryListUrl");

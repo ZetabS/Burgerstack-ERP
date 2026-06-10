@@ -27,7 +27,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         // 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
         if (loginUser == null) {
-            session.setAttribute("alertMsg", "로그인 후 이용 가능한 서비스입니다.");
             response.sendRedirect("/burgerstack/auth/login");
             return false;
         }

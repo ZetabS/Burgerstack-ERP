@@ -86,7 +86,7 @@
 </style>
 </head>
 <body>
-	<t:menubarHO>
+	<t:layout>
 
 			<h1 id="title">문의사항 상세 보기</h1>
 
@@ -135,6 +135,6 @@
 			    </button>
 			
 			</div>
-	</t:menubarHO>
+	</t:layout>
 </body>
 </html>

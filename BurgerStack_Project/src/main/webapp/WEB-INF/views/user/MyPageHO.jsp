@@ -113,7 +113,7 @@
 </head>
 <body>
 
-<t:menubarHO>
+<t:layout>
 
 	<div class="mypage-container">
 	
@@ -203,7 +203,7 @@
 			</div>
 		
 
-</t:menubarHO>
+</t:layout>
 
 
 </body>

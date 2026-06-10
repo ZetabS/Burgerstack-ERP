@@ -103,7 +103,7 @@
 </head>
 <body>
 
-	<t:menubarHO>
+	<t:layout>
 		<h3>계정 등록</h3>
                 <hr>
                 <form id="new" action="/burgerstack/admin/users" method="post">
@@ -172,7 +172,7 @@
                 </form>
 
 		
-	</t:menubarHO>
+	</t:layout>
 
 </body>
 </html>

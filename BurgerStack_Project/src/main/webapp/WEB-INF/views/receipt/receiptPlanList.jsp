@@ -13,7 +13,7 @@
 </head>
 
 <body>
-<t:menubarBO>
+<t:layout>
 
     <h2>입고 예정 목록</h2>
 
@@ -90,6 +90,6 @@
 
     <ui:pagination pageInfo="${pageInfo}"></ui:pagination>
 
-</t:menubarBO>
+</t:layout>
 </body>
 </html>

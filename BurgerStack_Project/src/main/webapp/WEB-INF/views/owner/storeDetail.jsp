@@ -68,7 +68,7 @@
 </head>
 <body>
 
-<t:menubarBO>
+<t:layout>
 
     <div class="store-detail-wrap">
 
@@ -124,7 +124,7 @@
 
     </div>
 
-</t:menubarBO>
+</t:layout>
 
 </body>
 </html>
