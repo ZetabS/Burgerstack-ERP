@@ -54,11 +54,12 @@
     <table class="table2">
         <thead>
             <tr>
-                <th><input type="checkbox"></th>
+                <th>상품코드</th>
+                <th>상품유형</th>
                 <th>품목</th>
-                <th>원가</th>
                 <th>현 재고</th>
                 <th>주문수량</th>
+                <th>공급가</th>
                 <th>구매가격</th>
             </tr>
         </thead>
@@ -66,17 +67,21 @@
         <tbody>
             <c:forEach var="item" items="${list}">
                 <tr class="item-row ${item.status eq 'REQUESTED' ? '' : 'disabled-row'}">
-                    <td><input type="checkbox"></td>
+                    <td>${item.materialId}</td>
+
+                    <td>${item.materialType}</td>
 
                     <td>${item.materialName}</td>
 
-                    <td>${item.supplyPriceSnapshot}</td>
+                    
 
                     <td>${item.currentQuantity}</td>
 
                     <td>
                         <input type="number" value="${item.requestQuantity}" disabled>
                     </td>
+
+                    <td>${item.supplyPriceSnapshot}</td>
 
                     <td>${item.totalPrice}</td>
                 </tr>

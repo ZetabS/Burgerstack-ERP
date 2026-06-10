@@ -70,8 +70,8 @@
                         <!-- 상품코드 -->
                         <td>${item.materialId}</td>
 
-                        <!-- 상품유형 (없으면 임시) -->
-                        <td>-</td>
+                        <!-- 상품유형 -->
+                        <td>${item.materialType}</td>
 
                         <!-- 상품명 -->
                         <td>${item.materialName}</td>
