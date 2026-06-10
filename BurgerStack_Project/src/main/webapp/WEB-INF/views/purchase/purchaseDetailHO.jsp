@@ -7,7 +7,6 @@
 <head>
 <meta charset="UTF-8">
 <title>발주 목록 상세 조회</title>
-<jsp:include page="../common/header.jsp" />
 <style>
     .content-top{
         display: flex;
