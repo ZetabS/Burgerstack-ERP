@@ -22,4 +22,11 @@
           FROM STORES
          WHERE STATUS = 'OPEN'
     </select>
+
+    <select id="getStoreStatistics">
+        SELECT COUNT(CASE WHEN STATUS = 'OPEN' THEN 1 END) AS OPEN_STORE_COUNT
+             , COUNT(CASE WHEN STATUS = 'PAUSED' THEN 1 END) AS PAUSED_STORE_COUNT
+             , COUNT(CASE WHEN STATUS = 'CLOSED' THEN 1 END) AS CLOSED_STORE_COUNT
+          FROM STORES
+    </select>
 </mapper>
