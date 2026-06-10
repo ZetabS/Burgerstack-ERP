@@ -5,7 +5,6 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <jsp:include page="/WEB-INF/views/common/header.jsp" />
     <title>안전재고 조정</title>
     <style></style>
   </head>

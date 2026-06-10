@@ -6,7 +6,6 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <jsp:include page="/WEB-INF/views/common/header.jsp" />
     <title>재고 변동 상세</title>
     <style></style>
   </head>
