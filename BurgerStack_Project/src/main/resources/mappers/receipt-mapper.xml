@@ -6,7 +6,7 @@
 	<select id="getPlanTotalCount" resultType="_int">
 	    SELECT COUNT(*)
 	    FROM PURCHASE_ORDERS
-	    WHERE STATUS = 'APPROVED'
+	    WHERE STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
 	</select>
         <!-- 
         WHERE STATUS = 'REQUESTED'
@@ -22,21 +22,41 @@
 
     <!-- 입고 예정 목록 리스트 조회 -->
     <select id="selectReceiptPlanList"
-        resultType="purchaseOrder">
-
-    SELECT
-          PURCHASE_ORDER_ID AS purchaseOrderId
-        , TOTAL_AMOUNT       AS totalAmount
-        , ORDER_MEMO         AS orderMemo
-        , STATUS             AS status
-        , CREATED_AT         AS createdAt
-        , UPDATED_AT         AS updatedAt
-        , STORE_ID           AS storeId
-    FROM PURCHASE_ORDERS
-    WHERE STATUS = 'APPROVED'
-    ORDER BY CREATED_AT DESC
-
-</select>
+	        parameterType="string"
+	        resultType="purchaseOrder">
+	
+	          SELECT
+				      PO.PURCHASE_ORDER_ID AS purchaseOrderId
+				    , PO.TOTAL_AMOUNT AS totalAmount
+				    , PO.STATUS AS status
+				    , PO.CREATED_AT AS createdAt
+				
+				    , MIN(POI.MATERIAL_NAME_SNAPSHOT)
+				      || CASE
+				            WHEN COUNT(*) > 1
+				            THEN ' 외 ' || (COUNT(*) - 1) || '건'
+				            ELSE ''
+				         END AS materialSummary
+	    FROM PURCHASE_ORDERS PO
+	    JOIN PURCHASE_ORDER_ITEMS POI
+	      ON PO.PURCHASE_ORDER_ID = POI.PURCHASE_ORDER_ID
+	    WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
+	
+	    <if test="_parameter != null and _parameter != '' and _parameter != 'ALL'">
+	        AND PO.STATUS = #{status}
+	    </if>
+	
+	    GROUP BY
+	          PO.PURCHASE_ORDER_ID
+	        , PO.TOTAL_AMOUNT
+	        , PO.ORDER_MEMO
+	        , PO.STATUS
+	        , PO.CREATED_AT
+	        , PO.UPDATED_AT
+	        , PO.STORE_ID
+	    ORDER BY PO.CREATED_AT DESC
+	
+	</select>
 
 	<!-- 입고 이력 목록 조회 -->
 	<select id="selectReceiptList"
@@ -291,6 +311,27 @@
 	      ON POI.MATERIAL_ID = M.MATERIAL_ID
 	    WHERE RI.RECEIPT_ID = #{receiptId}
 	    ORDER BY RI.RECEIPT_ITEM_ID
+	
+	</select>
+	
+	<!-- 입고 처리 화면 상품 목록 조회 -->
+	<select id="selectReceiptCheckItemList"
+	        parameterType="long"
+	        resultType="com.kh.burgerstack.receipt.ReceiptCheckItemDto">
+	
+	    SELECT
+	        POI.PURCHASE_ORDER_ITEM_ID AS purchaseOrderItemId,
+	        M.MATERIAL_CODE AS materialCode,
+	        M.MATERIAL_TYPE AS materialType,
+	        POI.MATERIAL_NAME_SNAPSHOT AS materialName,
+	        POI.APPROVED_QUANTITY AS approvedQuantity,
+	        POI.SUPPLY_PRICE_SNAPSHOT AS supplyPrice,
+	        POI.APPROVED_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT AS amount
+	    FROM PURCHASE_ORDER_ITEMS POI
+	    JOIN MATERIALS M
+	      ON POI.MATERIAL_ID = M.MATERIAL_ID
+	    WHERE POI.PURCHASE_ORDER_ID = #{purchaseId}
+	    ORDER BY POI.PURCHASE_ORDER_ITEM_ID
 	
 	</select>
 

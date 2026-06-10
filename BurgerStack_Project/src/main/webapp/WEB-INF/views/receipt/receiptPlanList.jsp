@@ -20,9 +20,10 @@
     <!-- 검색 -->
     <div class="search-area" align="right">
         <select name="status" id="purchaseStatus">
-            <option value="">전체</option>
-            <option value="APPROVED" selected>승인</option>
-        </select>
+		    <option value="">전체</option>
+		    <option value="APPROVED">승인</option>
+		    <option value="PARTIALLY_APPROVED">부분 승인</option>
+		</select>
 
         <input type="date">
         ~
@@ -35,15 +36,6 @@
                  style="width: 16px;"/>
             검색
         </button>
-    </div>
-
-    <div class="receive-info">
-        <table>
-            <tr>
-                <td>입고 예정 발주 목록</td>
-                <td>상태 : 승인(APPROVED)</td>
-            </tr>
-        </table>
     </div>
 
     <table class="table">
@@ -72,8 +64,22 @@
                     <c:forEach var="p" items="${list}">
                         <tr>
                             <td>${p.purchaseOrderId}</td>
-                            <td>${p.status}</td>
-                            <td>품목요약</td>
+                            <td>
+							    <c:choose>
+							        <c:when test="${p.status eq 'APPROVED'}">
+							            승인
+							        </c:when>
+							
+							        <c:when test="${p.status eq 'PARTIALLY_APPROVED'}">
+							            부분 승인
+							        </c:when>
+							
+							        <c:otherwise>
+							            ${p.status}
+							        </c:otherwise>
+							    </c:choose>
+							</td>
+                            <td>${p.materialSummary}</td>
                             <td>${p.totalAmount}</td>
                             <td>${p.createdAt}</td>
                             <td>

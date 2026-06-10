@@ -22,4 +22,5 @@ public class PurchaseOrder {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long storeId;
+    private String materialSummary;
 }

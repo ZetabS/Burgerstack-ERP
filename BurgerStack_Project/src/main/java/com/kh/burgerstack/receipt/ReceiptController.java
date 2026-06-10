@@ -1,19 +1,18 @@
 package com.kh.burgerstack.receipt;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class ReceiptController {
@@ -27,6 +26,8 @@ public class ReceiptController {
                                   ModelAndView mv) {
 
         mv.addObject("purchaseId", purchaseId);
+        mv.addObject("itemList", receiptService.selectReceiptCheckItemList(purchaseId));
+
         mv.setViewName("receipt/receiptCheckForm");
 
         return mv;
@@ -82,21 +83,21 @@ public class ReceiptController {
     }
 
     // 입고 예정 목록 조회 - 점주
-    @GetMapping(value = "/owner/purchases", params = "status=APPROVED")
-    public String planned(PagingRequest pagingRequest,
+    @GetMapping(value = "/owner/purchases", params = "status")
+    public String planned(@RequestParam(required = false, defaultValue = "ALL") String status,
+                          PagingRequest pagingRequest,
                           HttpServletRequest request,
                           Model model) {
 
-        PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest);
+        PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest, status);
 
         if (pageInfo.isCurrentPageOutOfRange()) {
-            return "redirect:/owner/purchases?status=APPROVED";
+            return "redirect:/owner/purchases?status=" + status;
         }
 
         model.addAttribute("pageInfo", pageInfo);
-
-        model.addAttribute("list",
-                receiptService.selectReceiptPlanList(pagingRequest));
+        model.addAttribute("status", status);
+        model.addAttribute("list", receiptService.selectReceiptPlanList(pagingRequest, status));
 
         return "receipt/receiptPlanList";
     }
