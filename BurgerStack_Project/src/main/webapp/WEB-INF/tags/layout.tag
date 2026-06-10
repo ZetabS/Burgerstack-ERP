@@ -23,11 +23,6 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <%-- alertify 1.13.1 --%>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
-
     <%-- CSS --%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout.css" />
@@ -78,17 +73,6 @@
         </div>
       </div>
     </div>
-
-    <c:if test="${ not empty sessionScope.alertMsg }">
-      <span id="alert" hidden><c:out value="${alertMsg}" /></span>
-      <script>
-        $(() => {
-          alertify.alert($("#alert").text(), () => {
-            $("#alert").remove();
-          });
-        });
-      </script>
-      <c:remove var="alertMsg" scope="session" />
-    </c:if>
+    <t:alertify />
   </body>
 </html>
