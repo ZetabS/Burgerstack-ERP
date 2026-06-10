@@ -36,7 +36,7 @@ a:active {
   grid-template-rows: 70px 1fr;
   grid-template-columns: 250px 1fr;
   grid-template-areas:
-    "header header"
+    "logo header"
     "menubar main";
   width: 100vw;
   height: 100vh;
@@ -75,8 +75,12 @@ a:active {
 
 .layout__logo {
   display: flex;
+  grid-area: logo;
   align-items: center;
   gap: 8px;
+  background: #222831;
+  padding-inline: 30px;
+  color: white;
 }
 
 .layout__logo:hover {
