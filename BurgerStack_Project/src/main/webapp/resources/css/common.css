@@ -534,7 +534,7 @@ body{
     right: 0px;
     width: 40px;
     height: calc(100vh - 70px); /* 전체 화면 높이(100vh)에서 헤더 높이만큼 제외 */
-    //background-color: #cccccc;
+    background-color: #ffffff;opacity : 0.5;
     z-index: 90;
     box-sizing: border-box;
 }
