@@ -140,11 +140,11 @@ td {
 				</tbody>
 			</table>
 			
-			<div class="pagination" style="text-align: center; margin-top: 20px;">
+			<div class="pagination" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;">
 			    <c:forEach var="p" begin="${startPage}" end="${endPage}">
 			        <c:choose>
 			            <c:when test="${p == currentPage}">
-			                <strong style="color: green;">${p}</strong>
+			                <strong style="color: green; font-size: 1.2em;">${p}</strong>
 			            </c:when>
 			            <c:otherwise>
 			                <a href="?page=${p}&condition=${condition}&keyword=${keyword}">${p}</a>

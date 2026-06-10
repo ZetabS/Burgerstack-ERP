@@ -41,7 +41,22 @@
 	    </if>
 	</select>
 	
-
+	<select id="InquiryListDetail" resultType="com.kh.burgerstack.inquiry.Inquiry">
+	    SELECT  
+	        TITLE AS title, 
+	        CONTENT AS content, 
+	        ANSWER_CONTENT AS answerContent, 
+	        CREATED_AT AS createdAt, 
+	        ANSWERED_AT AS answeredAt
+	    FROM INQUIRIES
+	    WHERE INQUIRY_ID = #{inquiryId}
+	</select>
 	
+	<update id="InquiryEdit" parameterType="INQUIRY">
+		 UPDATE INQUIRIES	
+   			SET	TITLE = #{title} 
+              , CONTENT = #{content} 
+		  WHERE INQUIRY_ID = #{inquiryId}	
+	</update>
 	
 </mapper>

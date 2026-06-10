@@ -25,4 +25,12 @@ public class InquiryDaoBO {
         return inquiryMapper.getTotalCount(storeId, condition, keyword);
     }
 
+	public Inquiry InquiryListDetail(String inquiryId) {
+		return inquiryMapper.InquiryListDetail(inquiryId);
+	}
+
+	public int InquiryEdit(Inquiry i) {
+		return inquiryMapper.InquiryEdit(i);
+	}
+
 }

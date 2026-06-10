@@ -16,4 +16,8 @@ public interface InquiryMapper {
 
 	int getTotalCount(@Param("storeId") Long storeId, @Param("condition") String condition,
 			@Param("keyword") String keyword);
+
+	Inquiry InquiryListDetail(String inquiryId);
+
+	int InquiryEdit(Inquiry i);
 }

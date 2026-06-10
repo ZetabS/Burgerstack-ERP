@@ -26,5 +26,14 @@ public class InquiryServiceBO {
     public int getTotalCount(Long storeId, String condition, String keyword) {
         return inquiryDaoBO.getTotalCount(storeId, condition, keyword);
     }
+
+	public Inquiry InquiryListDetail(String inquiryId) {
+		return inquiryDaoBO.InquiryListDetail(inquiryId);
+	}
+
+	public int InquiryEdit(Inquiry i) {
+		return inquiryDaoBO.InquiryEdit(i);
+	}
+
 	
 }

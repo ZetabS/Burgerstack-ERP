@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.user.LoginUser;
+import com.kh.burgerstack.user.User;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -71,7 +74,6 @@ public class InquiryControllerBO {
 		if (loginUser != null && loginUser.getStoreId() != null) {
 			inquiry.setStoreId(loginUser.getStoreId());
 		} else {
-
 			return "redirect:/auth/login";
 		}
 
@@ -82,9 +84,57 @@ public class InquiryControllerBO {
 
 	// 문의사항 상세 조회 페이지
 	@GetMapping("inquiries/{inquiryId}")
-	public String InquiryListDetail() {
-
-		return "inquiry/InquiryListDetailBO";
+	public String InquiryListDetail(@PathVariable String inquiryId, Model model) {
+		System.out.println("받은 Id = " + inquiryId);
+		
+		Inquiry i = inquiryServiceBO.InquiryListDetail(inquiryId);
+		
+		System.out.println("조회 결과 = " + inquiryId);
+		
+		model.addAttribute("inquiry",i);
+		
+		return "inquiry/inquiryListDetailBO";
 	}
+	//문의사항 수정 페이지
+	@GetMapping("inquiries/{inquiryId}/edit")
+	public String InquiryListEdit(@PathVariable String inquiryId, Model model) {
+		
+		Inquiry i = inquiryServiceBO.InquiryListDetail(inquiryId);
+		
+		model.addAttribute("inquiry",i);
+		
+		return"inquiry/inquiryEditBO";
+	}
+	// 문의사항 수정 기능
+	@PostMapping("inquiries/{inquiryId}")
+	public ModelAndView InquiryEdit(Inquiry i, ModelAndView mv, HttpSession session) {
+		
+		i.setStoreId(((LoginUser)session.getAttribute("loginUser")).getStoreId());
+
+		System.out.println("1. 세션에서 꺼낸 loginUser 객체: " + i);
+		
+		int result = inquiryServiceBO.InquiryEdit(i);
+		
+		if(result > 0) {
+			System.out.println("1");
+			
+			session.setAttribute("Inquiry", i);
+			
+			session.setAttribute("alertMsg", "성공적으로 정보가 수정되었습니다.");
+			
+			mv.setViewName("redirect:/owner/inquiries");
+			
+		}else {
+			
+			System.out.println("2");
+			mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
+			mv.setViewName("redirect:/owner/inquiries");
+			
+		}
+		
+		return mv;
+	}
+	
+	
 
 }
