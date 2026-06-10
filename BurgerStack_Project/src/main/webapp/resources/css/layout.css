@@ -79,6 +79,10 @@ a:active {
   gap: 8px;
 }
 
+.layout__logo:hover {
+  color: white;
+}
+
 .layout__logo-img {
   width: 32px;
   height: 32px;
