@@ -265,7 +265,7 @@
 
 <body>
 
-<t:menubarBO>
+<t:layout>
 
     <div class="dashboard-wrap">
 
@@ -509,7 +509,7 @@
 
     </div>
 
-</t:menubarBO>
+</t:layout>
 
 </body>
 </html>

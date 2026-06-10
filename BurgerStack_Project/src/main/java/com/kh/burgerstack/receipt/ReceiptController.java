@@ -82,24 +82,25 @@ public class ReceiptController {
         return mv;
     }
 
-    // 입고 예정 목록 조회 - 점주
-    @GetMapping("/owner/receipts/planned")
-    public String planned(PagingRequest pagingRequest,
-                          HttpServletRequest request,
-                          Model model) {
-
-        PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest, status);
-
-        if (pageInfo.isCurrentPageOutOfRange()) {
-            return "redirect:/owner/receipts/planned";
-        }
-
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("status", status);
-        model.addAttribute("list", receiptService.selectReceiptPlanList(pagingRequest, status));
-
-        return "receipt/receiptPlanList";
-    }
+	 	// 입고 예정 목록 조회 - 점주
+	    @GetMapping("/owner/receipts/planned")
+	    public String planned(@RequestParam(required = false, defaultValue = "") String status,
+	                          PagingRequest pagingRequest,
+	                          HttpServletRequest request,
+	                          Model model) {
+	
+	        PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest, status);
+	
+	        if (pageInfo.isCurrentPageOutOfRange()) {
+	            return "redirect:/owner/receipts/planned?status=" + status;
+	        }
+	
+	        model.addAttribute("pageInfo", pageInfo);
+	        model.addAttribute("status", status);
+	        model.addAttribute("list", receiptService.selectReceiptPlanList(pagingRequest, status));
+	
+	        return "receipt/receiptPlanList";
+	    }
     
 	 // 발주 입고 처리 - 점주
 	    @PostMapping("/owner/purchases/{purchaseId}/receipt")

@@ -17,25 +17,33 @@
     <h2>입고 예정 목록</h2>
 
     <!-- 검색 -->
-    <div class="search-area" align="right">
-        <select name="status" id="purchaseStatus">
-		    <option value="">전체</option>
-		    <option value="APPROVED">승인</option>
-		    <option value="PARTIALLY_APPROVED">부분 승인</option>
-		</select>
-
-        <input type="date">
-        ~
-        <input type="date">
-
-        <input type="text" placeholder="검색어 입력">
-
-        <button type="button" onclick="alert('클릭!')">
-            <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png"
-                 style="width: 16px;"/>
-            검색
-        </button>
-    </div>
+    <!-- 검색 -->
+	<form action="${pageContext.request.contextPath}/owner/receipts/planned"
+	      method="get">
+	
+	    <div class="search-area" align="right">
+	
+	        <select name="status" id="purchaseStatus">
+	            <option value="" ${empty status ? 'selected' : ''}>전체</option>
+	            <option value="APPROVED" ${status eq 'APPROVED' ? 'selected' : ''}>승인</option>
+	            <option value="PARTIALLY_APPROVED" ${status eq 'PARTIALLY_APPROVED' ? 'selected' : ''}>부분 승인</option>
+	        </select>
+	
+	        <input type="date">
+	        ~
+	        <input type="date">
+	
+	        <input type="text" placeholder="검색어 입력">
+	
+	        <button type="submit">
+	            <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png"
+	                 style="width: 16px;"/>
+	            검색
+	        </button>
+	
+	    </div>
+	
+	</form>
 
     <table class="table">
         <thead>
