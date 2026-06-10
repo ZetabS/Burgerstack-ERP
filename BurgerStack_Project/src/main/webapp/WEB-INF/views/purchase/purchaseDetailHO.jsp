@@ -9,7 +9,10 @@
 <title>발주 목록 상세 조회</title>
 <jsp:include page="../common/header.jsp" />
 <style>
-    .purchase-info {
+    .content-top{
+        display: flex;
+    }
+    .top-info {
         text-align: left;
         width: 200px;
     }
@@ -23,8 +26,8 @@
 
     <br>
 
-    <div class="contentTop" style="display: flex;">
-        <div class="purchase-info">
+    <div class="content-top" style="display: flex;">
+        <div class="top-info">
             <div><b>발주번호 :</b> ${list[0].purchaseOrderId}</div>
             <div><b>발주상태 :</b> ${list[0].status}</div>
         </div>

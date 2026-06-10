@@ -11,7 +11,10 @@
     table input{
         width: 50px;
     }
-    .purchase-info {
+    .content-top{
+        display: flex;
+    }
+    .top-info {
         text-align: left;
         width: 200px;
     }
@@ -21,9 +24,9 @@
     <t:menubarBO>
         <h2>발주 처리</h2>
 
-        <div class="contentTop" style="display: flex;">
+        <div class="content-top">
             <!-- 발주 정보 간이 -->
-            <div class="purchase-info">
+            <div class="top-info">
                 <div><b>발주번호 :</b> ${list[0].purchaseOrderId}</div>
                 <div><b>요청일 :</b> ${list[0].createdAt}</div>
             </div>

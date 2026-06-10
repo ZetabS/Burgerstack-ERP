@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.kh.burgerstack.common.pagination.PageInfo;
+import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderItemDto;
 import com.kh.burgerstack.purchase.dto.PurchaseSearchDto;
+import com.kh.burgerstack.user.LoginUser;
 
 import jakarta.servlet.http.HttpSession;
 import tools.jackson.core.type.TypeReference;
@@ -62,30 +65,31 @@ public class PurchaseControllerBO {
 
     // 발주 목록
     @GetMapping("purchases")
-    public ModelAndView purchaseList(
-        ModelAndView mv,
+    public String purchaseList(
+        PagingRequest pagingRequest,
         PurchaseSearchDto condition, 
-        HttpSession session){
-
+        HttpSession session,
+        Model model){
 
         // 1. 발주 목록 조회
-        ArrayList<PurchaseDto> list = purchaseService.searchPurchaseList(condition, session);
+        ArrayList<PurchaseDto> list = purchaseService.searchPurchaseList(pagingRequest, condition, session);
 
+        int totalCount = purchaseService.selectPurchaseCount(condition, session);
+
+        PageInfo pageInfo = pagingRequest.toPageInfo(totalCount);
 
         // System.out.println(list);
 		// for(PurchaseDto i : list) {
 		// 	System.out.println(i);
 		// }
         
-
         // 2. Model에 담기
-        mv.addObject("list", list);
+        model.addAttribute("list", list);
+        model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("condition", condition);
 
-        // 3. View 지정
-        mv.setViewName("purchase/purchaseListViewBO");
-		// > /WEB-INF/views/purchase/purchaseListViewBO.jsp
-
-        return mv;
+        return "purchase/purchaseListViewBO";
+        // > /WEB-INF/views/purchase/purchaseListViewBO.jsp
     }
 
     // 발주 처리

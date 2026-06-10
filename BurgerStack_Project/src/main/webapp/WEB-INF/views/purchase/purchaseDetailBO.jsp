@@ -83,7 +83,7 @@
         </div>
 
         <div class="button-group" style="display:flex; gap:10px; align-items:center;">
-            <button type="button" class="button-primary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
+            <button type="button" class="button-secondary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
             <c:choose>
                 <c:when test="${list[0].status eq 'REQUESTED'}">
                     <button class="button-primary" onclick="location.href='${pageContext.request.contextPath}/owner/purchases/${list[0].purchaseOrderId}/edit'">

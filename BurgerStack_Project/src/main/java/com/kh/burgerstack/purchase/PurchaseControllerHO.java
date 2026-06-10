@@ -10,19 +10,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
+import com.kh.burgerstack.common.pagination.PageInfo;
+import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.purchase.dto.PurchaseApprovalRequestDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
-import com.kh.burgerstack.purchase.dto.PurchaseOrderItemDto;
 import com.kh.burgerstack.purchase.dto.PurchaseSearchDto;
 
 import jakarta.servlet.http.HttpSession;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 
 
 /*
@@ -42,16 +39,22 @@ public class PurchaseControllerHO {
     // 발주 목록
     @GetMapping("purchases")
     public String purchaseList(
-            PurchaseSearchDto condition,
-            HttpSession session,
-            Model model) {
+        PagingRequest pagingRequest,
+        PurchaseSearchDto condition, 
+        HttpSession session,
+        Model model){
 
         // 1. 발주 목록 조회
-        List<PurchaseDto> list =
-                purchaseService.searchPurchaseList(condition, session);
+        ArrayList<PurchaseDto> list = purchaseService.searchPurchaseList(pagingRequest, condition, session);
+
+        int totalCount = purchaseService.selectPurchaseCount(condition, session);
+
+        PageInfo pageInfo = pagingRequest.toPageInfo(totalCount);
         
         // 2. Model에 담기
         model.addAttribute("list", list);
+        model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("condition", condition);
 
         // 3. View 지정
         return "purchase/purchaseListViewHO";

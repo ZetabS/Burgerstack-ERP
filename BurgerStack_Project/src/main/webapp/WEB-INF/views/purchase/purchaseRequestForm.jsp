@@ -87,7 +87,7 @@
         
 
         <div class="middle-area">
-            <button type="button" class="button-primary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
+            <button type="button" class="button-secondary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
             <button type="submit" class="button-primary" onclick="submitOrder()"> 결제 </button>
         </div>
 
@@ -284,9 +284,8 @@ function buildJson() {
 function submitOrder() {
     buildJson();
 
-    let json = $('#itemsJson').val();
-    if (!json || json === "[]") {
-        alert("선택된 항목이 없습니다.");
+    if (items.length === 0) {
+        alert("발주할 상품을 선택하세요.");
         return;
     }
 

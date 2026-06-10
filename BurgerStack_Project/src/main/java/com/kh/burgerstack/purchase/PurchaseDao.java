@@ -8,6 +8,7 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
@@ -26,9 +27,38 @@ public class PurchaseDao {
         return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchMaterialsList", storeId);
     }
 
-    public ArrayList<PurchaseDto> searchPurchaseList(SqlSessionTemplate sqlSession, PurchaseSearchDto condition) {
+    public ArrayList<PurchaseDto> searchPurchaseList(PagingRequest pagingRequest, PurchaseSearchDto condition, SqlSessionTemplate sqlSession) {
 
-        return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseList", condition);
+    Map<String, Object> param = new HashMap<>();
+
+    param.put("status", condition.getStatus());
+    param.put("keyword", condition.getKeyword());
+    param.put("startDate", condition.getStartDate());
+    param.put("endDate", condition.getEndDate());
+    param.put("storeId", condition.getStoreId());
+    param.put("isAdmin", condition.isAdmin());
+
+    param.put("startRow", pagingRequest.getStartRow());
+    param.put("endRow", pagingRequest.getEndRow());
+
+
+        return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseList", param);
+    }
+
+    public int selectPurchaseCount(PurchaseSearchDto condition, SqlSessionTemplate sqlSession){
+
+        Map<String, Object> param = new HashMap<>();
+
+        param.put("status", condition.getStatus());
+        param.put("keyword", condition.getKeyword());
+        param.put("startDate", condition.getStartDate());
+        param.put("endDate", condition.getEndDate());
+        param.put("storeId", condition.getStoreId());
+        param.put("isAdmin", condition.isAdmin());
+
+        return sqlSession.selectOne(
+            "com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseCount",
+            param);
     }
 
     // =========================

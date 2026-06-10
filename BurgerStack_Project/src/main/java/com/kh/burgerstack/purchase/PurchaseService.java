@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseApprovalItemDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
@@ -39,6 +40,7 @@ public class PurchaseService {
 
     //발주 목록 조회
     public ArrayList<PurchaseDto> searchPurchaseList(
+        PagingRequest pagingRequest,
         PurchaseSearchDto condition, 
         HttpSession session) {
 
@@ -50,17 +52,42 @@ public class PurchaseService {
 
         if (loginUser.getRole().equals("ADMIN")) {
             condition.setAdmin(true);
-            return purchaseDao.searchPurchaseList(sqlSession, condition);
+            return purchaseDao.searchPurchaseList(pagingRequest, condition, sqlSession);
         }
 
         condition.setAdmin(false);
-        return purchaseDao.searchPurchaseList(sqlSession, condition);
+        return purchaseDao.searchPurchaseList(pagingRequest, condition, sqlSession);
+    }
+
+    public int selectPurchaseCount(
+            PurchaseSearchDto condition,
+            HttpSession session) {
+
+        LoginUser loginUser =
+                (LoginUser) session.getAttribute("loginUser");
+
+        condition.setStoreId(loginUser.getStoreId());
+
+        if("ADMIN".equals(loginUser.getRole())){
+            condition.setAdmin(true);
+        }else{
+            condition.setAdmin(false);
+        }
+
+        return purchaseDao.selectPurchaseCount(
+                condition,
+                sqlSession);
     }
 
     // 발주 요청 처리
     @Transactional
     public void createPurchase(List<PurchaseOrderItemDto> items,
-                            HttpSession session) {
+                                HttpSession session) {
+
+        // 품목 미선택시 예외처리
+        if (items == null || items.isEmpty()) {
+            throw new IllegalArgumentException("발주 품목이 없습니다.");
+        }
 
         LoginUser user = (LoginUser) session.getAttribute("loginUser");
 
@@ -70,6 +97,10 @@ public class PurchaseService {
         long total = 0;
 
         for (PurchaseOrderItemDto item : items) {
+            if (item.getRequestQuantity() <= 0) {
+                throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+            }
+
             total += item.getSupplyPriceSnapshot() * item.getRequestQuantity();
         }
 

@@ -101,8 +101,8 @@
         
 
         <div class="middle-area">
-            <button type="button" class="button-primary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
-            <button type="submit" class="button-primary"> 수정 </button>
+            <button type="button" class="button-secondary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
+            <button type="submit" class="button-primary"> 저장 </button>
         </div>
 
 

@@ -36,43 +36,148 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <select id="searchPurchaseList"
         resultType="com.kh.burgerstack.purchase.dto.PurchaseDto">
 
-    SELECT
-        PO.PURCHASE_ORDER_ID AS purchaseOrderId,
-        PO.STORE_ID          AS storeId,
-        S.STORE_NAME          AS storeName,
-        PO.STATUS            AS status,
-        PO.TOTAL_AMOUNT      AS totalAmount,
-        PO.ORDER_MEMO        AS orderMemo,
-        TO_CHAR(PO.CREATED_AT,'YYYY.MM.DD') AS createdAt,
+    SELECT *
+    FROM (
 
-        (
-            SELECT
-                MIN(POI.MATERIAL_NAME_SNAPSHOT)
-                || ' 외 '
-                || (COUNT(*) - 1)
-                || '건'
-            FROM PURCHASE_ORDER_ITEMS POI
-            WHERE POI.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
-        ) AS itemSummary
+        SELECT
+            ROW_NUMBER() OVER(
+                ORDER BY PO.PURCHASE_ORDER_ID DESC
+            ) RN,
 
-    FROM PURCHASE_ORDERS PO, STORES S
+            PO.PURCHASE_ORDER_ID AS purchaseOrderId,
+            PO.STORE_ID          AS storeId,
+            S.STORE_NAME         AS storeName,
+            PO.STATUS            AS status,
+            PO.TOTAL_AMOUNT      AS totalAmount,
+            PO.ORDER_MEMO        AS orderMemo,
+            TO_CHAR(
+                PO.CREATED_AT,
+                'YYYY.MM.DD'
+            ) AS createdAt,
+
+            (
+                SELECT
+                    MIN(POI.MATERIAL_NAME_SNAPSHOT)
+                    || ' 외 '
+                    || (COUNT(*) - 1)
+                    || '건'
+                FROM PURCHASE_ORDER_ITEMS POI
+                WHERE POI.PURCHASE_ORDER_ID
+                    = PO.PURCHASE_ORDER_ID
+            ) AS itemSummary
+
+        FROM PURCHASE_ORDERS PO
+        JOIN STORES S
+          ON PO.STORE_ID = S.STORE_ID
+
+        <where>
+
+            <if test="isAdmin == false and storeId != null">
+                PO.STORE_ID = #{storeId}
+            </if>
+
+            <if test="status != null and status != ''">
+                AND PO.STATUS = #{status}
+            </if>
+
+            <if test="startDate != null">
+                AND TRUNC(PO.CREATED_AT)
+                <![CDATA[>=]]>
+                #{startDate}
+            </if>
+
+            <if test="endDate != null">
+                AND TRUNC(PO.CREATED_AT)
+                <![CDATA[<=]]>
+                #{endDate}
+            </if>
+
+            <if test="keyword != null and keyword != ''">
+
+                AND (
+
+                    EXISTS (
+                        SELECT 1
+                        FROM PURCHASE_ORDER_ITEMS POI
+                        WHERE POI.PURCHASE_ORDER_ID
+                              = PO.PURCHASE_ORDER_ID
+                        AND POI.MATERIAL_NAME_SNAPSHOT
+                            LIKE '%' || #{keyword} || '%'
+                    )
+
+                    OR
+
+                    PO.ORDER_MEMO
+                        LIKE '%' || #{keyword} || '%'
+
+                )
+
+            </if>
+
+        </where>
+
+    )
+
+    WHERE RN BETWEEN #{startRow}
+                 AND #{endRow}
+
+</select>
+
+<!-- 발주 목록 페이지 -->
+<select id="searchPurchaseCount"
+        resultType="int">
+
+    SELECT COUNT(*)
+
+    FROM PURCHASE_ORDERS PO
+    JOIN STORES S
+      ON PO.STORE_ID = S.STORE_ID
 
     <where>
 
-        PO.STORE_ID = S.STORE_ID
-        <!-- 점주만 스토어 제한 -->
-        <if test="!isAdmin and storeId != null">
-            AND PO.STORE_ID = #{storeId}
+        <if test="isAdmin == false and storeId != null">
+            PO.STORE_ID = #{storeId}
         </if>
 
-        <!-- 상태 필터 (관리자/점주 공통 사용 가능) -->
         <if test="status != null and status != ''">
             AND PO.STATUS = #{status}
         </if>
 
-    </where>
+        <if test="startDate != null">
+            AND TRUNC(PO.CREATED_AT)
+            <![CDATA[>=]]>
+            #{startDate}
+        </if>
 
-    ORDER BY PO.PURCHASE_ORDER_ID DESC
+        <if test="endDate != null">
+            AND TRUNC(PO.CREATED_AT)
+            <![CDATA[<=]]>
+            #{endDate}
+        </if>
+
+        <if test="keyword != null and keyword != ''">
+
+            AND (
+
+                EXISTS (
+                    SELECT 1
+                    FROM PURCHASE_ORDER_ITEMS POI
+                    WHERE POI.PURCHASE_ORDER_ID
+                          = PO.PURCHASE_ORDER_ID
+                    AND POI.MATERIAL_NAME_SNAPSHOT
+                        LIKE '%' || #{keyword} || '%'
+                )
+
+                OR
+
+                PO.ORDER_MEMO
+                    LIKE '%' || #{keyword} || '%'
+
+            )
+
+        </if>
+
+    </where>
 
 </select>
 
@@ -196,7 +301,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     UPDATE PURCHASE_ORDERS
     SET STATUS =
         <choose>
-            <when test="isAdmin">
+            <when test="isAdmin == true">
                 'REQUESTED'
             </when>
             <otherwise>
