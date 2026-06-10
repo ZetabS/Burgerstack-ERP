@@ -6,61 +6,62 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <jsp:include page="/WEB-INF/views/common/header.jsp" />
     <title>재고 변동 이력 목록</title>
     <style></style>
   </head>
   <body>
     <t:layout>
-      <div class="d-flex justify-content-between mb-3">
-        <h2>재고 변동 이력 목록</h2>
-        <a href="${inventoryTransactionListUrl}" class="btn btn-secondary">초기화</a>
-      </div>
+      <div class="outer">
+        <div class="d-flex justify-content-between mb-3">
+          <h2>재고 변동 이력 목록</h2>
+          <a href="${inventoryTransactionListUrl}" class="btn btn-secondary">초기화</a>
+        </div>
 
-      <form class="d-flex justify-content-between mb-3 text-nowrap" action="${inventoryTransactionListUrl}" method="get">
-        <input type="hidden" name="page" value="1" />
-        <input type="hidden" name="size" value="${view.pageInfo.size}" />
+        <form class="d-flex justify-content-between mb-3 text-nowrap" action="${inventoryTransactionListUrl}" method="get">
+          <input type="hidden" name="page" value="1" />
+          <input type="hidden" name="size" value="${view.pageInfo.size}" />
 
-        <select id="store-option" name="storeId" class="form-control mr-3">
-          <option value="">점포 선택</option>
-          <c:forEach var="option" items="${view.storeOptions}">
-            <option value="${option.storeId}" ${option.storeId eq view.condition.storeId ? 'selected' : ''}>${option.storeName}</option>
-          </c:forEach>
-        </select>
+          <select id="store-option" name="storeId" class="form-control mr-3">
+            <option value="">점포 선택</option>
+            <c:forEach var="option" items="${view.storeOptions}">
+              <option value="${option.storeId}" ${option.storeId eq view.condition.storeId ? 'selected' : ''}>${option.storeName}</option>
+            </c:forEach>
+          </select>
 
-        <select id="transaction-type-option" name="transactionType" class="form-control mr-3">
-          <option value="">유형 선택</option>
-          <option value="RECEIPT" ${view.condition.transactionType eq 'RECEIPT' ? 'selected' : ''}>입고</option>
-          <option value="STORE_CLOSING" ${view.condition.transactionType eq 'STORE_CLOSING' ? 'selected' : ''}>마감</option>
-          <option value="ADJUSTMENT" ${view.condition.transactionType eq 'ADJUSTMENT' ? 'selected' : ''}>조정</option>
-        </select>
-      </form>
+          <select id="transaction-type-option" name="transactionType" class="form-control mr-3">
+            <option value="">유형 선택</option>
+            <option value="RECEIPT" ${view.condition.transactionType eq 'RECEIPT' ? 'selected' : ''}>입고</option>
+            <option value="STORE_CLOSING" ${view.condition.transactionType eq 'STORE_CLOSING' ? 'selected' : ''}>마감</option>
+            <option value="ADJUSTMENT" ${view.condition.transactionType eq 'ADJUSTMENT' ? 'selected' : ''}>조정</option>
+          </select>
+        </form>
 
-      <table class="table2">
-        <thead>
-          <tr>
-            <th>변동 유형</th>
-            <th>점포명</th>
-            <th>처리자</th>
-            <th>처리 일시</th>
-            <th>사유</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <c:forEach var="item" items="${view.list}">
-            <c:url var="detail" value="/admin/inventory-transactions/${item.inventoryTransactionId}" />
-            <tr class="clickable-row" data-href="${detail}">
-              <td>${item.transactionType}</td>
-              <td>${item.storeName}</td>
-              <td>${item.createdByName}</td>
-              <td>${item.createdAt}</td>
-              <td>${item.reason}</td>
+        <table class="table2">
+          <thead>
+            <tr>
+              <th>변동 유형</th>
+              <th>점포명</th>
+              <th>처리자</th>
+              <th>처리 일시</th>
+              <th>사유</th>
             </tr>
-          </c:forEach>
-        </tbody>
-      </table>
-      <t:pagination pageInfo="${view.pageInfo}" />
+          </thead>
+
+          <tbody>
+            <c:forEach var="item" items="${view.list}">
+              <c:url var="detail" value="/admin/inventory-transactions/${item.inventoryTransactionId}" />
+              <tr class="clickable-row" data-href="${detail}">
+                <td>${item.transactionType}</td>
+                <td>${item.storeName}</td>
+                <td>${item.createdByName}</td>
+                <td>${item.createdAt}</td>
+                <td>${item.reason}</td>
+              </tr>
+            </c:forEach>
+          </tbody>
+        </table>
+        <t:pagination pageInfo="${view.pageInfo}" />
+      </div>
     </t:layout>
     <script>
       sessionStorage.setItem("inventoryTransactionListUrl", window.location.pathname + window.location.search);

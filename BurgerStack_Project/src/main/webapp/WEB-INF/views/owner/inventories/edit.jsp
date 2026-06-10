@@ -5,13 +5,12 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <jsp:include page="/WEB-INF/views/common/header.jsp" />
     <title>안전재고 조정</title>
     <style></style>
   </head>
   <body>
     <t:layout>
-      <div class="container py-4">
+      <div class="outer container py-4">
         <h2 class="mb-4">안전재고 조정</h2>
 
         <form action="/burgerstack/owner/inventories/${detail.inventoryId}" method="post">
