@@ -122,7 +122,7 @@ h1 {
 					<div class="btn-area">
 						<button type="submit" id="saveBtn">등록</button>
 	
-					<button type="submit"
+					<button type="submit" id="deleteBtn"
 					        formaction="/burgerstack/owner/inquiries/${inquiryId}/delete">
 					    삭제
 					</button>

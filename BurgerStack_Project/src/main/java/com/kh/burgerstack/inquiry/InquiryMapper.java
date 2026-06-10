@@ -21,5 +21,5 @@ public interface InquiryMapper {
 
 	int InquiryEdit(Inquiry i);
 
-	int inquiryDelete(String inquiryId);
+	int InquiryDelete(String inquiryId);
 }
