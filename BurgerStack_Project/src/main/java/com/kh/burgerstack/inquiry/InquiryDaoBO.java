@@ -33,4 +33,8 @@ public class InquiryDaoBO {
 		return inquiryMapper.InquiryEdit(i);
 	}
 
+	public int InquiryDelete(String inquiryId) {
+		return inquiryMapper.inquiryDelete(inquiryId);
+	}
+
 }

@@ -59,4 +59,10 @@
 		  WHERE INQUIRY_ID = #{inquiryId}	
 	</update>
 	
+	<delete id="IquiryDelete" parameterType="INQUIRY">
+		DELETE 
+		  FROM INQUIRIES
+		 WHERE INQUIRY_ID = #{inquiryId}
+	</delete>
+	
 </mapper>

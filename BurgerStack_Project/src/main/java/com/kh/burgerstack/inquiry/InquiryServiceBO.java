@@ -35,5 +35,9 @@ public class InquiryServiceBO {
 		return inquiryDaoBO.InquiryEdit(i);
 	}
 
+	public int InquiryDelete(String inquiryId) {
+		return inquiryDaoBO.InquiryDelete(inquiryId);
+	}
+
 	
 }

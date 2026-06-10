@@ -122,8 +122,10 @@ h1 {
 					<div class="btn-area">
 						<button type="submit" id="saveBtn">등록</button>
 	
-						<button type="submit" id="deleteBtn">
-							삭제</button>
+					<button type="submit"
+					        formaction="/burgerstack/owner/inquiries/${inquiryId}/delete">
+					    삭제
+					</button>
 	
 						<button type="button" id="homeBtn"
 							onclick="location.href='/burgerstack/owner/inquiries'">

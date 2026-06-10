@@ -134,7 +134,20 @@ public class InquiryControllerBO {
 		
 		return mv;
 	}
-	
-	
+	@PostMapping("inquiries/{inquiryId}/delete")
+	public String inquiryDelete(@PathVariable String inquiryId, Inquiry i, Model model, HttpSession session) {
+		
+		int result = inquiryServiceBO.InquiryDelete(inquiryId);
+		
+		if(result > 0) {
+			session.setAttribute("alertMsg", "성공적으로 삭제되었습니다.");
+			return "redirect:/owner/inquiries";
+			
+		}else {
+			model.addAttribute("errorMsg", "실패하였습니다.");
+			return "common/errorPage";
+			
+		}
+	}
 
 }

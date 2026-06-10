@@ -20,4 +20,6 @@ public interface InquiryMapper {
 	Inquiry InquiryListDetail(String inquiryId);
 
 	int InquiryEdit(Inquiry i);
+
+	int inquiryDelete(String inquiryId);
 }
