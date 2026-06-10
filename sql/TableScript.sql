@@ -160,7 +160,8 @@ CREATE TABLE STORES (
     , CONSTRAINT PK_STORES PRIMARY KEY ( STORE_ID )
     , CONSTRAINT UK_STORES_CODE UNIQUE ( STORE_CODE )
     , CONSTRAINT UK_STORES_OWNER UNIQUE ( OWNER_USER_NO )
-    , CONSTRAINT CK_STORES_STATUS CHECK ( STATUS IN ( 'OPEN', 'CLOSED' ) )
+    , CONSTRAINT CK_STORES_STATUS
+        CHECK ( STATUS IN ( 'OPEN', 'PAUSED', 'CLOSED' ) )
     , CONSTRAINT FK_STORES_OWNER FOREIGN KEY ( OWNER_USER_NO )
         REFERENCES USERS ( USER_NO )
 );
@@ -1381,6 +1382,886 @@ INSERT INTO STORE_INVENTORIES (
          , 3
          , 10 );
 
+
+-- 문의사항
+
+INSERT INTO INQUIRIES (
+    INQUIRY_ID
+    , TITLE
+    , CONTENT
+    , ANSWER_CONTENT
+    , CREATED_AT
+    , ANSWERED_AT
+    , DELETED_AT
+    , STORE_ID
+) VALUES ( SEQ_INQ.NEXTVAL
+         , '발주 승인 처리 문의'
+         , '지난주에 요청한 발주 건이 아직 승인 대기 상태로 표시됩니다. 처리 상태를 확인 부탁드립니다.'
+         , '확인 결과 일부 자재 재고 부족으로 승인 처리가 지연되었습니다. 금일 중 승인 처리 예정입니다.'
+         , SYSDATE - 10
+         , SYSDATE - 9
+         , NULL
+         , 1 );
+
+INSERT INTO INQUIRIES (
+    INQUIRY_ID
+    , TITLE
+    , CONTENT
+    , ANSWER_CONTENT
+    , CREATED_AT
+    , ANSWERED_AT
+    , DELETED_AT
+    , STORE_ID
+) VALUES ( SEQ_INQ.NEXTVAL
+         , '안전재고 수량 변경 요청'
+         , '양상추 사용량이 증가하여 안전재고 수량을 상향하고 싶습니다. 변경 가능 여부를 문의드립니다.'
+         , '점포 재고 화면에서 안전재고 수량을 직접 변경할 수 있습니다. 변경 후 부족 재고 목록에 반영됩니다.'
+         , SYSDATE - 9
+         , SYSDATE - 8
+         , NULL
+         , 2 );
+
+INSERT INTO INQUIRIES (
+    INQUIRY_ID
+    , TITLE
+    , CONTENT
+    , ANSWER_CONTENT
+    , CREATED_AT
+    , ANSWERED_AT
+    , DELETED_AT
+    , STORE_ID
+) VALUES ( SEQ_INQ.NEXTVAL
+         , '입고 처리 후 재고 반영 문의'
+         , '입고 처리를 완료했는데 일부 자재의 현재고가 바로 반영되지 않는 것 같습니다.'
+         , '입고 처리 내역을 확인한 결과 정상 반영되었습니다. 화면 새로고침 후에도 동일하면 다시 문의 부탁드립니다.'
+         , SYSDATE - 8
+         , SYSDATE - 7
+         , NULL
+         , 3 );
+
+INSERT INTO INQUIRIES (
+    INQUIRY_ID
+    , TITLE
+    , CONTENT
+    , ANSWER_CONTENT
+    , CREATED_AT
+    , ANSWERED_AT
+    , DELETED_AT
+    , STORE_ID
+) VALUES ( SEQ_INQ.NEXTVAL
+         , '폐기 처리 사유 입력 문의'
+         , '유통기한 경과로 폐기 처리할 때 사유를 어떤 형식으로 작성해야 하나요?'
+         , '폐기 수량과 폐기 사유를 확인할 수 있도록 자재명, 수량, 폐기 원인을 간단히 작성해주시면 됩니다.'
+         , SYSDATE - 7
+         , SYSDATE - 6
+         , NULL
+         , 1 );
+
+INSERT INTO INQUIRIES (
+    INQUIRY_ID
+    , TITLE
+    , CONTENT
+    , ANSWER_CONTENT
+    , CREATED_AT
+    , ANSWERED_AT
+    , DELETED_AT
+    , STORE_ID
+) VALUES ( SEQ_INQ.NEXTVAL
+         , '재고 조정 이력 확인 문의'
+         , '점포에서 조정한 재고 이력을 다시 확인할 수 있는 메뉴가 있는지 문의드립니다.'
+         , '재고 관리 메뉴의 재고 변동 이력 화면에서 조정 내역을 확인할 수 있습니다.'
+         , SYSDATE - 6
+         , SYSDATE - 5
+         , NULL
+         , 2 );
+
+INSERT INTO INQUIRIES (
+    INQUIRY_ID
+    , TITLE
+    , CONTENT
+    , ANSWER_CONTENT
+    , CREATED_AT
+    , ANSWERED_AT
+    , DELETED_AT
+    , STORE_ID
+) VALUES ( SEQ_INQ.NEXTVAL
+         , '일일 마감 후 수정 가능 여부'
+         , '일일 마감을 완료한 뒤 입력한 수량이 잘못된 것을 확인했습니다. 수정이 가능한가요?'
+         , NULL
+         , SYSDATE - 5
+         , NULL
+         , NULL
+         , 3 );
+
+INSERT INTO INQUIRIES (
+    INQUIRY_ID
+    , TITLE
+    , CONTENT
+    , ANSWER_CONTENT
+    , CREATED_AT
+    , ANSWERED_AT
+    , DELETED_AT
+    , STORE_ID
+) VALUES ( SEQ_INQ.NEXTVAL
+         , '자재 목록에 없는 품목 문의'
+         , '신규 행사 메뉴에 필요한 자재가 목록에 표시되지 않습니다. 등록 예정인지 확인 부탁드립니다.'
+         , NULL
+         , SYSDATE - 4
+         , NULL
+         , NULL
+         , 1 );
+
+INSERT INTO INQUIRIES (
+    INQUIRY_ID
+    , TITLE
+    , CONTENT
+    , ANSWER_CONTENT
+    , CREATED_AT
+    , ANSWERED_AT
+    , DELETED_AT
+    , STORE_ID
+) VALUES ( SEQ_INQ.NEXTVAL
+         , '발주 반려 사유 확인 요청'
+         , '최근 발주 요청이 반려되었는데 상세 사유를 확인하고 싶습니다.'
+         , '해당 발주 건은 최소 발주 단위 미달로 반려되었습니다. 수량을 조정하여 다시 요청해주시기 바랍니다.'
+         , SYSDATE - 3
+         , SYSDATE - 2
+         , NULL
+         , 2 );
+
+INSERT INTO INQUIRIES (
+    INQUIRY_ID
+    , TITLE
+    , CONTENT
+    , ANSWER_CONTENT
+    , CREATED_AT
+    , ANSWERED_AT
+    , DELETED_AT
+    , STORE_ID
+) VALUES ( SEQ_INQ.NEXTVAL
+         , '공지사항 첨부파일 다운로드 오류'
+         , '공지사항에 첨부된 파일을 다운로드하려고 하면 오류가 발생합니다.'
+         , NULL
+         , SYSDATE - 2
+         , NULL
+         , NULL
+         , 3 );
+
+INSERT INTO INQUIRIES (
+    INQUIRY_ID
+    , TITLE
+    , CONTENT
+    , ANSWER_CONTENT
+    , CREATED_AT
+    , ANSWERED_AT
+    , DELETED_AT
+    , STORE_ID
+) VALUES ( SEQ_INQ.NEXTVAL
+         , '재고 부족 알림 기준 문의'
+         , '부족 재고로 표시되는 기준이 현재고 기준인지 안전재고 기준인지 문의드립니다.'
+         , '현재고가 안전재고보다 적은 경우 부족 재고로 표시됩니다.'
+         , SYSDATE - 1
+         , SYSDATE
+         , NULL
+         , 1 );
+
+-- 발주
+
+
+/* 1. 요청 상태 */
+INSERT INTO PURCHASE_ORDERS (
+    PURCHASE_ORDER_ID
+    , TOTAL_AMOUNT
+    , ORDER_MEMO
+    , STATUS
+    , CREATED_AT
+    , UPDATED_AT
+    , STORE_ID
+) VALUES ( SEQ_PUR_REQ.NEXTVAL
+         , 178000
+         , '주말 판매량 증가 예상으로 기본 자재 발주 요청합니다.'
+         , 'REQUESTED'
+         , SYSDATE - 10
+         , NULL
+         , 1 );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 30
+         , 0
+         , NULL
+         , '참깨번'
+         , 1200
+         , 1
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 20
+         , 0
+         , NULL
+         , '비프패티'
+         , 3500
+         , 2
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 40
+         , 0
+         , NULL
+         , '체다치즈'
+         , 1800
+         , 3
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'REQUESTED'
+         , '점주 발주 요청'
+         , SYSDATE - 10
+         , 2
+         , SEQ_PUR_REQ.CURRVAL );
+
+
+/* 2. 승인 완료 */
+INSERT INTO PURCHASE_ORDERS (
+    PURCHASE_ORDER_ID
+    , TOTAL_AMOUNT
+    , ORDER_MEMO
+    , STATUS
+    , CREATED_AT
+    , UPDATED_AT
+    , STORE_ID
+) VALUES ( SEQ_PUR_REQ.NEXTVAL
+         , 136000
+         , '평일 판매분 보충 발주입니다.'
+         , 'APPROVED'
+         , SYSDATE - 9
+         , SYSDATE - 8
+         , 2 );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 20
+         , 20
+         , NULL
+         , '참깨번'
+         , 1200
+         , 1
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 25
+         , 25
+         , NULL
+         , '비프패티'
+         , 3500
+         , 2
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 15
+         , 15
+         , NULL
+         , '양상추'
+         , 1600
+         , 4
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'REQUESTED'
+         , '점주 발주 요청'
+         , SYSDATE - 9
+         , 3
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'APPROVED'
+         , '요청 수량 전체 승인'
+         , SYSDATE - 8
+         , 1
+         , SEQ_PUR_REQ.CURRVAL );
+
+
+/* 3. 부분 승인 */
+INSERT INTO PURCHASE_ORDERS (
+    PURCHASE_ORDER_ID
+    , TOTAL_AMOUNT
+    , ORDER_MEMO
+    , STATUS
+    , CREATED_AT
+    , UPDATED_AT
+    , STORE_ID
+) VALUES ( SEQ_PUR_REQ.NEXTVAL
+         , 224000
+         , '행사 기간 대비 추가 발주 요청합니다.'
+         , 'PARTIALLY_APPROVED'
+         , SYSDATE - 8
+         , SYSDATE - 7
+         , 3 );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 40
+         , 40
+         , NULL
+         , '참깨번'
+         , 1200
+         , 1
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 40
+         , 30
+         , '본사 보유 재고 부족으로 일부 수량만 승인'
+         , '비프패티'
+         , 3500
+         , 2
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 20
+         , 0
+         , '행사 자재 우선 배정으로 승인 불가'
+         , '베이컨'
+         , 3800
+         , 5
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'REQUESTED'
+         , '점주 발주 요청'
+         , SYSDATE - 8
+         , 4
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'PARTIALLY_APPROVED'
+         , '일부 품목 수량 조정 승인'
+         , SYSDATE - 7
+         , 1
+         , SEQ_PUR_REQ.CURRVAL );
+
+
+/* 4. 반려 */
+INSERT INTO PURCHASE_ORDERS (
+    PURCHASE_ORDER_ID
+    , TOTAL_AMOUNT
+    , ORDER_MEMO
+    , STATUS
+    , CREATED_AT
+    , UPDATED_AT
+    , STORE_ID
+) VALUES ( SEQ_PUR_REQ.NEXTVAL
+         , 315000
+         , '신규 메뉴 테스트를 위한 대량 발주 요청입니다.'
+         , 'REJECTED'
+         , SYSDATE - 7
+         , SYSDATE - 6
+         , 1 );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 50
+         , 0
+         , '사전 승인되지 않은 테스트 발주'
+         , '비프패티'
+         , 3500
+         , 2
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 40
+         , 0
+         , '사전 승인되지 않은 테스트 발주'
+         , '베이컨'
+         , 3500
+         , 5
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'REQUESTED'
+         , '점주 발주 요청'
+         , SYSDATE - 7
+         , 2
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'REJECTED'
+         , '사전 승인되지 않은 대량 발주로 반려'
+         , SYSDATE - 6
+         , 1
+         , SEQ_PUR_REQ.CURRVAL );
+
+
+/* 5. 취소 */
+INSERT INTO PURCHASE_ORDERS (
+    PURCHASE_ORDER_ID
+    , TOTAL_AMOUNT
+    , ORDER_MEMO
+    , STATUS
+    , CREATED_AT
+    , UPDATED_AT
+    , STORE_ID
+) VALUES ( SEQ_PUR_REQ.NEXTVAL
+         , 96000
+         , '수량을 잘못 입력하여 취소 예정입니다.'
+         , 'CANCELED'
+         , SYSDATE - 6
+         , SYSDATE - 5
+         , 2 );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 80
+         , 0
+         , NULL
+         , '참깨번'
+         , 1200
+         , 1
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'REQUESTED'
+         , '점주 발주 요청'
+         , SYSDATE - 6
+         , 3
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'CANCELED'
+         , '점주 요청 수량 오입력으로 취소'
+         , SYSDATE - 5
+         , 3
+         , SEQ_PUR_REQ.CURRVAL );
+
+
+/* 6. 입고 완료 */
+INSERT INTO PURCHASE_ORDERS (
+    PURCHASE_ORDER_ID
+    , TOTAL_AMOUNT
+    , ORDER_MEMO
+    , STATUS
+    , CREATED_AT
+    , UPDATED_AT
+    , STORE_ID
+) VALUES ( SEQ_PUR_REQ.NEXTVAL
+         , 165000
+         , '정기 발주입니다.'
+         , 'RECEIVED'
+         , SYSDATE - 5
+         , SYSDATE - 3
+         , 3 );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 30
+         , 30
+         , NULL
+         , '비프패티'
+         , 3500
+         , 2
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 20
+         , 20
+         , NULL
+         , '체다치즈'
+         , 1800
+         , 3
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 15
+         , 15
+         , NULL
+         , '감자튀김'
+         , 1600
+         , 6
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'REQUESTED'
+         , '점주 발주 요청'
+         , SYSDATE - 5
+         , 4
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'APPROVED'
+         , '요청 수량 전체 승인'
+         , SYSDATE - 4
+         , 1
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'RECEIVED'
+         , '점포 입고 처리 완료'
+         , SYSDATE - 3
+         , 4
+         , SEQ_PUR_REQ.CURRVAL );
+
+
+/* 7. 요청 상태 */
+INSERT INTO PURCHASE_ORDERS (
+    PURCHASE_ORDER_ID
+    , TOTAL_AMOUNT
+    , ORDER_MEMO
+    , STATUS
+    , CREATED_AT
+    , UPDATED_AT
+    , STORE_ID
+) VALUES ( SEQ_PUR_REQ.NEXTVAL
+         , 87000
+         , '소스류 재고 부족으로 추가 발주합니다.'
+         , 'REQUESTED'
+         , SYSDATE - 2
+         , NULL
+         , 1 );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 10
+         , 0
+         , NULL
+         , '케첩'
+         , 2500
+         , 7
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 20
+         , 0
+         , NULL
+         , '마요네즈'
+         , 3100
+         , 8
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'REQUESTED'
+         , '점주 발주 요청'
+         , SYSDATE - 2
+         , 2
+         , SEQ_PUR_REQ.CURRVAL );
+
+
+/* 8. 승인 완료 */
+INSERT INTO PURCHASE_ORDERS (
+    PURCHASE_ORDER_ID
+    , TOTAL_AMOUNT
+    , ORDER_MEMO
+    , STATUS
+    , CREATED_AT
+    , UPDATED_AT
+    , STORE_ID
+) VALUES ( SEQ_PUR_REQ.NEXTVAL
+         , 116000
+         , '음료 및 포장 자재 정기 발주입니다.'
+         , 'APPROVED'
+         , SYSDATE - 1
+         , SYSDATE
+         , 2 );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 20
+         , 20
+         , NULL
+         , '콜라시럽'
+         , 4000
+         , 9
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_ITEMS (
+    PURCHASE_ORDER_ITEM_ID
+    , REQUEST_QUANTITY
+    , APPROVED_QUANTITY
+    , REJECT_REASON
+    , MATERIAL_NAME_SNAPSHOT
+    , SUPPLY_PRICE_SNAPSHOT
+    , MATERIAL_ID
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_ITEM.NEXTVAL
+         , 30
+         , 30
+         , NULL
+         , '포장지'
+         , 1200
+         , 10
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'REQUESTED'
+         , '점주 발주 요청'
+         , SYSDATE - 1
+         , 3
+         , SEQ_PUR_REQ.CURRVAL );
+
+INSERT INTO PURCHASE_ORDER_HISTORIES (
+    PURCHASE_ORDER_HISTORY_ID
+    , TO_STATUS
+    , REASON
+    , CREATED_AT
+    , CREATED_BY
+    , PURCHASE_ORDER_ID
+) VALUES ( SEQ_PUR_REQ_HIST.NEXTVAL
+         , 'APPROVED'
+         , '요청 수량 전체 승인'
+         , SYSDATE
+         , 1
+         , SEQ_PUR_REQ.CURRVAL );
 
 -- 커밋
 COMMIT;
