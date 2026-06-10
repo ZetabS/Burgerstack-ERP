@@ -23,4 +23,6 @@ public class PurchaseOrderDetailDto {
 
     private String status;
 
+    private String rejectReason;
+
 }

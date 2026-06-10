@@ -247,6 +247,25 @@ public class PurchaseService {
 
         for(PurchaseApprovalItemDto item : items){
 
+            if(item.getApprovedQuantity() < 0){
+                throw new IllegalArgumentException("승인수량 오류");
+            }
+
+            if(item.getRejectQuantity() < 0){
+                throw new IllegalArgumentException("반려수량 오류");
+            }
+
+            if(item.getApprovedQuantity()
+                    + item.getRejectQuantity()
+                    != item.getRequestQuantity()){
+
+                throw new IllegalArgumentException(
+                    "승인수량 + 반려수량은 요청수량과 같아야 합니다.");
+            }
+        }
+
+        for(PurchaseApprovalItemDto item : items){
+
             purchaseDao.updateApprovedQuantity(
                     purchaseOrderId,
                     item.getMaterialId(),

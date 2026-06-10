@@ -7,6 +7,15 @@
 <head>
 <meta charset="UTF-8">
 <title>발주 목록 상세 조회</title>
+<style>
+    .content-top{
+        display: flex;
+    }
+    .top-info {
+        text-align: left;
+        width: 200px;
+    }
+</style>
 </head>
 <body>
 
@@ -18,7 +27,7 @@
 
 
     <!-- 검색 -->
-    <div class="search-area">
+    <!-- <div class="search-area">
         <button class="file-export">
             파일로 내보내기 (.xlsx, .pdf)
         </button>
@@ -34,16 +43,17 @@
                     <img src="resources/images/search.png" alt="검색">
             </button>
         </div>
-    </div>
+    </div> -->
 
     <table class="table2">
         <thead>
             <tr>
-                <th><input type="checkbox"></th>
+                <th>상품코드</th>
+                <th>상품유형</th>
                 <th>품목</th>
-                <th>원가</th>
                 <th>현 재고</th>
                 <th>주문수량</th>
+                <th>공급가</th>
                 <th>구매가격</th>
             </tr>
         </thead>
@@ -51,17 +61,19 @@
         <tbody>
             <c:forEach var="item" items="${list}">
                 <tr class="item-row ${item.status eq 'REQUESTED' ? '' : 'disabled-row'}">
-                    <td><input type="checkbox"></td>
+                    <td>${item.materialId}</td>
+
+                    <td>${item.materialType}</td>
 
                     <td>${item.materialName}</td>
-
-                    <td>${item.supplyPriceSnapshot}</td>
 
                     <td>${item.currentQuantity}</td>
 
                     <td>
                         <input type="number" value="${item.requestQuantity}" disabled>
                     </td>
+
+                    <td>${item.supplyPriceSnapshot}</td>
 
                     <td>${item.totalPrice}</td>
                 </tr>

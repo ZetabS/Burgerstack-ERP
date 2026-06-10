@@ -65,6 +65,14 @@
                 <tbody>
                     <c:forEach var="item" items="${list}" varStatus="s">
 
+                    <input type="hidden"
+                            name="items[${s.index}].materialId"
+                            value="${item.materialId}">
+                    
+                    <input type="hidden"
+                            name="items[${s.index}].requestQuantity"
+                            value="${item.requestQuantity}">
+
                     <tr>
 
                         <!-- 상품코드 -->
@@ -99,10 +107,18 @@
 
                         <!-- 반려사유 -->
                         <td>
-                            <input type="text"
+                            <select
                                 class="reason"
                                 name="items[${s.index}].rejectReason"
                                 disabled>
+
+                                <option value="">선택</option>
+                                <option value="재고부족">재고부족</option>
+                                <option value="품절">품절</option>
+                                <option value="공급중단">공급중단</option>
+                                <option value="기타">기타</option>
+
+                            </select>
                         </td>
 
                         <!-- 단가 -->
@@ -114,6 +130,8 @@
                     </tr>
 
                     </c:forEach>
+
+
 
                     <tr>
                         <th>총 금액</th>
@@ -132,65 +150,149 @@
 	</t:layout>
 
     <script>
-        // 불량수량 입력창의 값이 변경될 때마다 실행
-        $(document).on('input change', 'input[name="defect_quantity"]', function() {
-            let $row = $(this).closest('tr'); // 현재 행(row) 찾기
-            let $reasonSelect = $row.find('select[name="defect_reason"]'); // 불량사유 select
-            let defectQty = parseInt($(this).val());
+        $(function(){
 
-            // 1) 빈 값이거나 숫자가 아닌 경우 0으로 처리
-            if (isNaN(defectQty)) {
-                defectQty = 0;
-            }
+            $('.rejectQty').each(function(){
 
-            // 2) [핵심 추가] 불량수량이 0 미만으로 내려가려고 하면 0으로 강제 고정
-            if (defectQty < 0) {
-                defectQty = 0;
-                $(this).val(0); // input창의 값도 0으로 변경
-            }
+                toggleReason(
+                    $(this).closest('tr')
+                );
 
-            // 3) 조건에 따른 불량사유 select 제어
-            if (defectQty >= 1) {
-                // 불량 수량이 1 이상일 때만 활성화
-                $reasonSelect.prop('disabled', false);
-            } else {
-                // 0일 때는 비활성화 및 '선택'으로 변경
-                $reasonSelect.val('').prop('disabled', true); 
-            }
+            });
+
         });
-
-        $('.approvedQty').on('input', function() {
+        // =================================
+        // 승인수량 변경
+        // =================================
+        $(document).on('input', '.approvedQty', function () {
 
             const row = $(this).closest('tr');
 
-            const requestQty = Number(
-                row.find('.requestQty').text()
+            const requestQty =
+                Number(row.find('.requestQty').text()) || 0;
+
+            let approvedQty =
+                Number($(this).val()) || 0;
+
+            if (approvedQty < 0) {
+                approvedQty = 0;
+            }
+
+            if (approvedQty > requestQty) {
+                approvedQty = requestQty;
+            }
+
+            $(this).val(approvedQty);
+
+            const rejectQty =
+                requestQty - approvedQty;
+
+            row.find('.rejectQty').val(rejectQty);
+
+            toggleReason(row);
+        });
+
+
+        // =================================
+        // 반려수량 변경
+        // =================================
+        $(document).on('input', '.rejectQty', function () {
+
+            const row = $(this).closest('tr');
+
+            const requestQty =
+                Number(row.find('.requestQty').text()) || 0;
+
+            let rejectQty =
+                Number($(this).val()) || 0;
+
+            if (rejectQty < 0) {
+                rejectQty = 0;
+            }
+
+            if (rejectQty > requestQty) {
+                rejectQty = requestQty;
+            }
+
+            $(this).val(rejectQty);
+
+            const approvedQty =
+                requestQty - rejectQty;
+
+            row.find('.approvedQty').val(approvedQty);
+
+            toggleReason(row);
+        });
+
+
+        // =================================
+        // 반려사유 활성화
+        // =================================
+        function toggleReason(row){
+
+            const rejectQty =
+                Number(row.find('.rejectQty').val()) || 0;
+
+            const reasonSelect =
+                row.find('.reason');
+
+            if(rejectQty > 0){
+
+                reasonSelect
+                    .prop('disabled', false)
+                    .prop('required', true);
+
+            }else{
+
+                reasonSelect
+                    .val('')
+                    .prop('required', false)
+                    .prop('disabled', true);
+            }
+        }
+        
+        // ===============================
+        // 결재 전 검증 + 최종 확인
+        // ===============================
+        $('form').on('submit', function(e){
+
+            let valid = true;
+
+            $('.rejectQty').each(function(){
+
+                const row = $(this).closest('tr');
+
+                const rejectQty =
+                    Number($(this).val()) || 0;
+
+                const reason =
+                    row.find('.reason').val();
+
+                // 반려수량이 있는데 사유 미선택
+                if(rejectQty > 0 && !reason){
+
+                    alert('반려수량이 있는 경우 반려사유를 선택해야 합니다.');
+
+                    row.find('.reason').focus();
+
+                    valid = false;
+
+                    return false;
+                }
+            });
+
+            if(!valid){
+                e.preventDefault();
+                return;
+            }
+
+            // 최종 결재 확인
+            const result = confirm(
+                '발주를 결재하시겠습니까?\n\n결재 후에는 처리 상태가 변경됩니다.'
             );
 
-            const approvedQty = Number($(this).val());
-
-            if (approvedQty < requestQty) {
-                row.find('.reason').prop('disabled', false);
-            } else {
-                row.find('.reason').val('');
-                row.find('.reason').prop('disabled', true);
-            }
-        });
-
-        $(document).on('input', '.approvedQty, .rejectQty', function () {
-
-            const row = $(this).closest('tr');
-
-            const requestQty = Number(row.find('.requestQty').text()) || 0;
-            const approvedQty = Number(row.find('.approvedQty').val()) || 0;
-            const rejectQty = Number(row.find('.rejectQty').val()) || 0;
-
-            // 합계 초과 방지
-            if (approvedQty + rejectQty > requestQty) {
-                alert("요청수량을 초과할 수 없습니다.");
-
-                $(this).val(0);
-                return;
+            if(!result){
+                e.preventDefault();
             }
         });
     </script>

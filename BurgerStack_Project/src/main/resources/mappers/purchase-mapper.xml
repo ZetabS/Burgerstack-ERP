@@ -243,8 +243,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 </insert>
 
-<select id="selectPurchaseOrderDetail" 
+<select id="selectPurchaseOrderDetail"
         resultType="com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto">
+
     SELECT
         P.PURCHASE_ORDER_ID,
         P.STATUS,
@@ -254,16 +255,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         I.SUPPLY_PRICE_SNAPSHOT,
         INV.CURRENT_QUANTITY,
         I.REQUEST_QUANTITY,
-        (I.REQUEST_QUANTITY * I.SUPPLY_PRICE_SNAPSHOT) AS TOTAL_PRICE
+        NVL(I.APPROVED_QUANTITY,0)
+            AS APPROVED_QUANTITY,
+        (I.REQUEST_QUANTITY
+            - NVL(I.APPROVED_QUANTITY,0))
+            AS REJECT_QUANTITY,
+        I.REJECT_REASON,
+        (
+            NVL(I.APPROVED_QUANTITY,0)
+            * I.SUPPLY_PRICE_SNAPSHOT
+        ) AS TOTAL_PRICE
+
     FROM PURCHASE_ORDERS P
+
     JOIN PURCHASE_ORDER_ITEMS I
-        ON P.PURCHASE_ORDER_ID = I.PURCHASE_ORDER_ID
+      ON P.PURCHASE_ORDER_ID
+       = I.PURCHASE_ORDER_ID
     JOIN MATERIALS M
-        ON I.MATERIAL_ID = M.MATERIAL_ID
+      ON I.MATERIAL_ID
+       = M.MATERIAL_ID
     JOIN STORE_INVENTORIES INV
-        ON INV.MATERIAL_ID = M.MATERIAL_ID
-       AND INV.STORE_ID = P.STORE_ID
-    WHERE P.PURCHASE_ORDER_ID = #{purchaseOrderId}
+      ON INV.MATERIAL_ID
+       = M.MATERIAL_ID
+     AND INV.STORE_ID
+       = P.STORE_ID
+
+    WHERE P.PURCHASE_ORDER_ID
+        = #{purchaseOrderId}
+
 </select>
 
 <!-- MASTER 조회 -->
