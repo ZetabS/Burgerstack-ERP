@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.exception.CustomException;
+import com.kh.burgerstack.exception.BusinessException;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionDetail;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailItem;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionListItem;
@@ -24,7 +24,7 @@ public class InventoryTransactionDao {
     public InventoryTransaction insert(InventoryTransaction inventoryTransaction) {
         int result = inventoryTransactionMapper.insert(inventoryTransaction);
         if (result <= 0) {
-            throw new CustomException("재고 변동 이력을 추가할 수 없습니다.");
+            throw new BusinessException("재고 변동 이력을 추가할 수 없습니다.");
         }
         return inventoryTransactionMapper.findById(inventoryTransaction.getInventoryTransactionId());
     }
@@ -43,7 +43,7 @@ public class InventoryTransactionDao {
             List<InventoryTransactionItem> list) {
         int result = inventoryTransactionMapper.insertItems(inventoryTransactionId, list);
         if (result <= 0) {
-            throw new CustomException("재고 변동 이력을 추가할 수 없습니다.");
+            throw new BusinessException("재고 변동 이력을 추가할 수 없습니다.");
         }
         return inventoryTransactionMapper.findItemsByTransactionId(inventoryTransactionId);
     }
