@@ -65,4 +65,31 @@
 		 WHERE INQUIRY_ID = #{inquiryId}
 	</delete>
 	
+	<!-- 점주 문의사항 목록조회  -->
+	<select id="InquiryListHO" resultType="com.kh.burgerstack.inquiry.Inquiry">
+	    SELECT INQUIRY_ID AS inquiryId, TITLE, CONTENT, ANSWER_CONTENT AS answerContent, CREATED_AT AS createdAt 
+	    FROM INQUIRIES
+	    WHERE DELETED_AT IS NULL
+	    <if test="keyword != null and keyword != ''">
+	        <choose>
+	            <when test="condition == 'title'"> AND TITLE LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'content'"> AND CONTENT LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'inquiryId'"> AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%' </when>
+	        </choose>
+	    </if>
+	    ORDER BY INQUIRY_ID DESC
+	</select>
+	
+	<select id="getTotalCountHO" resultType="int">
+	    SELECT COUNT(*) FROM INQUIRIES
+	    WHERE DELETED_AT IS NULL
+	    <if test="keyword != null and keyword != ''">
+	        <choose>
+	            <when test="condition == 'title'"> AND TITLE LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'content'"> AND CONTENT LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'inquiryId'"> AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%' </when>
+	        </choose>
+	    </if>
+	</select>
+	
 </mapper>

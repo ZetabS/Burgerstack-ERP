@@ -14,11 +14,11 @@ public class InquiryDaoHO {
 	private final InquiryMapper inquiryMapper;
 	
 	public List<Inquiry> InquiryList(String condition, String keyword, RowBounds rowBounds) {
-        return inquiryMapper.InquiryList(condition, keyword, rowBounds);
+        return inquiryMapper.InquiryListHO(condition, keyword, rowBounds);
     }
 
     public int getTotalCount(String condition, String keyword) {
-        return inquiryMapper.getTotalCount(condition, keyword);
+        return inquiryMapper.getTotalCountHO(condition, keyword);
     }
 
 }
