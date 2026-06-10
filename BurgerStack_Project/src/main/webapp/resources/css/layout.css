@@ -57,6 +57,10 @@ a:active {
   color: white;
 }
 
+.layout__header-title {
+  font-size: 20px;
+}
+
 .layout__header-user-info {
   display: flex;
   justify-content: end;

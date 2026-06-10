@@ -1,5 +1,6 @@
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ attribute name="title" required="false" %>
+<%@ attribute name="headerTitle" required="false" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
@@ -37,7 +38,7 @@
       </a>
       <%-- 헤더 --%>
       <div class="layout__header">
-        <div></div>
+        <a href="" class="layout__header-title">${headerTitle}</a>
         <div class="layout__header-user-info">
           <span class="layout__header-user-info-text">${sessionScope.loginUser.userId}님 환영합니다.</span>
           <c:url var="logoutUrl" value="/auth/logout" />
