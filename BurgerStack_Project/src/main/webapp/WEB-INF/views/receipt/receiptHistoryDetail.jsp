@@ -163,7 +163,7 @@
 		    <span>입고 메모 : ${receipt.receiptMemo}</span>
 		</div>
 		            
-        </div>
+        
 	        <table class="table">
 	    <thead>
 	        <tr>

@@ -324,9 +324,9 @@
 	        M.MATERIAL_CODE AS materialCode,
 	        M.MATERIAL_TYPE AS materialType,
 	        POI.MATERIAL_NAME_SNAPSHOT AS materialName,
-	        POI.APPROVED_QUANTITY AS approvedQuantity,
+	        POI.REQUEST_QUANTITY AS approvedQuantity,
 	        POI.SUPPLY_PRICE_SNAPSHOT AS supplyPrice,
-	        POI.APPROVED_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT AS amount
+	        POI.REQUEST_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT AS amount
 	    FROM PURCHASE_ORDER_ITEMS POI
 	    JOIN MATERIALS M
 	      ON POI.MATERIAL_ID = M.MATERIAL_ID
@@ -334,7 +334,6 @@
 	    ORDER BY POI.PURCHASE_ORDER_ITEM_ID
 	
 	</select>
-
 
 
 
