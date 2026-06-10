@@ -129,17 +129,6 @@ public class AdminController {
 		return "redirect:/admin/mypage";
 	}
 
-	@GetMapping("homebutton")
-	public String homeButton() {
-
-		return "user/dashboardHO";
-	}
-
-	@GetMapping("dashboard")
-	public String dashboardHO() {
-		return "user/dashboardHO";
-	}
-
 	@GetMapping("users")
 	public String OwnerList(String status,
 	                        String keyword,
