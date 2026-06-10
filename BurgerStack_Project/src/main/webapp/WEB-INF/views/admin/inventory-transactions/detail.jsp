@@ -11,7 +11,7 @@
   </head>
   <body>
     <t:layout>
-      <div class="container py-4">
+      <div class="outer container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h2 class="mb-0">재고 변동 상세</h2>
 

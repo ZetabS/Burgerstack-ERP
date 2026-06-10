@@ -183,12 +183,3 @@ a:active {
   overflow-x: hidden;
   overflow-y: auto;
 }
-
-.layout__main-container {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  border-radius: 10px;
-  background-color: white;
-  padding: 30px;
-  width: 100%;
-  min-height: 100%;
-}

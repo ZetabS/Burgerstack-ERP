@@ -68,9 +68,7 @@
 
       <%-- CONTENT --%>
       <div class="layout__main">
-        <div class="layout__main-container">
-          <jsp:doBody />
-        </div>
+        <jsp:doBody />
       </div>
     </div>
     <t:alertify />
