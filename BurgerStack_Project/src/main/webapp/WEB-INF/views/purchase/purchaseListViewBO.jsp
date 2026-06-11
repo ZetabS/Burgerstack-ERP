@@ -63,7 +63,7 @@
 
                         <option value="RECEIVED"
                             ${condition.status eq 'RECEIVED' ? 'selected' : ''}>
-                            배송중
+                            입고완료
                         </option>
                     </select>
                     <input type="date"
@@ -151,6 +151,28 @@
         function autoSearch() {
             document.getElementById("searchForm").submit();
         }
+
+        let typing = false;
+
+        // 검색어 입력시 새로고침 방지
+        document.addEventListener("focusin", function(e) {
+            if (e.target.tagName === "INPUT") {
+                typing = true;
+            }
+        });
+
+        document.addEventListener("focusout", function(e) {
+            if (e.target.tagName === "INPUT") {
+                typing = false;
+            }
+        });
+
+        // 10초마다 새로고침
+        setInterval(function() {
+            if (!typing) {
+                document.getElementById("searchForm").submit();
+            }
+        }, 5000);
     </script>
 </body>
 </html>
