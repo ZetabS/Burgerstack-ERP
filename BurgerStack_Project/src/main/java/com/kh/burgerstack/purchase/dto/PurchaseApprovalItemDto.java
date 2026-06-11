@@ -16,7 +16,8 @@ public class PurchaseApprovalItemDto {
     private int materialId;
     private int requestQuantity;
     private int approvedQuantity;
+    private int rejectQuantity;
     private String status;
     private String rejectReason;
-    
+
 }

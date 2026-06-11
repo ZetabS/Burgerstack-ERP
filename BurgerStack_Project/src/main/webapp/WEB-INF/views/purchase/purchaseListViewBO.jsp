@@ -34,7 +34,7 @@
                 <form method="get" id="searchForm">
                     <select name="status" onchange="autoSearch()">
 
-                        <option value="">전체</option>
+                        <option value="">전체상태</option>
 
                         <option value="REQUESTED"
                             ${condition.status eq 'REQUESTED' ? 'selected' : ''}>

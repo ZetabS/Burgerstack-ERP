@@ -31,7 +31,7 @@
             <div><b>발주상태 :</b> ${list[0].status}</div>
         </div>
         <!-- 검색 -->
-        <div class="search-area">
+        <!-- <div class="search-area">
             <button class="file-export">
                 파일로 내보내기 (.xlsx, .pdf)
             </button>
@@ -44,21 +44,34 @@
             <div class="search-box">
                 <input type="text" placeholder="검색어 입력">
                 <button class="search-btn">  
-                        <!-- <img src="resources/images/search.png" alt="검색"> -->
+                        <img src="resources/images/search.png" alt="검색">
                 </button>
             </div>
-        </div>
+        </div> -->
     </div>
 
 
     <table class="table2">
         <thead>
             <tr>
-                <th><input type="checkbox"></th>
+                <th>상품코드</th>
+                <th>상품유형</th>
                 <th>품목</th>
-                <th>원가</th>
-                <th>현 재고</th>
-                <th>주문수량</th>
+                <th>현재고</th>
+
+                <th>요청수량</th>
+
+                <c:if test="${list[0].status eq 'APPROVED'
+                        || list[0].status eq 'PARTIALLY_APPROVED'
+                        || list[0].status eq 'REJECTED'}">
+
+                    <th>승인수량</th>
+                    <th>반려수량</th>
+                    <th>반려사유</th>
+
+                </c:if>
+
+                <th>공급가</th>
                 <th>구매가격</th>
             </tr>
         </thead>
@@ -66,17 +79,55 @@
         <tbody>
             <c:forEach var="item" items="${list}">
                 <tr class="item-row ${item.status eq 'REQUESTED' ? '' : 'disabled-row'}">
-                    <td><input type="checkbox"></td>
+                    <td>${item.materialId}</td>
+
+                    <td>${item.materialType}</td>
 
                     <td>${item.materialName}</td>
 
-                    <td>${item.supplyPriceSnapshot}</td>
-
                     <td>${item.currentQuantity}</td>
 
+                    <!-- 요청수량 -->
                     <td>
-                        <input type="number" value="${item.requestQuantity}" disabled>
+                        <input type="number"
+                            value="${item.requestQuantity}"
+                            disabled>
                     </td>
+
+                    <c:if test="${list[0].status eq 'APPROVED'
+                            || list[0].status eq 'PARTIALLY_APPROVED'
+                            || list[0].status eq 'REJECTED'}">
+
+                        <!-- 승인수량 -->
+                        <td>
+                            <input type="number"
+                                value="${item.approvedQuantity}"
+                                disabled>
+                        </td>
+
+                        <!-- 반려수량 -->
+                        <td>
+                            ${item.requestQuantity - item.approvedQuantity}
+                        </td>
+
+                        <!-- 반려사유 -->
+                        <td>
+                            <c:choose>
+
+                                <c:when test="${empty item.rejectReason}">
+                                    -
+                                </c:when>
+
+                                <c:otherwise>
+                                    ${item.rejectReason}
+                                </c:otherwise>
+
+                            </c:choose>
+                        </td>
+
+                    </c:if>
+
+                    <td>${item.supplyPriceSnapshot}</td>
 
                     <td>${item.totalPrice}</td>
                 </tr>
