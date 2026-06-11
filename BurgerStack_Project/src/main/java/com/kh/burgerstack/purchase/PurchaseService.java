@@ -304,4 +304,10 @@ public class PurchaseService {
                 status,
                 sqlSession);
     }
+
+    // 발주 정보 조회
+    public PurchaseOrderDto selectPurchaseOrder(Long purchaseOrderId){
+
+        return purchaseDao.selectPurchaseOrder(purchaseOrderId, sqlSession);
+    }
 }

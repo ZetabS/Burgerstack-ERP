@@ -147,5 +147,10 @@ public class PurchaseDao {
     public PurchaseOrderStatistics getPurchaseOrderStatistics() {
         return purchaseMapper.getPurchaseOrderStatistics();
     }
+
+    public PurchaseOrderDto selectPurchaseOrder(Long purchaseOrderId, SqlSessionTemplate sqlSession) {
+        return sqlSession.selectOne("com.kh.burgerstack.purchase.PurchaseMapper.selectPurchaseOrder",
+                purchaseOrderId);
+    }
 }
 

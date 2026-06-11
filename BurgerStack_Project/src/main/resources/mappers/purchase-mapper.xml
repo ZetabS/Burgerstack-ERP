@@ -31,6 +31,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 </select>
 
+<!-- 발주한 점포 조회 -->
+<select id="selectPurchaseOrder" resultType="com.kh.burgerstack.purchase.dto.PurchaseOrderDto">
+    SELECT 
+        PO.PURCHASE_ORDER_ID AS purchaseOrderId,
+        PO.STORE_ID AS storeId,
+        S.STORE_NAME AS storeName
+    FROM PURCHASE_ORDERS po
+    JOIN STORES s ON PO.STORE_ID = S.STORE_ID
+    WHERE PO.PURCHASE_ORDER_ID = #{purchaseOrderId}
+</select>
 
 <!-- 발주 목록 -->
 <select id="searchPurchaseList"
@@ -57,13 +67,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
             (
                 SELECT
-                    MIN(POI.MATERIAL_NAME_SNAPSHOT)
-                    || ' 외 '
-                    || (COUNT(*) - 1)
-                    || '건'
+                    CASE
+                        WHEN COUNT(*) > 1 THEN
+                            MIN(POI.MATERIAL_NAME_SNAPSHOT)
+                            || ' 외 '
+                            || (COUNT(*) - 1)
+                            || '건'
+                        ELSE
+                            MIN(POI.MATERIAL_NAME_SNAPSHOT)
+                    END
                 FROM PURCHASE_ORDER_ITEMS POI
-                WHERE POI.PURCHASE_ORDER_ID
-                    = PO.PURCHASE_ORDER_ID
+                WHERE POI.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
             ) AS itemSummary
 
         FROM PURCHASE_ORDERS PO

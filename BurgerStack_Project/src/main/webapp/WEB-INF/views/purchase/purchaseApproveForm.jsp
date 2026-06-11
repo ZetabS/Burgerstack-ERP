@@ -125,7 +125,10 @@
                         <td>${item.supplyPriceSnapshot}</td>
 
                         <!-- 금액 -->
-                        <td>${item.totalPrice}</td>
+                        <td class="itemPrice"
+                            data-unit-price="${item.supplyPriceSnapshot}">
+                            ${item.totalPrice}
+                        </td>
 
                     </tr>
 
@@ -135,7 +138,7 @@
 
                     <tr>
                         <th>총 금액</th>
-                        <td align="right" colspan="8">0원</td>
+                        <td align="right" colspan="8" id="totalAmount">0원</td>
                     </tr>
                 </tbody>
             </table>
@@ -150,13 +153,15 @@
 	</t:layout>
 
     <script>
+        // 페이지 로드 시 실행
         $(function(){
 
             $('.rejectQty').each(function(){
 
-                toggleReason(
-                    $(this).closest('tr')
-                );
+                const row = $(this).closest('tr');
+
+                toggleReason(row);
+                updateAmount(row);
 
             });
 
@@ -190,6 +195,7 @@
             row.find('.rejectQty').val(rejectQty);
 
             toggleReason(row);
+            updateAmount(row);
         });
 
 
@@ -219,9 +225,10 @@
             const approvedQty =
                 requestQty - rejectQty;
 
-            row.find('.approvedQty').val(approvedQty);
+            row.find('.rejectQty').val(rejectQty);
 
             toggleReason(row);
+            updateAmount(row);
         });
 
 
@@ -249,6 +256,57 @@
                     .prop('required', false)
                     .prop('disabled', true);
             }
+        }
+        // =================================
+        // 금액 계산
+        // =================================
+        function updateAmount(row){
+
+            const approvedQty =
+                Number(row.find('.approvedQty').val()) || 0;
+
+            const priceCell =
+                row.find('.itemPrice');
+
+            const unitPrice =
+                Number(priceCell.data('unit-price')) || 0;
+
+            const amount =
+                approvedQty * unitPrice;
+
+            priceCell.text(
+                amount.toLocaleString() + '원'
+            );
+
+            updateTotalAmount();
+        }
+
+        // =================================
+        // 총 금액 계산
+        // =================================
+        function updateTotalAmount(){
+
+            let total = 0;
+
+            $('.itemPrice').each(function(){
+
+                const approvedQty =
+                    Number(
+                        $(this)
+                        .closest('tr')
+                        .find('.approvedQty')
+                        .val()
+                    ) || 0;
+
+                const unitPrice =
+                    Number($(this).data('unit-price')) || 0;
+
+                total += approvedQty * unitPrice;
+            });
+
+            $('#totalAmount').text(
+                total.toLocaleString() + '원'
+            );
         }
         
         // ===============================
