@@ -50,6 +50,7 @@
                     <th>주문수량</th>
                     <th>구매가격</th>
                     <th>상태</th>
+                    
                 </tr>
             </thead>
 
@@ -63,7 +64,7 @@
                         <td class="unit-price">${m.costPrice}</td>
                         <td class="stock">${m.currentQuantity}</td>
                         <td>
-                            <input type="number" class="qty-input" value="0" min="0">
+                            <input type="number" class="qty-input" value="0" min="0" max="1000">
                         </td>
                         <td class="total-price">0</td>
                         <td class="status">${m.status}</td>
@@ -130,7 +131,7 @@
 
 
 <script>
-        $(document).ready(function () {
+    $(document).ready(function () {
 
     // =========================
     // 1. 수량 변경
@@ -191,7 +192,7 @@
 
         let total = 0;
 
-        $('.item-row').each(function () {
+        $('.main-table .item-row').each(function () {
 
             let $row = $(this);
 
@@ -205,28 +206,66 @@
 
             total += price * qty;
 
+            // console.log("name = " + name);
+            // console.log("price = " + price);
+            // console.log("qty = " + qty);
+
+            $('.item-row').each(function () {
+
+                let $row = $(this);
+
+                console.log("현재 row =", $row);
+
+                console.log(
+                    "item-name count =",
+                    $row.find('.item-name').length
+                );
+
+                console.log(
+                    "qty-input count =",
+                    $row.find('.qty-input').length
+                );
+
+            });
+
             // ✔ 사이드바 출력
-            $tbody.append(`
-                <tr class="sidebar-row">
-                    <td>
-                        <input type="checkbox" class="sidebar-check" checked>
-                    </td>
-                    <td>${name}</td>
-                    <td>${qty}</td>
-                    <td>${price.toLocaleString()}원</td>
-                </tr>
-            `);
+            $tbody.append(
+                $('<tr>').addClass('sidebar-row')
+                    .attr('data-id', $row.data('id'))
+                    .append(
+                        $('<td>').html('<input type="checkbox" class="sidebar-check" checked>')
+                    )
+                    .append(
+                        $('<td>').text(name)
+                    )
+                    .append(
+                        $('<td>').append(
+                            $('<input>')
+                                .attr({
+                                    type: 'number',
+                                    min: 1,
+                                    max: 1000
+                                })
+                                .addClass('sidebar-qty')
+                                .val(qty)
+                        )
+                    )
+                    .append(
+                        $('<td>').text(price.toLocaleString() + '원')
+                    )
+            );
         });
 
         $('.main-total-amount').text(total.toLocaleString() + "원");
         $('#sidebar-total-amount').text(total.toLocaleString() + "원");
 
         $('#totalAmountInput').val(total);
+
     }
 
 
     // =========================
-    // 4. 사이드바 체크 이벤트 (핵심 추가)
+    // 4. 사이드바 체크 이벤트
     // =========================
     $(document).on('change', '.sidebar-check', function () {
 
@@ -252,6 +291,34 @@
                 $row.find('.total-price').text(0);
             }
         });
+
+        updateSidebar();
+    });
+    // =========================
+    // 5. 사이드바 수량 이벤트
+    // =========================
+    $(document).on('change', '.sidebar-qty', function () {
+
+        let qty = parseInt($(this).val()) || 0;
+
+        let materialId = $(this)
+            .closest('tr')
+            .data('id');
+
+        let $mainRow = $('.item-row[data-id="' + materialId + '"]');
+
+        $mainRow.find('.qty-input').val(qty);
+
+        let price =
+            parseInt($mainRow.find('.unit-price').text()) || 0;
+
+        $mainRow.find('.total-price').text(price * qty);
+
+        if (qty > 0) {
+            $mainRow.find('.row-check').prop('checked', true);
+        } else {
+            $mainRow.find('.row-check').prop('checked', false);
+        }
 
         updateSidebar();
     });
@@ -290,6 +357,25 @@ function submitOrder() {
 
     $('form').submit();
 }
+
+$('.qty-input').on('input', function () {
+
+    let qty = parseInt($(this).val()) || 0;
+
+    const MAX_QTY = 1000;
+
+    if (qty > MAX_QTY) {
+        alert('최대 주문 가능 수량은 ' + MAX_QTY + '개 입니다.');
+        qty = MAX_QTY;
+        $(this).val(MAX_QTY);
+    }
+
+    if (qty < 0) {
+        qty = 0;
+        $(this).val(0);
+    }
+
+});
 
 </script>
 

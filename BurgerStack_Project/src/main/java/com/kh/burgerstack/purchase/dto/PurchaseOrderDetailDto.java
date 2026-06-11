@@ -12,6 +12,7 @@ public class PurchaseOrderDetailDto {
     private Long purchaseOrderId;
     private int materialId;
     private String materialName;
+    private String materialType;
     private int supplyPriceSnapshot;
     private int currentQuantity;
     private int requestQuantity;
@@ -21,5 +22,7 @@ public class PurchaseOrderDetailDto {
     private LocalDateTime createdAt;
 
     private String status;
+
+    private String rejectReason;
 
 }

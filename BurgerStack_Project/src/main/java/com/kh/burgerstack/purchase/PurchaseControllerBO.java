@@ -101,9 +101,17 @@ public class PurchaseControllerBO {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        List<PurchaseOrderItemDto> items =
-                mapper.readValue(itemsJson,
-                        new TypeReference<List<PurchaseOrderItemDto>>() {});
+        List<PurchaseOrderItemDto> items = mapper.readValue(itemsJson, new TypeReference<List<PurchaseOrderItemDto>>() {});
+
+        
+        for (PurchaseOrderItemDto item : items) {
+
+            if(item.getRequestQuantity() > 1000) {
+                throw new IllegalArgumentException(
+                        "주문 수량은 1000개를 초과할 수 없습니다.");
+            }
+
+        }
 
         purchaseService.createPurchase(items, session);
 

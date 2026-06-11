@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-
+import com.kh.burgerstack.dashboard.dto.StoreStatistics;
 import com.kh.burgerstack.store.dto.StoreOption;
 
 @Repository
@@ -100,5 +100,9 @@ public class StoreDao {
 	public List<StoreOption> getStoreOptions() {
 		return storeMapper.getStoreOptions();
 	}
+
+    public StoreStatistics getStoreStatistics() {
+        return storeMapper.getStoreStatistics();
+    }
 }
 

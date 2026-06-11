@@ -48,15 +48,24 @@ public class PurchaseService {
         LoginUser loginUser =(LoginUser) session.getAttribute("loginUser");
 
         // 검색 조건 설정
-        condition.setStoreId(loginUser.getStoreId());
+        if ("ADMIN".equals(loginUser.getRole())) {
 
-        if (loginUser.getRole().equals("ADMIN")) {
             condition.setAdmin(true);
-            return purchaseDao.searchPurchaseList(pagingRequest, condition, sqlSession);
+
+        } else {
+
+            condition.setAdmin(false);
+
+            // 점주만 자신의 점포로 강제 제한
+            condition.setStoreId(loginUser.getStoreId());
         }
 
-        condition.setAdmin(false);
-        return purchaseDao.searchPurchaseList(pagingRequest, condition, sqlSession);
+        System.out.println("최종 condition = " + condition);
+
+        return purchaseDao.searchPurchaseList(
+                pagingRequest,
+                condition,
+                sqlSession);
     }
 
     public int selectPurchaseCount(
@@ -69,9 +78,14 @@ public class PurchaseService {
         condition.setStoreId(loginUser.getStoreId());
 
         if("ADMIN".equals(loginUser.getRole())){
+
             condition.setAdmin(true);
+
         }else{
+
             condition.setAdmin(false);
+
+            condition.setStoreId(loginUser.getStoreId());
         }
 
         return purchaseDao.selectPurchaseCount(
@@ -95,6 +109,11 @@ public class PurchaseService {
 
         // 1. total 계산
         long total = 0;
+
+        if(total > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(
+                    "계산 금액이 허용 범위를 초과했습니다.");
+        }
 
         for (PurchaseOrderItemDto item : items) {
             if (item.getRequestQuantity() <= 0) {
@@ -225,6 +244,25 @@ public class PurchaseService {
 
         boolean allApproved = true;
         boolean allRejected = true;
+
+        for(PurchaseApprovalItemDto item : items){
+
+            if(item.getApprovedQuantity() < 0){
+                throw new IllegalArgumentException("승인수량 오류");
+            }
+
+            if(item.getRejectQuantity() < 0){
+                throw new IllegalArgumentException("반려수량 오류");
+            }
+
+            if(item.getApprovedQuantity()
+                    + item.getRejectQuantity()
+                    != item.getRequestQuantity()){
+
+                throw new IllegalArgumentException(
+                    "승인수량 + 반려수량은 요청수량과 같아야 합니다.");
+            }
+        }
 
         for(PurchaseApprovalItemDto item : items){
 

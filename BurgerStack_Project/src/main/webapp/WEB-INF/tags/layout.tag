@@ -1,5 +1,6 @@
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ attribute name="title" required="false" %>
+<%@ attribute name="headerTitle" required="false" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
@@ -29,14 +30,15 @@
   </head>
   <body>
     <div class="layout__container">
+      <%-- 로고 --%>
+      <c:url var="dashboardUrl" value="/${role}/dashboard" />
+      <a class="layout__logo" href="${dashboardUrl}">
+        <img class="layout__logo-img" src="${pageContext.request.contextPath}/resources/images/BS_logo2.png" alt="logo" />
+        <span class="layout__logo-text">BurgerStack ERP</span>
+      </a>
       <%-- 헤더 --%>
       <div class="layout__header">
-        <%-- 로고 --%>
-        <c:url var="dashboardUrl" value="/${role}/dashboard" />
-        <a class="layout__logo" href="${dashboardUrl}">
-          <img class="layout__logo-img" src="${pageContext.request.contextPath}/resources/images/BS_logo2.png" alt="logo" />
-          <span class="layout__logo-text">BurgerStack ERP</span>
-        </a>
+        <a href="" class="layout__header-title">${headerTitle}</a>
         <div class="layout__header-user-info">
           <span class="layout__header-user-info-text">${sessionScope.loginUser.userId}님 환영합니다.</span>
           <c:url var="logoutUrl" value="/auth/logout" />
@@ -68,9 +70,7 @@
 
       <%-- CONTENT --%>
       <div class="layout__main">
-        <div class="layout__main-container">
-          <jsp:doBody />
-        </div>
+        <jsp:doBody />
       </div>
     </div>
     <t:alertify />

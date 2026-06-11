@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.dashboard.dto.AdminDashboardPurchaseOrderListItem;
+import com.kh.burgerstack.dashboard.dto.PurchaseOrderStatistics;
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
@@ -18,6 +21,8 @@ import com.kh.burgerstack.purchase.dto.PurchaseSearchDto;
 
 @Repository
 public class PurchaseDao {
+    @Autowired
+    private PurchaseMapper purchaseMapper;
 
     // =========================
     // 자재 조회 (기존)
@@ -133,6 +138,14 @@ public class PurchaseDao {
         sqlSession.update(
                 "com.kh.burgerstack.purchase.PurchaseMapper.updatePurchaseStatus",
                 param);
+    }
+
+    public List<AdminDashboardPurchaseOrderListItem> findRecent(int count) {
+        return purchaseMapper.findTopN(count);
+    }
+
+    public PurchaseOrderStatistics getPurchaseOrderStatistics() {
+        return purchaseMapper.getPurchaseOrderStatistics();
     }
 }
 

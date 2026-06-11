@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.common.pagination.PageInfo;
@@ -18,6 +20,9 @@ import com.kh.burgerstack.purchase.dto.PurchaseApprovalRequestDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
 import com.kh.burgerstack.purchase.dto.PurchaseSearchDto;
+import com.kh.burgerstack.store.StoreDao;
+import com.kh.burgerstack.store.StoreService;
+import com.kh.burgerstack.store.dto.StoreOption;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -36,25 +41,40 @@ public class PurchaseControllerHO {
     @Autowired
     private PurchaseService purchaseService;
 
+    @Autowired
+    private StoreDao storeDao;
+
     // 발주 목록
     @GetMapping("purchases")
     public String purchaseList(
+        @RequestParam(required = false) Long storeId,
+        PurchaseSearchDto condition,
         PagingRequest pagingRequest,
-        PurchaseSearchDto condition, 
         HttpSession session,
         Model model){
 
         // 1. 발주 목록 조회
         ArrayList<PurchaseDto> list = purchaseService.searchPurchaseList(pagingRequest, condition, session);
 
+        List<StoreOption> storeOptions = storeDao.getStoreOptions();
+
         int totalCount = purchaseService.selectPurchaseCount(condition, session);
 
         PageInfo pageInfo = pagingRequest.toPageInfo(totalCount);
+
+            System.out.println("request storeId = " + storeId);
+            System.out.println("condition before = " + condition);
+
+            condition.setStoreId(storeId);
+
+            System.out.println("condition after = " + condition);
+
         
         // 2. Model에 담기
         model.addAttribute("list", list);
         model.addAttribute("pageInfo", pageInfo);
         model.addAttribute("condition", condition);
+        model.addAttribute("storeList", storeOptions);
 
         // 3. View 지정
         return "purchase/purchaseListViewHO";

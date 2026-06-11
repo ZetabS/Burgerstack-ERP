@@ -1,0 +1,262 @@
+.dashboard-wrap {
+  background: #f5f7fb;
+  padding: 25px 32px;
+  min-height: calc(100vh - 70px);
+}
+
+.page-title {
+  margin: 0 0 22px 0;
+  color: #111827;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.summary-card,
+.panel-card,
+.notice-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.summary-card {
+  padding: 20px 24px;
+}
+
+.summary-card:nth-child(1) {
+  border-left: 5px solid #22c55e;
+}
+
+.summary-card:nth-child(2) {
+  border-left: 5px solid #3b82f6;
+}
+
+.summary-card:nth-child(3) {
+  border-left: 5px solid #f97316;
+}
+
+.summary-card:nth-child(4) {
+  border-left: 5px solid #8b5cf6;
+}
+
+.summary-title {
+  margin-bottom: 12px;
+  color: #6b7280;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.summary-count {
+  color: #111827;
+  font-weight: bold;
+  font-size: 38px;
+}
+
+.summary-count span {
+  margin-left: 4px;
+  font-weight: normal;
+  font-size: 16px;
+}
+
+.summary-link,
+.more-link {
+  color: #6b7280;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.summary-link {
+  display: inline-block;
+  margin-top: 14px;
+}
+
+.panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.panel-card {
+  padding: 22px 24px;
+  min-height: 230px;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.panel-title {
+  color: #111827;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.data-list {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.data-list th {
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 10px 8px;
+  color: #6b7280;
+  font-weight: bold;
+  font-size: 13px;
+  text-align: center;
+}
+
+.data-list tr {
+  border-bottom: 1px solid #edf0f3;
+}
+
+.data-list td {
+  vertical-align: middle;
+  padding: 11px 8px;
+  color: #374151;
+  font-size: 14px;
+  text-align: center;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.rank {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: #dcfce7;
+  width: 28px;
+  height: 28px;
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.badge-blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.badge-orange {
+  background: #ffedd5;
+  color: #f97316;
+}
+
+.detail-btn {
+  display: inline-block;
+  cursor: pointer;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+  padding: 6px 12px;
+  color: #2563eb;
+  font-weight: bold;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.detail-btn:hover {
+  background: #dbeafe;
+}
+
+.closing-complete {
+  margin-bottom: 18px;
+  color: #16a34a;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.closing-open {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 120px;
+  color: #374151;
+}
+
+.closing-open strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.closing-open p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.closing-info {
+  border: 1px solid #e5e7eb;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.closing-info th {
+  background: #22c55e;
+  padding: 14px;
+  width: 150px;
+  color: #fff;
+  font-size: 14px;
+  text-align: left;
+}
+
+.closing-info td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 14px 18px;
+  font-size: 14px;
+  text-align: left;
+}
+
+.notice-card {
+  padding: 22px 24px;
+}
+
+.empty-row {
+  padding: 24px 8px !important;
+  color: #9ca3af !important;
+}
+
+.chart-panel-body {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.chart-wrap {
+  position: relative;
+  flex: 0 0 160px;
+  width: 160px;
+  height: 160px;
+}
+
+.chart-summary-list {
+  flex: 1;
+}
