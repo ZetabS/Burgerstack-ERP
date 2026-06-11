@@ -1,9 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 
 <!DOCTYPE html>
 <html>
@@ -12,169 +11,154 @@
 <title>문의사항 목록 조회</title>
 
 <style>
+table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
 
-    table{
-        width:100%;
-        border-collapse: collapse;
-    }
+th {
+	background-color: #22c55e;
+	color: white;
+	height: 40px;
+	text-align: center !important;
+	vertical-align: middle !important;
+}
 
-    th{
-        background-color:#22c55e;
-        color:white;
-        height:40px;
-    }
+td {
+	text-align: center !important;
+	vertical-align: middle !important;
+	height: 40px;
+	border-bottom: 1px solid #ddd;
+}
 
-    td{
-        text-align:center;
-        height:40px;
-        border-bottom:1px solid #ddd;
-    }
+.search-area {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 15px;
+	gap: 10px;
+}
 
-    .search-area{
-        display:flex;
-        justify-content:flex-end;
-        margin-bottom:15px;
-        gap:10px;
-    }
+.btn {
+	background-color: #333;
+	color: white;
+	border: none;
+	padding: 5px 15px;
+	cursor: pointer;
+	border-radius: 4px;
+}
 
-    .btn{
-        border:none;
-        padding:5px 10px;
-        cursor:pointer;
-    }
+.btn:hover {
+	background-color: #555;
+}
 
-    .user-link{
-        text-decoration:none;
-        color:black;
-        font-weight:bold;
-    }
+.title-link {
+	text-decoration: none;
+	color: black;
+	font-weight: bold;
+}
 
-    .user-link:hover{
-        color:green;
-    }
-	table{
-	    width:100%;
-	    border-collapse:collapse;
-	    table-layout:fixed;
-	}
-	
-	th,
-	table th,
-	table td{
-	    text-align:center !important;
-	    vertical-align:middle !important;
-	}
+.title-link:hover {
+	color: #22c55e;
+	text-decoration: underline;
+}
 </style>
-
 </head>
 <body>
 
-<t:layout>
+ <t:layout>
 
-    <h1>점주 계정 목록 조회</h1>
 
-    <div class="content">
+		<h1>나의 문의사항</h1>
 
-        <div class="search-area">
+		<div class="content">
 
-            <select name="status">
-                <option value="">전체상태</option>
-                <option value="ACTIVE">답변 완료</option>
-                <option value="INACTIVE">미답변</option>
-            </select>
+			<form action="/burgerstack/owner/inquiries"
+				method="get">
+				<div class="search-area">
+					<select name="condition" style="padding: 5px;">
+						<option value="title" ${condition == 'title' ? 'selected' : ''}>제목</option>
+						<option value="content"
+							${condition == 'content' ? 'selected' : ''}>내용</option>
+						<option value="inquiryId"
+							${condition == 'inquiryId' ? 'selected' : ''}>글번호</option>
+					</select> <input type="text" name="keyword" value="${keyword}"
+						placeholder="검색어 입력" style="padding: 5px;">
+					<button type="submit" class="btn">검색</button>
+				</div>
+			</form>
 
-            <input type="text"
-                   name="keyword"
-                   placeholder="아이디 또는 이름 검색">
+			<table>
+				<colgroup>
+					<col style="width: 10%">
+					<col style="width: 50%">
+					<col style="width: 20%">
+					<col style="width: 20%">
+				</colgroup>
 
-            <button>검색</button>
+				<thead>
+					<tr>
+						<th>글번호</th>
+						<th>제목</th>
+						<th>등록일</th>
+						<th>답변상태</th>
+					</tr>
+				</thead>
 
-        </div>
-		<table>
-			    <colgroup>
-			        <col style="width:7%">
-			        <col style="width:13%">
-			        <col style="width:30%">
-			        <col style="width:15%">
-			        <col style="width:15%">
-			        <col style="width:20%">
-			    </colgroup>
-            <thead>
-                <tr>
-                    <th>번호</th>
-                    <th>아이디</th>
-                    <th>이름</th>
-                    <th>연락처</th>
-                    <th>이메일</th>
-                    <th>등록일</th>
-                </tr>
-            </thead>
+				<tbody>
+					<c:choose>
+						<c:when test="${empty inquiryList}">
+							<tr>
+								<td colspan="4">조회된 문의사항이 없습니다.</td>
+							</tr>
+						</c:when>
 
-            <tbody>
+						<c:otherwise>
+							<c:forEach var="inq" items="${inquiryList}">
+								<tr>
+									<td>${inq.inquiryId}</td>
 
-                <c:choose>
+									<td style="text-align: left !important; padding-left: 20px;">
+										<a class="title-link"
+										href="${pageContext.request.contextPath}/owner/inquiries/${inq.inquiryId}">
+											${inq.title} </a>
+									</td>
 
-                    <c:when test="${empty ownerList}">
-                        <tr>
-                            <td colspan="7">
-                                조회된 점주 계정이 없습니다.
-                            </td>
-                        </tr>
-                    </c:when>
+									<td>${inq.createdAt}</td>
 
-                    <c:otherwise>
-                    
-                        <c:forEach var="u" items="${ownerList}">
+									<td><c:choose>
+											<c:when test="${not empty inq.answerContent}">
+												<span style="color: #22c55e; font-weight: bold;">답변완료</span>
+											</c:when>
+											<c:otherwise>
+												<span style="color: #ff4d4f; font-weight: bold;">미답변</span>
+											</c:otherwise>
+										</c:choose></td>
+								</tr>
+							</c:forEach>
+						</c:otherwise>
+					</c:choose>
+				</tbody>
+			</table>
+			
+			<div class="pagination" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;">
+			    <c:forEach var="p" begin="${startPage}" end="${endPage}">
+			        <c:choose>
+			            <c:when test="${p == currentPage}">
+			                <strong style="color: green; font-size: 1.2em;">${p}</strong>
+			            </c:when>
+			            <c:otherwise>
+			                <a href="?page=${p}&condition=${condition}&keyword=${keyword}">${p}</a>
+			            </c:otherwise>
+			        </c:choose>
+			    </c:forEach>
+			</div>
 
-                            <tr>
 
-                                <td>${u.userNo}</td>
 
-								<td>
-								    <a class="user-link"
-								       href="/burgerstack/admin/users/${u.userId}">
-								        ${u.userId}
-								    </a>
-								</td>
-
-                                <td>${u.userName}</td>
-
-                                <td>${u.phone}</td>
-
-                                <td>${u.email}</td>
-
-                                <td>${u.createdAt}</td>
-
-                                <td>
-                                    <c:choose>
-
-                                        <c:when test="${u.status eq 'ACTIVE'}">
-                                            답변 완료
-                                        </c:when>
-
-                                        <c:otherwise>
-                                            미답변
-                                        </c:otherwise>
-
-                                    </c:choose>
-                                </td>
-                                
-								<td>${u.createdAt}</td>
-                            </tr>
-
-                        </c:forEach>
-
-                    </c:otherwise>
-
-                </c:choose>
-
-            </tbody>
-
-        </table>
-
-    </div>
 
 </t:layout>
+
 
 </body>
 </html>

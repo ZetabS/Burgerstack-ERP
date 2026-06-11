@@ -145,25 +145,28 @@
 	    </p>
         
         <!-- 검색 -->
-        <div class="search-area" align="right">
-            <select name="receiptStatus" id="receiptStatus">
-                <option value="">전체</option>
-                <option value="NORMAL">정상 입고</option>
-                <option value="DEFECT">불량 입고</option>
-            </select>
-
-            <input type="date" name="startDate">
-            ~
-            <input type="date" name="endDate">
-
-            <input type="text" name="keyword" placeholder="점포명 검색">
-
-            <button type="button" onclick="alert('검색 기능은 나중에 연결')">
-                <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png"
-                     style="width: 16px;"/>
-                검색
-            </button>
-        </div>
+		<form action="${pageContext.request.contextPath}/admin/receipts" method="get">
+		
+		    <div class="search-area" align="right">
+		        <select name="receiptType" id="receiptType" onchange="this.form.submit()">
+		            <option value="" ${empty receiptType ? 'selected' : ''}>전체</option>
+		            <option value="NORMAL" ${receiptType eq 'NORMAL' ? 'selected' : ''}>정상입고</option>
+		            <option value="DEFECT" ${receiptType eq 'DEFECT' ? 'selected' : ''}>불량입고</option>
+		        </select>
+		
+		        <input type="date" name="startDate">
+		        ~
+		        <input type="date" name="endDate">
+		
+		        <input type="text" name="keyword" placeholder="점포명 검색">
+		
+		        <button type="submit">
+		            검색
+		        </button>
+		
+		    </div>
+		
+		</form>
 
         <table class="table">
             <thead>
@@ -207,5 +210,6 @@
         <ui:pagination pageInfo="${pageInfo}"></ui:pagination>
 
     </t:layout>
+  
 </body>
 </html>

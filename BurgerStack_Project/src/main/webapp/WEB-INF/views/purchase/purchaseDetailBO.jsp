@@ -75,7 +75,10 @@
 
                     <td>${item.supplyPriceSnapshot}</td>
 
-                    <td>${item.totalPrice}</td>
+                    <td>
+                        <c:set var="rowTotal" value="${item.requestQuantity * item.supplyPriceSnapshot}" />
+                        ${rowTotal}
+                    </td>
                 </tr>
             </c:forEach>
         </tbody>
@@ -88,7 +91,8 @@
             <div>총 결제금액</div>
             <c:set var="total" value="0"/>
             <c:forEach var="item" items="${list}">
-                <c:set var="total" value="${total + item.totalPrice}"/>
+                <c:set var="rowTotal" value="${item.requestQuantity * item.supplyPriceSnapshot}" />
+                <c:set var="total" value="${total + rowTotal}" />
             </c:forEach>
             <h2>${total} 원</h2>
         </div>

@@ -76,7 +76,7 @@
 
                         <option value="RECEIVED"
                             ${condition.status eq 'RECEIVED' ? 'selected' : ''}>
-                            배송중
+                            입고완료
                         </option>
                     </select>
                     <input type="date"
@@ -113,7 +113,14 @@
                 </tr>
             </thead>
             
-            <tbody> 
+            <tbody id="purchaseListBody"> 
+                <c:if test="${empty list}">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">
+                            조회된 정보가 없습니다.
+                        </td>
+                    </tr>
+                </c:if>
                 <c:forEach var="p" items="${list}">
                     <tr style="cursor:pointer;"
                         onclick="location.href='${pageContext.request.contextPath}/admin/purchases/${p.purchaseOrderId}'">
@@ -159,6 +166,36 @@
         function autoSearch() {
             document.getElementById("searchForm").submit();
         }
+
+        let typing = false;
+
+        // 검색어 입력시 새로고침 방지
+        document.addEventListener("focusin", function(e) {
+            if (e.target.tagName === "INPUT") {
+                typing = true;
+            }
+        });
+
+        document.addEventListener("focusout", function(e) {
+            if (e.target.tagName === "INPUT") {
+                typing = false;
+            }
+        });
+
+        // 5초마다 새로고침
+        function refreshPurchaseList() {
+
+            $.ajax({
+                url : window.location.href,
+                success : function(html) {
+                    $("#purchaseListBody").html(
+                        $(html).find("#purchaseListBody").html()
+                    );
+                }
+            });
+        }
+
+        setInterval(refreshPurchaseList, 5000);
     </script>
 </body>
 </html>

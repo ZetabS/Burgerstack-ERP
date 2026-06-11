@@ -17,4 +17,5 @@ public class PurchaseOrderDto {
     private Long totalAmount;
     private String orderMemo;
     private Long storeId;
+    private String storeName;
 }

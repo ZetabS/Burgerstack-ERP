@@ -1,6 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.burgerstack.inquiry.InquiryMapper">
+	
+	<insert id="inquiryEnroll" parameterType="Inquiry">
+		INSERT INTO INQUIRIES(INQUIRY_ID
+		  , TITLE
+		  , CONTENT
+		  , STORE_ID
+		  )
+		VALUES(SEQ_INQ.NEXTVAL
+		   , #{title}
+		   , #{content}
+		   , #{storeId}                   
+		)
+	</insert>
+	
+	<insert id="insertInquiryFile"
+        parameterType="InquiryFile">
+
+	    INSERT INTO INQUIRY_FILES(
+	        INQUIRY_FILE_ID,
+	        ORIGINAL_NAME,
+	        STORED_NAME,
+	        STORAGE_PATH,
+	        ATTACH_TARGET,
+	        INQUIRY_ID
+	    )
+	    VALUES(
+	        SEQ_INQ_FILE.NEXTVAL,
+	        #{originalName},
+	        #{storedName},
+	        #{storagePath},
+	        #{attachTarget},
+	        #{inquiryId}
+	    )
+	
+	</insert>
+	
+	<select id="InquiryList" resultType="com.kh.burgerstack.inquiry.Inquiry">
+	    SELECT INQUIRY_ID AS inquiryId, TITLE, CONTENT, ANSWER_CONTENT AS answerContent, CREATED_AT AS createdAt 
+	    FROM INQUIRIES
+	    WHERE STORE_ID = #{storeId} AND DELETED_AT IS NULL
+	    <if test="keyword != null and keyword != ''">
+	        <choose>
+	            <when test="condition == 'title'"> AND TITLE LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'content'"> AND CONTENT LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'inquiryId'"> AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%' </when>
+	        </choose>
+	    </if>
+	    ORDER BY INQUIRY_ID DESC
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+	    SELECT COUNT(*) FROM INQUIRIES
+	    WHERE STORE_ID = #{storeId} AND DELETED_AT IS NULL
+	    <if test="keyword != null and keyword != ''">
+	        <choose>
+	            <when test="condition == 'title'"> AND TITLE LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'content'"> AND CONTENT LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'inquiryId'"> AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%' </when>
+	        </choose>
+	    </if>
+	</select>
+	
+	<select id="InquiryListDetail" resultType="com.kh.burgerstack.inquiry.Inquiry">
+	    SELECT  
+	        TITLE AS title, 
+	        CONTENT AS content, 
+	        ANSWER_CONTENT AS answerContent, 
+	        CREATED_AT AS createdAt, 
+	        ANSWERED_AT AS answeredAt
+	    FROM INQUIRIES
+	    WHERE INQUIRY_ID = #{inquiryId}
+	</select>
+	
+	<update id="InquiryEdit" parameterType="com.kh.burgerstack.inquiry.Inquiry">
+		 UPDATE INQUIRIES	
+   			SET	TITLE = #{title} 
+              , CONTENT = #{content} 
+		  WHERE INQUIRY_ID = #{inquiryId}	
+	</update>
+	
+	<delete id="InquiryDelete">
+		DELETE 
+		  FROM INQUIRIES
+		 WHERE INQUIRY_ID = #{inquiryId}
+	</delete>
+	
+	<!-- 점주 문의사항 목록조회  -->
+	<select id="InquiryListHO" resultType="com.kh.burgerstack.inquiry.Inquiry">
+	    SELECT
+	        I.INQUIRY_ID AS inquiryId,
+	        I.TITLE,
+	        I.CONTENT,
+	        I.ANSWER_CONTENT AS answerContent,
+	        I.CREATED_AT AS createdAt,
+	        S.STORE_NAME AS storeName
+	    FROM INQUIRIES I
+	    JOIN STORES S
+	      ON I.STORE_ID = S.STORE_ID
+	    WHERE I.DELETED_AT IS NULL
+	
+	    <if test="keyword != null and keyword != ''">
+	        <choose>
+	            <when test="condition == 'title'">
+	                AND I.TITLE LIKE '%' || #{keyword} || '%'
+	            </when>
+	
+	            <when test="condition == 'content'">
+	                AND I.CONTENT LIKE '%' || #{keyword} || '%'
+	            </when>
+	
+	            <when test="condition == 'inquiryId'">
+	                AND TO_CHAR(I.INQUIRY_ID) LIKE '%' || #{keyword} || '%'
+	            </when>
+	        </choose>
+	    </if>
+	
+	    ORDER BY I.INQUIRY_ID DESC
+	</select>
+	
+	
+	
+	<select id="getTotalCountHO" resultType="int">
+	    SELECT COUNT(*) FROM INQUIRIES
+	    WHERE DELETED_AT IS NULL
+	    <if test="keyword != null and keyword != ''">
+	        <choose>
+	            <when test="condition == 'title'"> AND TITLE LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'content'"> AND CONTENT LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'inquiryId'"> AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%' </when>
+	        </choose>
+	    </if>
+	</select>
+	
+	<update id="InquiryEditHO"
+	        parameterType="com.kh.burgerstack.inquiry.Inquiry">
+	
+	    UPDATE INQUIRIES
+	       SET ANSWER_CONTENT = #{answerContent}
+	     WHERE INQUIRY_ID = #{inquiryId}
+	
+	</update>
+	
+	<update id="InquiryDeleteHO" parameterType="com.kh.burgerstack.inquiry.Inquiry">
+	    UPDATE INQUIRIES
+	       SET ANSWER_CONTENT = NULL,
+	           ANSWERED_AT = NULL
+	     WHERE INQUIRY_ID = #{inquiryId}
+	</update>
+	
     <select id="findTopN">
         SELECT T.*
           FROM (

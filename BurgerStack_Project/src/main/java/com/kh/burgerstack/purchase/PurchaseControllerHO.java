@@ -19,6 +19,7 @@ import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.purchase.dto.PurchaseApprovalRequestDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
+import com.kh.burgerstack.purchase.dto.PurchaseOrderDto;
 import com.kh.burgerstack.purchase.dto.PurchaseSearchDto;
 import com.kh.burgerstack.store.StoreDao;
 import com.kh.burgerstack.store.StoreService;
@@ -90,7 +91,10 @@ public class PurchaseControllerHO {
         List<PurchaseOrderDetailDto> detail =
             purchaseService.getPurchaseOrderDetail(purchaseOrderId);
 
+        PurchaseOrderDto storeInfo = purchaseService.selectPurchaseOrder(purchaseOrderId);
+
         mv.addObject("list", detail);
+        mv.addObject("store", storeInfo);
         mv.setViewName("purchase/purchaseDetailHO");
 
         return mv;

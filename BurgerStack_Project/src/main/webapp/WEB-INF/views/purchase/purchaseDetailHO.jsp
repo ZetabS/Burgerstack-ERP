@@ -9,11 +9,16 @@
 <title>발주 목록 상세 조회</title>
 <style>
     .content-top{
-        display: flex;
+        flex-direction:row;
     }
     .top-info {
+        display: flex;
+        flex-direction: row;
+        gap: 20px; /* 요소 간 간격 */
         text-align: left;
-        width: 200px;
+    }
+    .top-info div{
+        padding: 5px;
     }
 </style>
 </head>
@@ -25,8 +30,9 @@
 
     <br>
 
-    <div class="content-top" style="display: flex;">
+    <div class="content-top">
         <div class="top-info">
+            <div><b>발주 신청 점포 :</b> ${store.storeName}</div>
             <div><b>발주번호 :</b> ${list[0].purchaseOrderId}</div>
             <div><b>발주상태 :</b> ${list[0].status}</div>
         </div>

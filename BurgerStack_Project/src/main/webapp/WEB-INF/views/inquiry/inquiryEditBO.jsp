@@ -93,54 +93,48 @@ h1 {
 	background: #6c757d;
 	color: white;    
 }
-.file-top{
-    display:flex;
-    justify-content:flex-end;
-    align-items:center;
-    gap:15px;
-}
-.file-area{
-    margin-top:20px;
-}
-
-.file-area label{
-    margin-right:15px;
+#deleteBtn {
+	margin-right: 10px;
+	background: #FF5B5B;
+	color: white;
 }
 </style>
 
 </head>
 <body>
-	<t:layout>
+	<t:menubarBO>
 
 		<div class="main-content">
 			<div class="form-container">
-				<h1>문의사항 작성</h1>
+				<h1>문의사항 수정</h1>
 
 				<form
-					action="/burgerstack/owner/inquiries/new"
-					method="post" enctype="multipart/form-data">
+					action="/burgerstack/owner/inquiries/${inquiryId}"
+					method="post">
 					<div class="form-group">
 						<input type="text" name="title" class="input-title"
-							placeholder="제목을 입력해주세요." required>
+							value="${inquiry.title}" required>
 					</div>
 					<div class="form-group">
 						<textarea name="content" class="textarea-content"
-							placeholder="문의하실 내용을 상세히 적어주세요." required></textarea>
+							required>${inquiry.content}</textarea>
 					</div>
 					<div class="btn-area">
 						<button type="submit" id="saveBtn">등록</button>
 	
+					<button type="submit" id="deleteBtn"
+					        formaction="/burgerstack/owner/inquiries/${inquiryId}/delete">
+					    삭제
+					</button>
+	
 						<button type="button" id="homeBtn"
-							onclick="location.href='/burgerstack/admin/dashboard'">
+							onclick="location.href='/burgerstack/owner/inquiries'">
 							이전으로</button>
 					</div>
-				    <div class="file-area">
-				        <label>첨부파일</label>
-				        <input type="file" name="uploadFile">
-				    </div>
+					
 				</form>
 			</div>
 		</div>
-	</t:layout>
+	</t:menubarBO>
 </body>
 </html>

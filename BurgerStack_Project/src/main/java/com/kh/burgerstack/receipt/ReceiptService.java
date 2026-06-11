@@ -21,8 +21,10 @@ public class ReceiptService {
     @Autowired
 	private SqlSessionTemplate sqlSession;
 
-    public PageInfo getHistoryPageInfo(PagingRequest pagingRequest) {
-        return pagingRequest.toPageInfo(receiptDao.getHistoryTotalCount(sqlSession));
+    public PageInfo getHistoryPageInfo(PagingRequest pagingRequest, String receiptType) {
+        return pagingRequest.toPageInfo(
+                receiptDao.getHistoryTotalCount(sqlSession, receiptType)
+        );
     }
 
     public PageInfo getPlanPageInfo(PagingRequest pagingRequest, String status) {
@@ -35,8 +37,8 @@ public class ReceiptService {
         return receiptDao.selectReceiptPlanList(sqlSession, pagingRequest, status);
     }
     
-    public List<Receipt> selectReceiptList() {
-        return receiptDao.selectReceiptList();
+    public List<Receipt> selectReceiptList(String receiptType) {
+        return receiptDao.selectReceiptList(receiptType);
     }
     
     @Transactional // 하나라도 실패하면 전체 롤백
@@ -179,7 +181,9 @@ public class ReceiptService {
         return receiptDao.selectReceiptCheckItemList(purchaseId);
     }
     
-    
+    public String selectPurchaseStatus(Long purchaseId) {
+        return receiptDao.selectPurchaseStatus(purchaseId);
+    }
     
     
     
