@@ -24,7 +24,6 @@ public class NoticeService {
 
     /**
      * 글 등록 + 첨부파일 등록 (일반 파일 + Quill 이미지 통합)
-     * ✅ 컨트롤러에서 fileList에 Quill 이미지도 합쳐서 넘기므로 메서드 시그니처 변경 없음
      */
     @Transactional(rollbackFor = Exception.class)
     public int insertNotice(Notice n, ArrayList<NoticeFile> fileList) {
@@ -38,7 +37,7 @@ public class NoticeService {
             // 2. 전체 파일(일반 + Quill 이미지) INSERT
             if (fileList != null && !fileList.isEmpty()) {
                 for (NoticeFile file : fileList) {
-                    file.setNoticeId(n.getNoticeId()); // ✅ 실제 글번호 주입
+                    file.setNoticeId(n.getNoticeId());
                     noticeDao.insertNoticeFile(file);
                 }
             }
@@ -69,17 +68,17 @@ public class NoticeService {
     }
 	
 	/**
-	 * ✅ selectFileList: 기존 첨부파일 목록 조회 (미구현 상태였던 것 완성)
+	 *  > selectFileList: 기존 첨부파일 목록 조회
 	 *    noticeDetail()에서 이미 notice.fileList를 채워주므로,
-	 *    컨트롤러에서 별도 호출 없이 noticeDetail() 하나로 충분합니다.
-	 *    하지만 단독으로 필요한 경우를 위해 구현합니다.
+	 *    컨트롤러에서 별도 호출 없이 noticeDetail() 하나로 충분.
+	 *    하지만 단독으로 필요한 경우를 위해 구현.
 	 */
 	public ArrayList<NoticeFile> selectFileList(Long noticeId) {
-	    return noticeDao.noticeDetailFileList(noticeId); // ✅ Dao 위임
+	    return noticeDao.noticeDetailFileList(noticeId);
 	}
 
 	/**
-	 * ✅ updateNotice: 글 수정 + 새 파일 추가 (Quill 이미지 포함)
+	 * updateNotice: 글 수정 + 새 파일 추가 (Quill 이미지 포함)
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public int updateNotice(Notice n, ArrayList<NoticeFile> fileList) {
@@ -89,7 +88,7 @@ public class NoticeService {
 	    // 2. 새로 추가된 파일 INSERT (일반 파일 + Quill 이미지 통합)
 	    if (result > 0 && fileList != null && !fileList.isEmpty()) {
 	        for (NoticeFile nf : fileList) {
-	            nf.setNoticeId(n.getNoticeId()); // ✅ noticeId 확실히 주입
+	            nf.setNoticeId(n.getNoticeId());
 	            noticeDao.insertNoticeFile(nf);
 	        }
 	    }
@@ -99,6 +98,10 @@ public class NoticeService {
 
 	public int deleteNotice(Long noticeId) {
 		return noticeDao.deleteNotice(noticeId);
+	}
+
+	public NoticeFile selectNoticeFile(Long noticeFileId) {
+		return noticeDao.selectNoticeFile(noticeFileId);
 	}
 	
 	

@@ -129,6 +129,12 @@
             <version>4.0.1</version>
             <scope>test</scope>
         </dependency>
+        <!-- Quill 에디터 사용을 위한 Jsoup -->
+        <dependency>
+        	<groupId>org.jsoup</groupId>
+        	<artifactId>jsoup</artifactId>
+        	<version>1.17.2</version>
+        </dependency>
     </dependencies>
 
     <build>

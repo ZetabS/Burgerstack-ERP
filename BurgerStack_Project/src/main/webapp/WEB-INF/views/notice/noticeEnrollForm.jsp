@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,7 +30,7 @@
 .table-area td {
     width : calc(100% - 120px);
 }
-.table-area td>input {
+.table-area td > input[type="text"] {
     border : 1px solid #cccccc;
     width : 100%;
     max-width : 800px;
@@ -51,10 +52,11 @@
 }
 #file-list-container {
     border : 1px solid #cccccc;
-    height : 65px;
+    min-height : 65px;
     overflow-y : auto;
     padding : 5px;
     box-sizing : border-box;
+    max-width: 800px;
 }
 </style>
 </head>
@@ -78,7 +80,6 @@
             <form id="noticeForm" action="${formAction}" method="post" enctype="multipart/form-data">
                 <c:if test="${not empty notice}">
                     <input type="hidden" name="noticeId" value="${notice.noticeId}">
-                    <%-- 수정 시 POST 오버라이드 (PUT 대신 POST + _method 방식도 가능하나 현재 구조상 POST 그대로) --%>
                 </c:if>
 
                 <div align="center">
@@ -92,7 +93,7 @@
                         <tr>
                             <th>내용</th>
                             <td>
-                                <%-- ✅ 수정 시 기존 내용을 data 속성으로 안전하게 전달 (JS 백틱 안에 EL 쓰면 특수문자 충돌) --%>
+                                <%-- data 속성으로 기존 내용 전달 (JS 백틱 안 EL은 특수문자 충돌 위험) --%>
                                 <div id="editor-container" data-content="${notice.content}"></div>
                                 <input type="hidden" name="content" id="server-content">
                             </td>
@@ -100,6 +101,7 @@
                         <tr>
                             <th></th>
                             <td>
+                                <%-- input file은 새 파일 추가 전용. DB 파일은 아래 div에 직접 렌더 --%>
                                 <input type="file" id="notice-files" name="files" multiple accept=".txt, image/*"
                                        style="border : none;" onchange="handleFileSelect(event)">
                             </td>
@@ -107,11 +109,23 @@
                         <tr>
                             <th>첨부파일</th>
                             <td>
-                                <%-- 수정 시: 기존 첨부파일 목록 표시 --%>
                                 <div id="file-list-container">
+                                    <%-- 수정 모드: DB에서 불러온 기존 파일 직접 렌더 (input file 보안 제한 우회) --%>
                                     <c:forEach items="${notice.fileList}" var="file">
-                                        <div class="file-item" style="display:flex; align-items:center; margin:5px 0;">
-                                            <span>${file.originalName}</span>
+                                        <c:set var="lowerName" value="${fn:toLowerCase(file.originalName)}" />
+                                        <c:choose>
+                                            <c:when test="${fn:endsWith(lowerName,'.jpg') || fn:endsWith(lowerName,'.jpeg') ||
+                                                        fn:endsWith(lowerName,'.png') || fn:endsWith(lowerName,'.gif') ||
+                                                        fn:endsWith(lowerName,'.webp')}">
+                                                <c:set var="fileIcon" value="🖼️" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:set var="fileIcon" value="📄" />
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <div class="file-item db-file-item" style="display:flex; align-items:center; margin:4px 0;">
+                                            <span>${fileIcon} ${file.originalName}</span>
+                                            <%-- DB 파일은 수정 시 삭제 기능 구현 전까지 표시만 --%>
                                         </div>
                                     </c:forEach>
                                 </div>
@@ -120,7 +134,7 @@
                     </table>
                 </div>
 
-                <div align="center">
+                <div align="center" style="margin-top: 10px;">
                     <c:choose>
                         <c:when test="${not empty notice}">
                             <button class="button-danger" type="button" onclick="history.back();">취소하기</button>
@@ -138,7 +152,7 @@
     </t:layout>
 
     <script>
-        // 1. Quill 초기화
+        // ── 1. Quill 초기화 ──────────────────────────────────────────
         const quill = new Quill('#editor-container', {
             theme: 'snow',
             modules: {
@@ -150,13 +164,14 @@
             }
         });
 
-        // ✅ 수정 시: data 속성에서 기존 내용을 안전하게 로드
+        // 수정 모드: data 속성에서 기존 내용 로드
         const savedContent = document.getElementById('editor-container').dataset.content;
         if (savedContent && savedContent.trim() !== '') {
             quill.root.innerHTML = savedContent;
         }
 
-        // 2. 이미지 업로드 핸들러 (서버 저장 + 세션 보관)
+        // ── 2. Quill 이미지 업로드 핸들러 ────────────────────────────
+        // ✅ 이미지 업로드 후 파일 리스트에 표시 + X 버튼으로 에디터에서도 동시 제거
         quill.getModule('toolbar').addHandler('image', () => {
             const input = document.createElement('input');
             input.setAttribute('type', 'file');
@@ -171,88 +186,130 @@
                 formData.append('image', file);
 
                 try {
-                    const response = await fetch('${pageContext.request.contextPath}/admin/notices/uploadImage', {
+                    const res = await fetch('${pageContext.request.contextPath}/admin/notices/uploadImage', {
                         method: 'POST',
                         body: formData
                     });
-                    const result = await response.json();
+                    const result = await res.json();
 
                     if (result.uploaded) {
+                        // 1. 에디터 본문에 이미지 삽입 후 삽입된 위치(index) 저장
                         const range = quill.getSelection();
-                        quill.insertEmbed(range.index, 'image', result.url);
+                        const insertIndex = range ? range.index : quill.getLength();
+                        quill.insertEmbed(insertIndex, 'image', result.url);
+
+                        // ✅ 2. 파일 리스트에 표시 + X 버튼 클릭 시 에디터에서도 해당 이미지 제거
+                        addQuillImageToList(file.name, result.url);
                     } else {
                         alert('이미지 업로드에 실패했습니다.');
                     }
-                } catch (error) {
-                    console.error('Error uploading image:', error);
+                } catch (err) {
+                    console.error('이미지 업로드 오류:', err);
                 }
             };
         });
 
-        // ✅ 3. submit 이벤트 핸들러는 하나만 (중복 제거)
+        /**
+         * Quill 이미지 전용 리스트 항목 추가
+         * X 버튼 클릭 시 에디터 본문의 해당 src 이미지도 함께 제거
+         */
+        function addQuillImageToList(fileName, imageUrl) {
+            const container = document.getElementById('file-list-container');
+
+            const item = document.createElement('div');
+            item.className = 'file-item js-file-item';
+            item.style.cssText = 'display:flex; align-items:center; margin:4px 0;';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = '🖼️ ' + fileName;
+            item.appendChild(nameSpan);
+
+            // ✅ X 버튼: 클릭 시 에디터 본문에서 해당 이미지 src와 일치하는 img 블롯 제거
+            const delBtn = document.createElement('button');
+            delBtn.textContent = 'X';
+            delBtn.type = 'button';
+            delBtn.style.cssText = 'margin-left:8px; color:red; border:none; background:none; cursor:pointer; font-weight:bold;';
+            delBtn.onclick = function() {
+                // Quill Delta에서 해당 URL의 이미지 찾아서 삭제
+                const delta = quill.getContents();
+                let idx = 0;
+                delta.ops.forEach(op => {
+                    if (op.insert && op.insert.image && op.insert.image === imageUrl) {
+                        quill.deleteText(idx, 1);
+                    }
+                    idx += (typeof op.insert === 'string') ? op.insert.length : 1;
+                });
+                item.remove();
+            };
+            item.appendChild(delBtn);
+            container.appendChild(item);
+        }
+
+
+        // ── 3. submit: 에디터 내용 → hidden input ───────────────────
         document.getElementById('noticeForm').addEventListener('submit', function() {
             document.getElementById('server-content').value = quill.root.innerHTML;
         });
 
-        // --- 일반 파일 첨부 로직 ---
+        // ── 4. 일반 파일 첨부 로직 ──────────────────────────────────
         let uploadedFiles = [];
         let fileIdCounter = 0;
 
         function handleFileSelect(event) {
-            const files = Array.from(event.target.files);
-            files.forEach(file => {
+            Array.from(event.target.files).forEach(file => {
                 file.fileId = 'file_' + fileIdCounter++;
                 uploadedFiles.push(file);
-            });
-            renderFileList();
-        }
-
-        function renderFileList() {
-            const fileListDiv = document.getElementById('file-list-container');
-            // 수정 시 기존 파일 목록(JSP로 렌더된 것)은 건드리지 않고, 새로 추가된 것만 append
-            // 등록 모드에서는 전체 재렌더
-            const isEditMode = ${not empty notice ? 'true' : 'false'};
-            if (!isEditMode) {
-                fileListDiv.innerHTML = '';
-            } else {
-                // 수정 모드: JS로 추가된 항목만 제거 후 다시 그림
-                fileListDiv.querySelectorAll('.js-file-item').forEach(el => el.remove());
-            }
-
-            uploadedFiles.forEach((file) => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'js-file-item';
-                fileItem.style.cssText = 'display:flex; align-items:center; margin:5px 0;';
-
-                const nameSpan = document.createElement('span');
-                nameSpan.textContent = (file.type.startsWith('image/') ? "🖼️ " : "📄 ") + file.name;
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = 'X';
-                deleteBtn.type = 'button';
-                deleteBtn.style.cssText = 'margin-left:10px; color:red; border:none; background:none; cursor:pointer; font-weight:bold;';
-                deleteBtn.onclick = function() {
-                    uploadedFiles = uploadedFiles.filter(f => f.fileId !== file.fileId);
-                    renderFileList();
-                };
-
-                fileItem.appendChild(nameSpan);
-                fileItem.appendChild(deleteBtn);
-                fileListDiv.appendChild(fileItem);
+                const icon = file.type.startsWith('image/') ? '🖼️' : '📄';
+                addFileItemToList(icon + ' ' + file.name, file.fileId);
             });
             syncInputFiles();
         }
 
-        function syncInputFiles() {
-            const dataTransfer = new DataTransfer();
-            uploadedFiles.forEach(file => dataTransfer.items.add(file));
-            document.getElementById('notice-files').files = dataTransfer.files;
+        /**
+         * 파일 리스트 div에 항목 추가
+         * @param {string} label  - 표시할 텍스트
+         * @param {string} fileId - 'quill' 이면 삭제 버튼 없음, 일반 파일이면 X 버튼 추가
+         */
+        function addFileItemToList(label, fileId) {
+            const container = document.getElementById('file-list-container');
+
+            const item = document.createElement('div');
+            item.className = 'file-item js-file-item';
+            item.dataset.fileId = fileId;
+            item.style.cssText = 'display:flex; align-items:center; margin:4px 0;';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = label;
+            item.appendChild(nameSpan);
+
+            // Quill 이미지는 에디터 본문에 포함되므로 삭제 버튼 불필요
+            if (fileId !== 'quill') {
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'X';
+                delBtn.type = 'button';
+                delBtn.style.cssText = 'margin-left:8px; color:red; border:none; background:none; cursor:pointer; font-weight:bold;';
+                delBtn.onclick = function() {
+                    uploadedFiles = uploadedFiles.filter(f => f.fileId !== fileId);
+                    item.remove();
+                    syncInputFiles();
+                };
+                item.appendChild(delBtn);
+            }
+
+            container.appendChild(item);
         }
 
+        function syncInputFiles() {
+            const dt = new DataTransfer();
+            uploadedFiles.forEach(f => dt.items.add(f));
+            document.getElementById('notice-files').files = dt.files;
+        }
+
+        // reset: 에디터 + 파일 목록 + JS 파일 항목 초기화 (DB 파일 항목은 유지)
         document.getElementById('noticeForm').addEventListener('reset', function() {
             quill.setContents([]);
             uploadedFiles = [];
-            document.getElementById('file-list-container').innerHTML = '';
+            document.querySelectorAll('.js-file-item').forEach(el => el.remove());
             document.getElementById('notice-files').value = '';
         });
     </script>

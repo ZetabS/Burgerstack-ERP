@@ -17,5 +17,6 @@ public interface NoticeMapper {
     ArrayList<NoticeFile> noticeDetailFileList(Long noticeId);
     int updateNotice(Notice n);
 	int deleteNotice(Long noticeId);
+	NoticeFile selectNoticeFile(Long noticeFileId);
     
 }

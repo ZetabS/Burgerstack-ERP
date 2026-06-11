@@ -45,4 +45,8 @@ public class NoticeDao {
 		return noticeMapper.deleteNotice(noticeId);
 	}
 
+	public NoticeFile selectNoticeFile(Long noticeFileId) {
+		return noticeMapper.selectNoticeFile(noticeFileId);
+	}
+
 }

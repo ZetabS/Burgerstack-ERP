@@ -72,6 +72,18 @@
            AND NOTICE_ID = #{noticeId}
     </select>
 
+	<!-- 다운로드용 조회 -->
+	<select id="selectNoticeFile" resultType="NoticeFile">
+	    SELECT NOTICE_FILE_ID AS noticeFileId
+	         , ORIGINAL_NAME  AS originalName
+	         , STORED_NAME    AS storedName
+	         , STORAGE_PATH   AS storagePath
+	         , NOTICE_ID      AS noticeId
+	      FROM NOTICE_FILES
+	     WHERE DELETED_AT IS NULL
+	       AND NOTICE_FILE_ID = #{noticeFileId}
+	</select>
+	
 	<!-- 게시글 수정 -->
 	<update id="updateNotice" parameterType="Notice">
 	    UPDATE NOTICES

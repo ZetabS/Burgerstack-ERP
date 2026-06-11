@@ -1,6 +1,9 @@
 package com.kh.burgerstack.notice;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -9,6 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.common.template.NoticeXssUtil;
 import com.kh.burgerstack.common.template.XssDefencePolicy;
 import com.kh.burgerstack.file.FileStore;
 import com.kh.burgerstack.file.StoredFile;
@@ -40,9 +48,6 @@ public class NoticeController {
     
     /**
      * 공지사항 전체 목록 조회
-     * @param pagingRequest
-     * @param model
-     * @return
      */
     @GetMapping("")
     public String selectNoticeList(PagingRequest pagingRequest, Model model) {
@@ -62,14 +67,12 @@ public class NoticeController {
         }
 
         model.addAttribute("notices", list);
-        return "notice/noticeListView";
+        return "notice/noticeListViewHO";
     }
 
 
     /**
      * 공지사항 글작성 페이지 진입
-     * @param session
-     * @return
      */
     @GetMapping({"/new", "new"})
     public String noticeEnrollForm(HttpSession session) {
@@ -82,10 +85,6 @@ public class NoticeController {
     
     /**
      * 공지사항 등록
-     * @param n
-     * @param files
-     * @param session
-     * @return
      */
     @PostMapping("")
     public String insertNotice(Notice n,
@@ -94,7 +93,7 @@ public class NoticeController {
 
         // 0. XSS 방어
         n.setTitle(XssDefencePolicy.defence(n.getTitle()));
-        n.setContent(XssDefencePolicy.defence(n.getContent()));
+        n.setContent(NoticeXssUtil.cleanContent(n.getContent()));
 
         // 1. 일반 첨부파일(input file) 서버 저장
         ArrayList<NoticeFile> fileList = new ArrayList<>();
@@ -134,6 +133,8 @@ public class NoticeController {
      *  DB INSERT 없이 서버 파일 저장만 하고, NoticeFile 정보를 세션에 임시 보관
      *  > insertNotice 시 세션에서 꺼내 fileList에 합쳐서 한 번에 DB 등록
      */
+ // ===== NoticeController.java uploadQuillImage 메서드 전체 교체 =====
+
     @PostMapping("/uploadImage")
     @ResponseBody
     public Map<String, Object> uploadQuillImage(@RequestParam("image") MultipartFile file,
@@ -146,31 +147,19 @@ public class NoticeController {
         }
 
         try {
-            // 1. 저장 경로 계산 및 폴더 생성
-            String rootPath = request.getServletContext().getRealPath("/");
-            String savePath = rootPath + "resources" + File.separator + "upload" + File.separator;
+            // ✅ fileStore로 통일 — 상대경로로 저장되어 download 메서드와 호환됨
+            StoredFile storedFile = fileStore.store(file, "upload");
 
-            File folder = new File(savePath);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
+            // 에디터 src URL: 상대경로를 웹 URL로 변환
+            // storagePath = "upload/2026/06/11/uuid.png"
+            String fileUrl = request.getContextPath() + "/resources/" + storedFile.getStoragePath();
 
-            // 2. 유니크 파일명 생성 후 저장
-            String originalName = file.getOriginalFilename();
-            String ext = originalName.substring(originalName.lastIndexOf("."));
-            String savedName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + ext;
-            file.transferTo(new File(savePath + savedName));
-
-            // 3. 에디터 src URL 조립
-            String contextPath = request.getContextPath();
-            String fileUrl = contextPath + "/resources/upload/" + savedName;
-
-            // 4. DB INSERT 없이 NoticeFile 객체를 세션에 누적 보관
+            // 세션에 NoticeFile 보관 (storagePath가 상대경로로 통일됨)
             NoticeFile noticeFile = new NoticeFile();
-            noticeFile.setOriginalName(originalName);
-            noticeFile.setStoredName(savedName);
-            noticeFile.setStoragePath(savePath);
-            noticeFile.setNoticeId(0L); // insertNotice 시 실제 noticeId로 교체됨
+            noticeFile.setOriginalName(storedFile.getOriginalName());
+            noticeFile.setStoredName(storedFile.getStoredName());
+            noticeFile.setStoragePath(storedFile.getStoragePath()); // ✅ 상대경로
+            noticeFile.setNoticeId(0L);
 
             HttpSession session = request.getSession();
             ArrayList<NoticeFile> quillImageFiles =
@@ -193,16 +182,54 @@ public class NoticeController {
     }
 
 
-    /** 공지사항 상세 조회 */
-    @GetMapping({"/{noticeId}", "{noticeId}"})
+    /**
+     * 공지사항 상세 조회
+     */
+    @GetMapping("/{noticeId:[0-9]+}")
     public String noticeDetail(@PathVariable("noticeId") Long noticeId, Model model) {
         Notice n = noticeService.noticeDetail(noticeId);
         model.addAttribute("notice", n);
-        return "notice/noticeDetail";
+        return "notice/noticeDetailHO";
     }
 
+    
+	/**
+	 * 파일 다운로드
+	 */
+    @GetMapping("/download")
+    public ResponseEntity<InputStreamResource> download(
+            @RequestParam("noticeFileId") Long noticeFileId) {
+        try {
+            NoticeFile noticeFile = noticeService.selectNoticeFile(noticeFileId);
+            if (noticeFile == null) return ResponseEntity.notFound().build();
 
-    /** 공지사항 수정 페이지 이동 */
+            // 경로 resolve
+            File file = fileStore.resolve(noticeFile.getStoragePath()).toFile();
+
+            System.out.println("[download] 최종 경로: " + file.getAbsolutePath());
+            System.out.println("[download] 존재 여부: " + file.exists());
+
+            if (!file.exists()) return ResponseEntity.notFound().build();
+
+            String encodedFileName = URLEncoder.encode(noticeFile.getOriginalName(), StandardCharsets.UTF_8)
+                                               .replace("+", "%20");
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + encodedFileName + "\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentLength(file.length())
+                    .body(new InputStreamResource(new FileInputStream(file)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * 공지사항 수정 페이지 이동
+     */
     @GetMapping("{noticeId}/edit")
     public String noticeEdit(@PathVariable("noticeId") Long noticeId,
                               HttpSession session,
@@ -216,7 +243,9 @@ public class NoticeController {
         return "notice/noticeEnrollForm";
     }
 
-    /** 공지사항 수정 처리 */
+    /**
+     * 공지사항 수정 처리
+     */
     @PostMapping({"/{noticeId}", "{noticeId}"})
     public String updateNotice(@PathVariable("noticeId") Long noticeId,
                                 Notice n,
@@ -225,7 +254,7 @@ public class NoticeController {
 
         n.setNoticeId(noticeId);
         n.setTitle(XssDefencePolicy.defence(n.getTitle()));
-        n.setContent(XssDefencePolicy.defence(n.getContent()));
+        n.setContent(NoticeXssUtil.cleanContent(n.getContent()));
 
         // 일반 첨부파일 처리
         ArrayList<NoticeFile> fileList = new ArrayList<>();
@@ -259,7 +288,9 @@ public class NoticeController {
     }
 
 
-    /** 공지사항 삭제 */
+    /**
+     * 공지사항 삭제
+     */
     @PostMapping({"/{noticeId}/delete", "{noticeId}/delete"})
     public String deleteNotice(@PathVariable("noticeId") Long noticeId, HttpSession session) {
     	

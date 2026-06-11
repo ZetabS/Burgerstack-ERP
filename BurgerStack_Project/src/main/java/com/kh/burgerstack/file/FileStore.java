@@ -150,4 +150,14 @@ public class FileStore {
         }
         return target;
     }
+    
+    
+    /**
+     * 파일 다운로드용 메소드 추가
+     * @param storagePath
+     * @return
+     */
+    public Path resolve(String storagePath) {
+        return resolveStoragePath(storagePath); // 이미 있는 private 메서드를 public으로 노출
+    }
 }
