@@ -11,15 +11,36 @@ import org.springframework.stereotype.Repository;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.purchase.PurchaseOrder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Repository
 public class ReceiptDao {
 
     @Autowired
     private SqlSessionTemplate sqlSession;
 
-    public int getHistoryTotalCount(SqlSessionTemplate sqlSession) {
-        return sqlSession.selectOne("ReceiptMapper.getHistoryTotalCount");
-    }  // sqlSession.selectOne("count", condition);
+    public int getHistoryTotalCount(SqlSessionTemplate sqlSession, String receiptType) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("receiptType", receiptType);
+
+        return sqlSession.selectOne(
+                "ReceiptMapper.getHistoryTotalCount",
+                map
+        );
+    }
+
+    public List<Receipt> selectReceiptList(String receiptType) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("receiptType", receiptType);
+
+        return sqlSession.selectList(
+                "ReceiptMapper.selectReceiptList",
+                map
+        );
+    }
     
     public int getPlanTotalCount(SqlSessionTemplate sqlSession, String status) {
         return sqlSession.selectOne(
@@ -43,9 +64,7 @@ public class ReceiptDao {
         );
     }
 
-    public List<Receipt> selectReceiptList() {
-        return sqlSession.selectList("ReceiptMapper.selectReceiptList");
-    }
+    
     
     public Long selectStoreIdByPurchaseOrderId(Long purchaseOrderId) {
         return sqlSession.selectOne("ReceiptMapper.selectStoreIdByPurchaseOrderId", purchaseOrderId);
@@ -108,6 +127,11 @@ public class ReceiptDao {
         return sqlSession.selectList("ReceiptMapper.selectReceiptCheckItemList", purchaseId);
     }
     
-    
+    public String selectPurchaseStatus(Long purchaseId) {
+        return sqlSession.selectOne(
+                "ReceiptMapper.selectPurchaseStatus",
+                purchaseId
+        );
+    }
     
 }

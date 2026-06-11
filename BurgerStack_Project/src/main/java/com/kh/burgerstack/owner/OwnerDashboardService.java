@@ -6,44 +6,70 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kh.burgerstack.store.Store;
+
 @Service
 public class OwnerDashboardService {
 
     @Autowired
     private OwnerDashboardDao dashboardDao;
 
-    public int selectShortageCount() {
-        return dashboardDao.selectShortageCount();
+
+    // 로그인한 점주의 점포 조회
+    public Store selectStoreByOwnerUserNo(long ownerUserNo) {
+        return dashboardDao.selectStoreByOwnerUserNo(ownerUserNo);
     }
 
-    public int selectTodayReceiptCount() {
-        return dashboardDao.selectTodayReceiptCount();
+
+    // 재고 부족 품목 개수
+    public int selectShortageCount(long storeId) {
+        return dashboardDao.selectShortageCount(storeId);
     }
 
-    public int selectPendingPurchaseCount() {
-        return dashboardDao.selectPendingPurchaseCount();
+
+    // 오늘 입고 예정 개수
+    public int selectTodayReceiptCount(long storeId) {
+        return dashboardDao.selectTodayReceiptCount(storeId);
     }
 
-    public int selectUnansweredInquiryCount() {
-        return dashboardDao.selectUnansweredInquiryCount();
+
+    // 승인 대기 발주 개수
+    public int selectPendingPurchaseCount(long storeId) {
+        return dashboardDao.selectPendingPurchaseCount(storeId);
     }
 
-    public List<Map<String, Object>> selectShortageTop5() {
-        return dashboardDao.selectShortageTop5();
+
+    // 미답변 문의 개수
+    public int selectUnansweredInquiryCount(long storeId) {
+        return dashboardDao.selectUnansweredInquiryCount(storeId);
     }
 
-    public List<Map<String, Object>> selectTodayReceiptList() {
-        return dashboardDao.selectTodayReceiptList();
+
+    // 재고 부족 TOP5
+    public List<Map<String, Object>> selectShortageTop5(long storeId) {
+        return dashboardDao.selectShortageTop5(storeId);
     }
 
-    public List<Map<String, Object>> selectPurchaseStatusList() {
-        return dashboardDao.selectPurchaseStatusList();
+
+    // 오늘 입고 예정 목록
+    public List<Map<String, Object>> selectTodayReceiptList(long storeId) {
+        return dashboardDao.selectTodayReceiptList(storeId);
     }
 
-    public Map<String, Object> selectTodayClosing() {
-        return dashboardDao.selectTodayClosing();
+
+    // 미처리 발주 상태 목록
+    public List<Map<String, Object>> selectPurchaseStatusList(long storeId) {
+        return dashboardDao.selectPurchaseStatusList(storeId);
     }
 
+
+    // 오늘 마감 정보
+    public Map<String, Object> selectTodayClosing(long storeId) {
+        return dashboardDao.selectTodayClosing(storeId);
+    }
+
+
+    // 공지사항은 전체 공지라서 storeId 안 받음
     public List<Map<String, Object>> selectNoticeList() {
         return dashboardDao.selectNoticeList();
     }

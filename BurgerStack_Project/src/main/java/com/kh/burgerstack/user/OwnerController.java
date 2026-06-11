@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.kh.burgerstack.owner.OwnerDashboardService;
 
 import jakarta.servlet.http.HttpSession;
+import com.kh.burgerstack.store.Store;
 
 @Controller
 @RequestMapping("owner")
@@ -110,17 +111,37 @@ public class OwnerController {
 	}
 
 	@GetMapping("dashboard")
-	public String dashboardBo(Model model) {
+	public String dashboardBo(Model model, HttpSession session) {
 
-	    model.addAttribute("shortageCount", dashboardService.selectShortageCount());
-	    model.addAttribute("todayReceiptCount", dashboardService.selectTodayReceiptCount());
-	    model.addAttribute("pendingPurchaseCount", dashboardService.selectPendingPurchaseCount());
-	    model.addAttribute("unansweredInquiryCount", dashboardService.selectUnansweredInquiryCount());
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-	    model.addAttribute("shortageList", dashboardService.selectShortageTop5());
-	    model.addAttribute("todayReceiptList", dashboardService.selectTodayReceiptList());
-	    model.addAttribute("purchaseStatusList", dashboardService.selectPurchaseStatusList());
-	    model.addAttribute("closing", dashboardService.selectTodayClosing());
+	    if (loginUser == null) {
+	        return "redirect:/login";
+	    }
+
+	    long ownerUserNo = loginUser.getUserNo();
+
+	    Store store = dashboardService.selectStoreByOwnerUserNo(ownerUserNo);
+
+	    if (store == null) {
+	        model.addAttribute("errorMsg", "해당 점주에게 연결된 점포가 없습니다.");
+	        return "common/errorPage";
+	    }
+
+	    long storeId = store.getStoreId();
+
+	    model.addAttribute("store", store);
+
+	    model.addAttribute("shortageCount", dashboardService.selectShortageCount(storeId));
+	    model.addAttribute("todayReceiptCount", dashboardService.selectTodayReceiptCount(storeId));
+	    model.addAttribute("pendingPurchaseCount", dashboardService.selectPendingPurchaseCount(storeId));
+	    model.addAttribute("unansweredInquiryCount", dashboardService.selectUnansweredInquiryCount(storeId));
+
+	    model.addAttribute("shortageList", dashboardService.selectShortageTop5(storeId));
+	    model.addAttribute("todayReceiptList", dashboardService.selectTodayReceiptList(storeId));
+	    model.addAttribute("purchaseStatusList", dashboardService.selectPurchaseStatusList(storeId));
+	    model.addAttribute("closing", dashboardService.selectTodayClosing(storeId));
+
 	    model.addAttribute("noticeList", dashboardService.selectNoticeList());
 
 	    return "user/dashboardBO";
