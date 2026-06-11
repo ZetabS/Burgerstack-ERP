@@ -2,7 +2,6 @@ package com.kh.burgerstack.inventory.dto;
 
 import java.util.List;
 
-import com.kh.burgerstack.inventory.vo.InventoryTransaction;
 import com.kh.burgerstack.inventory.vo.InventoryTransactionItem;
 
 import lombok.AllArgsConstructor;
@@ -27,18 +26,4 @@ public class InventoryTransactionCreateCommand {
     private Integer storeClosingId;
 
     private List<InventoryTransactionItem> inventoryTransactionItems;
-
-    public InventoryTransaction getInventoryTransaction() {
-        InventoryTransaction inventoryTransaction = new InventoryTransaction(
-                null,
-                getTransactionType(),
-                getReason(),
-                getTransactionMemo(),
-                null,
-                getCreatedBy(),
-                getStoreId(),
-                getReceiptId(),
-                getStoreClosingId());
-        return inventoryTransaction;
-    }
 }

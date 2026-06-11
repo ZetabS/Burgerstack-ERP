@@ -29,12 +29,22 @@ public class InventoryTransactionService {
     private final StoreDao storeDao;
 
     @Transactional
-    public InventoryTransaction createTransaction(InventoryTransactionCreateCommand command) {
+    protected InventoryTransaction createTransaction(InventoryTransactionCreateCommand command) {
         if (!TRANSACTION_TYPE.contains(command.getTransactionType())) {
             throw new BusinessException("재고 변동 이력 유형이 올바르지 않습니다.");
         }
 
-        InventoryTransaction inventoryTransaction = command.getInventoryTransaction();
+        InventoryTransaction inventoryTransaction = new InventoryTransaction(
+                null,
+                command.getTransactionType(),
+                command.getReason(),
+                command.getTransactionMemo(),
+                null,
+                command.getCreatedBy(),
+                command.getStoreId(),
+                command.getReceiptId(),
+                command.getStoreClosingId());
+
         inventoryTransactionDao.insert(inventoryTransaction);
 
         inventoryTransactionDao.insertItems(
@@ -42,6 +52,7 @@ public class InventoryTransactionService {
                 command.getInventoryTransactionItems());
 
         return inventoryTransaction;
+
     }
 
     public InventoryTransactionListView getInventoryTransactionListView(

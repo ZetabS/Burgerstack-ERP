@@ -9,6 +9,7 @@ import com.kh.burgerstack.exception.BusinessException;
 import com.kh.burgerstack.inventory.dto.InventoryDetail;
 import com.kh.burgerstack.inventory.dto.InventoryListItem;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
+import com.kh.burgerstack.inventory.exception.InventoryConflictException;
 import com.kh.burgerstack.inventory.vo.StoreInventory;
 
 import lombok.RequiredArgsConstructor;
@@ -36,9 +37,9 @@ public class InventoryDao {
             int storeInventoryId,
             int beforeQuantity,
             int afterQuantity) {
-        int result = inventoryMapper.updateQuantity(storeInventoryId, beforeQuantity, afterQuantity);
-        if (result <= 0) {
-            throw new BusinessException("재고 수량을 조정할 수 없습니다.");
+        int updatedCount = inventoryMapper.updateQuantity(storeInventoryId, beforeQuantity, afterQuantity);
+        if (updatedCount != 1) {
+            throw new InventoryConflictException();
         }
     }
 

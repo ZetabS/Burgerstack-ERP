@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.exception.BadRequestException;
 import com.kh.burgerstack.exception.BusinessException;
+import com.kh.burgerstack.exception.NotFoundException;
 import com.kh.burgerstack.inventory.dao.InventoryDao;
-import com.kh.burgerstack.inventory.dto.InventoryAdjustRequest;
+import com.kh.burgerstack.inventory.dto.InventoryAdjustmentCommand;
 import com.kh.burgerstack.inventory.dto.InventoryDetail;
 import com.kh.burgerstack.inventory.dto.InventoryListItem;
 import com.kh.burgerstack.inventory.dto.InventoryListView;
@@ -60,58 +62,85 @@ public class InventoryService {
     }
 
     @Transactional
-    public void adjust(
-            int inventoryId,
-            InventoryAdjustRequest inventoryAdjustRequest,
-            LoginUser loginUser) {
-        StoreInventory inventory = inventoryDao.findById(inventoryId);
-        if (!loginUser.isAdmin() && inventory.getStoreId() != loginUser.getStoreId().intValue()) {
-            throw new BusinessException("재고를 찾을 수 없습니다.");
-        }
-
-        if (inventory.getCurrentQuantity() == inventoryAdjustRequest.getAfterQuantity()) {
-            throw new BusinessException("변경 전과 후의 수량이 동일합니다.");
-        }
-
-        inventoryDao.updateQuantity(
-                inventoryId,
-                inventory.getCurrentQuantity(),
-                inventoryAdjustRequest.getAfterQuantity());
-
-        InventoryTransactionItem inventoryTransactionItem = new InventoryTransactionItem(
-                inventory.getCurrentQuantity(),
-                inventoryAdjustRequest.getAfterQuantity(),
-                inventoryId);
+    public void adjustQuantity(InventoryAdjustmentCommand command) {
+        StoreInventory current = find(command.getInventoryId());
+        validateAccess(current, command.getLoginUser());
+        validateQuantity(current.getCurrentQuantity(), command.getAfterQuantity());
+        updateQuantity(current, command);
 
         List<InventoryTransactionItem> list = new ArrayList<>();
+        InventoryTransactionItem inventoryTransactionItem = new InventoryTransactionItem(
+                current.getCurrentQuantity(),
+                command.getAfterQuantity(),
+                command.getInventoryId());
         list.add(inventoryTransactionItem);
-
         inventoryTransactionService.createTransaction(new InventoryTransactionCreateCommand(
                 "ADJUSTMENT",
-                inventoryAdjustRequest.getReason(),
-                inventoryAdjustRequest.getTransactionMemo(),
-                loginUser.getUserNo().intValue(),
-                inventory.getStoreId(),
+                command.getReason(),
+                command.getTransactionMemo(),
+                command.getLoginUser().getUserNo().intValue(),
+                current.getStoreId(),
                 null,
                 null,
                 list));
     }
 
     @Transactional
-    public void changeSafeQuantity(
+    public void changeSafetyQuantity(
             int inventoryId,
             int safetyQuantity,
             LoginUser loginUser) {
-        StoreInventory inventory = inventoryDao.findById(inventoryId);
+        StoreInventory current = find(inventoryId);
 
-        if (!loginUser.isAdmin() && inventory.getStoreId() != loginUser.getStoreId().intValue()) {
-            throw new BusinessException("재고를 찾을 수 없습니다.");
+        validateAccess(current, loginUser);
+        validateSafetyQuantity(current, safetyQuantity);
+
+        inventoryDao.updateSafetyQuantity(inventoryId, safetyQuantity, current.getSafetyQuantity());
+    }
+
+    private StoreInventory find(int inventoryId) {
+        StoreInventory current = inventoryDao.findById(inventoryId);
+
+        if (current == null) {
+            throw new NotFoundException("재고를 찾을 수 없습니다.");
         }
 
-        if (inventory.getSafetyQuantity() == safetyQuantity) {
+        return current;
+    }
+
+    private void validateAccess(StoreInventory current, LoginUser loginUser) {
+        boolean isAdmin = loginUser.isAdmin();
+        boolean isOwnStore = current.getStoreId() != loginUser.getStoreId().intValue();
+
+        if (!isAdmin && !isOwnStore) {
+            throw new BusinessException("재고에 접근할 권한이 없습니다.");
+        }
+    }
+
+    private void validateQuantity(int beforeQuantity, int afterQuantity) {
+        if (afterQuantity < 0) {
+            throw new BadRequestException("재고 수량은 0 이상이어야 합니다.");
+        }
+
+        if (beforeQuantity == afterQuantity) {
+            throw new BusinessException("변경 전과 후의 재고 수량이 동일합니다.");
+        }
+    }
+
+    private void updateQuantity(StoreInventory current, InventoryAdjustmentCommand command) {
+        inventoryDao.updateQuantity(
+                command.getInventoryId(),
+                current.getCurrentQuantity(),
+                command.getAfterQuantity());
+    }
+
+    private void validateSafetyQuantity(StoreInventory current, int safetyQuantity) {
+        if (safetyQuantity < 0) {
+            throw new BadRequestException("안전재고 수량은 0 이상이어야 합니다.");
+        }
+
+        if (current.getSafetyQuantity() == safetyQuantity) {
             throw new BusinessException("변경 전과 후의 안전재고 수량이 동일합니다.");
         }
-
-        inventoryDao.updateSafetyQuantity(inventoryId, safetyQuantity, inventory.getSafetyQuantity());
     }
 }

@@ -64,7 +64,7 @@ public class AdminInventoryController {
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        inventoryService.adjust(inventoryId, inventoryAdjustRequest, loginUser);
+        inventoryService.adjustQuantity(inventoryId, inventoryAdjustRequest, loginUser);
 
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
         return "redirect:/admin/inventories";
