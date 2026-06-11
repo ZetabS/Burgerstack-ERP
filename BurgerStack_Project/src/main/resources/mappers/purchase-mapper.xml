@@ -68,7 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             (
                 SELECT
                     CASE
-                        WHEN COUNT(*) > 1 THEN
+                        WHEN COUNT(*) <![CDATA[>]]> 1 THEN
                             MIN(POI.MATERIAL_NAME_SNAPSHOT)
                             || ' 외 '
                             || (COUNT(*) - 1)
