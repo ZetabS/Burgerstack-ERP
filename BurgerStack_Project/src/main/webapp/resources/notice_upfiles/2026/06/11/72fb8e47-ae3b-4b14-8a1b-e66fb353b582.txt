@@ -1,0 +1,929 @@
+// 테이블
+CREATE TABLE NOTICES (
+    NOTICE_ID  NUMBER NOT NULL
+    , TITLE      VARCHAR2(200) NOT NULL
+    , CONTENT    CLOB NOT NULL
+    , CREATED_AT DATE DEFAULT SYSDATE NOT NULL
+    , DELETED_AT DATE
+    , CONSTRAINT PK_NOTICES PRIMARY KEY ( NOTICE_ID )
+);
+
+CREATE SEQUENCE SEQ_NOTICE START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+CREATE TABLE NOTICE_FILES (
+    NOTICE_FILE_ID NUMBER NOT NULL
+    , ORIGINAL_NAME  VARCHAR2(255) NOT NULL
+    , STORED_NAME    VARCHAR2(255) NOT NULL
+    , STORAGE_PATH   VARCHAR2(500) NOT NULL
+    , CREATED_AT     DATE DEFAULT SYSDATE NOT NULL
+    , DELETED_AT     DATE
+    , NOTICE_ID      NUMBER NOT NULL
+    , CONSTRAINT PK_NOTICE_FILES PRIMARY KEY ( NOTICE_FILE_ID )
+    , CONSTRAINT FK_NOTICE_FILES_NOTICE FOREIGN KEY ( NOTICE_ID )
+        REFERENCES NOTICES ( NOTICE_ID )
+);
+
+CREATE SEQUENCE SEQ_NOTICE_FILE START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+
+// noticeEnrollform.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BurgerStack</title>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<style>
+/* 기존 스타일 유지 */
+.outer { border: none !important; width: 100%; max-width: 950px; margin: 0 auto; box-sizing: border-box; }
+.table-area { table-layout: fixed; width: 100%; max-width: 950px; margin: 0 auto; }
+.table-area th { width: 120px; vertical-align: middle; }
+.table-area td { width: calc(100% - 120px); }
+.table-area td>input { border: 1px solid #ccc; width: 100%; max-width: 800px; padding: 5px 10px; box-sizing: border-box; }
+.ql-toolbar.ql-snow { max-width: 800px; border: 1px solid #ccc !important; }
+#editor-container { border: 1px solid #ccc !important; width: 100%; max-width: 800px; height: 340px; background: white; }
+#file-list-container { border: 1px solid #ccc; min-height: 65px; padding: 5px; box-sizing: border-box; }
+.existing-file { color: #666; margin: 4px 0; }
+</style>
+</head>
+<body>
+<t:layout>
+<div class="outer">
+    <br>
+    <h2 style="padding-left:20px;">
+        <b>공지사항 ${not empty notice ? '수정' : '등록'}</b>
+    </h2>
+
+    <form id="noticeForm" action="${not empty notice ? '/admin/notices/' + notice.noticeId : '/admin/notices'}"
+          method="post" enctype="multipart/form-data">
+       
+        <c:if test="${not empty notice}">
+            <input type="hidden" name="noticeId" value="${notice.noticeId}">
+        </c:if>
+
+        <div align="center">
+            <table class="table table-area">
+                <tr>
+                    <th>제목</th>
+                    <td><input type="text" name="title" value="${notice.title}" required></td>
+                </tr>
+                <tr>
+                    <th>내용</th>
+                    <td>
+                        <div id="editor-container"></div>
+                        <input type="hidden" name="content" id="server-content">
+                    </td>
+                </tr>
+                <tr>
+                    <th>파일추가</th>
+                    <td>
+                        <input type="file" id="notice-files" name="files" multiple accept=".txt,image/*">
+                    </td>
+                </tr>
+                <tr>
+                    <th>첨부파일</th>
+                    <td>
+                        <div id="file-list-container"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div align="center" style="margin-top:20px;">
+            <c:choose>
+                <c:when test="${not empty notice}">
+                    <button class="button-danger" type="button" onclick="history.back()">취소하기</button>
+                </c:when>
+                <c:otherwise>
+                    <button class="button-danger" type="reset">초기화</button>
+                </c:otherwise>
+            </c:choose>
+            <button class="button-primary" type="submit">
+                ${not empty notice ? '수정완료' : '등록하기'}
+            </button>
+        </div>
+    </form>
+</div>
+</t:layout>
+
+<script>
+// Quill 초기화
+const quill = new Quill('#editor-container', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            ['image', 'code-block']
+        ]
+    }
+});
+
+// Quill 이미지 업로드 (기존 코드 유지)
+quill.getModule('toolbar').addHandler('image', () => { /* ... 기존 이미지 업로드 코드 그대로 ... */ });
+
+// 기존 내용 로드 (수정 모드일 때)
+<c:if test="${not empty notice && notice.content != null}">
+    quill.root.innerHTML = `${notice.content}`;
+</c:if>
+
+// 폼 제출 시 content 주입 (하나로 통일!)
+document.getElementById('noticeForm').addEventListener('submit', function() {
+    document.getElementById('server-content').value = quill.root.innerHTML;
+});
+
+// ==================== 파일 처리 ====================
+let uploadedFiles = [];        // 새로 추가한 파일들
+let filesToDelete = [];        // 삭제할 기존 파일 ID들
+
+// 기존 파일 표시 (수정 모드)
+<c:if test="${not empty fileList}">
+    window.existingFiles = [
+        <c:forEach var="f" items="${fileList}">
+        { fileId: \( {f.fileId}, originalName: " \){f.originalName}" },
+        </c:forEach>
+    ];
+</c:if>
+
+// 기존 파일 렌더링
+function renderExistingFiles() {
+    const container = document.getElementById('file-list-container');
+    if (typeof window.existingFiles === 'undefined') return;
+
+    window.existingFiles.forEach(file => {
+        const div = document.createElement('div');
+        div.className = 'existing-file';
+        div.innerHTML = `
+            📄 ${file.originalName}
+            <button type="button" onclick="deleteExistingFile(${file.fileId}, this)"
+                    style="margin-left:10px; color:red; border:none; background:none; cursor:pointer;">X</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// 기존 파일 삭제 표시
+function deleteExistingFile(fileId, btn) {
+    filesToDelete.push(fileId);
+    btn.parentElement.remove();
+   
+    // hidden input으로 삭제할 파일 ID 전송
+    let input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'deleteFileIds';
+    input.value = fileId;
+    document.getElementById('noticeForm').appendChild(input);
+}
+
+// 새 파일 선택
+document.getElementById('notice-files').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+        file.fileId = 'new_' + Date.now() + Math.random();
+        uploadedFiles.push(file);
+    });
+    renderNewFiles();
+});
+
+function renderFileList() {
+            const fileListDiv = document.getElementById('file-list-container');
+            fileListDiv.innerHTML = '';
+            uploadedFiles.forEach((file) => {
+                const fileItem = document.createElement('div');
+                fileItem.style.cssText = 'display:flex; align-items:center; margin:5px 0;';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = (file.type.startsWith('image/') ? "🖼️ " : "📄 ") + file.name;
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'X';
+                deleteBtn.type = 'button';
+                deleteBtn.style.cssText = 'margin-left:10px; color:red; border:none; background:none; cursor:pointer; font-weight:bold;';
+                deleteBtn.onclick = function() {
+                    uploadedFiles = uploadedFiles.filter(f => f.fileId !== file.fileId);
+                    renderFileList();
+                };
+
+                fileItem.appendChild(nameSpan);
+                fileItem.appendChild(deleteBtn);
+                fileListDiv.appendChild(fileItem);
+            });
+            syncInputFiles();
+        }
+
+        function syncInputFiles() {
+            const dataTransfer = new DataTransfer();
+            uploadedFiles.forEach(file => dataTransfer.items.add(file));
+            document.getElementById('notice-files').files = dataTransfer.files;
+        }
+
+        document.getElementById('noticeForm').addEventListener('reset', function() {
+            quill.setContents([]);
+            uploadedFiles = [];
+            document.getElementById('file-list-container').innerHTML = '';
+            document.getElementById('notice-files').value = '';
+        });
+
+// 페이지 로드 시 기존 파일 표시
+window.onload = function() {
+    renderExistingFiles();
+    // renderNewFiles() 등
+};
+</script>
+</body>
+</html>
+
+
+// noticeDetail.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BurgerStack</title>
+<%-- Quill snow CSS: 에디터로 작성된 HTML이 상세보기에서도 동일하게 보이도록 --%>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+<style>
+.outer {
+    border : none !important;
+    width : 100%;
+    max-width : 950px;
+    margin : 0 auto;
+    box-sizing : border-box;
+}
+.table-area {
+    table-layout : fixed;
+    width : 100%;
+    max-width : 950px;
+    margin : 0 auto;
+    border-collapse: collapse;
+}
+.table-area td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eeeeee;
+    text-align: left;
+    width : calc(100% - 120px);
+    vertical-align : middle;
+}
+#notice-content {
+    width : 100%;
+    max-width : 100%;
+    overflow-y : auto;
+    overflow-x : hidden;
+    min-height : 340px;
+    box-sizing : border-box;
+    line-height: 1.6;
+    white-space: normal;
+    word-break: break-all;
+    overflow-wrap: break-word;
+}
+#notice-content img {
+    max-width : 100%;
+    height : auto;
+    display : inline-block;
+    vertical-align : middle;
+}
+#file-list-container {
+    border : 1px solid #cccccc;
+    width: 100%;
+    height : 75px;
+    overflow-y : auto;
+    padding : 8px 12px;
+    box-sizing : border-box;
+    background-color: #fafafa;
+}
+.file-item a {
+    display: inline-block;
+    padding: 2px 0;
+    transition: color 0.2s;
+}
+.file-item a:hover {
+    color: #16a34a !important;
+    text-decoration: underline !important;
+}
+</style>
+</head>
+<body>
+    <t:layout>
+        <div class="outer">
+            <br>
+            <h2 style="padding-left : 20px;">
+                <b>공지사항</b>
+            </h2>
+
+            <div>
+                <table class="table table-area">
+
+                    <tr>
+                        <td><b>${notice.title}</b></td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div id="notice-content">
+                                <%-- escapeXml을 false로 설정하여 HTML 태그가 정상적으로 렌더링되도록 합니다 --%>
+                                <c:out value="${notice.content}" escapeXml="false" />
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <b>첨부파일</b><br>
+                            <div id="file-list-container">
+                                <c:forEach items="${notice.fileList}" var="file">
+                                    <c:set var="fileName" value="${fn:toLowerCase(file.originalName)}" />
+                                    
+                                    <div class="file-item" style="margin-bottom: 5px;">
+                                        <a href="${pageContext.request.contextPath}/admin/notices/download?noticeFileId=${file.noticeFileId}"
+                                        style="color: #22C55E; text-decoration: none;">
+                                            📁 ${file.originalName}
+                                        </a>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+
+            <div align="center">
+                <!-- 1. 수정하기: 단순 GET 이동 -->
+                <button type="button" class="button-secondary" 
+                        onclick="location.href='${pageContext.request.contextPath}/admin/notices/${notice.noticeId}/edit'">
+                    수정하기
+                </button>
+
+                <!-- 2. 목록으로: GET 이동 -->
+                <button type="button" class="button-primary" 
+                        onclick="location.href='${pageContext.request.contextPath}/admin/notices'">
+                    목록으로
+                </button>
+
+                <!-- 3. 삭제하기: POST 방식 전송을 위한 form -->
+                <form id="deleteForm" action="${pageContext.request.contextPath}/admin/notices/${notice.noticeId}/delete" method="post" style="display:inline;">
+                    <button type="button" class="button-danger" onclick="confirmDelete()">
+                        삭제하기
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function confirmDelete() {
+                if (confirm("정말로 삭제하시겠습니까?")) {
+                    document.getElementById('deleteForm').submit();
+                }
+            }
+        </script>
+        <script>
+            // 페이지 로드 시 기존 내용 삽입
+            const quill = new Quill('#editor', { ... });
+            const content = `${notice.content}`; // 서버에서 가져온 기존 HTML
+            quill.root.innerHTML = content;
+            
+            // 폼 제출 전 content 숨겨진 input에 값 넣기
+            document.querySelector('form').onsubmit = function() {
+                document.getElementById('content').value = quill.root.innerHTML;
+            };
+        </script>
+    </t:layout>
+</body>
+</html>
+
+
+// 컨트롤러
+package com.kh.burgerstack.notice;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.common.template.XssDefencePolicy;
+import com.kh.burgerstack.file.FileStore;
+import com.kh.burgerstack.file.StoredFile;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+@RequestMapping("/admin/notices")
+public class NoticeController {
+
+    @Autowired
+    private NoticeService noticeService;
+
+    @Autowired
+    private FileStore fileStore;
+
+    /** 공지사항 전체 목록 조회 */
+    @GetMapping("")
+    public String selectNoticeList(PagingRequest pagingRequest, Model model) {
+        int totalCount = noticeService.selectNoticeCount();
+        model.addAttribute("pageInfo", pagingRequest.toPageInfo(totalCount));
+
+        ArrayList<Notice> list = noticeService.selectNoticeList(pagingRequest);
+
+        DateTimeFormatter formatterList   = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatterDetail = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        for (Notice n : list) {
+            if (n.getCreatedAt() != null) {
+                n.setListDate(n.getCreatedAt().format(formatterList));
+                n.setDetailDate(n.getCreatedAt().format(formatterDetail));
+            }
+        }
+
+        model.addAttribute("notices", list);
+        return "notice/noticeListView";
+    }
+
+
+    /** 공지사항 새 글 작성 페이지 이동 */
+    @GetMapping({"/new", "new"})
+    public String noticeEnrollForm(HttpSession session) {
+        // ✅ 글쓰기 페이지 진입 시 세션의 Quill 이미지 목록 초기화
+        session.removeAttribute("quillImageFiles");
+        return "notice/noticeEnrollForm";
+    }
+
+
+    /** 공지사항 등록 처리 */
+    @PostMapping("")
+    public String insertNotice(Notice n,
+                               MultipartFile[] files,
+                               HttpSession session) {
+
+        // 0. XSS 방어
+        n.setTitle(XssDefencePolicy.defence(n.getTitle()));
+        n.setContent(XssDefencePolicy.defence(n.getContent()));
+
+        // 1. 일반 첨부파일(input file) 서버 저장
+        ArrayList<NoticeFile> fileList = new ArrayList<>();
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    StoredFile storedFile = fileStore.store(file, "notice_upfiles");
+                    NoticeFile noticeFile = storedFile.toNoticeFile(0);
+                    fileList.add(noticeFile);
+                }
+            }
+        }
+
+        // ✅ 2. 세션에 임시 보관된 Quill 이미지 파일 목록도 fileList에 합치기
+        ArrayList<NoticeFile> quillImageFiles =
+            (ArrayList<NoticeFile>) session.getAttribute("quillImageFiles");
+        if (quillImageFiles != null && !quillImageFiles.isEmpty()) {
+            fileList.addAll(quillImageFiles);
+            session.removeAttribute("quillImageFiles"); // 세션 정리
+        }
+
+        // 3. 서비스 호출 (기존 insertNotice 그대로 사용 가능)
+        int result = noticeService.insertNotice(n, fileList);
+
+        if (result > 0) {
+            session.setAttribute("alertMsg", "공지사항 등록이 완료되었습니다.");
+            return "redirect:/admin/notices";
+        } else {
+            session.setAttribute("alertMsg", "공지사항 등록에 실패했습니다.");
+            return "redirect:/admin/notices/new";
+        }
+    }
+
+
+    /**
+     * Quill 에디터 본문 이미지 비동기 업로드
+     * ✅ DB INSERT 없이 서버 파일 저장만 하고, NoticeFile 정보를 세션에 임시 보관
+     *    → insertNotice 시 세션에서 꺼내 fileList에 합쳐서 한 번에 DB 등록
+     */
+    @PostMapping("/uploadImage")
+    @ResponseBody
+    public Map<String, Object> uploadQuillImage(@RequestParam("image") MultipartFile file,
+                                                 HttpServletRequest request) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (file.isEmpty()) {
+            response.put("uploaded", false);
+            return response;
+        }
+
+        try {
+            // 1. 저장 경로 계산 및 폴더 생성
+            String rootPath = request.getServletContext().getRealPath("/");
+            String savePath = rootPath + "resources" + File.separator + "upload" + File.separator;
+
+            File folder = new File(savePath);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            // 2. 유니크 파일명 생성 후 저장
+            String originalName = file.getOriginalFilename();
+            String ext = originalName.substring(originalName.lastIndexOf("."));
+            String savedName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + ext;
+            file.transferTo(new File(savePath + savedName));
+
+            // 3. 에디터 src URL 조립
+            String contextPath = request.getContextPath();
+            String fileUrl = contextPath + "/resources/upload/" + savedName;
+
+            // ✅ 4. DB INSERT 없이 NoticeFile 객체를 세션에 누적 보관
+            NoticeFile noticeFile = new NoticeFile();
+            noticeFile.setOriginalName(originalName);
+            noticeFile.setStoredName(savedName);
+            noticeFile.setStoragePath(savePath);
+            noticeFile.setNoticeId(0L); // insertNotice 시 실제 noticeId로 교체됨
+
+            HttpSession session = request.getSession();
+            ArrayList<NoticeFile> quillImageFiles =
+                (ArrayList<NoticeFile>) session.getAttribute("quillImageFiles");
+            if (quillImageFiles == null) {
+                quillImageFiles = new ArrayList<>();
+            }
+            quillImageFiles.add(noticeFile);
+            session.setAttribute("quillImageFiles", quillImageFiles);
+
+            response.put("uploaded", true);
+            response.put("url", fileUrl);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("uploaded", false);
+        }
+
+        return response;
+    }
+
+
+    /** 공지사항 상세 조회 */
+    @GetMapping({"/{noticeId}", "{noticeId}"})
+    public String noticeDetail(@PathVariable("noticeId") Long noticeId, Model model) {
+        Notice n = noticeService.noticeDetail(noticeId);
+        model.addAttribute("notice", n);
+        return "notice/noticeDetail";
+    }
+
+    @GetMapping("{noticeId}/edit")
+    public String noticeEdit(@PathVariable("noticeId") Long noticeId, Model model) {
+        Notice notice = noticeService.noticeDetail(noticeId);
+        ArrayList<NoticeFile> fileList = noticeService.selectFileList(noticeId); // 조회
+        
+        model.addAttribute("notice", notice);
+        model.addAttribute("fileList", fileList); // JSP에서 ${fileList}로 사용
+        return "notice/noticeEnrollForm";
+    }
+    
+    @PostMapping({"/{noticeId}", "{noticeId}"})
+    public String updateNotice(@PathVariable("noticeId") Long noticeId,
+                               Notice n,
+                               MultipartFile[] files,
+                               @RequestParam(value = "deleteFileIds", required = false) ArrayList<Long> deleteFileIds,
+                               HttpSession session) {
+
+        n.setNoticeId(noticeId);
+        n.setTitle(XssDefencePolicy.defence(n.getTitle()));
+        n.setContent(XssDefencePolicy.defence(n.getContent()));
+
+        // 삭제할 파일 처리
+        if (deleteFileIds != null && !deleteFileIds.isEmpty()) {
+            noticeService.deleteNoticeFiles(deleteFileIds);
+        }
+
+        // 새 파일 처리
+        ArrayList<NoticeFile> newFileList = new ArrayList<>();
+        if (files != null) {
+            for (MultipartFile f : files) {
+                if (!f.isEmpty()) {
+                    StoredFile stored = fileStore.store(f, "notice_upfiles");
+                    newFileList.add(stored.toNoticeFile(noticeId));
+                }
+            }
+        }
+
+        int result = noticeService.updateNotice(n, newFileList);
+
+        session.setAttribute("alertMsg", result > 0 ? "수정되었습니다." : "수정 실패");
+        return "redirect:/admin/notices/" + noticeId;
+    }
+
+    
+    /**
+     * 
+     * 삭제용
+     * @param noticeId
+     * @param model
+     * @param session
+     * @return
+     */
+    @PostMapping({"/{noticeId}/delete", "{noticeId}/delete"})
+    public String noticeDelete(@PathVariable("noticeId") Long noticeId, Model model, HttpSession session) {
+    	int result = noticeService.deleteNotice(noticeId);
+    	if (result > 0) {
+            session.setAttribute("alertMsg", "자재가 삭제되었습니다.");
+            return "redirect:/admin/notices";
+        } else {
+            model.addAttribute("errorMsg", "자재 정보 삭제에 실패했습니다.");
+            return "common/errorPage";
+        }
+    }
+
+}
+
+// 서비스
+package com.kh.burgerstack.notice;
+
+import java.util.ArrayList;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.kh.burgerstack.common.pagination.PagingRequest;
+
+@Service
+public class NoticeService {
+
+    @Autowired
+    private NoticeDao noticeDao;
+
+    public int selectNoticeCount() {
+        return noticeDao.selectNoticeCount();
+    }
+
+    public ArrayList<Notice> selectNoticeList(PagingRequest pagingRequest) {
+        return noticeDao.selectNoticeList(pagingRequest);
+    }
+
+    /**
+     * 글 등록 + 첨부파일 등록 (일반 파일 + Quill 이미지 통합)
+     * ✅ 컨트롤러에서 fileList에 Quill 이미지도 합쳐서 넘기므로 메서드 시그니처 변경 없음
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public int insertNotice(Notice n, ArrayList<NoticeFile> fileList) {
+        try {
+            // 1. 글 INSERT (selectKey로 noticeId 확보)
+            int result = noticeDao.insertNotice(n);
+            if (result <= 0) {
+                throw new RuntimeException("공지사항 글 등록 실패");
+            }
+
+            // 2. 전체 파일(일반 + Quill 이미지) INSERT
+            if (fileList != null && !fileList.isEmpty()) {
+                for (NoticeFile file : fileList) {
+                    file.setNoticeId(n.getNoticeId()); // ✅ 실제 글번호 주입
+                    noticeDao.insertNoticeFile(file);
+                }
+            }
+
+            return 1;
+
+        } catch (Exception e) {
+            // 물리 파일 롤백 삭제
+            if (fileList != null && !fileList.isEmpty()) {
+                for (NoticeFile file : fileList) {
+                    String fullPath = file.getStoragePath() + "/" + file.getStoredName();
+                    java.io.File targetFile = new java.io.File(fullPath);
+                    if (targetFile.exists()) {
+                        targetFile.delete();
+                    }
+                }
+            }
+            throw e;
+        }
+    }
+
+    public Notice noticeDetail(Long noticeId) {
+        Notice n = noticeDao.noticeDetail(noticeId);
+        if (n != null) {
+            n.setFileList(noticeDao.noticeDetailFileList(noticeId));
+        }
+        return n;
+    }
+
+    
+    @Transactional
+    public int updateNotice(Notice n, ArrayList<NoticeFile> newFiles) {
+        int result = noticeDao.updateNotice(n);
+       
+        if (result > 0 && newFiles != null && !newFiles.isEmpty()) {
+            for (NoticeFile nf : newFiles) {
+                noticeDao.insertNoticeFile(nf);
+            }
+        }
+        return result;
+    }
+
+	public ArrayList<NoticeFile> selectFileList(Long noticeId) {
+		return noticeDao.noticeDetailFileList(noticeId);
+	}
+	
+	
+	@Transactional
+	public int deleteNotice(Long noticeId) {
+		return noticeDao.deleteNotice(noticeId);
+	} //deleteNotice
+
+}
+
+// DAOpackage com.kh.burgerstack.notice;
+
+import java.util.ArrayList;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.kh.burgerstack.common.pagination.PagingRequest;
+
+@Repository
+public class NoticeDao {
+
+    @Autowired
+    private NoticeMapper noticeMapper;
+
+    public int selectNoticeCount() {
+        return noticeMapper.selectNoticeCount();
+    }
+
+    public ArrayList<Notice> selectNoticeList(PagingRequest pagingRequest) {
+        return noticeMapper.selectNoticeList(pagingRequest);
+    }
+
+    public int insertNotice(Notice n) {
+        return noticeMapper.insertNotice(n);
+    }
+
+    public int insertNoticeFile(NoticeFile noticeFile) {
+        return noticeMapper.insertNoticeFile(noticeFile);
+    }
+
+    public Notice noticeDetail(Long noticeId) {
+        return noticeMapper.noticeDetail(noticeId);
+    }
+
+    public ArrayList<NoticeFile> noticeDetailFileList(Long noticeId) {
+        return noticeMapper.noticeDetailFileList(noticeId);
+    }
+
+	public int deleteNotice(Long noticeId) {
+		return noticeMapper.deleteNotice(noticeId);
+	}
+
+	public int updateNotice(Notice n) {
+		return noticeMapper.updateNotice(n);
+	}
+
+}
+
+// 매퍼클래스
+package com.kh.burgerstack.notice;
+
+import java.util.ArrayList;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.kh.burgerstack.common.pagination.PagingRequest;
+
+@Mapper
+public interface NoticeMapper {
+
+    ArrayList<Notice> selectNoticeList(PagingRequest pagingRequest);
+    int selectNoticeCount();
+    int insertNotice(Notice n);
+    int insertNoticeFile(NoticeFile noticeFile);
+    Notice noticeDetail(Long noticeId);
+    ArrayList<NoticeFile> noticeDetailFileList(Long noticeId);
+	int deleteNotice(Long noticeId);
+	int updateNotice(Notice n);
+	ArrayList<NoticeFile> selectFileList(Long noticeId);
+
+}
+
+// 매퍼파일
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.burgerstack.notice.NoticeMapper">
+
+    <!-- 게시글 수 조회 -->
+    <select id="selectNoticeCount" resultType="_int">
+        SELECT COUNT(*)
+          FROM NOTICES
+         WHERE DELETED_AT IS NULL
+    </select>
+
+    <!-- 전체 목록 조회 (페이징) -->
+    <select id="selectNoticeList" resultType="Notice">
+        <![CDATA[
+            SELECT noticeId
+                 , title
+                 , createdAt
+              FROM (
+                  SELECT ROWNUM AS rn
+                       , NOTICE_ID  AS noticeId
+                       , TITLE      AS title
+                       , CREATED_AT AS createdAt
+                    FROM (
+                        SELECT NOTICE_ID
+                             , TITLE
+                             , CREATED_AT
+                          FROM NOTICES
+                         WHERE DELETED_AT IS NULL
+                         ORDER BY NOTICE_ID DESC
+                    )
+                   WHERE ROWNUM < #{endRow}
+              )
+             WHERE rn >= #{startRow}
+        ]]>
+    </select>
+
+    <!-- 게시글 등록 -->
+    <insert id="insertNotice" parameterType="Notice">
+        <selectKey keyProperty="noticeId" resultType="long" order="BEFORE">
+            SELECT SEQ_NOTICE.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO NOTICES(NOTICE_ID, TITLE, CONTENT)
+                     VALUES(#{noticeId}, #{title}, #{content})
+    </insert>
+
+    <!-- 첨부파일 등록 (일반 파일 + Quill 이미지 공용) -->
+    <insert id="insertNoticeFile" parameterType="NoticeFile">
+        INSERT INTO NOTICE_FILES(NOTICE_FILE_ID, ORIGINAL_NAME, STORED_NAME, STORAGE_PATH, NOTICE_ID)
+                          VALUES(SEQ_NOTICE_FILE.NEXTVAL, #{originalName}, #{storedName}, #{storagePath}, #{noticeId})
+    </insert>
+
+    <!-- 게시글 상세 조회 -->
+    <select id="noticeDetail" resultType="Notice">
+        SELECT NOTICE_ID  AS noticeId
+             , TITLE      AS title
+             , CONTENT    AS content
+             , CREATED_AT AS createdAt
+          FROM NOTICES
+         WHERE DELETED_AT IS NULL
+           AND NOTICE_ID = #{noticeId}
+    </select>
+
+    <!-- 게시글 첨부파일 조회 -->
+    <select id="noticeDetailFileList" resultType="NoticeFile">
+        SELECT NOTICE_FILE_ID AS noticeFileId
+             , ORIGINAL_NAME  AS originalName
+             , STORED_NAME    AS storedName
+             , STORAGE_PATH   AS storagePath
+             , NOTICE_ID      AS noticeId
+          FROM NOTICE_FILES
+         WHERE DELETED_AT IS NULL
+           AND NOTICE_ID = #{noticeId}
+    </select>
+    
+    <!-- 기존 내용 불러오기 -->
+    
+    <!-- 기존파일 삭제 -->
+    <update id="deleteNoticeFile">
+	    UPDATE NOTICE_FILES
+		   SET DELETED_AT = SYSDATE
+		 WHERE DELETED_AT IS NULL
+		   AND NOTICE_FILE_ID = #{noticeFileId}
+	</update>
+	
+	<!-- 게시글 수정 -->
+    <update id="updateNotice" parameterType="Notice">
+    	UPDATE NOTICES
+		   SET TITLE = #{title}
+		     , CONTENT = #{content}
+		     , UPDATED_AT = SYSDATE
+		 WHERE DELETED_AT IS NULL
+		   AND NOTICE_ID = #{noticeId}
+    </update>
+    
+    <!-- 게시글 삭제 -->
+    <update id="deleteNotice">
+    	UPDATE NOTICES
+		   SET DELETED_AT = SYSDATE
+		 WHERE DELETED_AT IS NULL
+		   AND NOTICE_ID = #{noticeId}
+    </update>
+
+</mapper>

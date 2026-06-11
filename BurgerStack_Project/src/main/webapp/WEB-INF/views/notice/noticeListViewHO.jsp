@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
 <html>
@@ -16,9 +16,9 @@ table {
 
 table thead tr {
   display: grid;
-  grid-template-columns: 50px 500px 150px;
+  grid-template-columns: 50px 500px 200px;
   align-items: center;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid #FFFFFF;
   font-weight: bold;
   background-color: #22C55E;
   color: white;
@@ -27,10 +27,10 @@ table thead tr {
 
 table tbody tr {
   display: grid;
-  grid-template-columns: 50px 500px 150px;
+  grid-template-columns: 50px 500px 200px;
   align-items: center;
   border-bottom: 1px solid #eee;
-  padding: 8px 0;
+  padding: 10px 0;
 }
 
 table tbody tr:hover {
@@ -89,17 +89,18 @@ table tbody tr td:nth-child(3) {
                     </c:if>
 
                     <c:forEach items="${notices}" var="n">
-                        <tr>
+                        <tr onclick="location.href='${pageContext.request.contextPath}/admin/notices/${n.noticeId}'">
                             <td>${n.noticeId}</td>
                             <td>${n.title}</td>
-                            <td>${n.createdAt}</td>
+                            <td>${n.listDate}</td>
                         </tr>
                     </c:forEach>
                 </tbody>
             </table>
         </div>
-        <br>
+        <br><br>
         <t:pagination pageInfo="${pageInfo}"/>
+        <br><br>
     </t:layout>
     <script>
 

@@ -60,8 +60,6 @@
                     <input type="hidden" name="materialId" value="${material.materialId}">
                 </c:if>
 
-                <input type="hidden" name="createdBy" value="1">
-
                 <div id="img-area" align="center">
                     <div id="imagePreviewContainer" onclick="document.getElementById('fileInput').click();" 
                         style="width: 300px; height: 300px; border: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin: 0 auto 20px; position: relative; background-color: #fff;">
@@ -123,23 +121,25 @@
                             </td>
                         </tr>
                     </table>
-                </div>
+                </div> <!-- 양식 -->
 
                 <br>
                 
                 <div align="center">
-                    <button class="button-primary" type="submit">
-                        ${not empty material ? '수정완료' : '등록하기'}
-                    </button>
-                    
                     <c:choose>
                         <c:when test="${not empty material}">
+                            <!-- 수정 상태일 때는 원래대로 돌리는 '초기화'와 '취소' 둘 다 제공 -->
+                            <button class="button-secondary" type="reset">되돌리기</button>
                             <button class="button-danger" type="button" onclick="history.back();">취소하기</button>
                         </c:when>
                         <c:otherwise>
+                            <!-- 신규 등록일 때는 '초기화'만 제공 -->
                             <button class="button-danger" type="reset">초기화</button>
                         </c:otherwise>
                     </c:choose>
+                    <button class="button-primary" type="submit">
+                        ${not empty material ? '수정완료' : '등록하기'}
+                    </button>
                 </div>
                 <br>
             </form>

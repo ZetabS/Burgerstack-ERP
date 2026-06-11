@@ -9,8 +9,14 @@ import com.kh.burgerstack.common.pagination.PagingRequest;
 @Mapper
 public interface NoticeMapper {
 
-	public ArrayList<Notice> selectNoticeList(PagingRequest pagingRequest);
-	public int selectNoticeCount();
-
+    ArrayList<Notice> selectNoticeList(PagingRequest pagingRequest);
+    int selectNoticeCount();
+    int insertNotice(Notice n);
+    int insertNoticeFile(NoticeFile noticeFile);
+    Notice noticeDetail(Long noticeId);
+    ArrayList<NoticeFile> noticeDetailFileList(Long noticeId);
+    int updateNotice(Notice n);
+	int deleteNotice(Long noticeId);
+	NoticeFile selectNoticeFile(Long noticeFileId);
+    
 }
-

@@ -1,103 +1,68 @@
--- 자재 사진 등록 쿼리문
--- 파일 JAVA 완성 후 삽입
-INSERT INTO FILES(FILE_ID
-                , ORIGINAL_NAME
-                , STORED_NAME
-                , STORAGE_PATH
-                , MIME_TYPE
-                , FILE_SIZE
-                , CREATED_BY
-                , CREATED_AT)
-           VALUES(SEQ_FILE.NEXTVAL
-                , ?
-                , ?
-                , ?
-                , ?
-                , ?
-                , ?
-                , ?);
-
--- 자재 등록 쿼리문
-INSERT INTO MATERIALS(MATERIAL_ID
-                    , MATERIAL_CODE
-                    , MATERIAL_NAME
-                    , MATERIAL_TYPE
-                    , COST_PRICE
-                    , SELLING_PRICE
-                    , IMAGE_FILE_ID
-                    , DETAILS
-                    , CREATED_BY)
-               VALUES(SEQ_MATERIAL.NEXTVAL
-                    , ? || '-' || LPAD(SEQ_MATERIAL.CURRVAL, 3, '0')
-                    , ?
-                    , ?
-                    , ?
-                    , ?
-                    , ?
-                    , ?
-                    , ?);
-
-
--- 자재 전체 목록 조회 쿼리문
+-- 전체 목록 조회 쿼리문
 -- materialId, materialType, materialName, 파일경로, 파일명, 파일확장자 필요 (jsp에 이미지 출력)
-SELECT M.MATERIAL_ID
-     , M.MATERIAL_TYPE
-     , M.MATERIAL_NAME
-     , M.IMAGE_FILE_ID
-     , F.STORED_NAME
-  FROM MATERIALS M
-  LEFT JOIN FILES F ON M.IMAGE_FILE_ID = F.FILE_ID
- WHERE M.STATUS = 'ACTIVE'
- ORDER BY M.MATERIAL_TYPE, M.MATERIAL_NAME;
-
--- 자재 상세 목록 조회용 쿼리문
-SELECT MATERIAL_NAME
-     , COST_PRICE
-     , SELLING_PRICE
-     , DETAILS
-     , M.STATUS
-     , CURRENT_QUANTITY
-     , IMAGE_FILE_ID
-  FROM MATERIALS M
-  LEFT JOIN STORE_INVENTORIES USING (MATERIAL_ID)
- WHERE MATERIAL_ID = ?
-   AND M.STATUS != 'INACTIVE';
-
--- 자재 내용 불러울 쿼리문
 SELECT M.MATERIAL_ID
      , M.MATERIAL_CODE
      , M.MATERIAL_NAME
      , M.MATERIAL_TYPE
-     , M.COST_PRICE
-     , M.SELLING_PRICE
-     , M.IMAGE_FILE_ID
+     , M.SUPPLY_PRICE
+     , M.STATUS
+     , MF.MATERIAL_FILE_ID
+     , MF.STORED_NAME
+     , MF.STORAGE_PATH
+     , MF.ORIGINAL_NAME
+     , MF.CREATED_AT  AS FILE_CREATED_AT
+     , MF.DELETED_AT
+     , MF.MATERIAL_ID AS MF_MATERIAL_ID
+  FROM MATERIALS M
+  LEFT OUTER JOIN (
+      SELECT MATERIAL_FILE_ID
+           , MATERIAL_ID
+           , STORED_NAME
+           , STORAGE_PATH
+           , ORIGINAL_NAME
+           , CREATED_AT
+           , DELETED_AT
+        FROM MATERIAL_FILES
+       WHERE DELETED_AT IS NULL
+         AND MATERIAL_FILE_ID IN (
+             SELECT MIN(MATERIAL_FILE_ID)
+               FROM MATERIAL_FILES
+              WHERE DELETED_AT IS NULL
+              GROUP BY MATERIAL_ID
+         )
+  ) MF ON M.MATERIAL_ID = MF.MATERIAL_ID
+ WHERE M.STATUS != 'INACTIVE'
+ ORDER BY CASE MATERIAL_TYPE
+             WHEN 'AF' THEN 1  -- 상온식품
+             WHEN 'RF' THEN 2  -- 냉장식품
+             WHEN 'FF' THEN 3  -- 냉동식품
+             WHEN 'PK' THEN 4  -- 포장재
+             WHEN 'KW' THEN 5  -- 주방용품
+             ELSE 6            -- 기타(ET)
+         END ASC;
+
+-- 상세 조회 (첨부파일 전체) 쿼리문
+SELECT M.MATERIAL_ID
+     , M.MATERIAL_CODE
+     , M.MATERIAL_NAME
+     , M.MATERIAL_TYPE
+     , M.SUPPLY_PRICE
      , M.DETAILS
      , M.STATUS
-     , M.CREATED_BY
      , M.CREATED_AT
-     , F.STORAGE_PATH
-     , F.STORED_NAME
-     , F.ORIGINAL_NAME
-    FROM MATERIALS M
-    LEFT OUTER JOIN FILES F ON M.IMAGE_FILE_ID = F.FILE_ID
-    WHERE M.MATERIAL_ID = ?
-      AND M.STATUS != 'INACTIVE';
--- 자재 내용 수정용 쿼리문
-UPDATE MATERIALS
-   SET MATERIAL_CODE = ? || SUBSTR(MATERIAL_CODE, 3)
-     , MATERIAL_NAME = ?
-     , MATERIAL_TYPE = ?
-     , COST_PRICE    = ?
-     , SELLING_PRICE = ?
-     , IMAGE_FILE_ID = ?
-     , DETAILS       = ?
-     , UPDATED_BY    = ?
-     , UPDATED_AT    = SYSDATE
- WHERE MATERIAL_ID   = ?
-   AND STATUS       != 'INACTIVE';
-   
--- 자재 삭제용 쿼리문
-UPDATE MATERIALS
-   SET STATUS = 'INACTIVE'
- WHERE MATERIAL_ID   = ?
-   AND STATUS       != 'INACTIVE';
+     , M.UPDATED_AT
+     , MF.MATERIAL_FILE_ID
+     , MF.STORED_NAME
+     , MF.STORAGE_PATH
+     , MF.ORIGINAL_NAME
+     , MF.CREATED_AT  AS FILE_CREATED_AT
+     , MF.DELETED_AT
+     , MF.MATERIAL_ID AS MF_MATERIAL_ID
+  FROM MATERIALS M
+  LEFT OUTER JOIN MATERIAL_FILES MF
+    ON M.MATERIAL_ID = MF.MATERIAL_ID
+   AND MF.DELETED_AT IS NULL
+ WHERE M.MATERIAL_ID = #{materialId}
+   AND M.STATUS != 'INACTIVE';
+
+-- 

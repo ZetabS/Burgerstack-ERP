@@ -1,3 +1,73 @@
+//StroedFile.java
+
+package com.kh.burgerstack.file;
+
+import java.time.LocalDateTime;
+
+import com.kh.burgerstack.inquiry.InquiryFile;
+import com.kh.burgerstack.material.MaterialFile;
+import com.kh.burgerstack.notice.NoticeFile;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Getter
+@Setter
+@ToString
+public class StoredFile {
+    private String originalName;
+    private String storedName;
+    private String storagePath;
+    private String mimeType;
+    private Long fileSize;
+    private LocalDateTime deletedAt;
+    private LocalDateTime createdAt;
+
+    public MaterialFile toMaterialFile(long materialId) {
+        return new MaterialFile(
+                null,
+                originalName,
+                storedName,
+                storagePath,
+                createdAt,
+                deletedAt,
+                materialId);
+    }
+
+    public NoticeFile toNoticeFile(long noticeId) {
+        return new NoticeFile(
+                null,
+                originalName,
+                storedName,
+                storagePath,
+                createdAt,
+                deletedAt,
+                noticeId);
+    }
+
+    public InquiryFile toInquiryFile(long inquiryId, String attachTarget) {
+        return new InquiryFile(
+                null,
+                originalName,
+                storedName,
+                storagePath,
+                attachTarget,
+                createdAt,
+                deletedAt,
+                inquiryId);
+    }
+}
+
+
+
+//FileStore.java
 package com.kh.burgerstack.file;
 
 import java.io.IOException;
@@ -110,13 +180,7 @@ public class FileStore {
                     storedName);
         }
 
-        return "%s/%04d/%02d/%02d/%s".formatted(
-                prefix,
-                now.getYear(),
-                now.getMonthValue(),
-                now.getDayOfMonth(),
-                storedName);
-
+        return "%s/%04d/%02d/%02d/%s".formatted(prefix, storedName);
     }
 
     private String generateStoredName(String extension) {
@@ -150,14 +214,16 @@ public class FileStore {
         }
         return target;
     }
-    
-    
-    /**
-     * 파일 다운로드용 메소드 추가
-     * @param storagePath
-     * @return
-     */
-    public Path resolve(String storagePath) {
-        return resolveStoragePath(storagePath); // 이미 있는 private 메서드를 public으로 노출
+}
+
+
+// FileException.java
+package com.kh.burgerstack.file;
+
+import com.kh.burgerstack.exception.CustomException;
+
+public class FileException extends CustomException {
+    public FileException(String message) {
+        super(message);
     }
 }
