@@ -99,7 +99,7 @@
                 </tr>
             </thead>
             
-            <tbody>
+            <tbody id="purchaseListBody">
                 <c:if test="${empty list}">
                     <tr>
                         <td colspan="5" style="text-align:center;">
@@ -167,12 +167,20 @@
             }
         });
 
-        // 10초마다 새로고침
-        setInterval(function() {
-            if (!typing) {
-                document.getElementById("searchForm").submit();
-            }
-        }, 5000);
+        // 5초마다 새로고침
+        function refreshPurchaseList() {
+
+            $.ajax({
+                url : window.location.href,
+                success : function(html) {
+                    $("#purchaseListBody").html(
+                        $(html).find("#purchaseListBody").html()
+                    );
+                }
+            });
+        }
+
+        setInterval(refreshPurchaseList, 5000);
     </script>
 </body>
 </html>
