@@ -3,6 +3,7 @@ package com.kh.burgerstack.common.interceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import com.kh.burgerstack.exception.ForbiddenException;
 import com.kh.burgerstack.user.LoginUser;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,10 +30,8 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
         switch (loginUser.getRole()) {
             case "ADMIN": // 관리자는 통과
                 return true;
-            case "OWNER": // 점주는 리다이렉트
-                session.setAttribute("alertMsg", "비정상적인 접속입니다.");
-                response.sendRedirect("/burgerstack/owner/dashboard");
-                return false;
+            case "OWNER": // 점주는 예외 발생
+                throw new ForbiddenException("접근 권한이 없습니다.\n올바른 경로로 접근했는지 확인하세요.");
             default:
                 // 역할이 없을 수는 없음.
                 throw new RuntimeException("사용자의 역할이 존재하지 않습니다.");
