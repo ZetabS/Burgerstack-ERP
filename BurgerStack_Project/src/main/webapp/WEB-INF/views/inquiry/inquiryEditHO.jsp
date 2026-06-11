@@ -110,7 +110,7 @@ h1 {
 
 				<form
 					action="/burgerstack/admin/inquiries/${inquiryId}"
-					method="post">
+					method="post" enctype="multipart/form-data">
 					<div class="form-group">
 					    <strong>제목</strong><br>
 					    ${inquiry.title}
@@ -142,7 +142,10 @@ h1 {
 							onclick="location.href='/burgerstack/admin/inquiries'">
 							이전으로</button>
 					</div>
-					
+					<div class="file-area">
+					    <label>첨부파일</label>
+					    <input type="file" name="uploadFile">
+					</div>
 				</form>
 			</div>
 		</div>

@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.kh.burgerstack.user.LoginUser;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -77,6 +76,9 @@ public class InquiryControllerHO {
 	public ModelAndView InquiryEdit(
 	        @PathVariable Long inquiryId,
 	        Inquiry i,
+	        @RequestParam(value="uploadFile",
+            required=false)
+	        MultipartFile uploadFile,
 	        ModelAndView mv,
 	        HttpSession session) {
 		
@@ -85,7 +87,7 @@ public class InquiryControllerHO {
 
 	    i.setInquiryId(inquiryId);
 
-	    int result = inquiryServiceHO.InquiryEdit(i);
+	    int result = inquiryServiceHO.InquiryEdit(i, uploadFile);
 
 	    if(result > 0) {
 

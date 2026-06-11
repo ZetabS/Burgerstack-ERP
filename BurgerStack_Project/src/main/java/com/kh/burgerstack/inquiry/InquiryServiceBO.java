@@ -47,7 +47,7 @@ public class InquiryServiceBO {
 	            file.setOriginalName(originName);
 	            file.setStoredName(changeName);
 	            file.setStoragePath(savePath);
-	            file.setAttachTarget("INQUIRY");
+	            file.setAttachTarget("Q");
 
 	            // 문의글 PK 저장
 	            file.setInquiryId(inquiry.getInquiryId());

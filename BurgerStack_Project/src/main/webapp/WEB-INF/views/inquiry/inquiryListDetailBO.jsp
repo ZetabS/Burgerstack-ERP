@@ -8,8 +8,6 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/resources/css/inquiryDetail.css">
 <style>
 #title {
 	padding-top: 30px;
@@ -154,7 +152,15 @@
 				onclick="location.href='${pageContext.request.contextPath}/owner/inquiries'">목록</button>
 
 		</div>
-
+		<c:if test="${not empty file}">
+		    <div class="form-group">
+		        <label>첨부파일</label>
+		
+		        <a href="/burgerstack/admin/inquiries/file/${file.inquiryFileId}">
+		            ${file.originalName}
+		        </a>
+		    </div>
+		</c:if>
 
 		
 	</t:layout>

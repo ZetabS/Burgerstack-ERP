@@ -30,6 +30,12 @@ public class InquiryDaoHO {
 	public int InquiryEdit(Inquiry i) {
 		return inquiryMapper.InquiryEditHO(i);
 	}
+	public int insertInquiryFile(
+	        InquiryFile file) {
+
+	    return inquiryMapper
+	            .insertInquiryFile(file);
+	}
 
 	public int inquiryDelete(long inquiryId) {
 		return inquiryMapper.InquiryDeleteHO(inquiryId);

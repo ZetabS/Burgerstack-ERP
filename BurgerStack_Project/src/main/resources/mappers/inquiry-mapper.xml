@@ -2,17 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.burgerstack.inquiry.InquiryMapper">
 	
-	<insert id="inquiryEnroll" parameterType="Inquiry">
-		INSERT INTO INQUIRIES(INQUIRY_ID
-		  , TITLE
-		  , CONTENT
-		  , STORE_ID
-		  )
-		VALUES(SEQ_INQ.NEXTVAL
-		   , #{title}
-		   , #{content}
-		   , #{storeId}                   
-		)
+	<insert id="inquiryEnroll" parameterType="com.kh.burgerstack.inquiry.Inquiry">
+	    <selectKey keyProperty="inquiryId" resultType="long" order="BEFORE">
+	        SELECT SEQ_INQ.NEXTVAL FROM DUAL
+	    </selectKey>
+	
+	    INSERT INTO INQUIRIES(
+	          INQUIRY_ID
+	        , TITLE
+	        , CONTENT
+	        , STORE_ID
+	    )
+	    VALUES(
+	          #{inquiryId}  , #{title}
+	        , #{content}
+	        , #{storeId}                   
+	    )
 	</insert>
 	
 	<insert id="insertInquiryFile"
