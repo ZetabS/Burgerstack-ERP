@@ -31,4 +31,9 @@ public interface InventoryMapper {
 
     public StoreInventory findById(
             @Param("storeInventoryId") int storeInventoryId);
+
+    public int updateSafetyQuantity(
+            @Param("storeInventoryId") int storeInventoryId,
+            @Param("safetyQuantity") int safetyQuantity,
+            @Param("currentSafetyQuantity") int currentSafetyQuantity);
 }

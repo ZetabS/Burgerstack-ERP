@@ -21,4 +21,129 @@
 
     </select>
 
+	<!-- ================= 점주 대시보드 ================= -->
+
+	<!-- 재고 부족 품목 개수 -->
+	<select id="selectShortageCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM STORE_INVENTORIES
+	    WHERE CURRENT_QUANTITY &lt; SAFETY_QUANTITY
+	</select>
+	
+	<!-- 오늘 입고 예정 개수 -->
+	<select id="selectTodayReceiptCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM PURCHASE_ORDERS
+	    WHERE STATUS = 'APPROVED'
+	</select>
+	
+	<!-- 승인 대기 발주 개수 -->
+	<select id="selectPendingPurchaseCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM PURCHASE_ORDERS
+	    WHERE STATUS = 'REQUESTED'
+	</select>
+	
+	<!-- 미답변 문의 개수 -->
+	<select id="selectUnansweredInquiryCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM INQUIRIES
+	    WHERE ANSWER_CONTENT IS NULL
+	      AND DELETED_AT IS NULL
+	</select>
+	
+	<!-- 재고 부족 TOP5 -->
+	<select id="selectShortageTop5" resultType="map">
+	    SELECT *
+	    FROM (
+	        SELECT
+	            M.MATERIAL_NAME AS materialName,
+	            SI.CURRENT_QUANTITY AS currentQuantity,
+	            SI.SAFETY_QUANTITY AS safetyQuantity
+	        FROM STORE_INVENTORIES SI
+	        JOIN MATERIALS M
+	          ON SI.MATERIAL_ID = M.MATERIAL_ID
+	        WHERE SI.CURRENT_QUANTITY &lt; SI.SAFETY_QUANTITY
+	        ORDER BY (SI.SAFETY_QUANTITY - SI.CURRENT_QUANTITY) DESC
+	    )
+	    WHERE ROWNUM &lt;= 5
+	</select>
+	
+	<!-- 오늘 입고 예정 목록 -->
+	<select id="selectTodayReceiptList" resultType="map">
+	    SELECT *
+	    FROM (
+	        SELECT
+	            PO.PURCHASE_ORDER_ID AS receiptId,
+	            MIN(POI.MATERIAL_NAME_SNAPSHOT) AS materialName,
+	            COUNT(*) - 1 AS extraCount
+	        FROM PURCHASE_ORDERS PO
+	        JOIN PURCHASE_ORDER_ITEMS POI
+	          ON PO.PURCHASE_ORDER_ID = POI.PURCHASE_ORDER_ID
+	        WHERE PO.STATUS = 'APPROVED'
+	        GROUP BY PO.PURCHASE_ORDER_ID
+	        ORDER BY PO.PURCHASE_ORDER_ID DESC
+	    )
+	    WHERE ROWNUM &lt;= 3
+	</select>
+	
+	<!-- 미처리 발주 상태 목록 -->
+	<select id="selectPurchaseStatusList" resultType="map">
+	    SELECT
+	        STATUS AS status,
+	        COUNT(*) AS count
+	    FROM PURCHASE_ORDERS
+	    WHERE STATUS IN ('REQUESTED', 'PARTIALLY_APPROVED')
+	    GROUP BY STATUS
+	    ORDER BY
+	        CASE STATUS
+	            WHEN 'REQUESTED' THEN 1
+	            WHEN 'PARTIALLY_APPROVED' THEN 2
+	        END
+	</select>
+	
+	<!-- 오늘 마감 정보 -->
+	<select id="selectTodayClosing" resultType="map">
+	    SELECT
+	        STORE_CLOSING_ID AS closingNo,
+	        TO_CHAR(BUSINESS_DATE, 'YYYY-MM-DD') AS businessDate,
+	        CLOSING_MEMO AS closingMemo,
+	        TO_CHAR(CLOSED_AT, 'YYYY-MM-DD HH24:MI:SS') AS closingDate
+	    FROM STORE_CLOSINGS
+	    WHERE TRUNC(BUSINESS_DATE) = TRUNC(SYSDATE)
+	</select>
+	
+	<!-- 최근 공지사항 -->
+	<select id="selectNoticeList" resultType="map">
+	    SELECT *
+	    FROM (
+	        SELECT
+	            TITLE AS noticeTitle,
+	            TO_CHAR(CREATED_AT, 'YYYY-MM-DD') AS createdAt
+	        FROM NOTICES
+	        WHERE DELETED_AT IS NULL
+	        ORDER BY CREATED_AT DESC
+	    )
+	    WHERE ROWNUM &lt;= 3
+	</select>
+	
+	<select id="selectReceiptCheckItemList"
+	        parameterType="long"
+	        resultType="com.kh.burgerstack.receipt.ReceiptCheckItemDto">
+	
+	    SELECT
+	        M.MATERIAL_CODE AS materialCode,
+	        M.MATERIAL_TYPE AS materialType,
+	        POI.MATERIAL_NAME_SNAPSHOT AS materialName,
+	        POI.APPROVED_QUANTITY AS approvedQuantity,
+	        POI.SUPPLY_PRICE_SNAPSHOT AS supplyPrice,
+	        POI.APPROVED_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT AS amount
+	    FROM PURCHASE_ORDER_ITEMS POI
+	    JOIN MATERIALS M
+	      ON M.MATERIAL_ID = POI.MATERIAL_ID
+	    WHERE POI.PURCHASE_ORDER_ID = #{purchaseId}
+	    ORDER BY POI.PURCHASE_ORDER_ITEM_ID
+	
+	</select>
+
 </mapper>

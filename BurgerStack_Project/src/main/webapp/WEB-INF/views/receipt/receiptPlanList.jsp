@@ -9,42 +9,41 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<jsp:include page="../common/header.jsp" />
 </head>
 
 <body>
-<t:menubarBO>
+<t:layout>
 
     <h2>입고 예정 목록</h2>
 
     <!-- 검색 -->
-    <div class="search-area" align="right">
-        <select name="status" id="purchaseStatus">
-            <option value="">전체</option>
-            <option value="APPROVED" selected>승인</option>
-        </select>
-
-        <input type="date">
-        ~
-        <input type="date">
-
-        <input type="text" placeholder="검색어 입력">
-
-        <button type="button" onclick="alert('클릭!')">
-            <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png"
-                 style="width: 16px;"/>
-            검색
-        </button>
-    </div>
-
-    <div class="receive-info">
-        <table>
-            <tr>
-                <td>입고 예정 발주 목록</td>
-                <td>상태 : 승인(APPROVED)</td>
-            </tr>
-        </table>
-    </div>
+    <!-- 검색 -->
+	<form action="${pageContext.request.contextPath}/owner/receipts/planned"
+	      method="get">
+	
+	    <div class="search-area" align="right">
+	
+	        <select name="status" id="purchaseStatus">
+	            <option value="" ${empty status ? 'selected' : ''}>전체</option>
+	            <option value="APPROVED" ${status eq 'APPROVED' ? 'selected' : ''}>승인</option>
+	            <option value="PARTIALLY_APPROVED" ${status eq 'PARTIALLY_APPROVED' ? 'selected' : ''}>부분 승인</option>
+	        </select>
+	
+	        <input type="date">
+	        ~
+	        <input type="date">
+	
+	        <input type="text" placeholder="검색어 입력">
+	
+	        <button type="submit">
+	            <img src="${pageContext.request.contextPath}/resources/images/BS_logo2.png"
+	                 style="width: 16px;"/>
+	            검색
+	        </button>
+	
+	    </div>
+	
+	</form>
 
     <table class="table">
         <thead>
@@ -72,8 +71,22 @@
                     <c:forEach var="p" items="${list}">
                         <tr>
                             <td>${p.purchaseOrderId}</td>
-                            <td>${p.status}</td>
-                            <td>품목요약</td>
+                            <td>
+							    <c:choose>
+							        <c:when test="${p.status eq 'APPROVED'}">
+							            승인
+							        </c:when>
+							
+							        <c:when test="${p.status eq 'PARTIALLY_APPROVED'}">
+							            부분 승인
+							        </c:when>
+							
+							        <c:otherwise>
+							            ${p.status}
+							        </c:otherwise>
+							    </c:choose>
+							</td>
+                            <td>${p.materialSummary}</td>
                             <td>${p.totalAmount}</td>
                             <td>${p.createdAt}</td>
                             <td>
@@ -90,6 +103,6 @@
 
     <ui:pagination pageInfo="${pageInfo}"></ui:pagination>
 
-</t:menubarBO>
+</t:layout>
 </body>
 </html>

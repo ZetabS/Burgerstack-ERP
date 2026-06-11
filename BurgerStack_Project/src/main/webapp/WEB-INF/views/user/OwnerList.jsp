@@ -69,7 +69,7 @@
 </head>
 <body>
 
-<t:menubarHO>
+<t:layout>
 
     <h1>점주 계정 목록 조회</h1>
 
@@ -179,7 +179,7 @@
 
     </div>
 
-</t:menubarHO>
+</t:layout>
 
 </body>
 </html>

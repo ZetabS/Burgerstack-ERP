@@ -20,20 +20,22 @@ public class ReceiptDao {
     public int getHistoryTotalCount(SqlSessionTemplate sqlSession) {
         return sqlSession.selectOne("ReceiptMapper.getHistoryTotalCount");
     }  // sqlSession.selectOne("count", condition);
-
-    public int getPlanTotalCount(SqlSessionTemplate sqlSession) {
-        return sqlSession.selectOne("ReceiptMapper.getPlanTotalCount");
-    }  // sqlSession.selectOne("count", condition);
-
     
-    
+    public int getPlanTotalCount(SqlSessionTemplate sqlSession, String status) {
+        return sqlSession.selectOne(
+                "ReceiptMapper.getPlanTotalCount",
+                status
+        );
+    }
+
     public List<PurchaseOrder> selectReceiptPlanList(
             SqlSessionTemplate sqlSession,
-            PagingRequest pagingRequest) {
+            PagingRequest pagingRequest,
+            String status) {
 
         return sqlSession.selectList(
                 "ReceiptMapper.selectReceiptPlanList",
-                null,
+                status,
                 new RowBounds(
                         pagingRequest.getOffset(),
                         pagingRequest.getLimit()
@@ -102,7 +104,9 @@ public class ReceiptDao {
         return sqlSession.selectList("ReceiptMapper.selectReceiptItemDetailList", receiptId);
     }
     
-    
+    public List<ReceiptCheckItemDto> selectReceiptCheckItemList(Long purchaseId) {
+        return sqlSession.selectList("ReceiptMapper.selectReceiptCheckItemList", purchaseId);
+    }
     
     
     

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import com.kh.burgerstack.dashboard.dto.AdminDashboardInquiryListItem;
 import org.apache.ibatis.session.RowBounds;
 
 @Mapper
@@ -40,4 +41,6 @@ public interface InquiryMapper {
 	int InquiryEditHO(Inquiry i);
 
 	int InquiryDeleteHO(long inquiryId);
+   public List<AdminDashboardInquiryListItem> findTopN(
+            @Param("count") int count);
 }

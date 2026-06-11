@@ -67,7 +67,8 @@ td {
 </head>
 <body>
 
-<t:menubarHO>
+<t:layout>
+
 
     <h1>문의사항 목록 조회</h1>
 
@@ -170,7 +171,7 @@ td {
 			    </c:forEach>
 			</div>
 
-</t:menubarHO>
 
+	</t:layout>
 </body>
 </html>

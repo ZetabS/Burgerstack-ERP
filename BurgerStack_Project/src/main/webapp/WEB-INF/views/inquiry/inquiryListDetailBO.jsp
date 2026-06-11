@@ -116,7 +116,8 @@
 </style>
 </head>
 <body>
-	<t:menubarBO>
+	<t:layout>
+	
 
 		<h1 id="title">문의사항 상세 보기</h1>
 
@@ -153,6 +154,10 @@
 				onclick="location.href='${pageContext.request.contextPath}/owner/inquiries'">목록</button>
 
 		</div>
-	</t:menubarBO>
+
+
+		
+	</t:layout>
+
 </body>
 </html>

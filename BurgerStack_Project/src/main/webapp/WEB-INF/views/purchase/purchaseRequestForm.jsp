@@ -7,7 +7,6 @@
 <head>
 <meta charset="UTF-8">
 <title>발주 요청 페이지 조회</title>
-<jsp:include page="../common/header.jsp" />
 <style>
         .disabled-row {
         opacity: 0.5;
@@ -17,7 +16,7 @@
 </head>
 <body>
 
-<t:menubarBO>
+<t:layout>
 
     <h2>발주 요청 페이지</h2>
     
@@ -37,7 +36,7 @@
 
             <input type="text" placeholder="검색어 입력">
             <button class="search-btn">  
-                    <img src="" alt="검색"/>
+                    <!-- <img src="" alt="검색"/> -->
             </button>
         </div>
 
@@ -51,41 +50,25 @@
                     <th>주문수량</th>
                     <th>구매가격</th>
                     <th>상태</th>
+                    
                 </tr>
             </thead>
 
             <tbody>
                 <c:forEach var="m" items="${list}">
-                    <c:if test="${m.status ne 'ACTIVE'}">
-                        <tr class="item-row" data-id="${m.materialId}">
-                            <td>
-                                <input type="checkbox" class="row-check">
-                            </td>
-                            <td class="item-name">${m.materialName}</td>
-                            <td class="unit-price">${m.costPrice}</td>
-                            <td class="stock">${m.currentQuantity}</td>
-                            <td>
-                                <input type="number" class="qty-input" value="0" min="0">
-                            </td>
-                            <td class="total-price">0</td>
-                            <td class="status">${m.status}</td>
-                        </tr>
-                    </c:if>
-                    <c:if test="${m.status eq 'ACTIVE'}">
-                        <tr class="item-row" data-id="${m.materialId}">
-                            <td>
-                                <input type="checkbox" class="row-check">
-                            </td>
-                            <td class="item-name">${m.materialName}</td>
-                            <td class="unit-price">${m.costPrice}</td>
-                            <td class="stock">${m.currentQuantity}</td>
-                            <td>
-                                <input type="number" class="qty-input" value="0" min="0">
-                            </td>
-                            <td class="total-price">0</td>
-                            <td class="status">${m.status}</td>
-                        </tr>
-                    </c:if>
+                    <tr class="item-row ${m.status eq 'ACTIVE' ? '' : 'disabled-row'}" data-id="${m.materialId}">
+                        <td>
+                            <input type="checkbox" class="row-check">
+                        </td>
+                        <td class="item-name">${m.materialName}</td>
+                        <td class="unit-price">${m.costPrice}</td>
+                        <td class="stock">${m.currentQuantity}</td>
+                        <td>
+                            <input type="number" class="qty-input" value="0" min="0" max="1000">
+                        </td>
+                        <td class="total-price">0</td>
+                        <td class="status">${m.status}</td>
+                    </tr>
                 </c:forEach>
                 <tr>
                     <td colspan="2">총 금액</td>
@@ -104,10 +87,12 @@
         
 
         <div class="middle-area">
-            <button type="button" class="button-primary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
-            <button type="submit" class="button-primary" onclick="buildJson()"> 결제 </button>
+            <button type="button" class="button-secondary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
+            <button type="submit" class="button-primary" onclick="submitOrder()"> 결제 </button>
         </div>
 
+
+        <!-- 사이드 바 -->
         <t:sidebar>
             <jsp:attribute name="sidebarTitle">
                 주문리스트
@@ -133,18 +118,20 @@
                         <h5>TOTAL</h5>
                     </p>
                     <b><h3 id="sidebar-total-amount">0원</h3></b>
-                    <button class="button-primary" type="submit"> 결제 </button>
+                    <button class="button-primary" onclick="submitOrder()"> 결제 </button>
+                    
                 </div>
             </jsp:body>
         </t:sidebar>
+
     </form>
     
 
-</t:menubarBO>
+</t:layout>
 
 
 <script>
-        $(document).ready(function () {
+    $(document).ready(function () {
 
     // =========================
     // 1. 수량 변경
@@ -205,7 +192,7 @@
 
         let total = 0;
 
-        $('.item-row').each(function () {
+        $('.main-table .item-row').each(function () {
 
             let $row = $(this);
 
@@ -217,30 +204,68 @@
             let name = $row.find('.item-name').text().trim();
             let price = parseInt($row.find('.unit-price').text()) || 0;
 
-            total += price;
+            total += price * qty;
+
+            // console.log("name = " + name);
+            // console.log("price = " + price);
+            // console.log("qty = " + qty);
+
+            $('.item-row').each(function () {
+
+                let $row = $(this);
+
+                console.log("현재 row =", $row);
+
+                console.log(
+                    "item-name count =",
+                    $row.find('.item-name').length
+                );
+
+                console.log(
+                    "qty-input count =",
+                    $row.find('.qty-input').length
+                );
+
+            });
 
             // ✔ 사이드바 출력
-            $tbody.append(`
-                <tr class="sidebar-row">
-                    <td>
-                        <input type="checkbox" class="sidebar-check" checked>
-                    </td>
-                    <td>${name}</td>
-                    <td>${qty}</td>
-                    <td>${price.toLocaleString()}원</td>
-                </tr>
-            `);
+            $tbody.append(
+                $('<tr>').addClass('sidebar-row')
+                    .attr('data-id', $row.data('id'))
+                    .append(
+                        $('<td>').html('<input type="checkbox" class="sidebar-check" checked>')
+                    )
+                    .append(
+                        $('<td>').text(name)
+                    )
+                    .append(
+                        $('<td>').append(
+                            $('<input>')
+                                .attr({
+                                    type: 'number',
+                                    min: 1,
+                                    max: 1000
+                                })
+                                .addClass('sidebar-qty')
+                                .val(qty)
+                        )
+                    )
+                    .append(
+                        $('<td>').text(price.toLocaleString() + '원')
+                    )
+            );
         });
 
         $('.main-total-amount').text(total.toLocaleString() + "원");
         $('#sidebar-total-amount').text(total.toLocaleString() + "원");
 
         $('#totalAmountInput').val(total);
+
     }
 
 
     // =========================
-    // 4. 사이드바 체크 이벤트 (핵심 추가)
+    // 4. 사이드바 체크 이벤트
     // =========================
     $(document).on('change', '.sidebar-check', function () {
 
@@ -269,6 +294,34 @@
 
         updateSidebar();
     });
+    // =========================
+    // 5. 사이드바 수량 이벤트
+    // =========================
+    $(document).on('change', '.sidebar-qty', function () {
+
+        let qty = parseInt($(this).val()) || 0;
+
+        let materialId = $(this)
+            .closest('tr')
+            .data('id');
+
+        let $mainRow = $('.item-row[data-id="' + materialId + '"]');
+
+        $mainRow.find('.qty-input').val(qty);
+
+        let price =
+            parseInt($mainRow.find('.unit-price').text()) || 0;
+
+        $mainRow.find('.total-price').text(price * qty);
+
+        if (qty > 0) {
+            $mainRow.find('.row-check').prop('checked', true);
+        } else {
+            $mainRow.find('.row-check').prop('checked', false);
+        }
+
+        updateSidebar();
+    });
 
 });
 
@@ -286,13 +339,44 @@ function buildJson() {
         items.push({
             materialId: $(this).data('id'),
             materialNameSnapshot: $(this).find('.item-name').text().trim(),
-            unitPriceSnapshot: parseInt($(this).find('.unit-price').text()),
+            supplyPriceSnapshot: parseInt($(this).find('.unit-price').text()),
             requestQuantity: parseInt($(this).find('.qty-input').val()) || 0
         });
     });
 
     $('#itemsJson').val(JSON.stringify(items));
 }
+
+function submitOrder() {
+    buildJson();
+
+    if (items.length === 0) {
+        alert("발주할 상품을 선택하세요.");
+        return;
+    }
+
+    $('form').submit();
+}
+
+$('.qty-input').on('input', function () {
+
+    let qty = parseInt($(this).val()) || 0;
+
+    const MAX_QTY = 1000;
+
+    if (qty > MAX_QTY) {
+        alert('최대 주문 가능 수량은 ' + MAX_QTY + '개 입니다.');
+        qty = MAX_QTY;
+        $(this).val(MAX_QTY);
+    }
+
+    if (qty < 0) {
+        qty = 0;
+        $(this).val(0);
+    }
+
+});
+
 </script>
 
 </body>

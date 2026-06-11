@@ -150,4 +150,25 @@
 	     WHERE INQUIRY_ID = #{inquiryId}
 	</update>
 	
+    <select id="findTopN">
+        SELECT T.*
+          FROM (
+                SELECT INQUIRY_ID
+                     , 'INQ-' || EXTRACT(YEAR FROM SYSDATE) || '-' || LPAD(INQUIRY_ID, 4, '0') AS INQUIRY_CODE
+                     , TITLE
+                     , CASE WHEN ANSWERED_AT IS NULL     THEN '요청'
+                            WHEN ANSWERED_AT IS NOT NULL THEN '답변 완료'
+                            END AS STATUS
+                     , I.CREATED_AT
+                     , STORE_NAME
+                     , STORE_ID
+                  FROM INQUIRIES I
+                  JOIN STORES S
+                 USING ( STORE_ID )
+                 WHERE I.DELETED_AT IS NULL
+                 ORDER BY I.CREATED_AT DESC
+                        , INQUIRY_ID DESC
+               ) T
+         WHERE ROWNUM &lt;= #{count}
+    </select>
 </mapper>

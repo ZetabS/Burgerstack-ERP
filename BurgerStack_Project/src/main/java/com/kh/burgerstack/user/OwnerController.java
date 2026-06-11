@@ -3,10 +3,13 @@ package com.kh.burgerstack.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.kh.burgerstack.owner.OwnerDashboardService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -19,6 +22,9 @@ public class OwnerController {
 
 	@Autowired
 	private OwnerService ownerService;
+	
+	@Autowired
+    private OwnerDashboardService dashboardService;
 
 	@GetMapping("mypage")
 	public String MyPageBo() {
@@ -103,15 +109,21 @@ public class OwnerController {
 		return "redirect:/owner/mypage";
 	}
 
-	@GetMapping("homebutton")
-	public String homeButton() {
-
-		return "user/dashboardBO";
-	}
-
 	@GetMapping("dashboard")
-	public String dashboardBo() {
-		return "user/dashboardBO";
+	public String dashboardBo(Model model) {
+
+	    model.addAttribute("shortageCount", dashboardService.selectShortageCount());
+	    model.addAttribute("todayReceiptCount", dashboardService.selectTodayReceiptCount());
+	    model.addAttribute("pendingPurchaseCount", dashboardService.selectPendingPurchaseCount());
+	    model.addAttribute("unansweredInquiryCount", dashboardService.selectUnansweredInquiryCount());
+
+	    model.addAttribute("shortageList", dashboardService.selectShortageTop5());
+	    model.addAttribute("todayReceiptList", dashboardService.selectTodayReceiptList());
+	    model.addAttribute("purchaseStatusList", dashboardService.selectPurchaseStatusList());
+	    model.addAttribute("closing", dashboardService.selectTodayClosing());
+	    model.addAttribute("noticeList", dashboardService.selectNoticeList());
+
+	    return "user/dashboardBO";
 	}
 
 }

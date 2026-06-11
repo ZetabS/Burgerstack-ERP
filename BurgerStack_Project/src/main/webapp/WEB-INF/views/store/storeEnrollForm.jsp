@@ -123,7 +123,7 @@
 
 <body>
 
-<t:menubarHO>
+<t:layout>
 
     <main class="store-enroll-wrap">
 
@@ -215,7 +215,7 @@
 
     </main>
 
-</t:menubarHO>
+</t:layout>
 
 	<script>
 	function searchOwner() {

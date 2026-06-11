@@ -109,7 +109,7 @@
 </style>
 </head>
 <body>
-	<t:menubarHO>
+	<t:layout>
 
 		<h1 id="title">문의사항 상세 보기</h1>
 
@@ -131,11 +131,11 @@
 				<c:otherwise>
 			            ${inquiry.answerContent}
 			        </c:otherwise>
+
 			</c:choose>
 
 		</div>
 
-		</div>
 		<div class="btn-area">
 
 			<button type="button" id="saveBtn"
@@ -146,6 +146,8 @@
 				onclick="location.href='burgerstack/admin/inquiries'">목록</button>
 
 		</div>
-	</t:menubarHO>
+	
+	</t:layout>
+
 </body>
 </html>

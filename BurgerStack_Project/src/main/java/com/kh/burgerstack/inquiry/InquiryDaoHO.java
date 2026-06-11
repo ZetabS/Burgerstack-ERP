@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Repository;
 
+import com.kh.burgerstack.dashboard.dto.AdminDashboardInquiryListItem;
+
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -33,4 +35,7 @@ public class InquiryDaoHO {
 		return inquiryMapper.InquiryDeleteHO(inquiryId);
 	}
 
+    public List<AdminDashboardInquiryListItem> findRecent(int count) {
+        return inquiryMapper.findTopN(count);
+    }
 }

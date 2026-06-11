@@ -74,7 +74,7 @@ input {
 </head>
 <body>
 
-	<t:menubarHO>
+	<t:layout>
 		<h1 id="title" align="center">점주 계정 수정 페이지</h1>
 
 		<form action="/burgerstack/admin/users/${user.userId}" method="post">
@@ -130,7 +130,7 @@ input {
 					취소</button>
 			</div>
 		</form>
-	</t:menubarHO>
+	</t:layout>
 
 </body>
 </html>

@@ -1,0 +1,197 @@
+/* ================================================
+   전역 스타일 설정
+   ================================================ */
+
+body {
+  overflow: hidden;
+  font-family:
+    "Malgun Gothic" "Courier New",
+    Courier,
+    monospace;
+}
+
+a,
+a:hover,
+a:focus,
+a:active {
+  color: inherit; /* 글자 색상이 파란색으로 변하지 않고 부모의 색상을 따름 */
+  text-decoration: none; /* 밑줄 제거 */
+}
+
+.btn-burgerstack {
+  background-color: #ff6b00;
+  color: white;
+}
+
+.btn-burgerstack:hover {
+  background-color: #e45f00;
+}
+
+/* ================================================
+   레이아웃 컨테이너
+   ================================================ */
+
+.layout__container {
+  display: grid;
+  grid-template-rows: 70px 1fr;
+  grid-template-columns: 250px 1fr;
+  grid-template-areas:
+    "logo header"
+    "menubar main";
+  width: 100vw;
+  height: 100vh;
+}
+
+/* ================================================
+   레이아웃 헤더
+   ================================================ */
+
+.layout__header {
+  display: flex;
+  grid-area: header;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #393e46;
+  background: #222831;
+  padding-inline: 30px;
+  color: white;
+}
+
+.layout__header-title {
+  font-size: 20px;
+}
+
+.layout__header-user-info {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px;
+  font-size: 14px;
+}
+
+.layout__header-user-info-text {
+  font-size: 14px;
+}
+
+/* ================================================
+   레이아웃 로고
+   ================================================ */
+
+.layout__logo {
+  display: flex;
+  grid-area: logo;
+  align-items: center;
+  gap: 8px;
+  background: #222831;
+  padding-inline: 30px;
+  color: white;
+}
+
+.layout__logo:hover {
+  color: white;
+}
+
+.layout__logo-img {
+  width: 32px;
+  height: 32px;
+}
+
+.layout__logo-text {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+/* ================================================
+   레이아웃 메뉴바
+   ================================================ */
+
+.layout__menubar {
+  grid-area: menubar;
+  gap: 10px;
+  background: #2d3436;
+  overflow-y: auto;
+  color: white;
+}
+
+.layout__menubar-profile-box {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #444;
+  padding: 25px 20px;
+}
+
+.layout__menubar-profile-name {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.layout__menubar-profile-role {
+  padding-top: 5px;
+  color: #bbb;
+  font-size: 13px;
+}
+
+/* ================================================
+   레이아웃 메뉴
+   ================================================ */
+
+.layout__menu {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 상위 메뉴 */
+.layout__menu-title {
+  transition: background 0.2s;
+  cursor: pointer;
+  background: #393e46;
+  padding: 15px 20px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.layout__menu-title:hover {
+  background: #4b5457;
+}
+
+/* 하위 메뉴 */
+.layout__submenu {
+  transition: max-height 0.35s ease;
+  margin: 0;
+  background: #2f3638;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  list-style: none;
+}
+
+.layout__submenu[data-is-active="true"] {
+  max-height: 500px;
+}
+
+/* 하위 메뉴 항목 */
+.layout__submenu li {
+  border-bottom: 1px solid #3b3b3b;
+}
+
+.layout__submenu a {
+  display: block;
+  transition: background 0.2s;
+  padding: 13px 35px;
+}
+
+.layout__submenu a:hover {
+  background: #4b5457;
+}
+
+/* ================================================
+   레이아웃 메인 콘텐츠
+   ================================================ */
+
+.layout__main {
+  grid-area: main;
+  background-color: #f5f6fa;
+  padding: 30px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}

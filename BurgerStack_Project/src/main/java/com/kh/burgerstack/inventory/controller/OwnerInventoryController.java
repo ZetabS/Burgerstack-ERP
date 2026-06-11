@@ -44,7 +44,7 @@ public class OwnerInventoryController {
         return "owner/inventories/list";
     }
 
-    @GetMapping("/{inventoryId}/edit")
+    @GetMapping("/{inventoryId}/adjust")
     public String adjustForm(
             @PathVariable Integer inventoryId,
             Model model,
@@ -56,10 +56,10 @@ public class OwnerInventoryController {
                 loginUser);
 
         model.addAttribute("detail", detail);
-        return "owner/inventories/edit";
+        return "owner/inventories/adjust";
     }
 
-    @PostMapping("/{inventoryId}")
+    @PostMapping("/{inventoryId}/adjust")
     public String adjust(
             @PathVariable Integer inventoryId,
             InventoryAdjustRequest inventoryAdjustRequest,
@@ -70,6 +70,36 @@ public class OwnerInventoryController {
         inventoryService.adjust(inventoryId, inventoryAdjustRequest, loginUser);
 
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
-        return "redirect:/owner/inventories/" + inventoryId + "/edit";
+        return "redirect:/owner/inventories";
+    }
+
+    @GetMapping("/{inventoryId}/edit")
+    public String editForm(
+            @PathVariable int inventoryId,
+            HttpSession session,
+            Model model) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        InventoryDetail detail = inventoryService.getInventoryDetail(
+                inventoryId,
+                loginUser);
+
+        model.addAttribute("detail", detail);
+        return "owner/inventories/edit";
+    }
+
+    @PostMapping("/{inventoryId}")
+    public String edit(
+            @PathVariable int inventoryId,
+            int safetyQuantity,
+            HttpSession session) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        inventoryService.changeSafeQuantity(
+                inventoryId,
+                safetyQuantity,
+                loginUser);
+
+        return "redirect:/owner/inventories";
     }
 }

@@ -25,14 +25,14 @@ public class ReceiptService {
         return pagingRequest.toPageInfo(receiptDao.getHistoryTotalCount(sqlSession));
     }
 
-    public PageInfo getPlanPageInfo(PagingRequest pagingRequest) {
-        return pagingRequest.toPageInfo(receiptDao.getPlanTotalCount(sqlSession));
+    public PageInfo getPlanPageInfo(PagingRequest pagingRequest, String status) {
+        return pagingRequest.toPageInfo(
+                receiptDao.getPlanTotalCount(sqlSession, status)
+        );
     }
 
-    
-    
-    public List<PurchaseOrder> selectReceiptPlanList(PagingRequest pagingRequest) {
-        return receiptDao.selectReceiptPlanList(sqlSession, pagingRequest);
+    public List<PurchaseOrder> selectReceiptPlanList(PagingRequest pagingRequest, String status) {
+        return receiptDao.selectReceiptPlanList(sqlSession, pagingRequest, status);
     }
     
     public List<Receipt> selectReceiptList() {
@@ -174,6 +174,18 @@ public class ReceiptService {
     public List<ReceiptItemDetail> selectReceiptItemDetailList(Long receiptId) {
         return receiptDao.selectReceiptItemDetailList(receiptId);
     }
+    
+    public List<ReceiptCheckItemDto> selectReceiptCheckItemList(Long purchaseId) {
+        return receiptDao.selectReceiptCheckItemList(purchaseId);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 }

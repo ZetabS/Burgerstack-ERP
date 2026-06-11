@@ -95,7 +95,7 @@
 </head>
 <body> 
     <!-- 관리자용 메뉴바 -->
-    <t:menubarHO>
+    <t:layout>
         <!-- 상세정보 사이드바 -->
         <t:sidebar>
             <jsp:attribute name="sidebarTitle">
@@ -194,7 +194,7 @@
                 
             </c:forEach>
         </div>
-    </t:menubarHO>
+    </t:layout>
 
     <script>
         const MaterialDrawer = {

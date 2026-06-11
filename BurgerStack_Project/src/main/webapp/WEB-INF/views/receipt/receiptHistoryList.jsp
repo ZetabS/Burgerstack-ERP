@@ -8,7 +8,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<jsp:include page="../common/header.jsp" />
 <style>
 .page-title {
     font-size: 30px;
@@ -136,7 +135,7 @@
 </head>
 <body>
 
-    <t:menubarBO>
+    <t:layout>
         <h2>입고 이력</h2>
         
         <p class="table-guide">
@@ -195,6 +194,6 @@
 
         <ui:pagination pageInfo="${pageInfo}"></ui:pagination>
 
-    </t:menubarBO>
+    </t:layout>
 </body>
 </html>

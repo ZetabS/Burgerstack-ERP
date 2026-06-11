@@ -134,7 +134,7 @@
 
 <body>
 
-<t:menubarHO>
+<t:layout>
 
     <main class="store-detail-wrap">
 
@@ -209,7 +209,7 @@
 
     </main>
 
-</t:menubarHO>
+</t:layout>
 
 	<script>
 	function confirmClose(storeId) {
