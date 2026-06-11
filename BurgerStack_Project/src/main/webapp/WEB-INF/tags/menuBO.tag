@@ -90,4 +90,22 @@
       $submenu.attr("data-is-active", String(!isActive));
     });
   });
+
+  // 현재 탭 자동 열림
+  $(() => {
+
+    const currentPath = window.location.pathname;
+
+    $(".layout__submenu a").each(function() {
+
+        const href = $(this).attr("href");
+
+        if(currentPath.startsWith(href)) {
+
+            $(this)
+                .closest(".layout__submenu")
+                .attr("data-is-active", "true");
+        }
+    });
+  });
 </script>
