@@ -21,4 +21,16 @@ public class InquiryDaoHO {
         return inquiryMapper.getTotalCountHO(condition, keyword);
     }
 
+	public Inquiry InquiryListDetail(long inquiryId) {
+		return inquiryMapper.InquiryListDetail(inquiryId);
+	}
+
+	public int InquiryEdit(Inquiry i) {
+		return inquiryMapper.InquiryEditHO(i);
+	}
+
+	public int inquiryDelete(long inquiryId) {
+		return inquiryMapper.InquiryDeleteHO(inquiryId);
+	}
+
 }

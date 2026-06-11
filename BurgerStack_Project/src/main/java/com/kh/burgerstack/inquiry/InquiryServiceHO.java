@@ -22,5 +22,17 @@ public class InquiryServiceHO {
     public int getTotalCount(String condition, String keyword) {
         return inquiryDaoHO.getTotalCount(condition, keyword);
     }
+
+	public Inquiry InquiryListDetail(long inquiryId) {
+		return inquiryDaoHO.InquiryListDetail(inquiryId);
+	}
+
+	public int InquiryEdit(Inquiry i) {
+		return inquiryDaoHO.InquiryEdit(i);
+	}
+
+	public int InquiryDelete(long inquiryId) {
+		return inquiryDaoHO.inquiryDelete(inquiryId);
+	}
 	
 }

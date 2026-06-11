@@ -22,4 +22,5 @@ public class Inquiry {
     private LocalDateTime answeredAt;
     private LocalDateTime deletedAt;
     private Long storeId;
+    private String storeName;
 }

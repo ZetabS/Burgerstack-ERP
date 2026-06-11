@@ -10,6 +10,8 @@ import org.apache.ibatis.session.RowBounds;
 public interface InquiryMapper {
 
 	int inquiryEnroll(Inquiry inquiry);
+	
+	int insertInquiryFile(InquiryFile file);
 
 	// 점주 문의사항 목록조회
 	List<Inquiry> InquiryList(@Param("storeId") Long storeId, @Param("condition") String condition,
@@ -29,9 +31,13 @@ public interface InquiryMapper {
 	
 	
 
-	Inquiry InquiryListDetail(String inquiryId);
+	Inquiry InquiryListDetail(long inquiryId);
 
 	int InquiryEdit(Inquiry i);
 
-	int InquiryDelete(String inquiryId);
+	int InquiryDelete(long inquiryId);
+
+	int InquiryEditHO(Inquiry i);
+
+	int InquiryDeleteHO(long inquiryId);
 }

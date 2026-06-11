@@ -16,6 +16,9 @@ public class InquiryDaoBO {
 	public int InquiryEnroll(Inquiry inquiry) {
 		return inquiryMapper.inquiryEnroll(inquiry);
 	}
+	public int insertInquiryFile(InquiryFile file) {
+	    return inquiryMapper.insertInquiryFile(file);
+	}
 
 	public List<Inquiry> InquiryList(Long storeId, String condition, String keyword, RowBounds rowBounds) {
         return inquiryMapper.InquiryList(storeId, condition, keyword, rowBounds);
@@ -25,7 +28,7 @@ public class InquiryDaoBO {
         return inquiryMapper.getTotalCount(storeId, condition, keyword);
     }
 
-	public Inquiry InquiryListDetail(String inquiryId) {
+	public Inquiry InquiryListDetail(long inquiryId) {
 		return inquiryMapper.InquiryListDetail(inquiryId);
 	}
 
@@ -33,7 +36,7 @@ public class InquiryDaoBO {
 		return inquiryMapper.InquiryEdit(i);
 	}
 
-	public int InquiryDelete(String inquiryId) {
+	public int InquiryDelete(long inquiryId) {
 		return inquiryMapper.InquiryDelete(inquiryId);
 	}
 
