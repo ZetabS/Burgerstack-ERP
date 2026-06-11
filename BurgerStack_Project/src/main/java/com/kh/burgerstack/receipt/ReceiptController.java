@@ -26,43 +26,54 @@ public class ReceiptController {
                                   ModelAndView mv) {
 
         mv.addObject("purchaseId", purchaseId);
-        mv.addObject("itemList", receiptService.selectReceiptCheckItemList(purchaseId));
+
+        // APPROVED / PARTIALLY_APPROVED 상태를 JSP로 넘김
+        mv.addObject("purchaseStatus",
+                receiptService.selectPurchaseStatus(purchaseId));
+
+        // 입고 처리 품목 목록
+        mv.addObject("itemList",
+                receiptService.selectReceiptCheckItemList(purchaseId));
 
         mv.setViewName("receipt/receiptCheckForm");
 
         return mv;
     }
 
-    // 입고 이력 목록 조회 - 점주 / 관리자 공통
-    @GetMapping({"/owner/receipts", "/admin/receipts"})
-    public String history(PagingRequest pagingRequest,
-                          HttpServletRequest request,
-                          Model model) {
-
-        PageInfo pageInfo = receiptService.getHistoryPageInfo(pagingRequest);
-
-        if (pageInfo.isCurrentPageOutOfRange()) {
-
-            if (request.getRequestURI().contains("/admin/")) {
-                return "redirect:/admin/receipts"
-                        + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
-            }
-
-            return "redirect:/owner/receipts"
-                    + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
-        }
-
-        model.addAttribute("pageInfo", pageInfo);
-
-        model.addAttribute("list",
-                receiptService.selectReceiptList());
-
-        if (request.getRequestURI().contains("/admin/")) {
-            return "receipt/adminReceiptHistoryList";
-        }
-
-        return "receipt/receiptHistoryList";
-    }
+	 	// 입고 이력 목록 조회 - 점주 / 관리자 공통
+	    @GetMapping({"/owner/receipts", "/admin/receipts"})
+	    public String history(@RequestParam(required = false, defaultValue = "") String receiptType,
+	                          PagingRequest pagingRequest,
+	                          HttpServletRequest request,
+	                          Model model) {
+	    	
+	    	System.out.println("receiptType = [" + receiptType + "]");
+	
+	        PageInfo pageInfo = receiptService.getHistoryPageInfo(pagingRequest, receiptType);
+	
+	        if (pageInfo.isCurrentPageOutOfRange()) {
+	
+	            if (request.getRequestURI().contains("/admin/")) {
+	                return "redirect:/admin/receipts"
+	                        + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
+	            }
+	
+	            return "redirect:/owner/receipts"
+	                    + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
+	        }
+	
+	        model.addAttribute("pageInfo", pageInfo);
+	        model.addAttribute("receiptType", receiptType);
+	
+	        model.addAttribute("list",
+	                receiptService.selectReceiptList(receiptType));
+	
+	        if (request.getRequestURI().contains("/admin/")) {
+	            return "receipt/adminReceiptHistoryList";
+	        }
+	
+	        return "receipt/receiptHistoryList";
+	    }
 
     // 입고 이력 상세 조회 - 점주 / 관리자 공통
     @GetMapping({"/owner/receipts/{receiptId}", "/admin/receipts/{receiptId}"})
