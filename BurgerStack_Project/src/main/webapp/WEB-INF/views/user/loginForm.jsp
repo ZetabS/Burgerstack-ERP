@@ -17,6 +17,7 @@
 	#login-form table{
     	margin:auto;
 	}
+
 	.outer {
 		width : 500px;
 		border : 1px solid lightgray;
@@ -33,9 +34,10 @@
 	
 	#login-form input[type=text],
 	#login-form input[type=password]{
-		width:220px;
-		height:32px;
+		width:350px;
+		height:45px;
 		border:1px solid lightgray;
+		font-size: large;
 	}
 
 	#loginbutton{
@@ -58,7 +60,7 @@
 		font-size:12px;
 	}
 	#found{
-		padding-left: 70px;
+		padding-left: 20px;
 		padding-bottom: 5px;
 
 	}
@@ -74,6 +76,9 @@
 	    color:red;
 	    font-size:14px;
 	    margin-top:10px;
+	}
+	#login-form table tr{
+		text-align: center;
 	}
 	</style>
 
@@ -102,13 +107,9 @@
 					</a>
 			</div>
 
-			<br><br>
-
 			<div align="center" id="sign">
 				<h1>로그인</h1>
 			</div>
-
-			<br><br>
 
 
 			<div class="login-area">
@@ -116,15 +117,13 @@
 				<form id="login-form" action="/burgerstack/auth/login" method="post">
 					<table>
 						<tr id="login">
-							<th>아이디</th>
 							<td>
-								<input type="text" name="userId" id="user-id-input" required>
+								<input type="text" name="userId" id="user-id-input" required placeholder="아이디를 입력하세요.">
 							</td>
 						</tr>
 						<tr id="userPwd">
-							<th>비밀번호</th>
 							<td>
-								<input type="password" name="password" id="password-input" required>
+								<input type="password" name="password" id="password-input" required placeholder="비밀번호를 입력하세요.">
 							</td>
 						</tr>
 							<td id="found">

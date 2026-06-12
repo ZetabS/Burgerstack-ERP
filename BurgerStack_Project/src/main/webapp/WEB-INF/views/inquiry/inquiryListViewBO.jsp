@@ -62,6 +62,10 @@ td {
 	color: #22c55e;
 	text-decoration: underline;
 }
+tbody tr:hover {
+     background-color: #f5f5f5;
+     cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -98,7 +102,7 @@ td {
 
 				<thead>
 					<tr>
-						<th>글번호</th>
+						<th>No</th>
 						<th>제목</th>
 						<th>등록일</th>
 						<th>답변상태</th>
@@ -115,13 +119,11 @@ td {
 
 						<c:otherwise>
 							<c:forEach var="inq" items="${inquiryList}">
-								<tr>
+								<tr onclick="location.href='${pageContext.request.contextPath}/owner/inquiries/${inq.inquiryId}'" style="cursor: pointer;">
 									<td>${inq.inquiryId}</td>
 
 									<td style="text-align: left !important; padding-left: 20px;">
-										<a class="title-link"
-										href="${pageContext.request.contextPath}/owner/inquiries/${inq.inquiryId}">
-											${inq.title} </a>
+											${inq.title} 
 									</td>
 
 									<td>${inq.createdAt}</td>
