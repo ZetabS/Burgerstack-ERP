@@ -8,6 +8,14 @@
 <title>BurgerStack</title>
 <link rel="shortcut icon" type="image/x-icon" href="/resources/images/BS_logo2.png" />
 <style type="text/css">
+	.form-container {
+		width: auto%;
+		max-width: 2000px;
+		background: #fff;
+		padding: 30px;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
 	.page-title{
     font-weight:700;
     margin-bottom:20px;
@@ -97,7 +105,7 @@
 	    font-size: 16px;
 	}
 	#newOwner{
-		width: 1150px;
+		width: 2550px;
 	}
 </style>
 </head>
@@ -106,7 +114,7 @@
 	<t:layout>
 		<h3>계정 등록</h3>
                 <hr>
-                <form id="new" action="/burgerstack/admin/users" method="post">
+                <form id="new" action="/burgerstack/admin/users" method="post" class="form-container">
 
                     <table class="table">
                         <tr>
@@ -163,14 +171,12 @@
                             계정 등록
                         </button>
                     </div>
-		            <div class="home-btn-area">
+                </form>
+					<div class="home-btn-area">
 			    		<button type="button" id="homeBtn" onclick="location.href = '/burgerstack/admin/dashboard'">
 					        홈으로
 					    </button>
 					</div>
-					
-                </form>
-
 		
 	</t:layout>
 

@@ -10,6 +10,19 @@
 <title>Insert title here</title>
 
 <style>
+body {
+	margin: 0;
+	font-family: 'Malgun Gothic', sans-serif;
+	background-color: #f4f5f7;
+}
+.form-container {
+	width: 100%;
+	max-width: 900px;
+	background: #fff;
+	padding: 30px;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 #title {
 	padding-top: 30px;
 	font-weight: 1000;
@@ -117,7 +130,7 @@
 <body>
 	<t:layout>
 
-
+		<div class="form-container">
 		<h1 id="title">문의사항 상세 보기</h1>
 
 		<div class="inquiry-title-box" name="title">${inquiry.title}</div>
@@ -161,7 +174,7 @@
 			</div>
 		</c:if>
 
-
+		</div>
 	</t:layout>
 
 </body>

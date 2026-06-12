@@ -132,16 +132,11 @@
                     
                         <c:forEach var="u" items="${ownerList}">
 
-                            <tr>
+                            <tr onclick="location.href='/burgerstack/admin/users/${u.userId}'" style="cursor: pointer;">
 
                                 <td>${u.userNo}</td>
 
-								<td>
-								    <a class="user-link"
-								       href="/burgerstack/admin/users/${u.userId}">
-								        ${u.userId}
-								    </a>
-								</td>
+								<td>${u.userId}</td>
 
                                 <td>${u.userName}</td>
 

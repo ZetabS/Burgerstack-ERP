@@ -7,6 +7,14 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <style>
+.form-container {
+	width: 100%;
+	max-width: 2000px;
+	background: #fff;
+	padding: 30px;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 #title {
 	padding-top: 30px;
 	font-weight: 1000;
@@ -75,9 +83,10 @@ input {
 <body>
 
 	<t:layout>
+	
 		<h1 id="title" align="center">점주 계정 수정 페이지</h1>
 
-		<form action="/burgerstack/admin/users/${user.userId}" method="post">
+		<form action="/burgerstack/admin/users/${user.userId}" method="post" class="form-container">
 			<table>
 				<tr>
 					<th>아이디</th>
@@ -130,6 +139,7 @@ input {
 					취소</button>
 			</div>
 		</form>
+		
 	</t:layout>
 
 </body>

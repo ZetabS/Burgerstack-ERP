@@ -8,6 +8,14 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <style type="text/css">
+.form-container {
+	width: auto%;
+	max-width: 2000px;
+	background: #fff;
+	padding: 30px;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 #title {
 	padding-top: 30px;
 	font-weight: 1000;
@@ -79,7 +87,7 @@ input {
 		<h1 id="title" align="center">점주 계정 상세조회</h1>
 
 		<form id="OwnerListDetail"
-			action="/burgerstack/admin/users/${user.userId}" method="get">
+			action="/burgerstack/admin/users/${user.userId}" method="get" class="form-container">
 			<table>
 				<tr>
 					<th>아이디</th>
