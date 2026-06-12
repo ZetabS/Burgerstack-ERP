@@ -127,11 +127,6 @@
 								<input type="password" name="password" id="password-input" required>
 							</td>
 						</tr>
-						<tr id="saveId">
-							<th>
-								<input type="checkbox" name="saveId" id="">
-								<label for="saveId">아이디 저장</label>
-							</th>
 							<td id="found">
 								<a href="/burgerstack/auth/loginErrorPage">아이디 / 비밀번호 찾기</a>
 							</td>
