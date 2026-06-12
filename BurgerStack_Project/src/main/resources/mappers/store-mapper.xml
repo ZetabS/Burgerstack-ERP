@@ -128,11 +128,12 @@
 	        STORE_CODE AS storeCode,
 	        STORE_NAME AS storeName,
 	        PHONE AS phone,
-			ADDRESS AS address,
-	        OWNER_USER_NO AS ownerUserNo,
-			STATUS AS status
+	        ADDRESS AS address,
+	        STATUS AS status,
+	        CREATED_AT AS createdAt,
+	        OWNER_USER_NO AS ownerUserNo
 	    FROM STORES
-	    WHERE STORE_ID = #{storeId}
+	    WHERE STORE_ID = #{_parameter}
 	
 	</select>
 	
@@ -155,66 +156,45 @@
 
     <!-- 점포 수정 -->
 	<update id="updateStore"
-        parameterType="com.kh.burgerstack.store.Store">
-
-    UPDATE STORES
-    SET
-        STORE_NAME = #{storeName},
-        PHONE = #{phone},
-        ADDRESS = #{address},
-        STATUS = #{status},
-        UPDATED_AT = SYSDATE
-    WHERE STORE_ID = #{storeId}
-
-</update>
-
-    <!-- 점포 삭제/폐점 처리 -->
-	<delete id="deleteStore"
-	        parameterType="long">
+	        parameterType="com.kh.burgerstack.store.Store">
 	
-	    DELETE FROM STORES
+	    UPDATE STORES
+	    SET
+	        STORE_NAME = #{storeName},
+	        PHONE = #{phone},
+	        ADDRESS = #{address},
+	        STATUS = #{status}
 	    WHERE STORE_ID = #{storeId}
 	
-	</delete>
+	</update>
+
+	<!-- 점포 폐점 처리 -->
+	<update id="deleteStore"
+	        parameterType="long">
 	
+	    UPDATE STORES
+	    SET STATUS = 'CLOSED'
+	    WHERE STORE_ID = #{storeId}
+	
+	</update>
+	
+	<!-- 점주 userNo로 점포 조회 -->
 	<select id="selectStoreByOwnerUserNo"
-        parameterType="long"
-        resultType="com.kh.burgerstack.store.Store">
-
-    SELECT
-        STORE_ID AS storeId,
-        STORE_CODE AS storeCode,
-        STORE_NAME AS storeName,
-        PHONE AS phone,
-        ADDRESS AS address,
-        OWNER_USER_NO AS ownerUserNo,
-        STATUS AS status
-    FROM STORES
-    WHERE OWNER_USER_NO = #{ownerUserNo}
-
-</select>
-
-	<select id="selectOwnerStoreList"
-        parameterType="string"
-        resultType="com.kh.burgerstack.store.StoreListRow">
-
-    SELECT
-        STORE_ID AS storeId,
-        STORE_CODE AS storeCode,
-        STORE_NAME AS storeName,
-        PHONE AS phone,
-        ADDRESS AS address,
-        STATUS AS status,
-        CREATED_AT AS createdAt
-    FROM STORES
-    WHERE 1 = 1
-
-    <if test="_parameter != null and _parameter != ''">
-        AND STATUS = #{status}
-    </if>
-
-    ORDER BY STORE_ID DESC
-
-</select>
+	        parameterType="long"
+	        resultType="com.kh.burgerstack.store.Store">
+	
+	    SELECT
+	        STORE_ID AS storeId,
+	        STORE_CODE AS storeCode,
+	        STORE_NAME AS storeName,
+	        PHONE AS phone,
+	        ADDRESS AS address,
+	        STATUS AS status,
+	        CREATED_AT AS createdAt,
+	        OWNER_USER_NO AS ownerUserNo
+	    FROM STORES
+	    WHERE OWNER_USER_NO = #{_parameter}
+	
+	</select>
 
 </mapper>

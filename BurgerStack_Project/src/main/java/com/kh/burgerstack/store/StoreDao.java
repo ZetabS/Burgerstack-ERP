@@ -86,16 +86,6 @@ public class StoreDao {
 				ownerUserNo
 		);
 	}
-	
-	public List<StoreListRow> selectOwnerStoreList(
-	        SqlSession sqlSession,
-	        String status) {
-
-	    return sqlSession.selectList(
-	            "storeMapper.selectOwnerStoreList",
-	            status
-	    );
-	}
 
 	public List<StoreOption> getStoreOptions() {
 		return storeMapper.getStoreOptions();
@@ -103,6 +93,13 @@ public class StoreDao {
 
     public StoreStatistics getStoreStatistics() {
         return storeMapper.getStoreStatistics();
+    }
+    
+    public List<Store> selectOwnerStoreList(Long storeId) {
+        return sqlSessionTemplate.selectList(
+                "storeMapper.selectOwnerStoreList",
+                storeId
+        );
     }
 }
 
