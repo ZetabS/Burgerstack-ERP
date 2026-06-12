@@ -72,11 +72,9 @@ public class StoreService {
         );
     }
     
-    public List<StoreListRow> selectOwnerStoreList(String status) {
-
-        return storeDao.selectOwnerStoreList(
-                sqlSession,
-                status
-        );
+    public List<Store> selectOwnerStoreList(Long storeId) {
+        return storeDao.selectOwnerStoreList(storeId);
     }
+    
+    
 }

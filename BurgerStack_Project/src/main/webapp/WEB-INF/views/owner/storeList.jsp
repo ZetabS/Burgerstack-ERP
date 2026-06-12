@@ -1,213 +1,205 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
+<%@ page language="java"
+    contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>점포 목록 조회</title>
+<title>내 점포 정보</title>
 
 <style>
-   .store-list-wrap {
-        width: 1300px;
-        margin: 0 auto;
-        padding-top: 35px;
+    .store-info-wrap {
+        width: 1000px;
+        margin: 55px auto;
     }
 
     .page-title {
+        font-size: 30px;
+        font-weight: 700;
         margin-bottom: 8px;
-        font-size: 32px;
-        font-weight: bold;
     }
 
     .page-desc {
-        margin-bottom: 30px;
         color: #6b7280;
         font-size: 14px;
+        margin-bottom: 30px;
     }
 
-    .list-card {
+    .info-card {
         background: #fff;
         border: 1px solid #e5e7eb;
         border-radius: 14px;
         padding: 35px 40px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
 
     .section-title {
-        margin-bottom: 25px;
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 28px;
         padding-left: 12px;
         border-left: 5px solid #19c765;
-        font-size: 22px;
-        font-weight: bold;
     }
 
-    .search-area {
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px 32px;
+    }
+
+    .info-row {
         display: flex;
-        justify-content: flex-end;
-        align-items: center;
+        flex-direction: column;
         gap: 8px;
-        margin-bottom: 18px;
     }
 
-    .search-area select,
-    .search-area input[type="date"] {
-        height: 36px;
+    .info-row label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #374151;
+    }
+
+    .info-box {
+        height: 42px;
         border: 1px solid #d1d5db;
         border-radius: 8px;
-        padding: 0 10px;
-    }
-
-    .search-box {
+        padding: 0 13px;
         display: flex;
-        height: 36px;
+        align-items: center;
+        background: #f9fafb;
+        color: #111827;
+        font-size: 15px;
     }
 
-    .search-box input {
-        width: 150px;
-        border: 1px solid #d1d5db;
-        border-right: none;
-        border-radius: 8px 0 0 8px;
-        padding-left: 10px;
-    }
-
-    .search-btn {
-        width: 40px;
-        border: none;
-        border-radius: 0 8px 8px 0;
-        background: #374151;
-        cursor: pointer;
-    }
-
-    .search-btn img {
-        width: 24px;
-        height: 24px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: center;
-        font-size: 13px;
-    }
-
-    thead tr {
-        background: #19c765;
-        color: white;
-        height: 42px;
-    }
-
-    th, td {
-        padding: 12px 10px;
-    }
-
-    tbody tr {
-        border-bottom: 1px solid #e5e7eb;
-        cursor: pointer;
-    }
-
-    tbody tr:hover {
-        background: #f2f6ff;
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 700;
     }
 
     .status-open {
-        color: #16a34a;
-        font-weight: bold;
+        background: #dcfce7;
+        color: #166534;
     }
 
     .status-closed {
-        color: #ef4444;
-        font-weight: bold;
+        background: #fee2e2;
+        color: #b91c1c;
     }
 
-    
-   
+    .status-rest {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .notice-box {
+        margin-top: 30px;
+        padding: 15px 18px;
+        border-radius: 10px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+    }
 </style>
 </head>
 
 <body>
 <t:layout>
 
-    <main class="store-list-wrap">
+    <main class="store-info-wrap">
 
-        <section class="list-card">
+        <h1 class="page-title">내 점포 정보</h1>
+        <p class="page-desc">
+            점주 계정에 연결된 점포 정보를 확인할 수 있습니다.
+        </p>
 
-            <h2 class="section-title">점포 목록</h2>
+        <section class="info-card">
 
-            <div class="search-area">
+            <h2 class="section-title">점포 정보</h2>
 
-            <form action="${pageContext.request.contextPath}/owner/store"
-			      method="get">
-			
-			    <select name="status"
-			            onchange="this.form.submit()">
-			
-			        <option value="">전체상태</option>
-			
-			        <option value="OPEN"
-			            ${status eq 'OPEN' ? 'selected' : ''}>
-			            영업중
-			        </option>
-			
-			        <option value="CLOSED"
-			            ${status eq 'CLOSED' ? 'selected' : ''}>
-			            폐점
-			        </option>
-			
-			    </select>
-			
-			</form>
+            <div class="info-grid">
 
-                <input type="date">
-                <input type="date">
-
-                <div class="search-box">
-                    <input type="text" placeholder="검색어 입력">
-                    <button type="button" class="search-btn">
-                        🔍
-                    </button>
+                <div class="info-row">
+                    <label>점포ID</label>
+                    <div class="info-box">${store.storeId}</div>
                 </div>
+
+                <div class="info-row">
+                    <label>점포명</label>
+                    <div class="info-box">${store.storeName}</div>
+                </div>
+
+                <div class="info-row">
+                    <label>연락처</label>
+                    <div class="info-box">${store.phone}</div>
+                </div>
+
+                <div class="info-row">
+                    <label>주소</label>
+                    <div class="info-box">${store.address}</div>
+                </div>
+
+                <div class="info-row">
+                    <label>상태</label>
+                    <div>
+                        <c:choose>
+                            <c:when test="${store.status eq 'OPEN'}">
+                                <span class="status-badge status-open">
+                                    영업중
+                                </span>
+                            </c:when>
+
+                            <c:when test="${store.status eq 'CLOSED'}">
+                                <span class="status-badge status-closed">
+                                    폐점
+                                </span>
+                            </c:when>
+
+                            <c:when test="${store.status eq '영업중'}">
+                                <span class="status-badge status-open">
+                                    영업중
+                                </span>
+                            </c:when>
+
+                            <c:when test="${store.status eq '폐점'}">
+                                <span class="status-badge status-closed">
+                                    폐점
+                                </span>
+                            </c:when>
+
+                            <c:otherwise>
+                                <span class="status-badge status-rest">
+                                    ${store.status}
+                                </span>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <label>등록일</label>
+                    <div class="info-box">
+                        ${fn:replace(store.createdAt, 'T', ' ')}
+                    </div>
+                </div>
+
             </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>점포ID</th>
-                        <th>점포명</th>
-                        <th>주소</th>
-                        <th>연락처</th>
-                        <th>상태</th>
-                        <th>등록일</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <c:forEach var="s" items="${list}">
-                        <tr onclick="location.href='${pageContext.request.contextPath}/owner/store/${s.storeId}'">
-                            <td>${s.storeId}</td>
-                            <td>${s.storeName}</td>
-                            <td>${s.address}</td>
-                            <td>${s.phone}</td>
-
-                            <td>
-                                <c:choose>
-                                    <c:when test="${s.status eq 'OPEN'}">
-                                        <span class="status-open">영업중</span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="status-closed">${s.status}</span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-
-                            <td>${s.createdAt}</td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
+            <div class="notice-box">
+                점포 정보 수정은 본사 관리자에게 문의해 주세요.<br>
+                점주는 본인에게 연결된 점포 정보만 조회할 수 있습니다.
+            </div>
 
         </section>
 

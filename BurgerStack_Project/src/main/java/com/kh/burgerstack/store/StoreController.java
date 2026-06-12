@@ -28,7 +28,7 @@ public class StoreController {
 
         int result = storeService.insertStore(store, createStockYn);
 
-        if(result > 0) {
+        if (result > 0) {
             return "redirect:/admin/stores";
         } else {
             return "common/errorPage";
@@ -43,13 +43,12 @@ public class StoreController {
 
     // 점포 목록 조회
     @GetMapping("")
-    public String selectStoreList(
-            PagingRequest pi,
-            String status,
-            String startDate,
-            String endDate,
-            String keyword,
-            Model model) {
+    public String selectStoreList(PagingRequest pi,
+                                  String status,
+                                  String startDate,
+                                  String endDate,
+                                  String keyword,
+                                  Model model) {
 
         Map<String, String> map = new HashMap<>();
 
@@ -69,7 +68,6 @@ public class StoreController {
         return "store/storeList";
     }
 
- 
     // 점포 상세 조회
     @GetMapping("/{storeId}")
     public String selectStoreDetail(@PathVariable("storeId") Long storeId,
@@ -83,7 +81,7 @@ public class StoreController {
     }
 
     // 점포 수정 처리
-    @PostMapping("/{storeId}")
+    @PostMapping("/{storeId}/update")
     public String updateStore(@PathVariable("storeId") Long storeId,
                               Store store) {
 
@@ -91,26 +89,15 @@ public class StoreController {
 
         int result = storeService.updateStore(store);
 
-        if(result > 0) {
+        if (result > 0) {
             return "redirect:/admin/stores";
         }
 
         return "common/errorPage";
     }
 
-    @GetMapping("/{storeId}/status")
-    public String deleteStore(
-            @PathVariable("storeId") Long storeId) {
-
-        int result = storeService.deleteStore(storeId);
-
-        if(result > 0) {
-            return "redirect:/admin/stores";
-        }
-
-        return "common/errorPage";
-    }
-
-    
-    
+    /*
+     * 폐점 처리 버튼을 없앨 거면 이 메서드는 이제 필요 없음.
+     * 상태 select에서 CLOSED로 바꾸고 수정 버튼을 누르면 updateStore에서 처리됨.
+     */
 }
