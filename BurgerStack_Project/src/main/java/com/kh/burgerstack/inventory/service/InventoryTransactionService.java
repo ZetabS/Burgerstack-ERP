@@ -8,12 +8,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.BusinessException;
 import com.kh.burgerstack.inventory.dao.InventoryTransactionDao;
+import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionCreateCommand;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionDetail;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionListItem;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionListView;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionSearchCondition;
 import com.kh.burgerstack.inventory.vo.InventoryTransaction;
+import com.kh.burgerstack.inventory.vo.InventoryTransactionItem;
 import com.kh.burgerstack.store.StoreDao;
 import com.kh.burgerstack.store.dto.StoreOption;
 import com.kh.burgerstack.user.LoginUser;
@@ -23,17 +25,16 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class InventoryTransactionService {
-    private static final List<String> TRANSACTION_TYPE = List.of("RECEIPT", "STORE_CLOSING", "ADJUSTMENT");
 
     private final InventoryTransactionDao inventoryTransactionDao;
     private final StoreDao storeDao;
 
+    /**
+     * @param command
+     * @return
+     */
     @Transactional
     protected InventoryTransaction createTransaction(InventoryTransactionCreateCommand command) {
-        if (!TRANSACTION_TYPE.contains(command.getTransactionType())) {
-            throw new BusinessException("재고 변동 이력 유형이 올바르지 않습니다.");
-        }
-
         InventoryTransaction inventoryTransaction = new InventoryTransaction(
                 null,
                 command.getTransactionType(),
@@ -47,9 +48,17 @@ public class InventoryTransactionService {
 
         inventoryTransactionDao.insert(inventoryTransaction);
 
+        List<InventoryTransactionItem> items = command.getInventoryTransactionItems()
+                .stream()
+                .map((InventoryChangeParam param) -> new InventoryTransactionItem(
+                        param.getBeforeQuantity(),
+                        param.getAfterQuantity(),
+                        param.getInventoryId()))
+                .toList();
+
         inventoryTransactionDao.insertItems(
                 inventoryTransaction.getInventoryTransactionId(),
-                command.getInventoryTransactionItems());
+                items);
 
         return inventoryTransaction;
 

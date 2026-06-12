@@ -96,9 +96,9 @@
 
     <update id="updateQuantity">
         UPDATE STORE_INVENTORIES
-           SET CURRENT_QUANTITY = #{afterQuantity}
-         WHERE STORE_INVENTORY_ID = #{storeInventoryId}
-           AND CURRENT_QUANTITY = #{beforeQuantity}
+           SET CURRENT_QUANTITY = #{param.afterQuantity}
+         WHERE STORE_INVENTORY_ID = #{param.inventoryId}
+           AND CURRENT_QUANTITY = #{param.beforeQuantity}
     </update>
 
     <select id="findById">

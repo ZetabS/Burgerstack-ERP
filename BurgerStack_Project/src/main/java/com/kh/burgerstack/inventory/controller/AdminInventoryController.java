@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.inventory.dto.InventoryAdjustRequest;
+import com.kh.burgerstack.inventory.dto.InventoryAdjustmentCommand;
 import com.kh.burgerstack.inventory.dto.InventoryDetail;
 import com.kh.burgerstack.inventory.dto.InventoryListSort;
 import com.kh.burgerstack.inventory.dto.InventoryListView;
@@ -64,7 +65,12 @@ public class AdminInventoryController {
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        inventoryService.adjustQuantity(inventoryId, inventoryAdjustRequest, loginUser);
+        inventoryService.adjustQuantity(new InventoryAdjustmentCommand(
+                inventoryId,
+                inventoryAdjustRequest.getAfterQuantity(),
+                inventoryAdjustRequest.getReason(),
+                null,
+                loginUser));
 
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
         return "redirect:/admin/inventories";

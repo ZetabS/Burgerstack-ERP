@@ -1,7 +1,5 @@
 package com.kh.burgerstack.inventory.dto;
 
-import com.kh.burgerstack.user.LoginUser;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -9,10 +7,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @ToString
-public class InventoryAdjustmentCommand {
+public class InventoryChangeParam {
     private int inventoryId;
+    private int beforeQuantity;
     private int afterQuantity;
-    private String reason;
-    private String transactionMemo;
-    private LoginUser loginUser;
 }

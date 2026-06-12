@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.exception.BusinessException;
+import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
 import com.kh.burgerstack.inventory.dto.InventoryDetail;
 import com.kh.burgerstack.inventory.dto.InventoryListItem;
 import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
@@ -33,11 +33,8 @@ public class InventoryDao {
         return inventoryMapper.count(condition);
     }
 
-    public void updateQuantity(
-            int storeInventoryId,
-            int beforeQuantity,
-            int afterQuantity) {
-        int updatedCount = inventoryMapper.updateQuantity(storeInventoryId, beforeQuantity, afterQuantity);
+    public void updateQuantity(InventoryChangeParam param) {
+        int updatedCount = inventoryMapper.updateQuantity(param);
         if (updatedCount != 1) {
             throw new InventoryConflictException();
         }
@@ -52,12 +49,12 @@ public class InventoryDao {
             int storeInventoryId,
             int safetyQuantity,
             int currentSafetyQuantity) {
-        int result = inventoryMapper.updateSafetyQuantity(
+        int updatedCount = inventoryMapper.updateSafetyQuantity(
                 storeInventoryId,
                 safetyQuantity,
                 currentSafetyQuantity);
-        if (result <= 0) {
-            throw new BusinessException("안전재고 수량을 조정할 수 없습니다.");
+        if (updatedCount <= 0) {
+            throw new InventoryConflictException();
         }
     }
 }

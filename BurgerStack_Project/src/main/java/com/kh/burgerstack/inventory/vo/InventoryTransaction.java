@@ -2,6 +2,8 @@ package com.kh.burgerstack.inventory.vo;
 
 import java.time.LocalDateTime;
 
+import com.kh.burgerstack.inventory.enums.TransactionType;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +17,7 @@ import lombok.ToString;
 @ToString
 public class InventoryTransaction {
     private Integer inventoryTransactionId;
-    private String transactionType;
+    private TransactionType transactionType;
     private String reason;
     private String transactionMemo;
     private LocalDateTime createdAt;

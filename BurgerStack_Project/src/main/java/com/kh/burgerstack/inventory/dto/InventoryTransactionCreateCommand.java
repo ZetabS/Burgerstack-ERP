@@ -2,7 +2,7 @@ package com.kh.burgerstack.inventory.dto;
 
 import java.util.List;
 
-import com.kh.burgerstack.inventory.vo.InventoryTransactionItem;
+import com.kh.burgerstack.inventory.enums.TransactionType;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InventoryTransactionCreateCommand {
-    private String transactionType;
+    private TransactionType transactionType;
     private String reason;
     private String transactionMemo;
 
@@ -25,5 +25,5 @@ public class InventoryTransactionCreateCommand {
     private Integer receiptId;
     private Integer storeClosingId;
 
-    private List<InventoryTransactionItem> inventoryTransactionItems;
+    private List<InventoryChangeParam> inventoryTransactionItems;
 }
