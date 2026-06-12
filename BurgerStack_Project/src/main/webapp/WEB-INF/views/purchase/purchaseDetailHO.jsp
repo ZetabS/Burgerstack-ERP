@@ -2,11 +2,8 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>발주 목록 상세 조회</title>
+
+<title>목록상세보기</title>
 <style>
     .content-top{
         flex-direction:row;
@@ -21,9 +18,8 @@
         padding: 5px;
     }
 </style>
-</head>
-<body>
 
+<!-- 레이아웃 작업 -->
 <t:layout>
 
     <h2>발주 목록 상세 보기(관리자)</h2>
@@ -182,6 +178,3 @@
         </div>
     </div>
 </t:layout>
-
-</body>
-</html>

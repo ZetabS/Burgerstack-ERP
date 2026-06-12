@@ -2,10 +2,6 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
 <title>발주 요청 페이지 조회</title>
 <style>
         .disabled-row {
@@ -13,9 +9,7 @@
         pointer-events: none;
     }
 </style>
-</head>
-<body>
-
+<!-- 레이아웃 작업 -->
 <t:layout>
 
     <h2>발주 수정 페이지</h2>
@@ -335,6 +329,3 @@
 
 
 </script>
-
-</body>
-</html>

@@ -2,10 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>발주 목록 상세 조회</title>
 <style>
     .content-top{
@@ -16,9 +13,8 @@
         width: 200px;
     }
 </style>
-</head>
-<body>
 
+<!-- 레이아웃 작업 -->
 <t:layout>
 
     <h2>발주 목록 상세 보기</h2>
@@ -73,9 +69,9 @@
                         <input type="number" value="${item.requestQuantity}" disabled>
                     </td>
 
-                    <td>${item.supplyPriceSnapshot}</td>
+                    <td class="comma-number">${item.supplyPriceSnapshot}</td>
 
-                    <td>
+                    <td class="comma-number">
                         <c:set var="rowTotal" value="${item.requestQuantity * item.supplyPriceSnapshot}" />
                         ${rowTotal}
                     </td>
@@ -94,7 +90,7 @@
                 <c:set var="rowTotal" value="${item.requestQuantity * item.supplyPriceSnapshot}" />
                 <c:set var="total" value="${total + rowTotal}" />
             </c:forEach>
-            <h2>${total} 원</h2>
+            <h2><span class="comma-number">${total}</span>원</h2>
         </div>
 
         <div class="button-group" style="display:flex; gap:10px; align-items:center;">
@@ -122,5 +118,16 @@
     </div>
 </t:layout>
 
-</body>
-</html>
+<script>
+    // 금액 포멧팅
+    // 클래스가 'comma-number'인 모든 태그 선택
+    const elements = document.querySelectorAll('.comma-number');
+    
+    elements.forEach(el => {
+        const num = Number(el.textContent);
+        // 숫자가 맞을 때만 변경
+        if (!isNaN(num)) {
+        el.textContent = num.toLocaleString('ko-KR');
+        }
+    });
+</script>

@@ -2,10 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+<title>발주 상태 처리</title>
 <style>
     table input{
         width: 50px;
@@ -18,8 +15,8 @@
         width: 200px;
     }
 </style>
-</head>
-<body>
+
+    <!-- 레이아웃 작업 -->
     <t:layout>
         <h2>발주 처리</h2>
 
@@ -102,7 +99,8 @@
                                 class="rejectQty"
                                 name="items[${s.index}].rejectQuantity"
                                 value="0"
-                                min="0">
+                                min="0"
+                                disabled>
                         </td>
 
                         <!-- 반려사유 -->
@@ -122,7 +120,7 @@
                         </td>
 
                         <!-- 단가 -->
-                        <td>${item.supplyPriceSnapshot}</td>
+                        <td class="comma-number">${item.supplyPriceSnapshot}</td>
 
                         <!-- 금액 -->
                         <td class="itemPrice"
@@ -353,6 +351,17 @@
                 e.preventDefault();
             }
         });
+
+        // 금액 포멧팅
+        // 클래스가 'comma-number'인 모든 태그 선택
+        const elements = document.querySelectorAll('.comma-number');
+        
+        elements.forEach(el => {
+            const num = Number(el.textContent);
+            // 숫자가 맞을 때만 변경
+            if (!isNaN(num)) {
+            el.textContent = num.toLocaleString('ko-KR');
+            }
+        });
+        
     </script>
-</body>
-</html>

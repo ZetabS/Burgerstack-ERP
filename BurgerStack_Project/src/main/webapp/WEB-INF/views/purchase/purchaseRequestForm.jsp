@@ -2,10 +2,6 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
 <title>발주 요청 페이지 조회</title>
 <style>
         .disabled-row {
@@ -13,9 +9,7 @@
         pointer-events: none;
     }
 </style>
-</head>
-<body>
-
+<!-- 레이아웃 작업 -->
 <t:layout>
 
     <h2>발주 요청 페이지</h2>
@@ -61,7 +55,7 @@
                             <input type="checkbox" class="row-check">
                         </td>
                         <td class="item-name">${m.materialName}</td>
-                        <td class="unit-price">${m.costPrice}</td>
+                        <td class="unit-price comma-number">${m.costPrice}</td>
                         <td class="stock">${m.currentQuantity}</td>
                         <td>
                             <input type="number" class="qty-input" value="0" min="0" max="1000">
@@ -147,7 +141,7 @@
 
         let total = qty * price;
 
-        $row.find('.total-price').text(total);
+        $row.find('.total-price').text(total.toLocaleString() + "원");
 
         // 체크 자동
         $row.find('.row-check').prop('checked', qty > 0);
@@ -228,7 +222,7 @@
 
             });
 
-            // ✔ 사이드바 출력
+            // 사이드바 출력
             $tbody.append(
                 $('<tr>').addClass('sidebar-row')
                     .attr('data-id', $row.data('id'))
@@ -251,7 +245,7 @@
                         )
                     )
                     .append(
-                        $('<td>').text(price.toLocaleString() + '원')
+                        $('<td>').text((price* qty).toLocaleString() + '원')
                     )
             );
         });
@@ -285,7 +279,7 @@
 
             if ($row.find('.item-name').text().trim() === name) {
 
-                // ❗ 동기화 핵심
+                // 동기화 핵심
                 $row.find('.row-check').prop('checked', false);
                 $row.find('.qty-input').val(0);
                 $row.find('.total-price').text(0);
@@ -378,6 +372,3 @@ $('.qty-input').on('input', function () {
 });
 
 </script>
-
-</body>
-</html>

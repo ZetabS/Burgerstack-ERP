@@ -2,11 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>발주 목록 조회</title>
+
 <style>
     table.table2 tbody tr:hover {
         background-color: #f5f5f5;
@@ -19,9 +15,9 @@
         width: 200px;
     }
 </style>
-</head>
-<body>
+    <!-- 레이아웃 작업 -->
 	<t:layout>
+
         <h2>발주 목록</h2>
 
         <div class="content-top">
@@ -137,7 +133,7 @@
                             </c:choose>
                         </td>
                         <td>${p.itemSummary}</td>
-                        <td>${p.totalAmount}</td>
+                        <td class="comma-number">${p.totalAmount}</td>
                         <td>${p.createdAt}</td>
                     </tr>
                 </c:forEach>      
@@ -151,6 +147,18 @@
         function autoSearch() {
             document.getElementById("searchForm").submit();
         }
+
+        // 금액 포멧팅
+        // 클래스가 'comma-number'인 모든 태그 선택
+        const elements = document.querySelectorAll('.comma-number');
+        
+        elements.forEach(el => {
+            const num = Number(el.textContent);
+            // 숫자가 맞을 때만 변경
+            if (!isNaN(num)) {
+            el.textContent = num.toLocaleString('ko-KR');
+            }
+        });
 
         let typing = false;
 
@@ -182,5 +190,3 @@
 
         setInterval(refreshPurchaseList, 5000);
     </script>
-</body>
-</html>
