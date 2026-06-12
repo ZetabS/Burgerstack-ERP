@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -13,9 +15,19 @@ import com.kh.burgerstack.config.FileStoreProperties;
 
 @Component
 public class FileStore {
+	
     private final Path root;
     private final static String DEFAULT_PREFIX = "uploads";
+    private static final int MAX_FILE_COUNT = 5;  // 첨부파일 최대 개수
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024L; // 단일 파일 최대 10MB
 
+    private static final List<String> BLOCKED_EXTENSIONS = List.of(
+    	    "exe", "bat", "cmd", "sh", "ps1", "vbs",	// 실행 파일
+    	    "jsp", "php", "asp", "aspx",				// 서버 스크립트
+    	    "jar", "war", "class",						// Java 실행 파일
+    	    "msi", "dll", "so", "dylib"					// 라이브러리/설치파일
+    	);
+    
     public FileStore(FileStoreProperties properties) {
         this.root = Path.of(properties.getRoot())
                 .toAbsolutePath()
@@ -37,14 +49,54 @@ public class FileStore {
     public StoredFile store(MultipartFile multipartFile) {
         return store(multipartFile, null);
     }
+    
+    
+//    /**
+//     * 사용자가 지정한 경로에 파일을 저장하고 결과를 반환합니다.
+//     * by. 송경민
+//	   * 
+//     * @param multipartFile
+//     * @param prefix
+//     * @return StoredFile
+//     */
+//    public StoredFile store(MultipartFile multipartFile, String prefix) {
+//        if (multipartFile == null || multipartFile.isEmpty()) {
+//            throw new IllegalArgumentException("업로드 파일이 비어 있습니다.");
+//        }
+//
+//        String originalName = extractOriginalName(multipartFile);
+//        String extension = extractExtension(originalName);
+//        String storedName = generateStoredName(extension);
+//        String storagePath = buildStoragePath(storedName, prefix);
+//        Path targetPath = resolveStoragePath(storagePath);
+//
+//        try {
+//            Files.createDirectories(targetPath.getParent());
+//            multipartFile.transferTo(targetPath);
+//
+//            StoredFile storedFile = StoredFile.builder()
+//                    .originalName(originalName)
+//                    .storedName(storedName)
+//                    .storagePath(storagePath)
+//                    .mimeType(multipartFile.getContentType())
+//                    .fileSize(multipartFile.getSize())
+//                    .build();
+//
+//            return storedFile;
+//        } catch (Exception e) {
+//            throw new FileException("파일 저장에 실패했습니다.");
+//        }
+//    }
 
     /**
-     * 사용자가 지정한 경로에 파일을 저장하고 결과를 반환합니다.
-     *
-     * @param multipartFile
-     * @param prefix
-     * @return StoredFile
-     */
+   * 사용자가 지정한 경로에 파일을 저장하고 결과를 반환합니다.
+   * by. 김유화
+   * 변경 사항 => 확장자, 크기 검증 추가
+   *
+   * @param multipartFile
+   * @param prefix
+   * @return StoredFile
+   */
     public StoredFile store(MultipartFile multipartFile, String prefix) {
         if (multipartFile == null || multipartFile.isEmpty()) {
             throw new IllegalArgumentException("업로드 파일이 비어 있습니다.");
@@ -52,6 +104,18 @@ public class FileStore {
 
         String originalName = extractOriginalName(multipartFile);
         String extension = extractExtension(originalName);
+
+        // ✅ 금지 확장자 체크
+        if (BLOCKED_EXTENSIONS.contains(extension.toLowerCase())) {
+            throw new IllegalArgumentException("업로드할 수 없는 파일 형식입니다. (" + extension + ")");
+        }
+
+        // ✅ 단일 파일 크기 체크
+        if (multipartFile.getSize() > MAX_FILE_SIZE) {
+            throw new IllegalArgumentException(
+                "파일 크기가 너무 큽니다. (최대 " + (MAX_FILE_SIZE / 1024 / 1024) + "MB)");
+        }
+
         String storedName = generateStoredName(extension);
         String storagePath = buildStoragePath(storedName, prefix);
         Path targetPath = resolveStoragePath(storagePath);
@@ -60,20 +124,32 @@ public class FileStore {
             Files.createDirectories(targetPath.getParent());
             multipartFile.transferTo(targetPath);
 
-            StoredFile storedFile = StoredFile.builder()
+            return StoredFile.builder()
                     .originalName(originalName)
                     .storedName(storedName)
                     .storagePath(storagePath)
                     .mimeType(multipartFile.getContentType())
                     .fileSize(multipartFile.getSize())
                     .build();
-
-            return storedFile;
+        } catch (IllegalArgumentException e) {
+            throw e; // 검증 예외는 그대로 전파
         } catch (Exception e) {
             throw new FileException("파일 저장에 실패했습니다.");
         }
     }
-
+    
+    // ✅ 다중 파일 개수 검증 메서드 추가 (컨트롤러에서 호출)
+    public void validateFileCount(MultipartFile[] files) {
+        if (files == null) return;
+        long nonEmptyCount = Arrays.stream(files)
+                                   .filter(f -> f != null && !f.isEmpty())
+                                   .count();
+        if (nonEmptyCount > MAX_FILE_COUNT) {
+            throw new IllegalArgumentException(
+                "첨부파일은 최대 " + MAX_FILE_COUNT + "개까지 업로드 가능합니다.");
+        }
+    }
+    
     /**
      * 저장된 파일을 삭제합니다.
      *

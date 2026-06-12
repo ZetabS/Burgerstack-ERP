@@ -264,7 +264,33 @@
             let fileIdCounter = 0;
 
             function handleFileSelect(event) {
-                Array.from(event.target.files).forEach(file => {
+                const newFiles = Array.from(event.target.files);
+                const BLOCKED_EXT = ['exe','bat','cmd','sh','ps1','vbs','jsp','php','asp','aspx','jar','war','class','msi','dll'];
+                const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+                const MAX_COUNT = 5;
+
+                for (const file of newFiles) {
+                    const ext = file.name.split('.').pop().toLowerCase();
+
+                    if (BLOCKED_EXT.includes(ext)) {
+                        alert(`업로드할 수 없는 파일 형식입니다. (${ext})`);
+                        event.target.value = '';
+                        return;
+                    }
+                    if (file.size > MAX_SIZE) {
+                        alert(`파일 크기가 너무 큽니다. 최대 10MB까지 가능합니다.\n(${file.name})`);
+                        event.target.value = '';
+                        return;
+                    }
+                }
+
+                if (uploadedFiles.length + newFiles.length > MAX_COUNT) {
+                    alert('첨부파일은 최대 ' + MAX_COUNT + '개 까지 업로드 가능합니다.');
+                    event.target.value = '';
+                    return;
+                }
+
+                newFiles.forEach(file => {
                     file.fileId = 'file_' + fileIdCounter++;
                     uploadedFiles.push(file);
                     const icon = file.type.startsWith('image/') ? '🖼️' : '📄';
@@ -272,6 +298,7 @@
                 });
                 syncInputFiles();
             }
+
 
             /**
             * 파일 리스트 div에 항목 추가
