@@ -2,11 +2,6 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>BurgerStack</title>
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
 <style>
 .outer {
@@ -29,6 +24,9 @@
     text-align: left;
     width : calc(100% - 120px);
     vertical-align : middle;
+}
+.table-area div {
+    
 }
 #notice-content {
     width : 100%;
@@ -70,8 +68,6 @@
     text-decoration: underline !important;
 }
 </style>
-</head>
-<body>
     <t:layout>
         <div class="outer">
             <br>
@@ -83,11 +79,14 @@
                 <table class="table table-area">
 
                     <tr>
-                        <td><b>${notice.title}</b></td>
+                        <td><b>　${notice.title}</b></td>
+                        <td style="text-align: right; padding : auto;">
+                            ${notice.detailDate}
+                        </td>
                     </tr>
 
                     <tr>
-                        <td>
+                        <td colspan="2">
                             <div id="notice-content" class="ql-editor">
                                 <c:out value="${notice.content}" escapeXml="false" />
                             </div>
@@ -95,8 +94,9 @@
                     </tr>
 
                     <tr>
-                        <td>
-                            <b>첨부파일</b><br><br>
+                        <td colspan="2">
+                            <b>첨부파일</b>
+                            <br><br>
                             <div id="file-list-container">
                                 <c:if test="${empty notice.fileList}">
                                     <span style="color: #999; font-size: 14px;">첨부된 파일이 없습니다.</span>
@@ -155,5 +155,3 @@
             }
         </script>
     </t:layout>
-</body>
-</html>

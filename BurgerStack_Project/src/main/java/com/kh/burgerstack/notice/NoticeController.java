@@ -187,7 +187,11 @@ public class NoticeController {
      */
     @GetMapping("/{noticeId:[0-9]+}")
     public String noticeDetail(@PathVariable("noticeId") Long noticeId, Model model) {
+    	
         Notice n = noticeService.noticeDetail(noticeId);
+        DateTimeFormatter formatterDetail = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        n.setDetailDate(n.getCreatedAt().format(formatterDetail));
+        
         model.addAttribute("notice", n);
         return "notice/noticeDetailHO";
     }
@@ -206,8 +210,8 @@ public class NoticeController {
             // 경로 resolve
             File file = fileStore.resolve(noticeFile.getStoragePath()).toFile();
 
-            System.out.println("[download] 최종 경로: " + file.getAbsolutePath());
-            System.out.println("[download] 존재 여부: " + file.exists());
+//            System.out.println("[download] 최종 경로: " + file.getAbsolutePath());
+//            System.out.println("[download] 존재 여부: " + file.exists());
 
             if (!file.exists()) return ResponseEntity.notFound().build();
 
@@ -246,46 +250,42 @@ public class NoticeController {
     /**
      * 공지사항 수정 처리
      */
-    @PostMapping({"/{noticeId}", "{noticeId}"})
+    @PostMapping("/{noticeId:[0-9]+}")
     public String updateNotice(@PathVariable("noticeId") Long noticeId,
                                 Notice n,
                                 MultipartFile[] files,
+                                @RequestParam(value = "deleteFileIds", required = false) ArrayList<Long> deleteFileIds,
                                 HttpSession session) {
 
         n.setNoticeId(noticeId);
         n.setTitle(XssDefencePolicy.defence(n.getTitle()));
         n.setContent(NoticeXssUtil.cleanContent(n.getContent()));
 
-        // 일반 첨부파일 처리
-        ArrayList<NoticeFile> fileList = new ArrayList<>();
+        // 새로 추가된 일반 첨부파일
+        ArrayList<NoticeFile> newFileList = new ArrayList<>();
         if (files != null && files.length > 0) {
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
                     StoredFile storedFile = fileStore.store(file, "notice_upfiles");
-                    NoticeFile noticeFile = storedFile.toNoticeFile(noticeId);
-                    fileList.add(noticeFile);
+                    newFileList.add(storedFile.toNoticeFile(noticeId));
                 }
             }
         }
 
-        // 세션에 보관된 Quill 이미지도 fileList에 합치기
+        // 새로 추가된 Quill 이미지
         ArrayList<NoticeFile> quillImageFiles =
             (ArrayList<NoticeFile>) session.getAttribute("quillImageFiles");
         if (quillImageFiles != null && !quillImageFiles.isEmpty()) {
-            fileList.addAll(quillImageFiles);
+            newFileList.addAll(quillImageFiles);
             session.removeAttribute("quillImageFiles");
         }
 
-        int result = noticeService.updateNotice(n, fileList);
+        int result = noticeService.updateNotice(n, newFileList, deleteFileIds);
 
-        if (result > 0) {
-            session.setAttribute("alertMsg", "공지사항이 수정되었습니다.");
-        } else {
-            session.setAttribute("alertMsg", "수정에 실패했습니다.");
-        }
-
+        session.setAttribute("alertMsg", result > 0 ? "공지사항이 수정되었습니다." : "수정에 실패했습니다.");
         return "redirect:/admin/notices/" + noticeId;
     }
+
 
 
     /**

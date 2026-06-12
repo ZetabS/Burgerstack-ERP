@@ -92,12 +92,19 @@
 	     WHERE NOTICE_ID = #{noticeId}
 	</update>
 	
-	<!-- 게시글 삭제 -->
-	<update id="deleteNotice">
-		UPDATE NOTICES
-		   SET DELETED_AT = SYSDATE
-		 WHERE DELETED_AT IS NULL
-		   AND NOTICE_ID = #{noticeId}
+	<!-- 파일 단건 soft delete (수정 시 X버튼으로 삭제) -->
+	<update id="deleteNoticeFile">
+	    UPDATE NOTICE_FILES
+	       SET DELETED_AT = SYSDATE
+	     WHERE NOTICE_FILE_ID = #{noticeFileId}
+	</update>
+	
+	<!-- 글 삭제 시 연관 파일 전체 soft delete -->
+	<update id="deleteNoticeFilesByNoticeId">
+	    UPDATE NOTICE_FILES
+	       SET DELETED_AT = SYSDATE
+	     WHERE DELETED_AT IS NULL
+	       AND NOTICE_ID = #{noticeId}
 	</update>
 	
 </mapper>
