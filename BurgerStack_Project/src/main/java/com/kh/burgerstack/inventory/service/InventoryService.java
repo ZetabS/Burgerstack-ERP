@@ -141,7 +141,7 @@ public class InventoryService {
         }
 
         boolean isOwnStore = loginUser.getStoreId() == null ? false
-                : loginUser.getStoreId().intValue() != storeId;
+                : loginUser.getStoreId().intValue() == storeId;
 
         // 점주는 자신의 점포에 접근 가능
         if (loginUser.isOwner() && isOwnStore) {
