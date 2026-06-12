@@ -159,21 +159,32 @@
 	</t:layout>
 	
     <script>
+        // 페이지 로드시 최초 실행
+        $(document).ready(function () {
+
+            priceFormatting()
+
+        }); //
+
+
+        // 금액 포멧팅
+        function priceFormatting() {
+            
+            // 클래스가 'comma-number'인 모든 태그 선택
+            const elements = document.querySelectorAll('.comma-number');
+            
+            elements.forEach(el => {
+                const num = Number(el.textContent);
+                // 숫자가 맞을 때만 변경
+                if (!isNaN(num)) {
+                el.textContent = num.toLocaleString('ko-KR');
+                }
+            });
+        }
+
         function autoSearch() {
             document.getElementById("searchForm").submit();
         }
-
-        // 금액 포멧팅
-        // 클래스가 'comma-number'인 모든 태그 선택
-        const elements = document.querySelectorAll('.comma-number');
-        
-        elements.forEach(el => {
-            const num = Number(el.textContent);
-            // 숫자가 맞을 때만 변경
-            if (!isNaN(num)) {
-            el.textContent = num.toLocaleString('ko-KR');
-            }
-        });
 
         let typing = false;
 
@@ -199,6 +210,8 @@
                     $("#purchaseListBody").html(
                         $(html).find("#purchaseListBody").html()
                     );
+
+                    priceFormatting();
                 }
             });
         }

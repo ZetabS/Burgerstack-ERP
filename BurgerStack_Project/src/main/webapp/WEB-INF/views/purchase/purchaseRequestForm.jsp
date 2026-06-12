@@ -127,197 +127,198 @@
 <script>
     $(document).ready(function () {
 
-    // =========================
-    // 1. 수량 변경
-    // =========================
-    $('.qty-input').on('input', function () {
+        // =========================
+        // 1. 수량 변경
+        // =========================
+        $('.qty-input').on('input', function () {
 
-        let $row = $(this).closest('.item-row');
+            let $row = $(this).closest('.item-row');
 
-        let qty = parseInt($(this).val()) || 0;
-        if (qty < 0) qty = 0;
+            let qty = parseInt($(this).val()) || 0;
+            if (qty < 0) qty = 0;
 
-        let price = parseInt($row.find('.unit-price').text()) || 0;
-
-        let total = qty * price;
-
-        $row.find('.total-price').text(total.toLocaleString() + "원");
-
-        // 체크 자동
-        $row.find('.row-check').prop('checked', qty > 0);
-
-        updateSidebar();
-    });
-
-
-    // =========================
-    // 2. 체크박스 변경
-    // =========================
-    $('.row-check').on('change', function () {
-
-        let $row = $(this).closest('.item-row');
-        let $qty = $row.find('.qty-input');
-
-        if ($(this).is(':checked')) {
-            if (parseInt($qty.val()) === 0) {
-                $qty.val(1);
-            }
-        } else {
-            // ❗ 체크 해제 시 완전 초기화
-            $qty.val(0);
-        }
-
-        let price = parseInt($row.find('.unit-price').text()) || 0;
-        let qty = parseInt($qty.val()) || 0;
-
-        $row.find('.total-price').text(price * qty);
-
-        updateSidebar();
-    });
-
-
-    // =========================
-    // 3. 사이드바 업데이트
-    // =========================
-    function updateSidebar() {
-
-        let $tbody = $('#sidebar-order-list tbody');
-        $tbody.empty();
-
-        let total = 0;
-
-        $('.main-table .item-row').each(function () {
-
-            let $row = $(this);
-
-            let checked = $row.find('.row-check').is(':checked');
-            let qty = parseInt($row.find('.qty-input').val()) || 0;
-
-            if (!checked || qty <= 0) return;
-
-            let name = $row.find('.item-name').text().trim();
             let price = parseInt($row.find('.unit-price').text()) || 0;
 
-            total += price * qty;
+            let total = qty * price;
 
-            // console.log("name = " + name);
-            // console.log("price = " + price);
-            // console.log("qty = " + qty);
+            $row.find('.total-price').text(total.toLocaleString() + "원");
 
+            // 체크 자동
+            $row.find('.row-check').prop('checked', qty > 0);
+
+            updateSidebar();
+        });
+
+
+        // =========================
+        // 2. 체크박스 변경
+        // =========================
+        $('.row-check').on('change', function () {
+
+            let $row = $(this).closest('.item-row');
+            let $qty = $row.find('.qty-input');
+
+            if ($(this).is(':checked')) {
+                if (parseInt($qty.val()) === 0) {
+                    $qty.val(1);
+                }
+            } else {
+                // ❗ 체크 해제 시 완전 초기화
+                $qty.val(0);
+            }
+
+            let price = parseInt($row.find('.unit-price').text()) || 0;
+            let qty = parseInt($qty.val()) || 0;
+
+            $row.find('.total-price').text(price * qty);
+
+            updateSidebar();
+        });
+
+
+        // =========================
+        // 3. 사이드바 업데이트
+        // =========================
+        function updateSidebar() {
+
+            let $tbody = $('#sidebar-order-list tbody');
+            $tbody.empty();
+
+            let total = 0;
+
+            $('.main-table .item-row').each(function () {
+
+                let $row = $(this);
+
+                let checked = $row.find('.row-check').is(':checked');
+                let qty = parseInt($row.find('.qty-input').val()) || 0;
+
+                if (!checked || qty <= 0) return;
+
+                let name = $row.find('.item-name').text().trim();
+                let price = parseInt($row.find('.unit-price').text()) || 0;
+
+                total += price * qty;
+
+                // console.log("name = " + name);
+                // console.log("price = " + price);
+                // console.log("qty = " + qty);
+
+                $('.item-row').each(function () {
+
+                    let $row = $(this);
+
+                    console.log("현재 row =", $row);
+
+                    console.log(
+                        "item-name count =",
+                        $row.find('.item-name').length
+                    );
+
+                    console.log(
+                        "qty-input count =",
+                        $row.find('.qty-input').length
+                    );
+
+                });
+
+                // 사이드바 출력
+                $tbody.append(
+                    $('<tr>').addClass('sidebar-row')
+                        .attr('data-id', $row.data('id'))
+                        .append(
+                            $('<td>').html('<input type="checkbox" class="sidebar-check" checked>')
+                        )
+                        .append(
+                            $('<td>').text(name)
+                        )
+                        .append(
+                            $('<td>').append(
+                                $('<input>')
+                                    .attr({
+                                        type: 'number',
+                                        min: 1,
+                                        max: 1000
+                                    })
+                                    .addClass('sidebar-qty')
+                                    .val(qty)
+                            )
+                        )
+                        .append(
+                            $('<td>').text((price* qty).toLocaleString() + '원')
+                        )
+                    );
+                });
+
+            $('.main-total-amount').text(total.toLocaleString() + "원");
+            $('#sidebar-total-amount').text(total.toLocaleString() + "원");
+
+            $('#totalAmountInput').val(total);
+
+        }
+
+
+        // =========================
+        // 4. 사이드바 체크 이벤트
+        // =========================
+        $(document).on('change', '.sidebar-check', function () {
+
+            let index = $(this).closest('tr').index();
+
+            let $mainRow = $('.item-row').filter(function () {
+                return $(this).find('.item-name').text() ===
+                    $(this).closest('tr').find('.item-name').text();
+            });
+
+            let name = $(this).closest('tr').find('td:nth-child(2)').text();
+
+            // 메인 row 찾기
             $('.item-row').each(function () {
 
                 let $row = $(this);
 
-                console.log("현재 row =", $row);
+                if ($row.find('.item-name').text().trim() === name) {
 
-                console.log(
-                    "item-name count =",
-                    $row.find('.item-name').length
-                );
-
-                console.log(
-                    "qty-input count =",
-                    $row.find('.qty-input').length
-                );
-
+                    // 동기화 핵심
+                    $row.find('.row-check').prop('checked', false);
+                    $row.find('.qty-input').val(0);
+                    $row.find('.total-price').text(0);
+                }
             });
 
-            // 사이드바 출력
-            $tbody.append(
-                $('<tr>').addClass('sidebar-row')
-                    .attr('data-id', $row.data('id'))
-                    .append(
-                        $('<td>').html('<input type="checkbox" class="sidebar-check" checked>')
-                    )
-                    .append(
-                        $('<td>').text(name)
-                    )
-                    .append(
-                        $('<td>').append(
-                            $('<input>')
-                                .attr({
-                                    type: 'number',
-                                    min: 1,
-                                    max: 1000
-                                })
-                                .addClass('sidebar-qty')
-                                .val(qty)
-                        )
-                    )
-                    .append(
-                        $('<td>').text((price* qty).toLocaleString() + '원')
-                    )
-            );
+            updateSidebar();
         });
 
-        $('.main-total-amount').text(total.toLocaleString() + "원");
-        $('#sidebar-total-amount').text(total.toLocaleString() + "원");
+        // =========================
+        // 5. 사이드바 수량 이벤트
+        // =========================
+        $(document).on('change', '.sidebar-qty', function () {
 
-        $('#totalAmountInput').val(total);
+            let qty = parseInt($(this).val()) || 0;
 
-    }
+            let materialId = $(this)
+                .closest('tr')
+                .data('id');
 
+            let $mainRow = $('.item-row[data-id="' + materialId + '"]');
 
-    // =========================
-    // 4. 사이드바 체크 이벤트
-    // =========================
-    $(document).on('change', '.sidebar-check', function () {
+            $mainRow.find('.qty-input').val(qty);
 
-        let index = $(this).closest('tr').index();
+            let price =
+                parseInt($mainRow.find('.unit-price').text()) || 0;
 
-        let $mainRow = $('.item-row').filter(function () {
-            return $(this).find('.item-name').text() ===
-                   $(this).closest('tr').find('.item-name').text();
-        });
+            $mainRow.find('.total-price').text(price * qty);
 
-        let name = $(this).closest('tr').find('td:nth-child(2)').text();
-
-        // 메인 row 찾기
-        $('.item-row').each(function () {
-
-            let $row = $(this);
-
-            if ($row.find('.item-name').text().trim() === name) {
-
-                // 동기화 핵심
-                $row.find('.row-check').prop('checked', false);
-                $row.find('.qty-input').val(0);
-                $row.find('.total-price').text(0);
+            if (qty > 0) {
+                $mainRow.find('.row-check').prop('checked', true);
+            } else {
+                $mainRow.find('.row-check').prop('checked', false);
             }
+
+            updateSidebar();
         });
 
-        updateSidebar();
-    });
-    // =========================
-    // 5. 사이드바 수량 이벤트
-    // =========================
-    $(document).on('change', '.sidebar-qty', function () {
-
-        let qty = parseInt($(this).val()) || 0;
-
-        let materialId = $(this)
-            .closest('tr')
-            .data('id');
-
-        let $mainRow = $('.item-row[data-id="' + materialId + '"]');
-
-        $mainRow.find('.qty-input').val(qty);
-
-        let price =
-            parseInt($mainRow.find('.unit-price').text()) || 0;
-
-        $mainRow.find('.total-price').text(price * qty);
-
-        if (qty > 0) {
-            $mainRow.find('.row-check').prop('checked', true);
-        } else {
-            $mainRow.find('.row-check').prop('checked', false);
-        }
-
-        updateSidebar();
-    });
-
-});
+    }); // 끝
 
 function buildJson() {
 
