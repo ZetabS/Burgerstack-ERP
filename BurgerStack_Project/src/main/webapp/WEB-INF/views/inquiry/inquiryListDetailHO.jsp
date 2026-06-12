@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -81,6 +82,7 @@
 	color: white;
 	margin-left: 10px;
 }
+
 .btn-area {
 	text-align: center;
 	margin-top: 30px;
@@ -115,11 +117,14 @@
 
 		<div class="inquiry-title-box">${inquiry.title}</div>
 
-		<div class="inquiry-info">문의 등록일 : ${inquiry.createdAt}</div>
+		<div class="inquiry-info" name="createAt">문의 등록일 :
+			${fn:replace(inquiry.createdAt, 'T', ' ')}</div>
 
 		<div class="inquiry-content">${inquiry.content}</div>
 
-		<div class="answer-info">답변 등록일 : ${inquiry.answeredAt}</div>
+
+		<div class="answer-info" name="answeredAt">답변 등록일 :
+			${fn:replace(inquiry.answeredAt, 'T', ' ')}</div>
 
 		<div class="answer-content">
 
@@ -146,13 +151,12 @@
 				onclick="location.href='burgerstack/admin/inquiries'">목록</button>
 
 		</div>
-				<hr>
-		
+		<hr>
+
 		<div class="file-area">
-			<label>첨부파일</label>
-			<input type="file" name="uploadFile">
+			<label>첨부파일</label> <input type="file" name="uploadFile">
 		</div>
-	
+
 	</t:layout>
 
 </body>

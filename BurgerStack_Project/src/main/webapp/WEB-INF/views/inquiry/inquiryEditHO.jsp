@@ -102,7 +102,7 @@ h1 {
 
 </head>
 <body>
-	<t:menubarHO>
+	<t:layout>
 
 		<div class="main-content">
 			<div class="form-container">
@@ -149,6 +149,6 @@ h1 {
 				</form>
 			</div>
 		</div>
-	</t:menubarHO>
+	</t:layout>
 </body>
 </html>

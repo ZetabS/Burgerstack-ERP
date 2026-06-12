@@ -135,7 +135,7 @@
 				    <button type="button"
 				            class="login-button"
 				            onclick="location.href='/burgerstack/auth/login'">
-				        홈으로 돌아가기
+				        돌아가기
 				    </button>
 				</div>
 	

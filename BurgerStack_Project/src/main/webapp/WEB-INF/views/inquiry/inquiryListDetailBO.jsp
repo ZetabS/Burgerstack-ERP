@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -115,19 +116,19 @@
 </head>
 <body>
 	<t:layout>
-	
+
 
 		<h1 id="title">문의사항 상세 보기</h1>
 
 		<div class="inquiry-title-box" name="title">${inquiry.title}</div>
 
 		<div class="inquiry-info" name="createAt">문의 등록일 :
-			${inquiry.createdAt}</div>
+			${fn:replace(inquiry.createdAt, 'T', ' ')}</div>
 
 		<div class="inquiry-content" name="content">${inquiry.content}</div>
 
 		<div class="answer-info" name="answeredAt">답변 등록일 :
-			${inquiry.answeredAt}</div>
+			${fn:replace(inquiry.answeredAt, 'T', ' ')}</div>
 
 		<div class="answer-content" name="answerContent">
 
@@ -153,16 +154,14 @@
 
 		</div>
 		<c:if test="${not empty file}">
-		    <div class="form-group">
-		        <label>첨부파일</label>
-		
-		        <a href="/burgerstack/admin/inquiries/file/${file.inquiryFileId}">
-		            ${file.originalName}
-		        </a>
-		    </div>
+			<div class="form-group">
+				<label>첨부파일</label> <a
+					href="/burgerstack/admin/inquiries/file/${file.inquiryFileId}">
+					${file.originalName} </a>
+			</div>
 		</c:if>
 
-		
+
 	</t:layout>
 
 </body>
