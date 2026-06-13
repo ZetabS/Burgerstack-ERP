@@ -24,28 +24,26 @@ import jakarta.servlet.http.HttpSession;
 public class PurchaseService {
 
     @Autowired
-	private SqlSessionTemplate sqlSession;
+    private SqlSessionTemplate sqlSession;
 
     @Autowired
     private PurchaseDao purchaseDao;
 
-    
     public ArrayList<MaterialInventoryDto> searchMaterialsList(HttpSession session) {
 
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        LoginUser loginUser =(LoginUser) session.getAttribute("loginUser");
-
-        return purchaseDao.searchMaterialsList(sqlSession,loginUser.getStoreId());
+        return purchaseDao.searchMaterialsList(sqlSession, loginUser.getStoreId());
     }
 
-    //발주 목록 조회
+    // 발주 목록 조회
     public ArrayList<PurchaseDto> searchPurchaseList(
-        PagingRequest pagingRequest,
-        PurchaseSearchDto condition, 
-        HttpSession session) {
+            PagingRequest pagingRequest,
+            PurchaseSearchDto condition,
+            HttpSession session) {
 
         // 로그인 세션 값 불러오기
-        LoginUser loginUser =(LoginUser) session.getAttribute("loginUser");
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
         // 검색 조건 설정
         if ("ADMIN".equals(loginUser.getRole())) {
@@ -72,16 +70,15 @@ public class PurchaseService {
             PurchaseSearchDto condition,
             HttpSession session) {
 
-        LoginUser loginUser =
-                (LoginUser) session.getAttribute("loginUser");
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
         condition.setStoreId(loginUser.getStoreId());
 
-        if("ADMIN".equals(loginUser.getRole())){
+        if ("ADMIN".equals(loginUser.getRole())) {
 
             condition.setAdmin(true);
 
-        }else{
+        } else {
 
             condition.setAdmin(false);
 
@@ -96,7 +93,8 @@ public class PurchaseService {
     // 발주 요청 처리
     @Transactional
     public void createPurchase(List<PurchaseOrderItemDto> items,
-                                HttpSession session) {
+            String orderMemo,
+            HttpSession session) {
 
         // 품목 미선택시 예외처리
         if (items == null || items.isEmpty()) {
@@ -110,7 +108,11 @@ public class PurchaseService {
         // 1. total 계산
         long total = 0;
 
-        if(total > Integer.MAX_VALUE) {
+        if (orderMemo == null || orderMemo.isBlank()) {
+            orderMemo = "-";
+        }
+
+        if (total > Integer.MAX_VALUE) {
             throw new IllegalArgumentException(
                     "계산 금액이 허용 범위를 초과했습니다.");
         }
@@ -145,8 +147,7 @@ public class PurchaseService {
 
         PurchaseDto purchase = purchaseDao.selectPurchase(purchaseOrderId, sqlSession);
 
-        List<PurchaseOrderDetailDto> items =
-                purchaseDao.selectPurchaseOrderDetail(purchaseOrderId, sqlSession);
+        List<PurchaseOrderDetailDto> items = purchaseDao.selectPurchaseOrderDetail(purchaseOrderId, sqlSession);
 
         purchase.setItems(items);
 
@@ -158,30 +159,27 @@ public class PurchaseService {
 
         PurchaseDto purchase = purchaseDao.selectPurchase(purchaseOrderId, sqlSession);
 
-        List<PurchaseOrderDetailDto> items =
-                purchaseDao.selectPurchaseOrderDetail(purchaseOrderId, sqlSession);
+        List<PurchaseOrderDetailDto> items = purchaseDao.selectPurchaseOrderDetail(purchaseOrderId, sqlSession);
 
         purchase.setItems(items);
 
         return purchase;
     }
 
-
     // 발주 수정 처리
     @Transactional
     public void updatePurchase(Long purchaseOrderId,
-                            List<PurchaseOrderItemDto> items,
-                            HttpSession session) {
+            List<PurchaseOrderItemDto> items,
+            HttpSession session) {
 
         LoginUser user = (LoginUser) session.getAttribute("loginUser");
 
-        
         if (user == null) {
             throw new RuntimeException("로그인 필요");
         }
 
         PurchaseDto origin = purchaseDao.selectPurchase(purchaseOrderId, sqlSession);
-        
+
         // 1. total 계산
         long total = 0;
 
@@ -192,8 +190,6 @@ public class PurchaseService {
 
             total += price * qty;
         }
-
-
 
         // 🔥 상태 체크 (REQUESTED만 수정 가능)
         if (!"REQUESTED".equals(origin.getStatus())) {
@@ -209,7 +205,7 @@ public class PurchaseService {
             purchaseDao.insertPurchaseOrderItem(item, sqlSession);
         }
 
-         // TOTAL 재계산
+        // TOTAL 재계산
         purchaseDao.updateTotalAmount(purchaseOrderId, sqlSession);
     }
 
@@ -236,7 +232,6 @@ public class PurchaseService {
         purchaseDao.cancelPurchase(sqlSession, purchaseOrderId);
     }
 
-
     @Transactional
     public void processPurchase(
             Long purchaseOrderId,
@@ -245,26 +240,25 @@ public class PurchaseService {
         boolean allApproved = true;
         boolean allRejected = true;
 
-        for(PurchaseApprovalItemDto item : items){
+        for (PurchaseApprovalItemDto item : items) {
 
-            if(item.getApprovedQuantity() < 0){
+            if (item.getApprovedQuantity() < 0) {
                 throw new IllegalArgumentException("승인수량 오류");
             }
 
-            if(item.getRejectQuantity() < 0){
+            if (item.getRejectQuantity() < 0) {
                 throw new IllegalArgumentException("반려수량 오류");
             }
 
-            if(item.getApprovedQuantity()
-                    + item.getRejectQuantity()
-                    != item.getRequestQuantity()){
+            if (item.getApprovedQuantity()
+                    + item.getRejectQuantity() != item.getRequestQuantity()) {
 
                 throw new IllegalArgumentException(
-                    "승인수량 + 반려수량은 요청수량과 같아야 합니다.");
+                        "승인수량 + 반려수량은 요청수량과 같아야 합니다.");
             }
         }
 
-        for(PurchaseApprovalItemDto item : items){
+        for (PurchaseApprovalItemDto item : items) {
 
             purchaseDao.updateApprovedQuantity(
                     purchaseOrderId,
@@ -273,28 +267,27 @@ public class PurchaseService {
                     item.getRejectReason(),
                     sqlSession);
 
-            if(item.getApprovedQuantity()
-                    < item.getRequestQuantity()){
+            if (item.getApprovedQuantity() < item.getRequestQuantity()) {
 
                 allApproved = false;
             }
 
-            if(item.getApprovedQuantity() > 0){
+            if (item.getApprovedQuantity() > 0) {
                 allRejected = false;
             }
         }
 
         String status;
 
-        if(allApproved){
+        if (allApproved) {
 
             status = "APPROVED";
 
-        }else if(allRejected){
+        } else if (allRejected) {
 
             status = "REJECTED";
 
-        }else{
+        } else {
 
             status = "PARTIALLY_APPROVED";
         }
@@ -306,7 +299,7 @@ public class PurchaseService {
     }
 
     // 발주 정보 조회
-    public PurchaseOrderDto selectPurchaseOrder(Long purchaseOrderId){
+    public PurchaseOrderDto selectPurchaseOrder(Long purchaseOrderId) {
 
         return purchaseDao.selectPurchaseOrder(purchaseOrderId, sqlSession);
     }

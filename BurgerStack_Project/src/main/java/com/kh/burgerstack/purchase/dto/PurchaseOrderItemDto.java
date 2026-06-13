@@ -18,4 +18,5 @@ public class PurchaseOrderItemDto {
     private String materialNameSnapshot;
     private Long supplyPriceSnapshot;
     private Long requestQuantity;
+    private String orderMemo;
 }

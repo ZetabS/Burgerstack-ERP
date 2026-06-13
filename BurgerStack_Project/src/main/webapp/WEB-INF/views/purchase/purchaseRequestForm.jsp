@@ -4,32 +4,57 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <title>발주 요청 페이지 조회</title>
 <style>
-        .disabled-row {
+    .disabled-row {
         opacity: 0.5;
         pointer-events: none;
+    }
+    .sidebar-table-wrapper {
+        max-height: 270px;
+        overflow-y: auto;
+    }
+
+    #sidebar-order-list {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    #sidebar-order-list thead th {
+        position: sticky;
+        top: 0;
+        background: #19c765;
+        z-index: 1;
+    }
+    td h3{
+        text-align: right;
+        padding-right: 20px;
     }
 </style>
 <!-- 레이아웃 작업 -->
 <t:layout>
 
-    <h2>발주 요청 페이지</h2>
+<div class="outer">
+
+
+    <h2>발주 요청</h2>
     
     <br>
 
     <form action="${pageContext.request.contextPath}/owner/purchases" method="post">
         <!-- 검색 / 필터 -->
         <div class="search-area" align="rignt">
-            <select>
-                <option hidden selected disabled>정렬 방식</option>
-                <option>재고 부족순</option>
-                <option>재고 많은순</option>
-                <option>구매가 높은순</option>
-                <option>구매가 낮은순</option>
-                <option>발주 수량순</option>
+            <select id="typeFilter">
+                <option hidden selected disabled>자재 유형</option>
+                <option value="">전체</option>
+                <option value="상온">상온</option>
+                <option value="냉장">냉장</option>
+                <option value="냉동">냉동</option>
+                <option value="건자재">건자재</option>
+                <option value="주방용품">주방용품</option>
+                <option value="기타">기타</option>
             </select>
 
-            <input type="text" placeholder="검색어 입력">
-            <button class="search-btn">  
+            <input type="text" placeholder="검색어 입력" id="keyword">
+            <button class="search-btn" id="searchBtn">  
                     <!-- <img src="" alt="검색"/> -->
             </button>
         </div>
@@ -37,14 +62,16 @@
         <table class="table2 main-table">
             <thead>
                 <tr>
-                    <th>선택</th>
-                    <th>품목</th>
-                    <th>원가</th>
-                    <th>재고</th>
-                    <th>주문수량</th>
-                    <th>구매가격</th>
-                    <th>상태</th>
-                    
+                    <th>
+                        <div class="check-all" onclick="toggleCheckSaftyQty()">선택</div>
+                    </th>
+                    <th>자재 유형</th>
+                    <th>자재명</th>
+                    <th>공급가</th>
+                    <th>재고 수량</th>
+                    <th>안전재고 수량</th>
+                    <th>요청 수량</th>
+                    <th>자재별 금액</th>
                 </tr>
             </thead>
 
@@ -54,21 +81,32 @@
                         <td>
                             <input type="checkbox" class="row-check">
                         </td>
+                        <td class="item-type">
+                            <c:choose>
+                                <c:when test="${m.materialType eq 'AF'}">상온</c:when>
+                                <c:when test="${m.materialType eq 'RF'}">냉장</c:when>
+                                <c:when test="${m.materialType eq 'FF'}">냉동</c:when>
+                                <c:when test="${m.materialType eq 'PK'}">건자재</c:when>
+                                <c:when test="${m.materialType eq 'KW'}">주방용품</c:when>
+                                <c:when test="${m.materialType eq 'ET'}">기타</c:when>
+                                <c:otherwise>${m.materialType}</c:otherwise>
+                            </c:choose>
+                        </td>
                         <td class="item-name">${m.materialName}</td>
-                        <td class="unit-price comma-number">${m.costPrice}</td>
+                        <td class="unit-price comma-number">${m.supplyPrice}</td>
                         <td class="stock">${m.currentQuantity}</td>
+                        <td class="safety-stock">${m.safetyQuantity}</td>
                         <td>
                             <input type="number" class="qty-input" value="0" min="0" max="1000">
                         </td>
                         <td class="total-price">0</td>
-                        <td class="status">${m.status}</td>
                     </tr>
                 </c:forEach>
                 <tr>
                     <td colspan="2">총 금액</td>
-                    <td colspan="3"></td>
+                    <td colspan="5"></td>
                     <td>
-                        <h3 class="main-total-amount">0원</h3>
+                        <h3 class="main-total-amount">0원 </h3>
                     </td>
                 </tr>
             </tbody>
@@ -82,7 +120,7 @@
 
         <div class="middle-area">
             <button type="button" class="button-secondary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
-            <button type="submit" class="button-primary" onclick="submitOrder()"> 결제 </button>
+            <button type="button" class="button-primary" onclick="openSidebar()"> 결제 </button>
         </div>
 
 
@@ -92,35 +130,59 @@
                 주문리스트
             </jsp:attribute>
             <jsp:body>
-                <table class="table2" id="sidebar-order-list">
-                    <thead>
-                        <tr>
-                            <th>선택</th>
-                            <th>품목</th>
-                            <th>주문수량</th>
-                            <th>구매가격</th>
-                        </tr>
-                    </thead>
+                <div class="sidebar-table-wrapper">
+                    <table class="table2" id="sidebar-order-list">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="check-all" onclick="toggleCheckSaftyQty()">선택</div>
+                                </th>
+                                <th>품목</th>
+                                <th>주문수량</th>
+                                <th>구매가격</th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
+                        <tbody>
 
-                    </tbody>
-                </table>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td><b>총 금액</b></td>
+                                <td colspan="3">
+                                    <h3 id="sidebar-total-amount">0원</h3>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
 
-                <div class="middle-area">
-                    <p style="padding: 2px; text-align: center;">
-                        <h5>TOTAL</h5>
-                    </p>
-                    <b><h3 id="sidebar-total-amount">0원</h3></b>
-                    <button class="button-primary" onclick="submitOrder()"> 결제 </button>
-                    
+                <div style="margin-top:10px;">                    
+
+                    <div style="width:90%; margin-left:20px;">
+                        <textarea
+                            name="orderMemo"
+                            id="orderMemo"
+                            rows="4"
+                            style="width:100%; resize:none;"
+                            placeholder="발주 관련 요청사항을 입력하세요."></textarea>
+                        <br>
+                        <button type="button"
+                                class="button-primary"
+                                onclick="submitOrder()"
+                                style="width:90%; align-items:center; justify-content:center; display:flex;">
+                            결제
+                        </button>
+                    </div>
+
+
                 </div>
             </jsp:body>
         </t:sidebar>
 
     </form>
     
-
+</div>
 </t:layout>
 
 
@@ -141,11 +203,11 @@
 
             let total = qty * price;
 
-            $row.find('.total-price').text(total.toLocaleString() + "원");
+            $row.find('.total-price').text(total.toLocaleString());
 
             // 체크 자동
             $row.find('.row-check').prop('checked', qty > 0);
-
+            
             updateSidebar();
         });
 
@@ -154,23 +216,38 @@
         // 2. 체크박스 변경
         // =========================
         $('.row-check').on('change', function () {
-
+            // 체크박스가 변경된 행 찾기
             let $row = $(this).closest('.item-row');
             let $qty = $row.find('.qty-input');
 
+            // 체크 시 안전재고 수량으로 변경, 해제 시 0으로 변경
             if ($(this).is(':checked')) {
-                if (parseInt($qty.val()) === 0) {
-                    $qty.val(1);
+
+                let safety =
+                    parseInt($row.find('.safety-stock').text()) || 0;
+
+                let current =
+                    parseInt($row.find('.stock').text()) || 0;
+
+                let qty = safety - current;
+
+                // 안전재고보다 현재 재고가 많으면 수량 1로 설정
+                if(qty <= 0){
+                    qty = 1;
+                }else if(qty > 1000){
+                    qty = 1000;
                 }
+                // 체크 시 안전재고 수량으로 변경
+                $qty.val(qty);
+
             } else {
-                // ❗ 체크 해제 시 완전 초기화
+                // 체크 해제 시 수량 0으로 변경
                 $qty.val(0);
             }
-
             let price = parseInt($row.find('.unit-price').text()) || 0;
             let qty = parseInt($qty.val()) || 0;
 
-            $row.find('.total-price').text(price * qty);
+            $row.find('.total-price').text((price * qty).toLocaleString());
 
             updateSidebar();
         });
@@ -225,30 +302,31 @@
                 // 사이드바 출력
                 $tbody.append(
                     $('<tr>').addClass('sidebar-row')
-                        .attr('data-id', $row.data('id'))
-                        .append(
-                            $('<td>').html('<input type="checkbox" class="sidebar-check" checked>')
+                    .attr('data-id', $row.data('id'))
+                    .append(
+                        $('<td>').html('<input type="checkbox" class="sidebar-check" checked>')
+                    )
+                    .append(
+                        $('<td>').text(name)
+                    )
+                    .append(
+                        $('<td>').append(
+                            $('<input>')
+                                .attr({
+                                    type: 'number',
+                                    min: 1,
+                                    max: 1000
+                                })
+                                .addClass('sidebar-qty')
+                                .val(qty)
                         )
-                        .append(
-                            $('<td>').text(name)
-                        )
-                        .append(
-                            $('<td>').append(
-                                $('<input>')
-                                    .attr({
-                                        type: 'number',
-                                        min: 1,
-                                        max: 1000
-                                    })
-                                    .addClass('sidebar-qty')
-                                    .val(qty)
-                            )
-                        )
-                        .append(
-                            $('<td>').text((price* qty).toLocaleString() + '원')
-                        )
-                    );
-                });
+                    )
+                    .append(
+                        $('<td>').text((price* qty).toLocaleString() + "원")
+                    )
+                );
+        
+            });
 
             $('.main-total-amount').text(total.toLocaleString() + "원");
             $('#sidebar-total-amount').text(total.toLocaleString() + "원");
@@ -318,6 +396,8 @@
             updateSidebar();
         });
 
+        priceFormatting();
+
     }); // 끝
 
 function buildJson() {
@@ -326,33 +406,85 @@ function buildJson() {
 
     $('.item-row').each(function () {
 
-        let checked = $(this).find('.row-check').is(':checked');
-        let qty = parseInt($(this).find('.qty-input').val()) || 0;
+        let checked =
+            $(this).find('.row-check').is(':checked');
 
-        if (!checked || qty <= 0) return;
+        let qty =
+            parseInt($(this).find('.qty-input').val()) || 0;
+
+        if (!checked || qty <= 0) {
+            return;
+        }
 
         items.push({
             materialId: $(this).data('id'),
-            materialNameSnapshot: $(this).find('.item-name').text().trim(),
-            supplyPriceSnapshot: parseInt($(this).find('.unit-price').text()),
-            requestQuantity: parseInt($(this).find('.qty-input').val()) || 0
+            materialNameSnapshot:
+                $(this).find('.item-name').text().trim(),
+            supplyPriceSnapshot:
+                parseInt($(this).find('.unit-price').text()) || 0,
+            requestQuantity: qty,
+            orderMemo: $('#orderMemo').val()
         });
     });
 
     $('#itemsJson').val(JSON.stringify(items));
+
+    return items;
 }
 
+// 주문 제출
 function submitOrder() {
-    buildJson();
+
+    let items = buildJson();
 
     if (items.length === 0) {
         alert("발주할 상품을 선택하세요.");
         return;
     }
 
-    $('form').submit();
+    if (!confirm("발주를 진행하시겠습니까?")) {
+        return;
+    }
+
+    document.forms[0].submit();
 }
 
+// 체크박스 안전재고 미달 선택/해제
+let checked = true;
+
+function toggleCheckSaftyQty() {
+
+    checked = !checked;
+
+        $('.item-row').each(function() {
+
+        let $row = $(this);
+
+        let stock =
+            parseInt($row.find('.stock').text()) || 0;
+
+        let safety =
+            parseInt($row.find('.safety-stock').text()) || 0;
+
+        let shortage = safety - stock;
+
+        if(shortage > 0) {
+
+            $row.find('.row-check')
+                .prop('checked', checked)
+                .trigger('change');
+
+        } else if(!checked) {
+
+            // 해제 시에는 전부 해제
+            $row.find('.row-check')
+                .prop('checked', false)
+                .trigger('change');
+        }
+    });
+}
+
+// 수량 입력 제한
 $('.qty-input').on('input', function () {
 
     let qty = parseInt($(this).val()) || 0;
@@ -372,4 +504,72 @@ $('.qty-input').on('input', function () {
 
 });
 
+// 엔터키로 인한 폼 제출 방지
+$('form').on('keydown', function(e) {
+
+    if(e.key === 'Enter') {
+        e.preventDefault();
+        return false;
+    }
+
+});
+
+// 필터링 함수
+function filterMaterials() {
+
+    let selectedType =
+        $('#typeFilter').val().trim();
+
+    let keyword =
+        $('#keyword').val().trim().toLowerCase();
+
+    $('.item-row').each(function() {
+
+        let $row = $(this);
+
+        let materialType =
+            $row.find('.item-type').text().trim();
+
+        let materialName =
+            $row.find('.item-name').text().trim().toLowerCase();
+
+        let typeMatch =
+            selectedType === '' ||
+            materialType === selectedType;
+
+        let keywordMatch =
+            materialName.includes(keyword);
+
+        if(typeMatch && keywordMatch) {
+            $row.show();
+        }
+        else {
+            $row.hide();
+        }
+    });
+}
+// 금액 포멧팅
+function priceFormatting() {
+    
+    // 클래스가 'comma-number'인 모든 태그 선택
+    const elements = document.querySelectorAll('.comma-number');
+    
+    elements.forEach(el => {
+        const num = Number(el.textContent);
+        // 숫자가 맞을 때만 변경
+        if (!isNaN(num)) {
+        el.textContent = num.toLocaleString('ko-KR');
+        }
+    });
+}
+
+$('#typeFilter').on('change', function() {
+    filterMaterials();
+});
+$('#keyword').on('input', function() {
+    filterMaterials();
+});
+$('#searchBtn').on('click', function() {
+    filterMaterials();
+});
 </script>
