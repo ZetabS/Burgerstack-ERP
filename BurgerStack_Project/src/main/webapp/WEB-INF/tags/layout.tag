@@ -6,6 +6,8 @@
 
 <c:set var="role" value="${sessionScope.loginUser.admin ? 'admin' : sessionScope.loginUser.owner ? 'owner' : null}" />
 
+<c:url var="cssUrl" value="/resources/css" />
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -25,9 +27,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <%-- CSS --%>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/table.css" />
+    <link rel="stylesheet" href="${cssUrl}/common.css" />
+    <link rel="stylesheet" href="${cssUrl}/layout.css" />
+    <link rel="stylesheet" href="${cssUrl}/table.css" />
   </head>
   <body>
     <div class="layout__container">
