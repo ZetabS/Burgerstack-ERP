@@ -97,7 +97,7 @@
               </jsp:attribute>
               <jsp:attribute name="tbody">
                 <c:forEach var="item" items="${detail.list}">
-                  <tr>
+                  <ui:TableRow>
                     <td>${item.materialName}</td>
 
                     <td class="text-right">${item.beforeQuantity}</td>
@@ -119,7 +119,7 @@
                     </td>
 
                     <td class="text-right">${item.afterQuantity}</td>
-                  </tr>
+                  </ui:TableRow>
                 </c:forEach>
               </jsp:attribute>
             </ui:DataTable>

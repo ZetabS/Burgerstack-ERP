@@ -67,7 +67,7 @@
           </jsp:attribute>
           <jsp:attribute name="tbody">
             <c:forEach var="item" items="${view.list}">
-              <tr>
+              <ui:TableRow>
                 <c:if test="${isAdmin}">
                   <td>${item.storeName}</td>
                 </c:if>
@@ -84,7 +84,7 @@
                   <c:url var="adjustUrl" value="/${role}/inventories/${item.inventoryId}/adjust" />
                   <a href="${adjustUrl}" class="btn btn-sm btn-outline-primary">조정</a>
                 </td>
-              </tr>
+              </ui:TableRow>
             </c:forEach>
           </jsp:attribute>
         </ui:DataTable>

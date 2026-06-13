@@ -7,6 +7,7 @@
 <c:set var="role" value="${sessionScope.loginUser.admin ? 'admin' : sessionScope.loginUser.owner ? 'owner' : null}" />
 
 <c:url var="cssUrl" value="/resources/css" />
+<c:url var="jsUrl" value="/resources/js" />
 
 <!DOCTYPE html>
 <html>
@@ -80,5 +81,7 @@
       </div>
     </div>
     <t:alertify />
+
+    <script src="${jsUrl}/components.js"></script>
   </body>
 </html>

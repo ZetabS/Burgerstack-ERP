@@ -8,3 +8,4 @@ $(() => {
     location.href = $(e.currentTarget).data("href");
   });
 });
+

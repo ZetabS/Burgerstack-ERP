@@ -56,7 +56,7 @@
           <jsp:attribute name="tbody">
             <c:forEach var="item" items="${view.list}">
               <c:url var="detail" value="/${role}/inventory-transactions/${item.inventoryTransactionId}" />
-              <tr class="clickable-row" data-href="${detail}">
+              <ui:TableRow clickable="true" href="${detail}">
                 <td>${item.transactionType}</td>
                 <c:if test="${isAdmin}">
                   <td>${item.storeName}</td>
@@ -64,7 +64,7 @@
                 <td>${item.createdByName}</td>
                 <td>${item.createdAt}</td>
                 <td>${item.reason}</td>
-              </tr>
+              </ui:TableRow>
             </c:forEach>
           </jsp:attribute>
         </ui:DataTable>
@@ -76,9 +76,6 @@
       $(() => {
         $("#store-option").on("change", () => $("form").submit());
         $("#transaction-type-option").on("change", () => $("form").submit());
-        $(".clickable-row").click((e) => {
-          location.href = $(e.target).closest(".clickable-row").attr("data-href");
-        });
       });
     </script>
   </body>
