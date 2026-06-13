@@ -156,8 +156,6 @@
 				</c:choose>
 			</div>
 
-			<div>${fn:length(inquiry.answerContent)}</div>
-
 			<div class="btn-area">
 
 				<button type="button" id="saveBtn"

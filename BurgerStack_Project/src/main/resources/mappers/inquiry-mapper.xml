@@ -141,12 +141,15 @@
 	
 	<update id="InquiryEditHO"
 	        parameterType="com.kh.burgerstack.inquiry.Inquiry">
-	
+		
 	    UPDATE INQUIRIES
-	       SET ANSWER_CONTENT = #{answerContent}
+	       SET ANSWER_CONTENT = #{answerContent},
+	           ANSWERED_AT = SYSDATE
 	     WHERE INQUIRY_ID = #{inquiryId}
 	
 	</update>
+	
+	
 	
 	<update id="InquiryDeleteHO" parameterType="com.kh.burgerstack.inquiry.Inquiry">
 	    UPDATE INQUIRIES

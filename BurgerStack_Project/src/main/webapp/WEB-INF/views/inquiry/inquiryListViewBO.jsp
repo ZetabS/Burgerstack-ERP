@@ -19,6 +19,7 @@
 	border-radius: 8px;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -70,23 +71,40 @@ td {
 	color: #22c55e;
 	text-decoration: underline;
 }
+
 tbody tr:hover {
-     background-color: #f5f5f5;
-     cursor: pointer;
+	background-color: #f5f5f5;
+	cursor: pointer;
+}
+
+.status-badge {
+	display: inline-block;
+	padding: 6px 14px;
+	border-radius: 20px;
+	font-size: 13px;
+	font-weight: bold;
+	color: white;
+}
+
+.status-active {
+	background-color: #28a745;
+}
+
+.status-inactive {
+	background-color: #dc3545;
 }
 </style>
 </head>
 <body>
 
- <t:layout>
+	<t:layout>
 
 
 		<h1>나의 문의사항</h1>
 
 		<div class="content">
 
-			<form action="/burgerstack/owner/inquiries"
-				method="get">
+			<form action="/burgerstack/owner/inquiries" method="get">
 				<div class="search-area">
 					<select name="condition" style="padding: 5px;">
 						<option value="title" ${condition == 'title' ? 'selected' : ''}>제목</option>
@@ -127,21 +145,22 @@ tbody tr:hover {
 
 						<c:otherwise>
 							<c:forEach var="inq" items="${inquiryList}">
-								<tr onclick="location.href='${pageContext.request.contextPath}/owner/inquiries/${inq.inquiryId}'" style="cursor: pointer;">
+								<tr
+									onclick="location.href='${pageContext.request.contextPath}/owner/inquiries/${inq.inquiryId}'"
+									style="cursor: pointer;">
 									<td>${inq.inquiryId}</td>
 
 									<td style="text-align: left !important; padding-left: 20px;">
-											${inq.title} 
-									</td>
+										${inq.title}</td>
 
 									<td>${inq.createdAt}</td>
 
 									<td><c:choose>
 											<c:when test="${not empty inq.answerContent}">
-												<span style="color: #22c55e; font-weight: bold;">답변완료</span>
+												<span class="status-badge status-active"> 답변완료 </span>
 											</c:when>
 											<c:otherwise>
-												<span style="color: #ff4d4f; font-weight: bold;">미답변</span>
+												<span class="status-badge status-inactive"> 미답변 </span>
 											</c:otherwise>
 										</c:choose></td>
 								</tr>
@@ -150,24 +169,21 @@ tbody tr:hover {
 					</c:choose>
 				</tbody>
 			</table>
-			
-			<div class="pagination" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;">
-			    <c:forEach var="p" begin="${startPage}" end="${endPage}">
-			        <c:choose>
-			            <c:when test="${p == currentPage}">
-			                <strong style="color: green; font-size: 1.2em;">${p}</strong>
-			            </c:when>
-			            <c:otherwise>
-			                <a href="?page=${p}&condition=${condition}&keyword=${keyword}">${p}</a>
-			            </c:otherwise>
-			        </c:choose>
-			    </c:forEach>
+
+			<div class="pagination"
+				style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;">
+				<c:forEach var="p" begin="${startPage}" end="${endPage}">
+					<c:choose>
+						<c:when test="${p == currentPage}">
+							<strong style="color: green; font-size: 1.2em;">${p}</strong>
+						</c:when>
+						<c:otherwise>
+							<a href="?page=${p}&condition=${condition}&keyword=${keyword}">${p}</a>
+						</c:otherwise>
+					</c:choose>
+				</c:forEach>
 			</div>
-
-
-
-
-</t:layout>
+	</t:layout>
 
 
 </body>

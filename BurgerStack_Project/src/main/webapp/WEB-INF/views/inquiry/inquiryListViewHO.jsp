@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 
 <!DOCTYPE html>
 <html>
@@ -20,6 +20,7 @@
 	border-radius: 8px;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -71,23 +72,39 @@ td {
 	color: #22c55e;
 	text-decoration: underline;
 }
+
 tbody tr:hover {
-     background-color: #f5f5f5;
-     cursor: pointer;
+	background-color: #f5f5f5;
+	cursor: pointer;
+}
+.status-badge {
+	display: inline-block;
+	padding: 6px 14px;
+	border-radius: 20px;
+	font-size: 13px;
+	font-weight: bold;
+	color: white;
+}
+
+.status-active {
+	background-color: #28a745;
+}
+
+.status-inactive {
+	background-color: #dc3545;
 }
 </style>
 </head>
 <body>
 
-<t:layout>
+	<t:layout>
 
 
-    <h1>문의사항 목록 조회</h1>
+		<h1>문의사항 목록 조회</h1>
 
-    <div class="content">
+		<div class="content">
 
-			<form action="/burgerstack/admin/inquiries"
-				method="get">
+			<form action="/burgerstack/admin/inquiries" method="get">
 				<div class="search-area">
 					<select name="condition" style="padding: 5px;">
 						<option value="title" ${condition == 'title' ? 'selected' : ''}>제목</option>
@@ -100,86 +117,86 @@ tbody tr:hover {
 					<button type="submit" class="btn">검색</button>
 				</div>
 			</form>
-		<table class="form-container">
-			    <colgroup>
-			        <col style="width:10%">
-			        <col style="width:40%">
-			        <col style="width:15%">
-			        <col style="width:20%">
-			        <col style="width:15%">
-			    </colgroup>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>제목</th>
-                    <th>점포명</th>
-                    <th>답변상태</th>
-                    <th>등록일</th>
-                </tr>
-            </thead>
+			<table class="form-container">
+				<colgroup>
+					<col style="width: 10%">
+					<col style="width: 40%">
+					<col style="width: 15%">
+					<col style="width: 20%">
+					<col style="width: 15%">
+				</colgroup>
+				<thead>
+					<tr>
+						<th>No</th>
+						<th>제목</th>
+						<th>점포명</th>
+						<th>답변상태</th>
+						<th>등록일</th>
+					</tr>
+				</thead>
 
-            <tbody>
+				<tbody>
 
-                <c:choose>
+					<c:choose>
 
-                    <c:when test="${empty inquiryList}">
-                        <tr>
-                            <td colspan="7">
-                                조회된 문의사항이 없습니다.
-                            </td>
-                        </tr>
-                    </c:when>
+						<c:when test="${empty inquiryList}">
+							<tr>
+								<td colspan="7">조회된 문의사항이 없습니다.</td>
+							</tr>
+						</c:when>
 
-                    <c:otherwise>
-                    
-                        <c:forEach var="inq" items="${inquiryList}">
+						<c:otherwise>
 
-                            <tr onclick="location.href='${pageContext.request.contextPath}/admin/inquiries/${inq.inquiryId}'" style="cursor: pointer;">
+							<c:forEach var="inq" items="${inquiryList}">
 
-                                <td>${inq.inquiryId}</td>
+								<tr
+									onclick="location.href='${pageContext.request.contextPath}/admin/inquiries/${inq.inquiryId}'"
+									style="cursor: pointer;">
+
+									<td>${inq.inquiryId}</td>
 
 									<td style="text-align: left !important; padding-left: 20px;">
-											${inq.title}
-									</td>
+										${inq.title}</td>
 
-                                	<td>${inq.storeName}</td>
+									<td>${inq.storeName}</td>
 
 									<td><c:choose>
 											<c:when test="${not empty inq.answerContent}">
-												<span style="color: #22c55e; font-weight: bold;">답변완료</span>
+												<span class="status-badge status-active"> 답변완료 </span>
 											</c:when>
 											<c:otherwise>
-												<span style="color: #ff4d4f; font-weight: bold;">미답변</span>
+												<span class="status-badge status-inactive"> 미답변 </span>
 											</c:otherwise>
 										</c:choose></td>
-                                
-								<td>${inq.createdAt}</td>
-                            </tr>
 
-                        </c:forEach>
+									<td>${inq.createdAt}</td>
+								</tr>
 
-                    </c:otherwise>
+							</c:forEach>
 
-                </c:choose>
+						</c:otherwise>
 
-            </tbody>
+					</c:choose>
 
-        </table>
+				</tbody>
 
-    </div>
-    
-            <div class="pagination" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;">
-			    <c:forEach var="p" begin="${startPage}" end="${endPage}">
-			        <c:choose>
-			            <c:when test="${p == currentPage}">
-			                <strong style="color: green; font-size: 1.2em;">${p}</strong>
-			            </c:when>
-			            <c:otherwise>
-			                <a href="?page=${p}&condition=${condition}&keyword=${keyword}">${p}</a>
-			            </c:otherwise>
-			        </c:choose>
-			    </c:forEach>
-			</div>
+			</table>
+
+		</div>
+
+		<div class="pagination"
+			style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;">
+			<c:forEach var="p" begin="${startPage}" end="${endPage}">
+				<c:choose>
+					<c:when test="${p == currentPage}">
+						<strong style="color: green; font-size: 1.2em;">${p}</strong>
+					</c:when>
+					<c:otherwise>
+						<a href="?page=${p}&condition=${condition}&keyword=${keyword}">${p}</a>
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>
+		</div>
 
 
 	</t:layout>

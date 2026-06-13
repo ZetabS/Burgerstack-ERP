@@ -173,7 +173,7 @@
 
                             <tr onclick="location.href='/burgerstack/admin/users/${u.userId}'" style="cursor: pointer;">
 
-                                <td>${u.userNo}</td>
+                                <td>${u.displayNo}</td>
 
 								<td>${u.userId}</td>
 

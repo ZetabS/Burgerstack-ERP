@@ -23,4 +23,5 @@ public class User {
 	private String role;
 	private String status;
 	private LocalDateTime createdAt;
+	private String displayNo;
 }
