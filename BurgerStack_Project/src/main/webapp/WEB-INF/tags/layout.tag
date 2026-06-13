@@ -36,7 +36,7 @@
       <c:url var="dashboardUrl" value="/${role}/dashboard" />
       <a class="layout__logo" href="${dashboardUrl}">
         <img class="layout__logo-img" src="${pageContext.request.contextPath}/resources/images/BS_logo2.png" alt="logo" />
-        <span class="layout__logo-text">BurgerStack ERP</span>
+        <span class="layout__logo-text">BurgerStack</span>
       </a>
       <%-- 헤더 --%>
       <div class="layout__header">
@@ -58,7 +58,12 @@
             <c:url var="mypageUrl" value="/${role}/mypage" />
             <a class="layout__menubar-profile-role" href="${mypageUrl}">마이페이지</a>
           </div>
-          <div class="layout__menubar-profile-role">총괄 관리자</div>
+          <div class="layout__menubar-profile-role">
+            <if test="${role == 'owner'}">
+              ${sessionScope.loginUser.storeName}
+            </if>
+            ${role == 'owner' ? '점주' : '총괄 관리자'}
+          </div>
         </div>
         <c:choose>
           <c:when test="${sessionScope.loginUser.owner}">

@@ -36,7 +36,6 @@
 
     <ul class="layout__submenu">
       <li><a href="/burgerstack/owner/inventories">재고 목록 조회</a></li>
-      <li><a href="/burgerstack/owner/inventory-transactions?abnormalOnly=true">이상 재고 변동 조회</a></li>
       <li><a href="/burgerstack/owner/inventory-transactions">재고 변동 이력 조회</a></li>
     </ul>
   </div>
@@ -51,9 +50,9 @@
     </ul>
   </div>
 
-  <%-- 자재 관리 --%>
+  <%-- 자재 --%>
   <div class="layout__menu-item">
-    <div class="layout__menu-title">자재 관리</div>
+    <div class="layout__menu-title">자재</div>
 
     <ul class="layout__submenu">
       <li><a href="/burgerstack/owner/materials">자재 목록 조회</a></li>
