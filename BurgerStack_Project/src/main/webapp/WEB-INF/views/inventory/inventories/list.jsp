@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="isOwner" value="${sessionScope.loginUser.owner}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
@@ -49,8 +50,8 @@
           <input type="text" id="material-name-input" name="materialName" class="form-control mr-3" placeholder="검색할 자재명을 입력하세요." value="${view.condition.materialName}" />
           <button type="submit" class="btn btn-primary">검색</button>
         </form>
-        <table class="table2">
-          <thead>
+        <ui:DataTable>
+          <jsp:attribute name="thead">
             <tr>
               <c:if test="${isAdmin}">
                 <th>점포명</th>
@@ -63,9 +64,8 @@
               </c:if>
               <th>조정</th>
             </tr>
-          </thead>
-
-          <tbody>
+          </jsp:attribute>
+          <jsp:attribute name="tbody">
             <c:forEach var="item" items="${view.list}">
               <tr>
                 <c:if test="${isAdmin}">
@@ -86,8 +86,8 @@
                 </td>
               </tr>
             </c:forEach>
-          </tbody>
-        </table>
+          </jsp:attribute>
+        </ui:DataTable>
         <t:pagination pageInfo="${view.pageInfo}" />
       </div>
     </t:layout>

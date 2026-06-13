@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
 <c:url var="inventoryTransactionListUrl" value="/${role}/inventory-transactions" />
@@ -40,8 +41,8 @@
           </select>
         </form>
 
-        <table class="table2">
-          <thead>
+        <ui:DataTable>
+          <jsp:attribute name="thead">
             <tr>
               <th>변동 유형</th>
               <c:if test="${isAdmin}">
@@ -51,9 +52,8 @@
               <th>처리 일시</th>
               <th>사유</th>
             </tr>
-          </thead>
-
-          <tbody>
+          </jsp:attribute>
+          <jsp:attribute name="tbody">
             <c:forEach var="item" items="${view.list}">
               <c:url var="detail" value="/${role}/inventory-transactions/${item.inventoryTransactionId}" />
               <tr class="clickable-row" data-href="${detail}">
@@ -66,8 +66,8 @@
                 <td>${item.reason}</td>
               </tr>
             </c:forEach>
-          </tbody>
-        </table>
+          </jsp:attribute>
+        </ui:DataTable>
         <t:pagination pageInfo="${view.pageInfo}" />
       </div>
     </t:layout>

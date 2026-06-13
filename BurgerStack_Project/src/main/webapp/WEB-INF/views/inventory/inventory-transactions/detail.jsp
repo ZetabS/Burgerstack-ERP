@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
 <c:url var="backToList" value="/${role}/inventory-transactions" />
@@ -85,46 +86,43 @@
           <div class="card-header">변동 품목</div>
 
           <div class="card-body p-0">
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover mb-0">
-                <thead class="thead-light">
+            <ui:DataTable>
+              <jsp:attribute name="thead">
+                <tr>
+                  <th>자재명</th>
+                  <th class="text-right">변동 전 수량</th>
+                  <th class="text-right">변동 수량</th>
+                  <th class="text-right">변동 후 수량</th>
+                </tr>
+              </jsp:attribute>
+              <jsp:attribute name="tbody">
+                <c:forEach var="item" items="${detail.list}">
                   <tr>
-                    <th>자재명</th>
-                    <th class="text-right">변동 전 수량</th>
-                    <th class="text-right">변동 수량</th>
-                    <th class="text-right">변동 후 수량</th>
+                    <td>${item.materialName}</td>
+
+                    <td class="text-right">${item.beforeQuantity}</td>
+
+                    <td class="text-right">
+                      <c:choose>
+                        <c:when test="${item.changedQuantity > 0}">
+                          <span class="text-success">+${item.changedQuantity}</span>
+                        </c:when>
+
+                        <c:when test="${item.changedQuantity < 0}">
+                          <span class="text-danger">${item.changedQuantity}</span>
+                        </c:when>
+
+                        <c:otherwise>
+                          <span class="text-muted">0</span>
+                        </c:otherwise>
+                      </c:choose>
+                    </td>
+
+                    <td class="text-right">${item.afterQuantity}</td>
                   </tr>
-                </thead>
-
-                <tbody>
-                  <c:forEach var="item" items="${detail.list}">
-                    <tr>
-                      <td>${item.materialName}</td>
-
-                      <td class="text-right">${item.beforeQuantity}</td>
-
-                      <td class="text-right">
-                        <c:choose>
-                          <c:when test="${item.changedQuantity > 0}">
-                            <span class="text-success">+${item.changedQuantity}</span>
-                          </c:when>
-
-                          <c:when test="${item.changedQuantity < 0}">
-                            <span class="text-danger">${item.changedQuantity}</span>
-                          </c:when>
-
-                          <c:otherwise>
-                            <span class="text-muted">0</span>
-                          </c:otherwise>
-                        </c:choose>
-                      </td>
-
-                      <td class="text-right">${item.afterQuantity}</td>
-                    </tr>
-                  </c:forEach>
-                </tbody>
-              </table>
-            </div>
+                </c:forEach>
+              </jsp:attribute>
+            </ui:DataTable>
           </div>
         </div>
 

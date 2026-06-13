@@ -4,8 +4,6 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
-
-
 <c:set var="role" value="${sessionScope.loginUser.admin ? 'admin' : sessionScope.loginUser.owner ? 'owner' : null}" />
 
 <!DOCTYPE html>
@@ -29,6 +27,7 @@
     <%-- CSS --%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/table.css" />
   </head>
   <body>
     <div class="layout__container">
@@ -59,9 +58,7 @@
             <a class="layout__menubar-profile-role" href="${mypageUrl}">마이페이지</a>
           </div>
           <div class="layout__menubar-profile-role">
-            <if test="${role == 'owner'}">
-              ${sessionScope.loginUser.storeName}
-            </if>
+            <if test="${role == 'owner'}"> ${sessionScope.loginUser.storeName} </if>
             ${role == 'owner' ? '점주' : '총괄 관리자'}
           </div>
         </div>
