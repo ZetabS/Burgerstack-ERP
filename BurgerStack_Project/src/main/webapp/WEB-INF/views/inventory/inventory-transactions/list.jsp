@@ -49,7 +49,7 @@
                 <th>점포명</th>
               </c:if>
               <th>처리자</th>
-              <th>처리 일시</th>
+              <th class="text-right">처리 일시</th>
               <th>사유</th>
             </tr>
           </jsp:attribute>
@@ -57,13 +57,13 @@
             <c:forEach var="item" items="${view.list}">
               <c:url var="detail" value="/${role}/inventory-transactions/${item.inventoryTransactionId}" />
               <ui:TableRow clickable="true" href="${detail}">
-                <td>${item.transactionType}</td>
+                <ui:InventoryTransactionTypeCell value="${item.transactionType}" />
                 <c:if test="${isAdmin}">
-                  <td>${item.storeName}</td>
+                  <ui:TextCell value="${item.storeName}" />
                 </c:if>
-                <td>${item.createdByName}</td>
-                <td>${item.createdAt}</td>
-                <td>${item.reason}</td>
+                <ui:TextCell value="${item.createdByName}" />
+                <ui:DateTimeCell value="${item.createdAt}" />
+                <ui:TextCell value="${item.reason}" />
               </ui:TableRow>
             </c:forEach>
           </jsp:attribute>

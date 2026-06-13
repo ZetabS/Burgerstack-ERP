@@ -18,7 +18,7 @@
       <div class="outer">
         <div class="d-flex justify-content-between mb-3">
           <h2>재고 목록</h2>
-          <a href="${inventoryListUrl}" class="btn btn-secondary">초기화</a>
+          <button class="btn btn-secondary" onclick="location.href = ${inventoryListUrl}">초기화</button>
         </div>
         <form class="d-flex justify-content-between mb-3 text-nowrap" action="${inventoryListUrl}" method="get">
           <input type="hidden" name="page" value="1" />
@@ -67,23 +67,19 @@
           </jsp:attribute>
           <jsp:attribute name="tbody">
             <c:forEach var="item" items="${view.list}">
+              <c:url var="adjustUrl" value="/${role}/inventories/${item.inventoryId}/adjust" />
+              <c:url var="editUrl" value="/owner/inventories/${item.inventoryId}/edit" />
               <ui:TableRow>
                 <c:if test="${isAdmin}">
-                  <td>${item.storeName}</td>
+                  <ui:TextCell value="${item.storeName}" />
                 </c:if>
-                <td>${item.materialName}</td>
-                <td>${item.currentQuantity}</td>
-                <td>${item.safetyQuantity}</td>
+                <ui:TextCell value="${item.materialName}" />
+                <ui:NumberCell value="${item.currentQuantity}" />
+                <ui:NumberCell value="${item.safetyQuantity}" />
                 <c:if test="${isOwner}">
-                  <td>
-                    <c:url var="editUrl" value="/owner/inventories/${item.inventoryId}/edit" />
-                    <a href="${editUrl}" class="btn btn-sm btn-outline-primary">안전재고 조정</a>
-                  </td>
+                  <ui:ActionCell href="${editUrl}">안전재고 조정</ui:ActionCell>
                 </c:if>
-                <td>
-                  <c:url var="adjustUrl" value="/${role}/inventories/${item.inventoryId}/adjust" />
-                  <a href="${adjustUrl}" class="btn btn-sm btn-outline-primary">조정</a>
-                </td>
+                <ui:ActionCell href="${adjustUrl}">조정</ui:ActionCell>
               </ui:TableRow>
             </c:forEach>
           </jsp:attribute>

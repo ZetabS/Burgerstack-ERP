@@ -3,7 +3,7 @@
 <%@ attribute name="tbody" fragment="true" required="true" %>
 
 <div class="table-responsive">
-  <table class="table data-table table-hover w-100 table-fixed">
+  <table class="table data-table table-hover w-100">
     <thead>
       <jsp:invoke fragment="thead" />
     </thead>

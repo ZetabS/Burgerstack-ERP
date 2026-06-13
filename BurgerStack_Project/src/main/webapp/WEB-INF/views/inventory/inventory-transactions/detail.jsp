@@ -91,34 +91,17 @@
                 <tr>
                   <th>자재명</th>
                   <th class="text-right">변동 전 수량</th>
-                  <th class="text-right">변동 수량</th>
-                  <th class="text-right">변동 후 수량</th>
+                  <th>변동 수량</th>
+                  <th>변동 후 수량</th>
                 </tr>
               </jsp:attribute>
               <jsp:attribute name="tbody">
                 <c:forEach var="item" items="${detail.list}">
                   <ui:TableRow>
-                    <td>${item.materialName}</td>
-
-                    <td class="text-right">${item.beforeQuantity}</td>
-
-                    <td class="text-right">
-                      <c:choose>
-                        <c:when test="${item.changedQuantity > 0}">
-                          <span class="text-success">+${item.changedQuantity}</span>
-                        </c:when>
-
-                        <c:when test="${item.changedQuantity < 0}">
-                          <span class="text-danger">${item.changedQuantity}</span>
-                        </c:when>
-
-                        <c:otherwise>
-                          <span class="text-muted">0</span>
-                        </c:otherwise>
-                      </c:choose>
-                    </td>
-
-                    <td class="text-right">${item.afterQuantity}</td>
+                    <ui:TextCell value="${item.materialName}" />
+                    <ui:NumberCell value="${item.beforeQuantity}" />
+                    <ui:DeltaCell value="${item.changedQuantity}" />
+                    <ui:NumberCell value="${item.afterQuantity}" />
                   </ui:TableRow>
                 </c:forEach>
               </jsp:attribute>

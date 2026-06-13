@@ -1,15 +1,14 @@
-.data-table {
-  table-layout: fixed;
-}
-
 .data-table th,
 .data-table td {
   vertical-align: middle;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .data-table [data-clickable]:hover {
   cursor: pointer;
+}
+
+.data-table__col-fit {
+  width: 1%;
 }
