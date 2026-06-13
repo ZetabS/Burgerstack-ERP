@@ -4,6 +4,8 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
+
+
 <c:set var="role" value="${sessionScope.loginUser.admin ? 'admin' : sessionScope.loginUser.owner ? 'owner' : null}" />
 
 <!DOCTYPE html>

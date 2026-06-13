@@ -90,39 +90,44 @@ public class NoticeController {
     public String insertNotice(Notice n,
                                MultipartFile[] files,
                                HttpSession session) {
+        try {
+            // ✅ 파일 개수 검증 (MAX_FILE_COUNT 초과 시 예외)
+            fileStore.validateFileCount(files);
 
-        // 0. XSS 방어
-        n.setTitle(XssDefencePolicy.defence(n.getTitle()));
-        n.setContent(NoticeXssUtil.cleanContent(n.getContent()));
+            n.setTitle(XssDefencePolicy.defence(n.getTitle()));
+            n.setContent(NoticeXssUtil.cleanContent(n.getContent()));
 
-        // 1. 일반 첨부파일(input file) 서버 저장
-        ArrayList<NoticeFile> fileList = new ArrayList<>();
-        if (files != null && files.length > 0) {
-            for (MultipartFile file : files) {
-                if (!file.isEmpty()) {
-                    StoredFile storedFile = fileStore.store(file, "notice_upfiles");
-                    NoticeFile noticeFile = storedFile.toNoticeFile(0);
-                    fileList.add(noticeFile);
+            ArrayList<NoticeFile> fileList = new ArrayList<>();
+            if (files != null && files.length > 0) {
+                for (MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        // ✅ store() 내부에서 확장자·크기 검증 자동 처리
+                        StoredFile storedFile = fileStore.store(file, "notice_upfiles");
+                        fileList.add(storedFile.toNoticeFile(0));
+                    }
                 }
             }
-        }
 
-        // 2. 세션에 임시 보관된 Quill 이미지 파일 목록도 fileList에 합치기
-        ArrayList<NoticeFile> quillImageFiles =
-            (ArrayList<NoticeFile>) session.getAttribute("quillImageFiles");
-        if (quillImageFiles != null && !quillImageFiles.isEmpty()) {
-            fileList.addAll(quillImageFiles);
-            session.removeAttribute("quillImageFiles"); // 세션 정리
-        }
+            ArrayList<NoticeFile> quillImageFiles =
+                (ArrayList<NoticeFile>) session.getAttribute("quillImageFiles");
+            if (quillImageFiles != null && !quillImageFiles.isEmpty()) {
+                fileList.addAll(quillImageFiles);
+                session.removeAttribute("quillImageFiles");
+            }
 
-        // 3. 서비스 호출
-        int result = noticeService.insertNotice(n, fileList);
+            int result = noticeService.insertNotice(n, fileList);
 
-        if (result > 0) {
-            session.setAttribute("alertMsg", "공지사항 등록이 완료되었습니다.");
-            return "redirect:/admin/notices";
-        } else {
-            session.setAttribute("alertMsg", "공지사항 등록에 실패했습니다.");
+            if (result > 0) {
+                session.setAttribute("alertMsg", "공지사항 등록이 완료되었습니다.");
+                return "redirect:/admin/notices";
+            } else {
+                session.setAttribute("alertMsg", "공지사항 등록에 실패했습니다.");
+                return "redirect:/admin/notices/new";
+            }
+
+        } catch (IllegalArgumentException e) {
+            // ✅ 파일 검증 실패 시 사용자에게 메시지 전달
+            session.setAttribute("alertMsg", e.getMessage());
             return "redirect:/admin/notices/new";
         }
     }
@@ -187,7 +192,11 @@ public class NoticeController {
      */
     @GetMapping("/{noticeId:[0-9]+}")
     public String noticeDetail(@PathVariable("noticeId") Long noticeId, Model model) {
+    	
         Notice n = noticeService.noticeDetail(noticeId);
+        DateTimeFormatter formatterDetail = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        n.setDetailDate(n.getCreatedAt().format(formatterDetail));
+        
         model.addAttribute("notice", n);
         return "notice/noticeDetailHO";
     }
@@ -206,8 +215,8 @@ public class NoticeController {
             // 경로 resolve
             File file = fileStore.resolve(noticeFile.getStoragePath()).toFile();
 
-            System.out.println("[download] 최종 경로: " + file.getAbsolutePath());
-            System.out.println("[download] 존재 여부: " + file.exists());
+//            System.out.println("[download] 최종 경로: " + file.getAbsolutePath());
+//            System.out.println("[download] 존재 여부: " + file.exists());
 
             if (!file.exists()) return ResponseEntity.notFound().build();
 
@@ -246,46 +255,49 @@ public class NoticeController {
     /**
      * 공지사항 수정 처리
      */
-    @PostMapping({"/{noticeId}", "{noticeId}"})
+    @PostMapping("/{noticeId:[0-9]+}")
     public String updateNotice(@PathVariable("noticeId") Long noticeId,
                                 Notice n,
                                 MultipartFile[] files,
+                                @RequestParam(value = "deleteFileIds", required = false) ArrayList<Long> deleteFileIds,
                                 HttpSession session) {
+        try {
+            // ✅ 파일 개수 검증
+            fileStore.validateFileCount(files);
 
-        n.setNoticeId(noticeId);
-        n.setTitle(XssDefencePolicy.defence(n.getTitle()));
-        n.setContent(NoticeXssUtil.cleanContent(n.getContent()));
+            n.setNoticeId(noticeId);
+            n.setTitle(XssDefencePolicy.defence(n.getTitle()));
+            n.setContent(NoticeXssUtil.cleanContent(n.getContent()));
 
-        // 일반 첨부파일 처리
-        ArrayList<NoticeFile> fileList = new ArrayList<>();
-        if (files != null && files.length > 0) {
-            for (MultipartFile file : files) {
-                if (!file.isEmpty()) {
-                    StoredFile storedFile = fileStore.store(file, "notice_upfiles");
-                    NoticeFile noticeFile = storedFile.toNoticeFile(noticeId);
-                    fileList.add(noticeFile);
+            ArrayList<NoticeFile> newFileList = new ArrayList<>();
+            if (files != null && files.length > 0) {
+                for (MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        StoredFile storedFile = fileStore.store(file, "notice_upfiles");
+                        newFileList.add(storedFile.toNoticeFile(noticeId));
+                    }
                 }
             }
+
+            ArrayList<NoticeFile> quillImageFiles =
+                (ArrayList<NoticeFile>) session.getAttribute("quillImageFiles");
+            if (quillImageFiles != null && !quillImageFiles.isEmpty()) {
+                newFileList.addAll(quillImageFiles);
+                session.removeAttribute("quillImageFiles");
+            }
+
+            int result = noticeService.updateNotice(n, newFileList, deleteFileIds);
+
+            session.setAttribute("alertMsg", result > 0 ? "공지사항이 수정되었습니다." : "수정에 실패했습니다.");
+            return "redirect:/admin/notices/" + noticeId;
+
+        } catch (IllegalArgumentException e) {
+            // ✅ 파일 검증 실패 시 사용자에게 메시지 전달
+            session.setAttribute("alertMsg", e.getMessage());
+            return "redirect:/admin/notices/" + noticeId + "/edit";
         }
-
-        // 세션에 보관된 Quill 이미지도 fileList에 합치기
-        ArrayList<NoticeFile> quillImageFiles =
-            (ArrayList<NoticeFile>) session.getAttribute("quillImageFiles");
-        if (quillImageFiles != null && !quillImageFiles.isEmpty()) {
-            fileList.addAll(quillImageFiles);
-            session.removeAttribute("quillImageFiles");
-        }
-
-        int result = noticeService.updateNotice(n, fileList);
-
-        if (result > 0) {
-            session.setAttribute("alertMsg", "공지사항이 수정되었습니다.");
-        } else {
-            session.setAttribute("alertMsg", "수정에 실패했습니다.");
-        }
-
-        return "redirect:/admin/notices/" + noticeId;
     }
+
 
 
     /**

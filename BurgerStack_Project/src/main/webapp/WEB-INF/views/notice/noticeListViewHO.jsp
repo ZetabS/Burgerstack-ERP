@@ -2,11 +2,6 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>BurgerStack</title>
 <style>
 
 table {
@@ -65,45 +60,41 @@ table tbody tr td:nth-child(3) {
     margin-bottom: 20px; /* 타이틀과 테이블 사이의 간격 조정 */
 }
 </style>
-</head>
-<body>
     <t:layout>
 
-        
-        <div class="content-container">
-            <h2>공지사항 목록 조회</h2>
-            <br>
-            <table>
-                <thead align="center">
-                    <tr>
-                        <th>No</th>
-                        <th>제목</th>
-                        <th>작성일</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:if test="${empty notices}">
-                        <tr style="display: flex; justify-content: center; padding: 30px 0; color: #888;">
-                            <td colspan="3">등록된 공지사항이 없습니다.</td>
+        <div class="outer">
+            <div class="content-container">
+                <br>
+                <h2 style="padding-left : 20px;">
+                    <b>공지사항 목록 조회</b>
+                </h2>
+                <table>
+                    <thead align="center">
+                        <tr>
+                            <th>No</th>
+                            <th>제목</th>
+                            <th>작성일</th>
                         </tr>
-                    </c:if>
+                    </thead>
+                    <tbody>
+                        <c:if test="${empty notices}">
+                            <tr style="display: flex; justify-content: center; padding: 30px 0; color: #888;">
+                                <td colspan="3">등록된 공지사항이 없습니다.</td>
+                            </tr>
+                        </c:if>
 
-                    <c:forEach items="${notices}" var="n">
-                        <tr onclick="location.href='${pageContext.request.contextPath}/admin/notices/${n.noticeId}'">
-                            <td>${n.noticeId}</td>
-                            <td>${n.title}</td>
-                            <td>${n.listDate}</td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
+                        <c:forEach items="${notices}" var="n">
+                            <tr onclick="location.href='${pageContext.request.contextPath}/admin/notices/${n.noticeId}'">
+                                <td>${n.noticeId}</td>
+                                <td>${n.title}</td>
+                                <td>${n.listDate}</td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            <br><br>
+            <t:pagination pageInfo="${pageInfo}"/>
+            <br><br>
         </div>
-        <br><br>
-        <t:pagination pageInfo="${pageInfo}"/>
-        <br><br>
     </t:layout>
-    <script>
-
-    </script>
-</body>
-</html>

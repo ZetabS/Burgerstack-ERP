@@ -41,9 +41,17 @@ public class NoticeDao {
         return noticeMapper.updateNotice(n);
     }
 
-	public int deleteNotice(Long noticeId) {
-		return noticeMapper.deleteNotice(noticeId);
-	}
+    public int deleteNotice(Long noticeId) {
+    	return noticeMapper.deleteNotice(noticeId);
+    }
+    public int deleteNoticeFile(Long noticeFileId) {
+        return noticeMapper.deleteNoticeFile(noticeFileId);
+    }
+
+    // 글 삭제 시 연관 파일 전체 soft delete
+    public int deleteNoticeFilesByNoticeId(Long noticeId) {
+        return noticeMapper.deleteNoticeFilesByNoticeId(noticeId);
+    }
 
 	public NoticeFile selectNoticeFile(Long noticeFileId) {
 		return noticeMapper.selectNoticeFile(noticeFileId);

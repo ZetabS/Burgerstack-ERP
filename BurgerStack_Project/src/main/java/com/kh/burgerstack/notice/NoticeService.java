@@ -7,12 +7,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.file.FileStore;
 
 @Service
 public class NoticeService {
 
     @Autowired
     private NoticeDao noticeDao;
+    
+    @Autowired
+    private FileStore fileStore;
 
     public int selectNoticeCount() {
         return noticeDao.selectNoticeCount();
@@ -81,15 +85,21 @@ public class NoticeService {
 	 * updateNotice: 글 수정 + 새 파일 추가 (Quill 이미지 포함)
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public int updateNotice(Notice n, ArrayList<NoticeFile> fileList) {
-	    // 1. 글 본문(제목, 내용) 업데이트
+	public int updateNotice(Notice n, ArrayList<NoticeFile> newFileList, ArrayList<Long> deleteFileIds) {
 	    int result = noticeDao.updateNotice(n);
 
-	    // 2. 새로 추가된 파일 INSERT (일반 파일 + Quill 이미지 통합)
-	    if (result > 0 && fileList != null && !fileList.isEmpty()) {
-	        for (NoticeFile nf : fileList) {
+	    // 새 파일 INSERT
+	    if (newFileList != null && !newFileList.isEmpty()) {
+	        for (NoticeFile nf : newFileList) {
 	            nf.setNoticeId(n.getNoticeId());
 	            noticeDao.insertNoticeFile(nf);
+	        }
+	    }
+
+	    // X버튼으로 삭제 요청된 파일: DB soft delete + 물리 파일 삭제
+	    if (deleteFileIds != null && !deleteFileIds.isEmpty()) {
+	        for (Long fileId : deleteFileIds) {
+	            noticeDao.deleteNoticeFile(fileId);
 	        }
 	    }
 
