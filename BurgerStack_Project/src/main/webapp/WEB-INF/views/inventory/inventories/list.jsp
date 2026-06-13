@@ -1,7 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<c:url var="inventoryListUrl" value="/admin/inventories" />
+<c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
+<c:set var="isOwner" value="${sessionScope.loginUser.owner}" />
+<c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
+<c:url var="inventoryListUrl" value="/${role}/inventories" />
 <!DOCTYPE html>
 <html>
   <head>
@@ -20,12 +23,14 @@
           <input type="hidden" name="page" value="1" />
           <input type="hidden" name="size" value="${view.pageInfo.size}" />
 
-          <select id="store-option" name="storeId" class="form-control mr-3">
-            <option value="">점포 선택</option>
-            <c:forEach var="option" items="${view.storeOptions}">
-              <option value="${option.storeId}" ${option.storeId eq view.condition.storeId ? 'selected' : ''}>${option.storeName}</option>
-            </c:forEach>
-          </select>
+          <c:if test="${isAdmin}">
+            <select id="store-option" name="storeId" class="form-control mr-3">
+              <option value="">점포 선택</option>
+              <c:forEach var="option" items="${view.storeOptions}">
+                <option value="${option.storeId}" ${option.storeId eq view.condition.storeId ? 'selected' : ''}>${option.storeName}</option>
+              </c:forEach>
+            </select>
+          </c:if>
 
           <select id="material-type-option" name="materialType" class="form-control mr-3">
             <option value="">유형 선택</option>
@@ -47,10 +52,15 @@
         <table class="table2">
           <thead>
             <tr>
-              <th>점포명</th>
+              <c:if test="${isAdmin}">
+                <th>점포명</th>
+              </c:if>
               <th>자재명</th>
               <th>현재 수량</th>
               <th>안전재고 수량</th>
+              <c:if test="${isOwner}">
+                <th>안전재고 조정</th>
+              </c:if>
               <th>조정</th>
             </tr>
           </thead>
@@ -58,12 +68,20 @@
           <tbody>
             <c:forEach var="item" items="${view.list}">
               <tr>
-                <td>${item.storeName}</td>
+                <c:if test="${isAdmin}">
+                  <td>${item.storeName}</td>
+                </c:if>
                 <td>${item.materialName}</td>
                 <td>${item.currentQuantity}</td>
                 <td>${item.safetyQuantity}</td>
+                <c:if test="${isOwner}">
+                  <td>
+                    <c:url var="editUrl" value="/owner/inventories/${item.inventoryId}/edit" />
+                    <a href="${editUrl}" class="btn btn-sm btn-outline-primary">안전재고 조정</a>
+                  </td>
+                </c:if>
                 <td>
-                  <c:url var="adjustUrl" value="/admin/inventories/${item.inventoryId}/adjust" />
+                  <c:url var="adjustUrl" value="/${role}/inventories/${item.inventoryId}/adjust" />
                   <a href="${adjustUrl}" class="btn btn-sm btn-outline-primary">조정</a>
                 </td>
               </tr>

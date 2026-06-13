@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
+<c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
+<c:url var="inventoryBaseUrl" value="/${role}/inventories" />
+<c:url var="adjustAction" value="/${role}/inventories/${detail.inventoryId}/adjust" />
 <!DOCTYPE html>
 <html>
   <head>
@@ -13,11 +17,18 @@
       <div class="outer container py-4">
         <h2 class="mb-4">재고 조정</h2>
 
-        <form action="/burgerstack/owner/inventories/${detail.inventoryId}/adjust" method="post">
+        <form action="${adjustAction}" method="post">
           <div class="card mb-4">
             <div class="card-header">재고 정보</div>
 
             <div class="card-body">
+              <c:if test="${isAdmin}">
+                <div class="row mb-3">
+                  <div class="col-sm-3 fw-bold">점포명</div>
+                  <div class="col-sm-9">${detail.storeName}</div>
+                </div>
+              </c:if>
+
               <div class="row mb-3">
                 <div class="col-sm-3 fw-bold">자재명</div>
                 <div class="col-sm-9">${detail.materialName}</div>
@@ -57,7 +68,7 @@
           </div>
 
           <div class="d-flex justify-content-end">
-            <a href="/burgerstack/owner/inventories" class="btn btn-secondary mr-2 back-to-list-btn">목록으로</a>
+            <a href="${inventoryBaseUrl}" class="btn btn-secondary mr-2 back-to-list-btn">목록으로</a>
             <button type="submit" class="btn btn-primary">조정</button>
           </div>
         </form>

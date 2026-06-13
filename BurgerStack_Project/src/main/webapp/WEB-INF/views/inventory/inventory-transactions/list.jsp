@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<c:url var="inventoryTransactionListUrl" value="/admin/inventory-transactions" />
+<c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
+<c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
+<c:url var="inventoryTransactionListUrl" value="/${role}/inventory-transactions" />
 <!DOCTYPE html>
 <html>
   <head>
@@ -21,12 +23,14 @@
           <input type="hidden" name="page" value="1" />
           <input type="hidden" name="size" value="${view.pageInfo.size}" />
 
-          <select id="store-option" name="storeId" class="form-control mr-3">
-            <option value="">점포 선택</option>
-            <c:forEach var="option" items="${view.storeOptions}">
-              <option value="${option.storeId}" ${option.storeId eq view.condition.storeId ? 'selected' : ''}>${option.storeName}</option>
-            </c:forEach>
-          </select>
+          <c:if test="${isAdmin}">
+            <select id="store-option" name="storeId" class="form-control mr-3">
+              <option value="">점포 선택</option>
+              <c:forEach var="option" items="${view.storeOptions}">
+                <option value="${option.storeId}" ${option.storeId eq view.condition.storeId ? 'selected' : ''}>${option.storeName}</option>
+              </c:forEach>
+            </select>
+          </c:if>
 
           <select id="transaction-type-option" name="transactionType" class="form-control mr-3">
             <option value="">유형 선택</option>
@@ -40,7 +44,9 @@
           <thead>
             <tr>
               <th>변동 유형</th>
-              <th>점포명</th>
+              <c:if test="${isAdmin}">
+                <th>점포명</th>
+              </c:if>
               <th>처리자</th>
               <th>처리 일시</th>
               <th>사유</th>
@@ -49,10 +55,12 @@
 
           <tbody>
             <c:forEach var="item" items="${view.list}">
-              <c:url var="detail" value="/admin/inventory-transactions/${item.inventoryTransactionId}" />
+              <c:url var="detail" value="/${role}/inventory-transactions/${item.inventoryTransactionId}" />
               <tr class="clickable-row" data-href="${detail}">
                 <td>${item.transactionType}</td>
-                <td>${item.storeName}</td>
+                <c:if test="${isAdmin}">
+                  <td>${item.storeName}</td>
+                </c:if>
                 <td>${item.createdByName}</td>
                 <td>${item.createdAt}</td>
                 <td>${item.reason}</td>

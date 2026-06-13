@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<c:url var="backToList" value="/admin/inventory-transactions" />
+<c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
+<c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
+<c:url var="backToList" value="/${role}/inventory-transactions" />
 <!DOCTYPE html>
 <html>
   <head>
@@ -34,11 +36,12 @@
               <div class="col-sm-9">${detail.transactionType}</div>
             </div>
 
-            <div class="row mb-3">
-              <div class="col-sm-3 font-weight-bold">점포명</div>
-
-              <div class="col-sm-9">${detail.storeName}</div>
-            </div>
+            <c:if test="${isAdmin}">
+              <div class="row mb-3">
+                <div class="col-sm-3 font-weight-bold">점포명</div>
+                <div class="col-sm-9">${detail.storeName}</div>
+              </div>
+            </c:if>
 
             <div class="row mb-3">
               <div class="col-sm-3 font-weight-bold">처리자</div>
