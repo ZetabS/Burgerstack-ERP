@@ -81,19 +81,39 @@
         background: #f8fafc;
     }
 
+    .memo-text {
+        white-space: normal;
+    }
+
+    .remain-qty {
+        font-weight: bold;
+        color: #2563eb;
+    }
+
+    .back-area {
+        margin-top: 25px;
+        text-align: center;
+    }
+
     .back-btn {
         display: inline-block;
-        margin-top: 25px;
         padding: 10px 18px;
         background: #374151;
-        color: white;
-        text-decoration: none;
+        color: #fff !important;
+        text-decoration: none !important;
         border-radius: 8px;
         transition: 0.2s;
     }
 
     .back-btn:hover {
         background: #1f2937;
+        color: #fff !important;
+        text-decoration: none !important;
+    }
+
+    .empty-row {
+        color: #888;
+        padding: 28px 10px;
     }
 </style>
 
@@ -111,8 +131,31 @@
 
     <table class="info-table">
         <tr>
-            <th>마감번호</th>
-            <td>${closing.storeClosingId}</td>
+            <th>마감코드</th>
+            <td>
+                <c:choose>
+                    <c:when test="${not empty closing.closingCode}">
+                        ${closing.closingCode}
+                    </c:when>
+                    <c:otherwise>
+                        C${closing.storeClosingId}
+                    </c:otherwise>
+                </c:choose>
+            </td>
+        </tr>
+
+        <tr>
+            <th>점포명</th>
+            <td>
+                <c:choose>
+                    <c:when test="${not empty closing.storeName}">
+                        ${closing.storeName}
+                    </c:when>
+                    <c:otherwise>
+                        -
+                    </c:otherwise>
+                </c:choose>
+            </td>
         </tr>
 
         <tr>
@@ -121,18 +164,31 @@
         </tr>
 
         <tr>
-            <th>마감메모</th>
-            <td>${closing.closingMemo}</td>
+            <th>비고</th>
+            <td class="memo-text">
+                <c:choose>
+                    <c:when test="${empty closing.closingMemo}">
+                        -
+                    </c:when>
+                    <c:otherwise>
+                        ${closing.closingMemo}
+                    </c:otherwise>
+                </c:choose>
+            </td>
         </tr>
 
         <tr>
             <th>마감일시</th>
-            <td>${closing.closedAt}</td>
-        </tr>
-
-        <tr>
-            <th>점포ID</th>
-            <td>${closing.storeId}</td>
+            <td>
+                <c:choose>
+                    <c:when test="${not empty closing.closedAt}">
+                        ${closing.closedAt.toString().replace('T',' ').substring(0,19)}
+                    </c:when>
+                    <c:otherwise>
+                        -
+                    </c:otherwise>
+                </c:choose>
+            </td>
         </tr>
     </table>
 
@@ -141,44 +197,103 @@
     <table class="closing-item-table">
 
         <colgroup>
-            <col style="width:15%">
-            <col style="width:15%">
-            <col style="width:15%">
-            <col style="width:15%">
-            <col style="width:25%">
-            <col style="width:15%">
+            <col style="width:14%">
+            <col style="width:18%">
+            <col style="width:13%">
+            <col style="width:13%">
+            <col style="width:13%">
+            <col style="width:17%">
+            <col style="width:12%">
         </colgroup>
 
         <thead>
             <tr>
+                <th>자재 유형</th>
                 <th>자재명</th>
-                <th>전산수량</th>
-                <th>사용수량</th>
-                <th>폐기수량</th>
-                <th>폐기사유</th>
-                <th>현재(남은) 수량</th>
+                <th>전산재고</th>
+                <th>실사용수량</th>
+                <th>폐기 수량</th>
+                <th>폐기 사유</th>
+                <th>잔여 수량</th>
             </tr>
         </thead>
 
         <tbody>
             <c:forEach var="item" items="${itemList}">
                 <tr>
-                    <td>${item.materialNameSnapshot}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${item.materialType eq 'AF'}">상온</c:when>
+                            <c:when test="${item.materialType eq 'RF'}">냉장</c:when>
+                            <c:when test="${item.materialType eq 'FF'}">냉동</c:when>
+                            <c:when test="${item.materialType eq 'PK'}">포장재</c:when>
+                            <c:when test="${item.materialType eq 'KW'}">주방용품</c:when>
+                            <c:otherwise>
+                                <c:choose>
+                                    <c:when test="${empty item.materialType}">
+                                        -
+                                    </c:when>
+                                    <c:otherwise>
+                                        ${item.materialType}
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+
+                    <td>
+                        <c:choose>
+                            <c:when test="${not empty item.materialName}">
+                                ${item.materialName}
+                            </c:when>
+                            <c:otherwise>
+                                ${item.materialNameSnapshot}
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+
                     <td>${item.systemQuantity}</td>
+
                     <td>${item.physicalQuantity}</td>
+
                     <td>${item.disposalQuantity}</td>
-                    <td>${item.closingItemMemo}</td>
-                    <td>${item.systemQuantity - item.physicalQuantity - item.disposalQuantity}</td>
+
+                    <td>
+                        <c:choose>
+                            <c:when test="${empty item.closingItemMemo}">
+                                -
+                            </c:when>
+                            <c:otherwise>
+                                ${item.closingItemMemo}
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+
+                    <td>
+                        <span class="remain-qty">
+                            ${item.systemQuantity - item.physicalQuantity - item.disposalQuantity}
+                        </span>
+                    </td>
                 </tr>
             </c:forEach>
+
+            <c:if test="${empty itemList}">
+                <tr>
+                    <td colspan="7" class="empty-row">
+                        마감 자재 내역이 없습니다.
+                    </td>
+                </tr>
+            </c:if>
         </tbody>
 
     </table>
 
-    <a class="back-btn"
-       href="${pageContext.request.contextPath}/admin/closings">
-        목록으로
-    </a>
+    <div class="back-area">
+        <a class="back-btn"
+           href="${pageContext.request.contextPath}/admin/closings">
+            목록으로
+        </a>
+    </div>
 
 </section>
 

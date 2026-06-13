@@ -15,7 +15,7 @@ public class OwnerStoreController {
     @Autowired
     private StoreService storeService;
 
- // 점주 - 내 점포 정보 조회
+    // 점주 - 내 점포 정보 조회
     @GetMapping("/owner/store")
     public String ownerStoreInfo(HttpSession session,
                                  Model model) {
@@ -37,9 +37,8 @@ public class OwnerStoreController {
             return "common/errorPage";
         }
 
-        Long storeId = ownerStore.getStoreId();
-
-        Store store = storeService.selectStoreDetail(storeId);
+        Store store =
+                storeService.selectStoreDetail(ownerStore.getStoreId());
 
         model.addAttribute("store", store);
 

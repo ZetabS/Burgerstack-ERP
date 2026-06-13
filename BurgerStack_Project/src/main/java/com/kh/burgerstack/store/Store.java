@@ -22,4 +22,5 @@ public class Store {
     private String status;
     private LocalDateTime createdAt;
     private Long ownerUserNo;
+    private String ownerName;
 }

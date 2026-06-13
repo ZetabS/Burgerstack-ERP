@@ -5,36 +5,84 @@
 <mapper namespace="closingMapper">
 
     <!-- 점주 마감 목록 -->
-    <select id="selectOwnerClosingList"
-            parameterType="long"
-            resultType="com.kh.burgerstack.closing.StoreClosing">
-
-        SELECT
-            STORE_CLOSING_ID AS storeClosingId,
-            BUSINESS_DATE AS businessDate,
-            CLOSING_MEMO AS closingMemo,
-            CLOSED_AT AS closedAt,
-            STORE_ID AS storeId
-        FROM STORE_CLOSINGS
-        WHERE STORE_ID = #{storeId}
-        ORDER BY BUSINESS_DATE DESC
-
-    </select>
+	<select id="selectOwnerClosingList"
+	        parameterType="map"
+	        resultType="com.kh.burgerstack.closing.StoreClosing">
+	
+	    SELECT
+	        SC.STORE_CLOSING_ID AS storeClosingId,
+	
+	        'C'
+	        || TO_CHAR(SC.BUSINESS_DATE, 'YYYY')
+	        || LPAD(SC.STORE_CLOSING_ID, 4, '0') AS closingCode,
+	
+	        SC.BUSINESS_DATE AS businessDate,
+	        SC.CLOSING_MEMO AS closingMemo,
+	        SC.CLOSED_AT AS closedAt,
+	        SC.STORE_ID AS storeId,
+	        S.STORE_NAME AS storeName
+	
+	    FROM STORE_CLOSINGS SC
+	    JOIN STORES S
+	      ON SC.STORE_ID = S.STORE_ID
+	
+	    WHERE SC.STORE_ID = #{storeId}
+	
+	    <if test="startDate != null and startDate != ''">
+	        AND SC.BUSINESS_DATE &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="endDate != null and endDate != ''">
+	        AND SC.BUSINESS_DATE &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    ORDER BY SC.BUSINESS_DATE DESC, SC.STORE_CLOSING_ID DESC
+	
+	</select>
 
     <!-- 관리자 마감 목록 -->
-    <select id="selectAdminClosingList"
-            resultType="com.kh.burgerstack.closing.StoreClosing">
-
-        SELECT
-            STORE_CLOSING_ID AS storeClosingId,
-            BUSINESS_DATE AS businessDate,
-            CLOSING_MEMO AS closingMemo,
-            CLOSED_AT AS closedAt,
-            STORE_ID AS storeId
-        FROM STORE_CLOSINGS
-        ORDER BY BUSINESS_DATE DESC
-
-    </select>
+	<select id="selectAdminClosingList"
+	        parameterType="map"
+	        resultType="com.kh.burgerstack.closing.StoreClosing">
+	
+	    SELECT
+	        SC.STORE_CLOSING_ID AS storeClosingId,
+	
+	        'C'
+	        || TO_CHAR(SC.BUSINESS_DATE, 'YYYY')
+	        || LPAD(SC.STORE_CLOSING_ID, 4, '0') AS closingCode,
+	
+	        SC.BUSINESS_DATE AS businessDate,
+	        SC.CLOSING_MEMO AS closingMemo,
+	        SC.CLOSED_AT AS closedAt,
+	        SC.STORE_ID AS storeId,
+	        S.STORE_NAME AS storeName
+	
+	    FROM STORE_CLOSINGS SC
+	    JOIN STORES S
+	      ON SC.STORE_ID = S.STORE_ID
+	
+	    WHERE 1 = 1
+	
+	    <if test="storeId != null">
+	        AND SC.STORE_ID = #{storeId}
+	    </if>
+	
+	    <if test="startDate != null and startDate != ''">
+	        AND SC.BUSINESS_DATE &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="endDate != null and endDate != ''">
+	        AND SC.BUSINESS_DATE &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="keyword != null and keyword != ''">
+	        AND S.STORE_NAME LIKE '%' || #{keyword} || '%'
+	    </if>
+	
+	    ORDER BY SC.BUSINESS_DATE DESC, SC.STORE_CLOSING_ID DESC
+	
+	</select>
     
     <!-- 마감 상세 조회 -->
 	<select id="selectClosing"
@@ -42,13 +90,23 @@
 	        resultType="com.kh.burgerstack.closing.StoreClosing">
 	
 	    SELECT
-	        STORE_CLOSING_ID AS storeClosingId,
-	        BUSINESS_DATE AS businessDate,
-	        CLOSING_MEMO AS closingMemo,
-	        CLOSED_AT AS closedAt,
-	        STORE_ID AS storeId
-	    FROM STORE_CLOSINGS
-	    WHERE STORE_CLOSING_ID = #{closingId}
+	        SC.STORE_CLOSING_ID AS storeClosingId,
+	
+	        'C'
+	        || TO_CHAR(SC.BUSINESS_DATE, 'YYYY')
+	        || LPAD(SC.STORE_CLOSING_ID, 4, '0') AS closingCode,
+	
+	        SC.BUSINESS_DATE AS businessDate,
+	        SC.CLOSING_MEMO AS closingMemo,
+	        SC.CLOSED_AT AS closedAt,
+	        SC.STORE_ID AS storeId,
+	        S.STORE_NAME AS storeName
+	
+	    FROM STORE_CLOSINGS SC
+	    JOIN STORES S
+	      ON SC.STORE_ID = S.STORE_ID
+	
+	    WHERE SC.STORE_CLOSING_ID = #{closingId}
 	
 	</select>
 
@@ -59,17 +117,37 @@
 	        resultType="com.kh.burgerstack.closing.StoreClosingItem">
 	
 	    SELECT
-	        STORE_CLOSING_ITEM_ID AS storeClosingItemId,
-	        SYSTEM_QUANTITY AS systemQuantity,
-	        PHYSICAL_QUANTITY AS physicalQuantity,
-	        DISPOSAL_QUANTITY AS disposalQuantity,
-	        CLOSING_ITEM_MEMO AS closingItemMemo,
-	        MATERIAL_NAME_SNAPSHOT AS materialNameSnapshot,
-	        STORE_CLOSING_ID AS storeClosingId,
-	        STORE_INVENTORY_ID AS storeInventoryId
-	    FROM STORE_CLOSING_ITEMS
-	    WHERE STORE_CLOSING_ID = #{closingId}
-	    ORDER BY STORE_CLOSING_ITEM_ID
+	        SCI.STORE_CLOSING_ITEM_ID AS storeClosingItemId,
+	
+	        SCI.SYSTEM_QUANTITY AS systemQuantity,
+	        SCI.PHYSICAL_QUANTITY AS physicalQuantity,
+	        SCI.DISPOSAL_QUANTITY AS disposalQuantity,
+	
+	        NVL(SCI.PHYSICAL_QUANTITY, 0)
+	        - NVL(SCI.DISPOSAL_QUANTITY, 0) AS remainingQuantity,
+	
+	        NVL(SCI.SYSTEM_QUANTITY, 0)
+	        - NVL(SCI.PHYSICAL_QUANTITY, 0) AS differenceQuantity,
+	
+	        SCI.CLOSING_ITEM_MEMO AS closingItemMemo,
+	        SCI.MATERIAL_NAME_SNAPSHOT AS materialNameSnapshot,
+	
+	        SCI.STORE_CLOSING_ID AS storeClosingId,
+	        SCI.STORE_INVENTORY_ID AS storeInventoryId,
+	
+	        M.MATERIAL_CODE AS materialCode,
+	        M.MATERIAL_NAME AS materialName,
+	        M.MATERIAL_TYPE AS materialType
+	
+	    FROM STORE_CLOSING_ITEMS SCI
+	    JOIN STORE_INVENTORIES SI
+	      ON SCI.STORE_INVENTORY_ID = SI.STORE_INVENTORY_ID
+	    JOIN MATERIALS M
+	      ON SI.MATERIAL_ID = M.MATERIAL_ID
+	
+	    WHERE SCI.STORE_CLOSING_ID = #{closingId}
+	
+	    ORDER BY SCI.STORE_CLOSING_ITEM_ID
 	
 	</select>
     
@@ -81,11 +159,17 @@
 	        SI.STORE_INVENTORY_ID AS storeInventoryId,
 	        SI.CURRENT_QUANTITY AS currentQuantity,
 	        SI.MATERIAL_ID AS materialId,
-	        M.MATERIAL_NAME AS materialName
+	
+	        M.MATERIAL_CODE AS materialCode,
+	        M.MATERIAL_NAME AS materialName,
+	        M.MATERIAL_TYPE AS materialType
+	
 	    FROM STORE_INVENTORIES SI
 	    JOIN MATERIALS M
-	        ON SI.MATERIAL_ID = M.MATERIAL_ID
+	      ON SI.MATERIAL_ID = M.MATERIAL_ID
+	
 	    WHERE SI.STORE_ID = #{storeId}
+	
 	    ORDER BY M.MATERIAL_NAME
 	
 	</select>
@@ -169,14 +253,17 @@
 	        resultType="com.kh.burgerstack.closing.StoreClosing">
 	
 	    SELECT
-	        STORE_CLOSING_ID AS storeClosingId,
-	        BUSINESS_DATE AS businessDate,
-	        CLOSING_MEMO AS closingMemo,
-	        CLOSED_AT AS closedAt,
-	        STORE_ID AS storeId
-	    FROM STORE_CLOSINGS
-	    WHERE STORE_ID = #{storeId}
-	    ORDER BY BUSINESS_DATE DESC
+	        SC.STORE_CLOSING_ID AS storeClosingId,
+	        SC.BUSINESS_DATE AS businessDate,
+	        SC.CLOSING_MEMO AS closingMemo,
+	        SC.CLOSED_AT AS closedAt,
+	        SC.STORE_ID AS storeId,
+	        S.STORE_NAME AS storeName
+	    FROM STORE_CLOSINGS SC
+	    JOIN STORES S
+	      ON SC.STORE_ID = S.STORE_ID
+	    WHERE SC.STORE_ID = #{storeId}
+	    ORDER BY SC.BUSINESS_DATE DESC
 	
 	</select>
     

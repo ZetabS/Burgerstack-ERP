@@ -5,6 +5,10 @@
 <%@ taglib prefix="c"
     uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<jsp:useBean id="now" class="java.util.Date" />
+<fmt:formatDate var="today" value="${now}" pattern="yyyy-MM-dd" />
 
 <!DOCTYPE html>
 <html>
@@ -22,22 +26,40 @@
     }
 
     .section-title {
-        margin-bottom: 25px;
+        margin-bottom: 12px;
         padding-left: 12px;
         border-left: 5px solid #19c765;
         font-size: 22px;
         font-weight: bold;
     }
 
-    .date-area {
-        margin-bottom: 20px;
+    .guide-text {
+        margin-bottom: 22px;
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.6;
     }
 
-    .date-area input {
-        height: 36px;
-        border: 1px solid #d1d5db;
+    .date-area {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .date-label {
+        font-weight: 700;
+        color: #374151;
+    }
+
+    .date-value {
+        display: inline-block;
+        padding: 8px 14px;
         border-radius: 8px;
-        padding: 0 10px;
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        color: #111827;
+        font-weight: 600;
     }
 
     table {
@@ -69,6 +91,8 @@
         width: 90px;
         height: 32px;
         text-align: center;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
     }
 
     textarea {
@@ -76,10 +100,16 @@
         border: 1px solid #d1d5db;
         border-radius: 6px;
         padding: 8px;
+        resize: none;
     }
 
     .memo-area {
         margin-top: 20px;
+    }
+
+    .memo-area strong {
+        display: inline-block;
+        margin-bottom: 8px;
     }
 
     .submit-btn {
@@ -97,7 +127,7 @@
         background: #16a34a;
     }
 
-    .usage-qty {
+    .remain-qty {
         font-weight: bold;
         color: #2563eb;
     }
@@ -120,7 +150,14 @@
         border: 1px solid #d1d5db;
         border-radius: 8px;
         padding: 10px;
-        resize: vertical;
+        resize: none;
+    }
+
+    .danger-text {
+        color: #dc2626;
+        font-size: 12px;
+        margin-top: 6px;
+        display: none;
     }
 </style>
 
@@ -140,25 +177,35 @@
 
     <h2 class="section-title">일일 재고 마감</h2>
 
+    <p class="guide-text">
+        오늘 영업일 기준으로 재고를 마감합니다.
+        실사용수량과 폐기 수량을 입력하면 잔여 수량이 자동 계산됩니다.
+        폐기 수량이 1개 이상이면 폐기 사유를 반드시 입력해야 합니다.
+    </p>
+
     <form action="${pageContext.request.contextPath}/owner/closings"
-          method="post">
+          method="post"
+          onsubmit="return validateClosingForm();">
 
         <div class="date-area">
-            <strong>영업일</strong>
-            <input type="date"
+            <span class="date-label">영업일</span>
+            <span class="date-value">${today}</span>
+
+            <input type="hidden"
                    name="businessDate"
-                   required>
+                   value="${today}">
         </div>
 
         <table>
 
             <thead>
                 <tr>
+                    <th>자재 유형</th>
                     <th>자재명</th>
                     <th>전산재고</th>
-                    <th>사용수량</th>
-                    <th>폐기수량</th>
-                    <th>현재(남은) 수량</th>
+                    <th>실사용수량</th>
+                    <th>폐기 수량</th>
+                    <th>잔여 수량</th>
                 </tr>
             </thead>
 
@@ -169,7 +216,18 @@
                     <tr class="item-row">
 
                         <td>
-                            ${inv.materialName}
+                            <c:choose>
+                                <c:when test="${inv.materialType eq 'AF'}">상온</c:when>
+                                <c:when test="${inv.materialType eq 'RF'}">냉장</c:when>
+                                <c:when test="${inv.materialType eq 'FF'}">냉동</c:when>
+                                <c:when test="${inv.materialType eq 'PK'}">포장재</c:when>
+                                <c:when test="${inv.materialType eq 'KW'}">주방용품</c:when>
+                                <c:otherwise>${inv.materialType}</c:otherwise>
+                            </c:choose>
+                        </td>
+
+                        <td>
+                            <span class="material-name">${inv.materialName}</span>
 
                             <input type="hidden"
                                    name="storeInventoryId"
@@ -191,12 +249,12 @@
                         <td>${inv.currentQuantity}</td>
 
                         <td>
-                            <span class="use-qty usage-qty">0</span>
-
-                            <input type="hidden"
+                            <input type="number"
                                    name="physicalQuantity"
-                                   class="use-qty-hidden"
-                                   value="0">
+                                   class="use-qty"
+                                   value="0"
+                                   min="0"
+                                   required>
                         </td>
 
                         <td>
@@ -208,21 +266,21 @@
                         </td>
 
                         <td>
-                            <input type="number"
-                                   class="remain-qty"
-                                   value="${inv.currentQuantity}"
-                                   min="0"
-                                   required>
+                            <span class="remain-qty">${inv.currentQuantity}</span>
+                            <div class="danger-text">
+                                실사용수량과 폐기 수량의 합은 전산재고보다 클 수 없습니다.
+                            </div>
                         </td>
 
                     </tr>
 
                     <tr class="reason-row" style="display:none;">
-                        <td colspan="5" class="reason-cell">
-                            <strong>폐기사유</strong>
+                        <td colspan="6" class="reason-cell">
+                            <strong>폐기 사유</strong>
                             <textarea name="closingItemMemo"
                                       class="disposal-reason"
-                                      placeholder="폐기사유를 입력하세요"></textarea>
+                                      maxlength="100"
+                                      placeholder="폐기 사유를 입력하세요."></textarea>
                         </td>
                     </tr>
 
@@ -236,11 +294,11 @@
 
             <strong>마감 메모</strong>
 
-            <br><br>
-
             <textarea name="closingMemo"
                       rows="5"
-                      required></textarea>
+                      maxlength="300"
+                      required
+                      placeholder="마감 메모를 입력하세요."></textarea>
 
         </div>
 
@@ -251,56 +309,95 @@
 
     </form>
 
-    <script>
-        function updateRow(row) {
+</section>
+
+</t:layout>
+
+<script>
+    function updateRow(row) {
+        const systemQty =
+            Number(row.querySelector(".system-qty").value || 0);
+
+        const useQty =
+            Number(row.querySelector(".use-qty").value || 0);
+
+        const disposalQty =
+            Number(row.querySelector(".disposal-qty").value || 0);
+
+        let remainQty = systemQty - useQty - disposalQty;
+
+        const dangerText = row.querySelector(".danger-text");
+
+        if (remainQty < 0) {
+            remainQty = 0;
+            dangerText.style.display = "block";
+        } else {
+            dangerText.style.display = "none";
+        }
+
+        row.querySelector(".remain-qty").innerText = remainQty;
+
+        const reasonRow = row.nextElementSibling;
+        const reason = reasonRow.querySelector(".disposal-reason");
+
+        if (disposalQty > 0) {
+            reasonRow.style.display = "";
+            reason.required = true;
+        } else {
+            reasonRow.style.display = "none";
+            reason.required = false;
+            reason.value = "";
+        }
+    }
+
+    function validateClosingForm() {
+        const rows = document.querySelectorAll(".item-row");
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+
+            const materialName = row.querySelector(".material-name").innerText.trim();
+
             const systemQty =
                 Number(row.querySelector(".system-qty").value || 0);
 
-            const remainQty =
-                Number(row.querySelector(".remain-qty").value || 0);
+            const useQty =
+                Number(row.querySelector(".use-qty").value || 0);
 
             const disposalQty =
                 Number(row.querySelector(".disposal-qty").value || 0);
 
-            let useQty =
-                systemQty - remainQty - disposalQty;
-
-            if (useQty < 0) {
-                useQty = 0;
-            }
-
-            row.querySelector(".use-qty").innerText = useQty;
-            row.querySelector(".use-qty-hidden").value = useQty;
-
             const reasonRow = row.nextElementSibling;
             const reason = reasonRow.querySelector(".disposal-reason");
 
-            if (disposalQty > 0) {
-                reasonRow.style.display = "";
-                reason.required = true;
-            } else {
-                reasonRow.style.display = "none";
-                reason.required = false;
-                reason.value = "";
+            if (useQty + disposalQty > systemQty) {
+                alert(materialName + "의 실사용수량과 폐기 수량의 합은 전산재고보다 클 수 없습니다.");
+                row.querySelector(".use-qty").focus();
+                return false;
+            }
+
+            if (disposalQty > 0 && reason.value.trim() === "") {
+                alert(materialName + "의 폐기 사유를 입력해주세요.");
+                reason.focus();
+                return false;
             }
         }
 
-        document.querySelectorAll(".item-row").forEach(function(row) {
+        return confirm("일일 재고 마감을 저장하시겠습니까?");
+    }
+
+    document.querySelectorAll(".item-row").forEach(function(row) {
+        updateRow(row);
+
+        row.querySelector(".use-qty").addEventListener("input", function() {
             updateRow(row);
-
-            row.querySelector(".remain-qty").addEventListener("input", function() {
-                updateRow(row);
-            });
-
-            row.querySelector(".disposal-qty").addEventListener("input", function() {
-                updateRow(row);
-            });
         });
-    </script>
 
-</section>
-
-</t:layout>
+        row.querySelector(".disposal-qty").addEventListener("input", function() {
+            updateRow(row);
+        });
+    });
+</script>
 
 </body>
 </html>

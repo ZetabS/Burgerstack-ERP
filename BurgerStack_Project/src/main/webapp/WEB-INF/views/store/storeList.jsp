@@ -11,54 +11,50 @@
 <title>점포 목록 조회</title>
 
 <style>
-   .store-list-wrap {
-        width: 1300px;
-        margin: 0 auto;
-        padding-top: 35px;
-    }
-
-    .page-title {
-        margin-bottom: 8px;
-        font-size: 32px;
-        font-weight: bold;
-    }
-
-    .page-desc {
-        margin-bottom: 30px;
-        color: #6b7280;
-        font-size: 14px;
-    }
-
     .list-card {
         background: #fff;
         border: 1px solid #e5e7eb;
         border-radius: 14px;
         padding: 35px 40px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .section-title {
-        margin-bottom: 25px;
+        margin-bottom: 10px;
         padding-left: 12px;
         border-left: 5px solid #19c765;
         font-size: 22px;
         font-weight: bold;
     }
 
+    .table-guide {
+        font-size: 13px;
+        color: #888;
+        margin-bottom: 20px;
+    }
+
+    .search-form {
+        width: 100%;
+        margin-bottom: 18px;
+    }
+
     .search-area {
+        width: 100%;
         display: flex;
         justify-content: flex-end;
         align-items: center;
         gap: 8px;
-        margin-bottom: 18px;
     }
 
-    .search-area select,
-    .search-area input[type="date"] {
+    .search-area select {
         height: 36px;
         border: 1px solid #d1d5db;
         border-radius: 8px;
         padding: 0 10px;
+        font-size: 13px;
+        background: #fff;
     }
 
     .search-box {
@@ -67,64 +63,112 @@
     }
 
     .search-box input {
-        width: 150px;
+        width: 190px;
         border: 1px solid #d1d5db;
         border-right: none;
         border-radius: 8px 0 0 8px;
         padding-left: 10px;
+        font-size: 13px;
+        box-sizing: border-box;
     }
 
     .search-btn {
-        width: 40px;
+        width: 42px;
         border: none;
         border-radius: 0 8px 8px 0;
         background: #374151;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .search-btn img {
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
     }
 
-    table {
+    .reset-btn {
+        height: 36px;
+        padding: 0 14px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        color: #374151;
+        font-size: 13px;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    .table-area {
+        width: 100%;
+        clear: both;
+    }
+
+    .store-table {
         width: 100%;
         border-collapse: collapse;
         text-align: center;
         font-size: 13px;
     }
 
-    thead tr {
+    .store-table thead tr {
         background: #19c765;
         color: white;
         height: 42px;
     }
 
-    th, td {
+    .store-table th,
+    .store-table td {
         padding: 12px 10px;
+        border-bottom: 1px solid #e5e7eb;
     }
 
-    tbody tr {
-        border-bottom: 1px solid #e5e7eb;
+    .store-table tbody tr.clickable-row {
         cursor: pointer;
     }
 
-    tbody tr:hover {
+    .store-table tbody tr.clickable-row:hover {
         background: #f2f6ff;
     }
 
+    .text-left {
+        text-align: left;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
     .status-open {
-        color: #16a34a;
-        font-weight: bold;
+        background: #dcfce7;
+        color: #166534;
     }
 
     .status-closed {
-        color: #ef4444;
-        font-weight: bold;
+        background: #fee2e2;
+        color: #b91c1c;
     }
 
-    
-   
+    .empty-row {
+        color: #888;
+        padding: 28px 10px !important;
+    }
+
+    .pagination-area {
+        width: 100%;
+        margin-top: 22px;
+        display: flex;
+        justify-content: center;
+    }
 </style>
 </head>
 
@@ -132,40 +176,57 @@
 
 <t:layout>
 
-    <section class="list-card">
+<section class="list-card">
 
     <h2 class="section-title">점포 목록</h2>
 
-    <form action="${pageContext.request.contextPath}/admin/stores"
+    <p class="table-guide">
+        행을 클릭하면 점포 상세 정보를 확인할 수 있습니다.
+    </p>
+
+    <form class="search-form"
+          action="${pageContext.request.contextPath}/admin/stores"
           method="get">
 
         <div class="search-area">
 
             <select name="status" onchange="this.form.submit()">
-                <option value="">전체상태</option>
-                <option value="OPEN"
-                    ${param.status eq 'OPEN' ? 'selected' : ''}>
+                <option value="" ${empty param.status ? 'selected' : ''}>
+                    전체 상태
+                </option>
+
+                <option value="OPEN" ${param.status eq 'OPEN' ? 'selected' : ''}>
                     영업중
                 </option>
-                <option value="CLOSED"
-                    ${param.status eq 'CLOSED' ? 'selected' : ''}>
+
+                <option value="CLOSED" ${param.status eq 'CLOSED' ? 'selected' : ''}>
                     폐점
                 </option>
             </select>
 
-            <input type="date"
-                   name="startDate"
-                   value="${param.startDate}">
+            <select name="sort" onchange="this.form.submit()">
+                <option value="" ${empty param.sort ? 'selected' : ''}>
+                    최신순
+                </option>
 
-            <input type="date"
-                   name="endDate"
-                   value="${param.endDate}">
+                <option value="code" ${param.sort eq 'code' ? 'selected' : ''}>
+                    점포코드순
+                </option>
+
+                <option value="name" ${param.sort eq 'name' ? 'selected' : ''}>
+                    점포명순
+                </option>
+
+                <option value="status" ${param.sort eq 'status' ? 'selected' : ''}>
+                    상태순
+                </option>
+            </select>
 
             <div class="search-box">
 
                 <input type="text"
                        name="keyword"
-                       placeholder="검색어 입력"
+                       placeholder="점포명, 코드, 주소 검색"
                        value="${param.keyword}">
 
                 <button type="submit"
@@ -177,68 +238,96 @@
 
             </div>
 
+            <a class="reset-btn"
+               href="${pageContext.request.contextPath}/admin/stores">
+                초기화
+            </a>
+
         </div>
 
     </form>
 
-    <table>
+    <div class="table-area">
 
-        <thead>
-            <tr>
-                <th>점포ID</th>
-                <th>점포명</th>
-                <th>주소</th>
-                <th>연락처</th>
-                <th>상태</th>
-                <th>등록일</th>
-            </tr>
-        </thead>
+        <table class="store-table">
 
-        <tbody>
-
-            <c:forEach var="s" items="${list}">
-
-                <tr onclick="location.href='${pageContext.request.contextPath}/admin/stores/${s.storeId}'">
-
-                    <td>${s.storeId}</td>
-                    <td>${s.storeName}</td>
-                    <td>${s.address}</td>
-                    <td>${s.phone}</td>
-
-                    <td>
-
-                        <c:choose>
-
-                            <c:when test="${s.status eq 'OPEN'}">
-                                <span class="status-open">영업중</span>
-                            </c:when>
-
-                            <c:otherwise>
-                                <span class="status-closed">폐점</span>
-                            </c:otherwise>
-
-                        </c:choose>
-
-                    </td>
-
-                    <td>${s.createdAt}</td>
-
+            <thead>
+                <tr>
+                    <th style="width: 20%;">점포 코드</th>
+                    <th style="width: 25%;">점포명</th>
+                    <th style="width: 40%;">주소</th>
+                    <th style="width: 15%;">상태</th>
                 </tr>
+            </thead>
 
-            </c:forEach>
+            <tbody>
 
-        </tbody>
+                <c:forEach var="s" items="${list}">
+                    <tr class="clickable-row"
+                        onclick="location.href='${pageContext.request.contextPath}/admin/stores/${s.storeId}'">
 
-    </table>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty s.storeCode}">
+                                    ${s.storeCode}
+                                </c:when>
+                                <c:otherwise>
+                                    S${s.storeId}
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
 
-</section>
-        
-        <br>
+                        <td>${s.storeName}</td>
 
-        <!-- 페이지네이션 -->
-        <t:pagination pageInfo="${pageInfo}" />
+                        <td class="text-left">
+                            <c:choose>
+                                <c:when test="${empty s.address}">
+                                    -
+                                </c:when>
+                                <c:otherwise>
+                                    ${s.address}
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+
+                        <td>
+                            <c:choose>
+                                <c:when test="${s.status eq 'OPEN'}">
+                                    <span class="status-badge status-open">
+                                        영업중
+                                    </span>
+                                </c:when>
+
+                                <c:otherwise>
+                                    <span class="status-badge status-closed">
+                                        폐점
+                                    </span>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+
+                    </tr>
+                </c:forEach>
+
+                <c:if test="${empty list}">
+                    <tr>
+                        <td colspan="4" class="empty-row">
+                            조회된 점포가 없습니다.
+                        </td>
+                    </tr>
+                </c:if>
+
+            </tbody>
+
+        </table>
 
     </div>
+
+    <div class="pagination-area">
+        <t:pagination pageInfo="${pageInfo}" />
+    </div>
+
+</section>
 
 </t:layout>
 

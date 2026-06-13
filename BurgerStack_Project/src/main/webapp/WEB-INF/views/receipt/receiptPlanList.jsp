@@ -111,7 +111,6 @@
     <h2>입고 예정 목록</h2>
 
     <!-- 검색 -->
-    <!-- 검색 -->
 	<form action="${pageContext.request.contextPath}/owner/receipts/planned"
 	      method="get">
 	
@@ -182,7 +181,7 @@
 							</td>
                             <td>${p.materialSummary}</td>
                             <td>${p.totalAmount}</td>
-                            <td>${p.createdAt}</td>
+                            <td>${p.createdAt.toString().replace('T',' ').substring(0,19)}</td>
                             <td>
 							    <a class="receipt-check-btn"
 							       href="${pageContext.request.contextPath}/owner/purchases/${p.purchaseOrderId}/receipt">

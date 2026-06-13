@@ -39,16 +39,17 @@
 
 
     <!-- 오늘 입고 예정 개수 -->
-    <select id="selectTodayReceiptCount"
-            parameterType="long"
-            resultType="int">
-
-        SELECT COUNT(*)
-        FROM PURCHASE_ORDERS
-        WHERE STATUS = 'APPROVED'
-          AND STORE_ID = #{storeId}
-
-    </select>
+	<select id="selectTodayReceiptCount"
+	        parameterType="long"
+	        resultType="int">
+	
+	    SELECT COUNT(*)
+	    FROM PURCHASE_ORDERS
+	    WHERE STATUS = 'APPROVED'
+	      AND STORE_ID = #{storeId}
+	      AND TRUNC(CREATED_AT) = TRUNC(SYSDATE)
+	
+	</select>
 
 
     <!-- 승인 대기 발주 개수 -->
@@ -102,27 +103,29 @@
 
 
     <!-- 오늘 입고 예정 목록 -->
-    <select id="selectTodayReceiptList"
-            parameterType="long"
-            resultType="map">
-
-        SELECT *
-        FROM (
-            SELECT
-                PO.PURCHASE_ORDER_ID AS receiptId,
-                MIN(POI.MATERIAL_NAME_SNAPSHOT) AS materialName,
-                COUNT(*) - 1 AS extraCount
-            FROM PURCHASE_ORDERS PO
-            JOIN PURCHASE_ORDER_ITEMS POI
-              ON PO.PURCHASE_ORDER_ID = POI.PURCHASE_ORDER_ID
-            WHERE PO.STATUS = 'APPROVED'
-              AND PO.STORE_ID = #{storeId}
-            GROUP BY PO.PURCHASE_ORDER_ID
-            ORDER BY PO.PURCHASE_ORDER_ID DESC
-        )
-        WHERE ROWNUM &lt;= 3
-
-    </select>
+	<select id="selectTodayReceiptList"
+	        parameterType="long"
+	        resultType="map">
+	
+	    SELECT *
+	    FROM (
+	        SELECT
+	            PO.PURCHASE_ORDER_ID AS purchaseOrderId,
+	            PO.PURCHASE_ORDER_ID AS receiptId,
+	            MIN(POI.MATERIAL_NAME_SNAPSHOT) AS materialName,
+	            COUNT(*) - 1 AS extraCount
+	        FROM PURCHASE_ORDERS PO
+	        JOIN PURCHASE_ORDER_ITEMS POI
+	          ON PO.PURCHASE_ORDER_ID = POI.PURCHASE_ORDER_ID
+	        WHERE PO.STATUS = 'APPROVED'
+	          AND PO.STORE_ID = #{storeId}
+	          AND TRUNC(PO.CREATED_AT) = TRUNC(SYSDATE)
+	        GROUP BY PO.PURCHASE_ORDER_ID
+	        ORDER BY PO.PURCHASE_ORDER_ID DESC
+	    )
+	    WHERE ROWNUM &lt;= 3
+	
+	</select>
 
 
     <!-- 미처리 발주 상태 목록 -->
@@ -164,21 +167,22 @@
 
 
     <!-- 최근 공지사항 -->
-    <select id="selectNoticeList"
-            resultType="map">
-
-        SELECT *
-        FROM (
-            SELECT
-                TITLE AS noticeTitle,
-                TO_CHAR(CREATED_AT, 'YYYY-MM-DD') AS createdAt
-            FROM NOTICES
-            WHERE DELETED_AT IS NULL
-            ORDER BY CREATED_AT DESC
-        )
-        WHERE ROWNUM &lt;= 3
-
-    </select>
+	<select id="selectNoticeList"
+	        resultType="map">
+	
+	    SELECT *
+	    FROM (
+	        SELECT
+	            NOTICE_ID AS noticeId,
+	            TITLE AS noticeTitle,
+	            TO_CHAR(CREATED_AT, 'YYYY-MM-DD') AS createdAt
+	        FROM NOTICES
+	        WHERE DELETED_AT IS NULL
+	        ORDER BY CREATED_AT DESC
+	    )
+	    WHERE ROWNUM &lt;= 3
+	
+	</select>
 
 
     <select id="selectReceiptCheckItemList"

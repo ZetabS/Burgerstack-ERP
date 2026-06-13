@@ -23,35 +23,42 @@ public class ClosingController {
     }
 
     @GetMapping("/owner/closings")
-    public String ownerClosingList(Model model){
+    public String ownerClosingList(@RequestParam(required = false, defaultValue = "") String startDate,
+                                   @RequestParam(required = false, defaultValue = "") String endDate,
+                                   Model model) {
 
         Long storeId = 1L;
 
         List<StoreClosing> list =
-                closingService.selectOwnerClosingList(storeId);
-
-        System.out.println("점주 마감 개수 : " + list.size());
+                closingService.selectOwnerClosingList(storeId, startDate, endDate);
 
         model.addAttribute("list", list);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
 
         return "owner/closing/closingListView";
     }
 
     @GetMapping("/admin/closings")
-    public String adminClosingList(
-            @RequestParam(required = false) Long storeId,
-            Model model) {
+    public String adminClosingList(@RequestParam(required = false) Long storeId,
+                                   @RequestParam(required = false, defaultValue = "") String startDate,
+                                   @RequestParam(required = false, defaultValue = "") String endDate,
+                                   @RequestParam(required = false, defaultValue = "") String keyword,
+                                   Model model) {
 
-        List<StoreClosing> list;
-
-        if (storeId != null) {
-            list = closingService.selectAdminClosingListByStoreId(storeId);
-        } else {
-            list = closingService.selectAdminClosingList();
-        }
+        List<StoreClosing> list =
+                closingService.selectAdminClosingList(
+                        storeId,
+                        startDate,
+                        endDate,
+                        keyword
+                );
 
         model.addAttribute("list", list);
         model.addAttribute("storeId", storeId);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        model.addAttribute("keyword", keyword);
 
         return "admin/closing/closingListView";
     }
@@ -114,20 +121,61 @@ public class ClosingController {
 
         for (int i = 0; i < storeInventoryId.size(); i++) {
 
-            StoreClosingItem item = new StoreClosingItem();
+            Long systemQty = systemQuantity.get(i);
+            Long useQty = physicalQuantity.get(i);
+            Long disposalQty = disposalQuantity.get(i);
 
-            item.setStoreInventoryId(storeInventoryId.get(i));
-            item.setSystemQuantity(systemQuantity.get(i));
-            item.setMaterialNameSnapshot(materialNameSnapshot.get(i));
-            item.setPhysicalQuantity(physicalQuantity.get(i));
-            item.setDisposalQuantity(disposalQuantity.get(i));
+            if (systemQty == null) {
+                systemQty = 0L;
+            }
+
+            if (useQty == null) {
+                useQty = 0L;
+            }
+
+            if (disposalQty == null) {
+                disposalQty = 0L;
+            }
 
             String memo = null;
 
             if (closingItemMemo != null && closingItemMemo.size() > i) {
                 memo = closingItemMemo.get(i);
+
+                if (memo != null) {
+                    memo = memo.trim();
+                }
             }
 
+            String materialName = materialNameSnapshot.get(i);
+
+            if (useQty + disposalQty > systemQty) {
+                ra.addFlashAttribute(
+                        "msg",
+                        materialName + "의 실사용수량과 폐기 수량의 합은 전산재고보다 클 수 없습니다."
+                );
+                return "redirect:/owner/closings/new";
+            }
+
+            if (disposalQty > 0 && (memo == null || memo.equals(""))) {
+                ra.addFlashAttribute(
+                        "msg",
+                        materialName + "의 폐기 사유를 입력해주세요."
+                );
+                return "redirect:/owner/closings/new";
+            }
+
+            if (disposalQty == 0) {
+                memo = null;
+            }
+
+            StoreClosingItem item = new StoreClosingItem();
+
+            item.setStoreInventoryId(storeInventoryId.get(i));
+            item.setSystemQuantity(systemQty);
+            item.setMaterialNameSnapshot(materialName);
+            item.setPhysicalQuantity(useQty);
+            item.setDisposalQuantity(disposalQty);
             item.setClosingItemMemo(memo);
 
             itemList.add(item);

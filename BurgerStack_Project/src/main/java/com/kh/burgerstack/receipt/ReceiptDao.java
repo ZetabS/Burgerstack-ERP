@@ -20,27 +20,46 @@ public class ReceiptDao {
     @Autowired
     private SqlSessionTemplate sqlSession;
 
-    public int getHistoryTotalCount(SqlSessionTemplate sqlSession, String receiptType) {
+    public int getHistoryTotalCount(SqlSessionTemplate sqlSession,
+						            String receiptType,
+						            String startDate,
+						            String endDate,
+						            String keyword) {
+						
+		Map<String, Object> map = new HashMap<>();
+		map.put("receiptType", receiptType);
+		map.put("startDate", startDate);
+		map.put("endDate", endDate);
+		map.put("keyword", keyword);
+						
+		return sqlSession.selectOne(
+		"ReceiptMapper.getHistoryTotalCount",
+		map
+);
+}
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("receiptType", receiptType);
+    public List<Receipt> selectReceiptList(SqlSessionTemplate sqlSession,
+								            PagingRequest pagingRequest,
+								            String receiptType,
+								            String startDate,
+								            String endDate,
+								            String keyword) {
 
-        return sqlSession.selectOne(
-                "ReceiptMapper.getHistoryTotalCount",
-                map
-        );
-    }
+			Map<String, Object> map = new HashMap<>();
+			map.put("receiptType", receiptType);
+			map.put("startDate", startDate);
+			map.put("endDate", endDate);
+			map.put("keyword", keyword);
 
-    public List<Receipt> selectReceiptList(String receiptType) {
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("receiptType", receiptType);
-
-        return sqlSession.selectList(
-                "ReceiptMapper.selectReceiptList",
-                map
-        );
-    }
+			return sqlSession.selectList(
+			"ReceiptMapper.selectReceiptList",
+			map,
+			new RowBounds(
+			pagingRequest.getOffset(),
+			pagingRequest.getLimit()
+			)
+		);
+}
     
     public int getPlanTotalCount(SqlSessionTemplate sqlSession, String status) {
         return sqlSession.selectOne(
