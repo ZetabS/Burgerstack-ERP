@@ -6,10 +6,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>점주 계정 목록 조회</title>
 
 <style>
@@ -98,8 +95,6 @@
 	}
 </style>
 
-</head>
-<body>
 
 <t:layout>
 
@@ -213,5 +208,3 @@
 
 </t:layout>
 
-</body>
-</html>

@@ -3,10 +3,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>Insert title here</title>
 
 <style>
@@ -131,8 +128,7 @@
 	margin-top: 0 !important;
 }
 </style>
-</head>
-<body>
+
 	<t:layout>
 
 		<div class="form-container">
@@ -165,7 +161,7 @@
 					수정</button>
 
 				<button type="button" id="homeBtn"
-					onclick="location.href='${pageContext.request.contextPath}/owner/inquiries'">목록</button>
+					onclick="location.href='${pageContext.request.contextPath}/owner/inquiries'">목록으로</button>
 
 			</div>
 			<c:if test="${not empty file}">
@@ -178,6 +174,3 @@
 
 		</div>
 	</t:layout>
-
-</body>
-</html>

@@ -1,9 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>로그인 화면</title>
 	<style type="text/css">
 	#header{
@@ -135,7 +132,7 @@
 				    <button type="button"
 				            class="login-button"
 				            onclick="location.href='/burgerstack/auth/login'">
-				        돌아가기
+				        이전으로
 				    </button>
 				</div>
 	

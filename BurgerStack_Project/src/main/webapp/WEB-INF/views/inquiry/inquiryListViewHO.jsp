@@ -5,10 +5,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
 <title>문의사항 목록 조회</title>
 
 <style>
@@ -94,8 +90,7 @@ tbody tr:hover {
 	background-color: #dc3545;
 }
 </style>
-</head>
-<body>
+
 
 	<t:layout>
 
@@ -200,5 +195,3 @@ tbody tr:hover {
 
 
 	</t:layout>
-</body>
-</html>

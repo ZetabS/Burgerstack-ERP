@@ -1,10 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>BurgerStack</title>
 <link rel="shortcut icon" type="image/x-icon" href="/resources/images/BS_logo2.png" />
 <style>
@@ -110,8 +107,6 @@
 	    font-size: 16px;
 	}
 </style>
-</head>
-<body>
 
 <t:layout>
 
@@ -198,13 +193,9 @@
 		
 			<div class="home-btn-area">
 	    		<button type="submit" id="homeBtn" onclick="location.href = '/burgerstack/admin/dashboard'">
-			        홈으로
+			        이전으로
 			    </button>
 			</div>
 		
 
 </t:layout>
-
-
-</body>
-</html>

@@ -2,10 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>Insert title here</title>
 <style>
 /* 화면 레이아웃 및 스타일 간이 정의 */
@@ -108,8 +105,7 @@ h1 {
 }
 </style>
 
-</head>
-<body>
+
 	<t:layout>
 
 		<div class="main-content">
@@ -142,5 +138,3 @@ h1 {
 			</div>
 		</div>
 	</t:layout>
-</body>
-</html>

@@ -3,10 +3,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>Insert title here</title>
 <style type="text/css">
 .form-container {
@@ -97,8 +94,7 @@ input {
     background-color:#dc3545;
 }
 </style>
-</head>
-<body>
+
 
 	<t:layout>
 		<h1 id="title" align="center">점주 계정 상세조회</h1>
@@ -156,12 +152,9 @@ input {
 				    <button type="button"
 				            id="homeBtn"
 				            onclick="location.href='/burgerstack/admin/users'">
-				        목록
+				        목록으로
 				    </button>
 				
 				</div>
 		</form>
 	</t:layout>
-
-</body>
-</html>

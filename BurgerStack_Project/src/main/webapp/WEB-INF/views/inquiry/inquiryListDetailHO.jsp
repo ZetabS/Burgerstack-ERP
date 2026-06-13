@@ -3,10 +3,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>Insert title here</title>
 
 <style>
@@ -131,8 +128,7 @@
 	margin-top: 0 !important;
 }
 </style>
-</head>
-<body>
+
 	<t:layout>
 		<div class="form-container">
 
@@ -163,7 +159,7 @@
 					답변 등록 및 수정</button>
 
 				<button type="button" id="homeBtn"
-					onclick="location.href='burgerstack/admin/inquiries'">목록</button>
+					onclick="location.href='burgerstack/admin/inquiries'">목록으로</button>
 
 			</div>
 			<hr>
@@ -174,5 +170,3 @@
 		</div>
 	</t:layout>
 
-</body>
-</html>

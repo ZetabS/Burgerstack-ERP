@@ -1,10 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>BurgerStack</title>
 <link rel="shortcut icon" type="image/x-icon"
 	href="/resources/images/BS_logo2.png" />
@@ -112,8 +109,7 @@ input:focus {
 	font-size: 16px;
 }
 </style>
-</head>
-<body>
+
 
 	<t:layout>
 
@@ -185,11 +181,7 @@ input:focus {
 			<div class="home-btn-area">
 				<button type="button" id="homeBtn"
 					onclick="location.href = '/burgerstack/owner/dashboard'">
-					홈으로</button>
+					이전으로</button>
 			</div>
 		</div>
 	</t:layout>
-
-
-</body>
-</html>

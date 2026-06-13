@@ -2,9 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>Insert title here</title>
 <style>
 .form-container {
@@ -79,8 +77,7 @@ input {
 	color: white;    
 }
 </style>
-</head>
-<body>
+
 
 	<t:layout>
 	
@@ -141,6 +138,3 @@ input {
 		</form>
 		
 	</t:layout>
-
-</body>
-</html>

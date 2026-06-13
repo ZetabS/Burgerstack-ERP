@@ -2,10 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
+
 <title>Insert title here</title>
 <style>
 /* 화면 레이아웃 및 스타일 간이 정의 */
@@ -100,8 +97,6 @@ h1 {
 }
 </style>
 
-</head>
-<body>
 	 <t:layout>
 
 		<div class="main-content">
@@ -120,7 +115,7 @@ h1 {
 							required>${inquiry.content}</textarea>
 					</div>
 					<div class="btn-area">
-						<button type="submit" id="saveBtn">등록</button>
+						<button type="submit" id="saveBtn">등록 및 수정</button>
 	
 					<button type="submit" id="deleteBtn"
 					        formaction="/burgerstack/owner/inquiries/${inquiryId}/delete">
@@ -129,7 +124,7 @@ h1 {
 	
 						<button type="button" id="homeBtn"
 							onclick="location.href='/burgerstack/owner/inquiries'">
-							이전으로</button>
+							목록으로</button>
 					</div>
 					<div class="file-area">
 				        <label>첨부파일</label>
@@ -140,5 +135,3 @@ h1 {
 			</div>
 		</div>
 	</t:layout>
-</body>
-</html>
