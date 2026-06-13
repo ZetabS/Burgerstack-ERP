@@ -22,6 +22,21 @@
         padding: 0.25em 0.4em;
         margin: 0;
     }
+    .bg-secondary {
+        color: #ffffff !important;
+    }
+    .bg-success {
+        color: #ffffff !important;
+    }
+    .bg-danger {
+        color: #ffffff !important;
+    }
+    .bg-info {
+        color: #ffffff !important;
+    }
+    .bg-warning {
+        color: #ffffff !important;
+    }
 </style>
 <!-- 레이아웃 작업 -->
 <t:layout>
@@ -72,16 +87,18 @@
                         </option>
                     </select>
                     <input type="date"
+                            id="startDate"
                             name="startDate"
+                            max="${today}"
                             value="${condition.startDate}"
-                            onchange="autoSearch()">
-
+                            onchange="validateDate()">
                     ~
-
                     <input type="date"
+                            id="endDate"
                             name="endDate"
+                            max="${today}"
                             value="${condition.endDate}"
-                            onchange="autoSearch()">
+                            onchange="validateDate();">
 
                 </form>             
             </div>
@@ -108,11 +125,11 @@
                 <c:forEach var="p" items="${list}">
                     <tr style="cursor:pointer;"
                         onclick="location.href='${pageContext.request.contextPath}/owner/purchases/${p.purchaseOrderId}'">
-                        <td>${p.purchaseOrderId}</td>
+                        <td>${p.purchaseCode}</td>
                         <td>
                             <c:choose>
                                 <c:when test="${p.status eq 'REQUESTED'}">
-                                    <h6><span class="badge rounded-pill bg-secondary">요청중</span></h6>
+                                    <h6><span class="badge bg-secondary">요청중</span></h6>
                                 </c:when>
                                 <c:when test="${p.status eq 'PARTIALLY_APPROVED'}">
                                     <h6><span class="badge bg-success">부분승인</span></h6>
@@ -124,7 +141,7 @@
                                     <h6><span class="badge bg-danger">발주취소</span></h6>
                                 </c:when>
                                 <c:when test="${p.status eq 'REJECTED'}">
-                                    <h6><span class="badge rounded-pill bg-danger">반려</span></h6>
+                                    <h6><span class="badge bg-danger">반려</span></h6>
                                 </c:when>
                                 <c:when test="${p.status eq 'RECEIVED'}">
                                     <h6><span class="badge bg-info">입고완료</span></h6>
@@ -154,6 +171,10 @@
         // 페이지 로드시 최초 실행
         $(document).ready(function () {
 
+            const today = new Date().toISOString().split('T')[0];
+
+            $('#endDate').attr('max', today);
+
             priceFormatting()
 
         }); //
@@ -174,8 +195,46 @@
             });
         }
 
+        // 검색어 변경시 자동 검색
         function autoSearch() {
             document.getElementById("searchForm").submit();
+        }
+
+        // 날짜 유효성 검사
+        function validateDate() {
+
+            const startDate =
+                document.getElementById('startDate');
+
+            const endDate =
+                document.getElementById('endDate');
+
+            const today =
+                new Date().toISOString().split('T')[0];
+
+            endDate.max = today;
+
+            if(endDate.value > today) {
+
+                alert('종료일은 오늘 이후로 선택할 수 없습니다.');
+
+                endDate.value = today;
+
+                return;
+            }
+
+            if(startDate.value &&
+            endDate.value &&
+            startDate.value > endDate.value) {
+
+                alert('시작일은 종료일보다 클 수 없습니다.');
+
+                startDate.value = endDate.value;
+
+                return;
+            }
+
+            autoSearch();
         }
 
         let typing = false;
@@ -196,17 +255,23 @@
         // 5초마다 새로고침
         function refreshPurchaseList() {
 
+            if(typing){
+                return;
+            }
+
             $.ajax({
                 url : window.location.href,
                 success : function(html) {
+
                     $("#purchaseListBody").html(
-                        $(html).find("#purchaseListBody").html()
+                        $(html)
+                        .find("#purchaseListBody")
+                        .html()
                     );
 
                     priceFormatting();
                 }
             });
-            
         }
 
         setInterval(refreshPurchaseList, 5000);
