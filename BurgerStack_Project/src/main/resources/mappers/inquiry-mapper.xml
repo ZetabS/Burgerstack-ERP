@@ -71,10 +71,10 @@
 	<select id="InquiryListDetail" resultType="com.kh.burgerstack.inquiry.Inquiry">
 	    SELECT  
 	        TITLE AS title, 
+	        CREATED_AT AS createdAt,
 	        CONTENT AS content, 
-	        ANSWER_CONTENT AS answerContent, 
-	        CREATED_AT AS createdAt, 
-	        ANSWERED_AT AS answeredAt
+	        ANSWERED_AT AS answeredAt,
+	        ANSWER_CONTENT AS answerContent 
 	    FROM INQUIRIES
 	    WHERE INQUIRY_ID = #{inquiryId}
 	</select>

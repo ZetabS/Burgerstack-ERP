@@ -11,6 +11,14 @@
 <title>문의사항 목록 조회</title>
 
 <style>
+.form-container {
+	width: 100%;
+	max-width: 2000px;
+	background: #fff;
+	padding: 30px;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -92,7 +100,7 @@ tbody tr:hover {
 				</div>
 			</form>
 
-			<table>
+			<table class="form-container">
 				<colgroup>
 					<col style="width: 10%">
 					<col style="width: 50%">

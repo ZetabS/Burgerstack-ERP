@@ -22,19 +22,22 @@ body {
 
 /* 메인 콘텐츠 영역 */
 .main-content {
-	flex: 1;
-	padding: 40px;
-	display: flex;
-	justify-content: center;
+    flex: 1;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
 }
 
 .form-container {
-	width: 100%;
-	max-width: 900px;
-	background: #fff;
-	padding: 30px;
-	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 2000px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+    margin-top: 0;
 }
 
 h1 {
@@ -98,6 +101,14 @@ h1 {
 	background: #FF5B5B;
 	color: white;
 }
+.layout__main .main-content{
+    padding-top:0 !important;
+    margin-top:0 !important;
+}
+
+.layout__main .form-container{
+    margin-top:0 !important;
+}
 </style>
 
 </head>
@@ -126,9 +137,6 @@ h1 {
 					              class="textarea-content"
 					              required>${inquiry.answerContent}</textarea>
 					</div>
-					
-					
-					
 					
 					<div class="btn-area">
 						<button type="submit" id="saveBtn">등록</button>

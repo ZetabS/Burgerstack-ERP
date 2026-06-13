@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -79,6 +80,22 @@ input {
 	background: #6c757d;
 	color: white;    
 }
+.status-badge{
+    display:inline-block;
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:bold;
+    color:white;
+}
+
+.status-active{
+    background-color:#28a745;
+}
+
+.status-inactive{
+    background-color:#dc3545;
+}
 </style>
 </head>
 <body>
@@ -107,17 +124,21 @@ input {
 				</tr>
 				<tr>
 					<th>등록일</th>
-					<td>${user.createdAt}</td>
+					<td>${fn:replace(user.createdAt, 'T', ' ')}</td>
 				</tr>
 				<tr>
 				    <th>상태</th>
 				    <td>
 				        <c:choose>
 				            <c:when test="${user.status eq 'ACTIVE'}">
-				                사용중
+				                <span class="status-badge status-active">
+				                    영업중
+				                </span>
 				            </c:when>
 				            <c:otherwise>
-				                정지
+				                <span class="status-badge status-inactive">
+				                    폐점
+				                </span>
 				            </c:otherwise>
 				        </c:choose>
 				    </td>

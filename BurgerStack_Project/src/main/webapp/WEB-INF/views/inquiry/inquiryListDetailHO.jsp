@@ -12,12 +12,13 @@
 <style>
 .form-container {
 	width: 100%;
-	max-width: 900px;
+	max-width: 2000px;
 	background: #fff;
 	padding: 30px;
 	border-radius: 8px;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 #title {
 	padding-top: 30px;
 	font-weight: 1000;
@@ -42,7 +43,7 @@
 
 .inquiry-content {
 	border: 1px solid #bdbdbd;
-	min-height: 250px;
+	min-height: auto;
 	padding: 20px;
 	margin-bottom: 30px;
 	white-space: pre-line;
@@ -58,11 +59,15 @@
 
 .answer-content {
 	border: 1px solid #bdbdbd;
-	min-height: 180px;
 	padding: 20px;
 	margin-bottom: 30px;
-	white-space: pre-line;
 	line-height: 1.6;
+	min-height: auto !important;
+	height: auto !important;
+}
+
+.answer-content {
+	white-space: normal;
 }
 
 .btn-area {
@@ -116,55 +121,58 @@
 	background: #6c757d;
 	color: white;
 }
+
+.layout__main .main-content {
+	padding-top: 0 !important;
+	margin-top: 0 !important;
+}
+
+.layout__main .form-container {
+	margin-top: 0 !important;
+}
 </style>
 </head>
 <body>
 	<t:layout>
 		<div class="form-container">
 
-		<h1 id="title">문의사항 상세 보기</h1>
+			<h1 id="title">문의사항 상세 보기</h1>
 
-		<div class="inquiry-title-box">${inquiry.title}</div>
+			<div class="inquiry-title-box">${inquiry.title}</div>
 
-		<div class="inquiry-info" name="createAt">문의 등록일 :
-			${fn:replace(inquiry.createdAt, 'T', ' ')}</div>
+			<div class="inquiry-info" name="createAt">문의 등록일 :
+				${fn:replace(inquiry.createdAt, 'T', ' ')}</div>
 
-		<div class="inquiry-content">${inquiry.content}</div>
+			<div class="inquiry-content">${inquiry.content}</div>
 
 
-		<div class="answer-info" name="answeredAt">답변 등록일 :
-			${fn:replace(inquiry.answeredAt, 'T', ' ')}</div>
+			<div class="answer-info" name="answeredAt">답변 등록일 :
+				${fn:replace(inquiry.answeredAt, 'T', ' ')}</div>
 
-		<div class="answer-content">
+			<div class="answer-content">
+				<c:choose>
+					<c:when test="${empty inquiry.answerContent}">아직 등록된 답변이 없습니다.</c:when>
+					<c:otherwise>${inquiry.answerContent}</c:otherwise>
+				</c:choose>
+			</div>
 
-			<c:choose>
-				<c:when test="${empty inquiry.answerContent}">
-			            아직 등록된 답변이 없습니다.
-			        </c:when>
+			<div>${fn:length(inquiry.answerContent)}</div>
 
-				<c:otherwise>
-			            ${inquiry.answerContent}
-			        </c:otherwise>
+			<div class="btn-area">
 
-			</c:choose>
+				<button type="button" id="saveBtn"
+					onclick="location.href='/burgerstack/admin/inquiries/${inquiryId}/edit'">
+					답변 등록 및 수정</button>
 
-		</div>
+				<button type="button" id="homeBtn"
+					onclick="location.href='burgerstack/admin/inquiries'">목록</button>
 
-		<div class="btn-area">
+			</div>
+			<hr>
 
-			<button type="button" id="saveBtn"
-				onclick="location.href='/burgerstack/admin/inquiries/${inquiryId}/edit'">
-				답변 등록 및 수정</button>
-
-			<button type="button" id="homeBtn"
-				onclick="location.href='burgerstack/admin/inquiries'">목록</button>
-
-		</div>
-		<hr>
-
-		<div class="file-area">
-			<label>첨부파일</label> <input type="file" name="uploadFile">
-		</div>
+			<div class="file-area">
+				<label>첨부파일</label> <input type="file" name="uploadFile">
+			</div>
 		</div>
 	</t:layout>
 

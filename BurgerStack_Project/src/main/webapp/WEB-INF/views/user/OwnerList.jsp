@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <!DOCTYPE html>
 <html>
@@ -12,7 +13,14 @@
 <title>점주 계정 목록 조회</title>
 
 <style>
-
+	.form-container {
+	width: 100%;
+	max-width: 2000px;
+	background: #fff;
+	padding: 30px;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
     table{
         width:100%;
         border-collapse: collapse;
@@ -64,6 +72,30 @@
 	    text-align:center !important;
 	    vertical-align:middle !important;
 	}
+	.status-badge{
+    display:inline-block;
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+    color:white;
+	}
+	
+	.status-active{
+	    background:#28a745;
+	}
+	
+	.status-inactive{
+	    background:#dc3545;
+	}
+	tbody tr{
+    cursor:pointer;
+    transition:0.2s;
+	}
+	
+	tbody tr:hover{
+	    background:#f5f5f5;
+	}
 </style>
 
 </head>
@@ -79,38 +111,45 @@
 		
 		    <div class="search-area">
 		
-		        <select name="status">
-		            <option value="">전체상태</option>
-		            <option value="ACTIVE">사용중</option>
-		            <option value="INACTIVE">정지</option>
-		        </select>
-		
-		        <input type="text"
-		               name="keyword"
-		               placeholder="아이디 또는 이름 검색">
+			<select name="status">
+			    <option value="" ${empty param.status ? 'selected' : ''}>
+			        전체상태
+			    </option>
+			
+			    <option value="ACTIVE"
+			        ${param.status eq 'ACTIVE' ? 'selected' : ''}>
+			        영업중
+			    </option>
+			
+			    <option value="INACTIVE"
+			        ${param.status eq 'INACTIVE' ? 'selected' : ''}>
+			        폐점
+			    </option>
+			</select>
+			
+			<input type="text"
+			       name="keyword"
+			       value="${param.keyword}"
+			       placeholder="아이디 또는 이름 검색">
 		
 		        <button type="submit">검색</button>
 		
 		    </div>
 		
 		</form>
-		<table>
+		<table class="form-container">
 			    <colgroup>
-			        <col style="width:7%">
-			        <col style="width:13%">
-			        <col style="width:10%">
-			        <col style="width:15%">
-			        <col style="width:25%">
 			        <col style="width:20%">
-			        <col style="width:10%">
+			        <col style="width:20%">
+			        <col style="width:20%">
+			        <col style="width:20%">
+			        <col style="width:20%">
 			    </colgroup>
             <thead>
                 <tr>
-                    <th>번호</th>
+                    <th>No</th>
                     <th>아이디</th>
                     <th>이름</th>
-                    <th>연락처</th>
-                    <th>이메일</th>
                     <th>등록일</th>
                     <th>상태</th>
                 </tr>
@@ -140,25 +179,23 @@
 
                                 <td>${u.userName}</td>
 
-                                <td>${u.phone}</td>
+                                <td>${fn:replace(user.createdAt, 'T', ' ')}</td>
 
-                                <td>${u.email}</td>
-
-                                <td>${u.createdAt}</td>
-
-                                <td>
-                                    <c:choose>
-
-                                        <c:when test="${u.status eq 'ACTIVE'}">
-                                            사용중
-                                        </c:when>
-
-                                        <c:otherwise>
-                                            정지
-                                        </c:otherwise>
-
-                                    </c:choose>
-                                </td>
+								<td>
+								    <c:choose>
+								        <c:when test="${u.status eq 'ACTIVE'}">
+								            <span class="status-badge status-active">
+								                영업중
+								            </span>
+								        </c:when>
+								
+								        <c:otherwise>
+								            <span class="status-badge status-inactive">
+								                폐점
+								            </span>
+								        </c:otherwise>
+								    </c:choose>
+								</td>
 
                             </tr>
 

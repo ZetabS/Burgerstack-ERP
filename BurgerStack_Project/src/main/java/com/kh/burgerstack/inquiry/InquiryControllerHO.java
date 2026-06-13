@@ -56,6 +56,10 @@ public class InquiryControllerHO {
 
 	    Inquiry inquiry = inquiryServiceHO.InquiryListDetail(inquiryId);
 	    
+	    System.out.println(
+	    	    "[" + inquiry.getAnswerContent() + "]"
+	    	);
+	    
 	    model.addAttribute("inquiry", inquiry);
 		
 		return"inquiry/inquiryListDetailHO";
@@ -67,6 +71,9 @@ public class InquiryControllerHO {
 		Inquiry i = inquiryServiceHO.InquiryListDetail(inquiryId);
 		
 		model.addAttribute("inquiry",i);
+		
+		System.out.println("조회값 = " + i.getAnswerContent());
+		System.out.println("길이 = " + i.getAnswerContent().length());
 		
 		return"inquiry/inquiryEditHO";
 	}
