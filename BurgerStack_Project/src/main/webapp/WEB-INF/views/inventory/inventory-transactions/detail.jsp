@@ -3,6 +3,7 @@
 <%@ taglib prefix="datetime" uri="/WEB-INF/tld/datetime.tld" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
 <c:url var="backToList" value="/${role}/inventory-transactions" />
@@ -33,7 +34,7 @@
 
         <div class="row mb-3">
           <div class="col-sm-3 font-weight-bold">변동 유형</div>
-          <div class="col-sm-9">${detail.transactionType}</div>
+          <div class="col-sm-9"><display:InventoryTransactionTypeLabel value="${detail.transactionType}" /></div>
         </div>
 
         <div class="row mb-3">

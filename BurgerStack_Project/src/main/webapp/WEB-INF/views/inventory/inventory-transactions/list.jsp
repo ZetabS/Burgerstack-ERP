@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
 <c:url var="inventoryTransactionListUrl" value="/${role}/inventory-transactions" />
@@ -51,7 +52,9 @@
           <table:TableRow clickable="true" href="${detail}">
             <table:TextFitCell value="${item.inventoryTransactionCode}" />
             <c:if test="${isAdmin}"><table:TextFitCell value="${item.storeName}" /></c:if>
-            <table:InventoryTransactionTypeCell value="${item.transactionType}" />
+            <table:BadgeCell>
+              <display:InventoryTransactionTypeLabel value="${item.transactionType}" />
+            </table:BadgeCell>
             <table:TextFitCell value="${item.createdByName}" />
             <table:DateTimeCell value="${item.createdAt}" />
             <table:TextCell value="${item.reason}" />
