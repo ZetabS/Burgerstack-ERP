@@ -8,10 +8,6 @@
 <%@ taglib prefix="t"
     tagdir="/WEB-INF/tags"%>
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
 <title>점주 대시보드</title>
 
 <style>
@@ -261,9 +257,7 @@
         padding: 24px 8px !important;
     }
 </style>
-</head>
 
-<body>
 
 <t:layout>
 
@@ -511,5 +505,3 @@
 
 </t:layout>
 
-</body>
-</html>

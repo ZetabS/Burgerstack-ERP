@@ -95,6 +95,7 @@ input {
 				    <td>
 				        <input type="text"
 				               id="password"
+				               name="password"
 				               readonly>
 				
 				        <button type="button"
@@ -156,7 +157,7 @@ input {
 				        );
 				    }
 				
-				    document.getElementById("tempPwd").value = pwd;
+				    document.getElementById("password").value = pwd;
 				}
 			</script>
 				
