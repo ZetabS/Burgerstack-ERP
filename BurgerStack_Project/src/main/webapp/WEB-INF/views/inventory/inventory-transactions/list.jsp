@@ -35,7 +35,7 @@
       </select>
     </form>
 
-    <table:DataTable>
+    <table:DataTable isEmpty="${empty view.list}" emptyMessage="재고 변동 이력이 없습니다.">
       <jsp:attribute name="thead">
         <tr>
           <th>변동 이력 코드</th>

@@ -43,7 +43,7 @@
       <input type="text" id="material-name-input" name="materialName" class="form-control mr-3" placeholder="검색할 자재명을 입력하세요." value="${view.condition.materialName}" />
       <button type="submit" class="btn btn-primary">검색</button>
     </form>
-    <table:DataTable>
+    <table:DataTable isEmpty="${empty view.list}" emptyMessage="조회된 재고가 없습니다.">
       <jsp:attribute name="thead">
         <tr>
           <c:if test="${isAdmin}"><th>점포명</th></c:if>
