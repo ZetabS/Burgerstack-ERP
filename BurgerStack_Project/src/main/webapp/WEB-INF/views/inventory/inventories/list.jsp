@@ -29,13 +29,20 @@
       </c:if>
 
       <select id="material-type-option" name="materialType" class="form-control mr-3">
-        <option value="">유형 선택</option>
-        <option value="AF" ${view.condition.materialType eq 'AF' ? 'selected' : ''}>상온식품</option>
-        <option value="RF" ${view.condition.materialType eq 'RF' ? 'selected' : ''}>냉장식품</option>
-        <option value="FF" ${view.condition.materialType eq 'FF' ? 'selected' : ''}>냉동식품</option>
-        <option value="PK" ${view.condition.materialType eq 'PK' ? 'selected' : ''}>포장재</option>
-        <option value="KW" ${view.condition.materialType eq 'KW' ? 'selected' : ''}>주방용품</option>
-        <option value="ET" ${view.condition.materialType eq 'ET' ? 'selected' : ''}>기타</option>
+        <c:choose>
+          <c:when test="${empty view.condition.materialType}">
+            <option value="" selected disabled hidden>전체 유형</option>
+          </c:when>
+          <c:otherwise>
+            <option value="">전체 유형</option>
+          </c:otherwise>
+        </c:choose>
+
+        <c:forEach var="type" items="AF,RF,FF,PK,KW,ET">
+          <option value="${type}" ${view.condition.materialType eq type ? 'selected' : ''}>
+            <display:MaterialTypeLabel value="${type}" />
+          </option>
+        </c:forEach>
       </select>
 
       <div class="form-check mr-3">
