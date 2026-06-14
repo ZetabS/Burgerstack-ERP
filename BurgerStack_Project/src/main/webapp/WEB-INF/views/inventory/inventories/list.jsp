@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
+
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="isOwner" value="${sessionScope.loginUser.owner}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
@@ -64,7 +66,9 @@
             <c:if test="${isAdmin}"><table:TextFitCell value="${item.storeName}" /></c:if>
             <table:TextFitCell value="${item.materialCode}" />
             <table:TextCell value="${item.materialName}" />
-            <table:FitCell>${item.materialType}</table:FitCell>
+            <table:FitCell>
+              <display:MaterialTypeLabel value="${item.materialType}" />
+            </table:FitCell>
             <table:NumberCell value="${item.currentQuantity}" />
             <table:NumberCell value="${item.safetyQuantity}" />
             <c:if test="${isOwner}"><table:ActionCell href="${editUrl}">안전재고 조정</table:ActionCell></c:if>
