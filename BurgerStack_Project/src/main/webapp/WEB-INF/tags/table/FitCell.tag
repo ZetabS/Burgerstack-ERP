@@ -2,7 +2,7 @@
 <%@ attribute name="value" required="false" type="java.lang.String" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<td class="data-table__col-fit">
+<td class="data-table__col-fit text-center">
   <c:choose>
     <c:when test="${not empty value}">
       <c:out value="${value}" />

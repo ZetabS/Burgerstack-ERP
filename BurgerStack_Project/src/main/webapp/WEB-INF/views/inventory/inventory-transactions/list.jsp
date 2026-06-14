@@ -52,9 +52,9 @@
           <table:TableRow clickable="true" href="${detail}">
             <table:TextFitCell value="${item.inventoryTransactionCode}" />
             <c:if test="${isAdmin}"><table:TextFitCell value="${item.storeName}" /></c:if>
-            <table:BadgeCell>
-              <display:InventoryTransactionTypeLabel value="${item.transactionType}" />
-            </table:BadgeCell>
+            <table:FitCell>
+              <display:InventoryTransactionTypeBadge value="${item.transactionType}" />
+            </table:FitCell>
             <table:TextFitCell value="${item.createdByName}" />
             <table:DateTimeCell value="${item.createdAt}" />
             <table:TextCell value="${item.reason}" />
