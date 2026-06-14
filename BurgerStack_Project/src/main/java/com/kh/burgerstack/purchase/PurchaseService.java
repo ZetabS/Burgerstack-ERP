@@ -129,7 +129,7 @@ public class PurchaseService {
         PurchaseOrderDto request = new PurchaseOrderDto();
         request.setStoreId(user.getStoreId());
         request.setTotalAmount(total);
-        request.setOrderMemo("수동 발주");
+        request.setOrderMemo(orderMemo);
 
         purchaseDao.insertPurchaseOrder(request, sqlSession);
 
@@ -191,7 +191,7 @@ public class PurchaseService {
             total += price * qty;
         }
 
-        // 🔥 상태 체크 (REQUESTED만 수정 가능)
+        // 상태 체크 (REQUESTED만 수정 가능)
         if (!"REQUESTED".equals(origin.getStatus())) {
             throw new IllegalStateException("수정 불가 상태입니다.");
         }
@@ -229,7 +229,7 @@ public class PurchaseService {
         }
 
         // 3. 취소 처리
-        purchaseDao.cancelPurchase(sqlSession, purchaseOrderId);
+        purchaseDao.cancelPurchase(sqlSession, isAdmin, purchaseOrderId);
     }
 
     @Transactional

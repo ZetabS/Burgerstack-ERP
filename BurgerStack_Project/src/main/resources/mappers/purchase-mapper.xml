@@ -280,40 +280,73 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     SELECT
         P.PURCHASE_ORDER_ID,
+
+        'P'
+        || TO_CHAR(P.CREATED_AT,'YYYY')
+        || LPAD(P.PURCHASE_ORDER_ID,4,'0')
+        AS PURCHASE_CODE,
+
+        P.STORE_ID,
+        S.STORE_NAME,
+
+        U.USER_NAME,
+        CASE U.ROLE
+            WHEN 'ADMIN' THEN '관리자'
+            WHEN 'OWNER' THEN '점주'
+        END AS ROLE,
+
+        P.CREATED_AT,
+
+        NVL(P.ORDER_MEMO,'-') AS ORDER_MEMO,
+
         P.STATUS,
+
         M.MATERIAL_ID,
+
+        M.MATERIAL_TYPE
+        || TO_CHAR(P.CREATED_AT,'YYYY')
+        || LPAD(M.MATERIAL_ID,4,'0')
+        AS MATERIAL_CODE,
+
         M.MATERIAL_NAME,
+
         M.MATERIAL_TYPE,
+
         I.SUPPLY_PRICE_SNAPSHOT,
+
         INV.CURRENT_QUANTITY,
+
         I.REQUEST_QUANTITY,
+
         NVL(I.APPROVED_QUANTITY,0)
             AS APPROVED_QUANTITY,
-        (I.REQUEST_QUANTITY
-            - NVL(I.APPROVED_QUANTITY,0))
-            AS REJECT_QUANTITY,
-        I.REJECT_REASON,
+
         (
-            NVL(I.APPROVED_QUANTITY,0)
+            I.REQUEST_QUANTITY
             * I.SUPPLY_PRICE_SNAPSHOT
-        ) AS TOTAL_PRICE
+        ) AS TOTAL_PRICE,
+
+        I.REJECT_REASON
 
     FROM PURCHASE_ORDERS P
 
     JOIN PURCHASE_ORDER_ITEMS I
-      ON P.PURCHASE_ORDER_ID
-       = I.PURCHASE_ORDER_ID
-    JOIN MATERIALS M
-      ON I.MATERIAL_ID
-       = M.MATERIAL_ID
-    JOIN STORE_INVENTORIES INV
-      ON INV.MATERIAL_ID
-       = M.MATERIAL_ID
-     AND INV.STORE_ID
-       = P.STORE_ID
+      ON P.PURCHASE_ORDER_ID = I.PURCHASE_ORDER_ID
 
-    WHERE P.PURCHASE_ORDER_ID
-        = #{purchaseOrderId}
+    JOIN MATERIALS M
+      ON I.MATERIAL_ID = M.MATERIAL_ID
+
+    JOIN STORE_INVENTORIES INV
+      ON INV.MATERIAL_ID = M.MATERIAL_ID
+     AND INV.STORE_ID = P.STORE_ID
+
+    JOIN STORES S
+      ON S.STORE_ID = P.STORE_ID
+
+    JOIN USERS U
+      ON U.USER_NO = S.OWNER_USER_NO
+
+    WHERE P.PURCHASE_ORDER_ID = #{purchaseOrderId}
 
 </select>
 

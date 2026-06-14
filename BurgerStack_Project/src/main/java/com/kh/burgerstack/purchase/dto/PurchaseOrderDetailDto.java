@@ -9,8 +9,14 @@ import lombok.Setter;
 @Setter
 public class PurchaseOrderDetailDto {
 
-    private Long purchaseOrderId;
+    private int purchaseOrderId;
+    private String purchaseCode;
+    private int storeId;
+    private String storeName;
+    private String userName;
+    private String role; // 사용자 역할 (예: 점장, 관리자)
     private int materialId;
+    private String materialCode;
     private String materialName;
     private String materialType;
     private int supplyPriceSnapshot;
@@ -22,6 +28,8 @@ public class PurchaseOrderDetailDto {
     private LocalDateTime createdAt;
 
     private String status;
+
+    private String orderMemo;
 
     private String rejectReason;
 

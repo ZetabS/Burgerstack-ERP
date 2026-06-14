@@ -29,28 +29,30 @@ public class PurchaseDao {
     // =========================
     public ArrayList<MaterialInventoryDto> searchMaterialsList(SqlSessionTemplate sqlSession, Long storeId) {
 
-        return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchMaterialsList", storeId);
+        return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchMaterialsList",
+                storeId);
     }
 
-    public ArrayList<PurchaseDto> searchPurchaseList(PagingRequest pagingRequest, PurchaseSearchDto condition, SqlSessionTemplate sqlSession) {
+    public ArrayList<PurchaseDto> searchPurchaseList(PagingRequest pagingRequest, PurchaseSearchDto condition,
+            SqlSessionTemplate sqlSession) {
 
-    Map<String, Object> param = new HashMap<>();
+        Map<String, Object> param = new HashMap<>();
 
-    param.put("status", condition.getStatus());
-    param.put("keyword", condition.getKeyword());
-    param.put("startDate", condition.getStartDate());
-    param.put("endDate", condition.getEndDate());
-    param.put("storeId", condition.getStoreId());
-    param.put("isAdmin", condition.isAdmin());
+        param.put("status", condition.getStatus());
+        param.put("keyword", condition.getKeyword());
+        param.put("startDate", condition.getStartDate());
+        param.put("endDate", condition.getEndDate());
+        param.put("storeId", condition.getStoreId());
+        param.put("isAdmin", condition.isAdmin());
 
-    param.put("startRow", pagingRequest.getStartRow());
-    param.put("endRow", pagingRequest.getEndRow());
+        param.put("startRow", pagingRequest.getStartRow());
+        param.put("endRow", pagingRequest.getEndRow());
 
-
-        return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseList", param);
+        return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseList",
+                param);
     }
 
-    public int selectPurchaseCount(PurchaseSearchDto condition, SqlSessionTemplate sqlSession){
+    public int selectPurchaseCount(PurchaseSearchDto condition, SqlSessionTemplate sqlSession) {
 
         Map<String, Object> param = new HashMap<>();
 
@@ -62,14 +64,14 @@ public class PurchaseDao {
         param.put("isAdmin", condition.isAdmin());
 
         return sqlSession.selectOne(
-            "com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseCount",
-            param);
+                "com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseCount",
+                param);
     }
 
     // =========================
     // 발주 MASTER 생성
     // =========================
-    public int insertPurchaseOrder(PurchaseOrderDto dto, SqlSessionTemplate sqlSession){
+    public int insertPurchaseOrder(PurchaseOrderDto dto, SqlSessionTemplate sqlSession) {
 
         return sqlSession.insert("com.kh.burgerstack.purchase.PurchaseMapper.insertPurchaseOrder", dto);
     }
@@ -77,18 +79,15 @@ public class PurchaseDao {
     // =========================
     // 발주 DETAIL 생성
     // =========================
-    public int insertPurchaseOrderItem(PurchaseOrderItemDto dto, SqlSessionTemplate sqlSession){
+    public int insertPurchaseOrderItem(PurchaseOrderItemDto dto, SqlSessionTemplate sqlSession) {
 
         return sqlSession.insert("com.kh.burgerstack.purchase.PurchaseMapper.insertPurchaseOrderItem", dto);
     }
 
-
-
     public List<PurchaseOrderDetailDto> selectPurchaseOrderDetail(Long purchaseOrderId, SqlSessionTemplate sqlSession) {
         return sqlSession.selectList(
-            "com.kh.burgerstack.purchase.PurchaseMapper.selectPurchaseOrderDetail",
-            purchaseOrderId
-        );
+                "com.kh.burgerstack.purchase.PurchaseMapper.selectPurchaseOrderDetail",
+                purchaseOrderId);
     }
 
     public PurchaseDto selectPurchase(Long id, SqlSessionTemplate sqlSession) {
@@ -103,8 +102,11 @@ public class PurchaseDao {
         sqlSession.update("com.kh.burgerstack.purchase.PurchaseMapper.updateTotalAmount", id);
     }
 
-    public int cancelPurchase(SqlSessionTemplate sqlSession, Long purchaseOrderId) {
-        return sqlSession.update("com.kh.burgerstack.purchase.PurchaseMapper.cancelPurchase", purchaseOrderId);
+    public int cancelPurchase(SqlSessionTemplate sqlSession, boolean isAdmin, Long purchaseOrderId) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("purchaseOrderId", purchaseOrderId);
+        param.put("isAdmin", isAdmin);
+        return sqlSession.update("com.kh.burgerstack.purchase.PurchaseMapper.cancelPurchase", param);
     }
 
     public void updateApprovedQuantity(
@@ -153,4 +155,3 @@ public class PurchaseDao {
                 purchaseOrderId);
     }
 }
-

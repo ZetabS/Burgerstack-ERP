@@ -91,7 +91,7 @@
                             </c:choose>
                         </td>
                         <td class="item-name">${m.materialName}</td>
-                        <td class="unit-price comma-number">${m.supplyPrice}</td>
+                        <td class="unit-price comma-number" data-price="${m.supplyPrice}">${m.supplyPrice}</td>
                         <td class="stock">${m.currentQuantity}</td>
                         <td class="safety-stock">${m.safetyQuantity}</td>
                         <td>
@@ -197,7 +197,7 @@
             let qty = parseInt($(this).val()) || 0;
             if (qty < 0) qty = 0;
 
-            let price = parseInt($row.find('.unit-price').text()) || 0;
+            let price = Number($row.find('.unit-price').data('price')) || 0;
 
             let total = qty * price;
 
@@ -242,7 +242,7 @@
                 // 체크 해제 시 수량 0으로 변경
                 $qty.val(0);
             }
-            let price = parseInt($row.find('.unit-price').text()) || 0;
+            let price = Number($row.find('.unit-price').data('price')) || 0;
             let qty = parseInt($qty.val()) || 0;
 
             $row.find('.total-price').text((price * qty).toLocaleString());
@@ -271,7 +271,7 @@
                 if (!checked || qty <= 0) return;
 
                 let name = $row.find('.item-name').text().trim();
-                let price = parseInt($row.find('.unit-price').text()) || 0;
+                let price = Number($row.find('.unit-price').data('price')) || 0;
 
                 total += price * qty;
 
@@ -381,7 +381,7 @@
             $mainRow.find('.qty-input').val(qty);
 
             let price =
-                parseInt($mainRow.find('.unit-price').text()) || 0;
+                Number($mainRow.find('.unit-price').data('price')) || 0;
 
             $mainRow.find('.total-price').text(price * qty);
 
@@ -419,7 +419,7 @@ function buildJson() {
             materialNameSnapshot:
                 $(this).find('.item-name').text().trim(),
             supplyPriceSnapshot:
-                parseInt($(this).find('.unit-price').text()) || 0,
+                Number($(this).find('.unit-price').data('price')) || 0,
             requestQuantity: qty,
             orderMemo: $('#orderMemo').val()
         });
