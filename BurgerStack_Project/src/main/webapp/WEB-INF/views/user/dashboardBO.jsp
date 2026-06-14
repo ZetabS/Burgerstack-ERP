@@ -5,6 +5,9 @@
 <%@ taglib prefix="c"
     uri="http://java.sun.com/jsp/jstl/core"%>
 
+<%@ taglib prefix="fmt"
+    uri="http://java.sun.com/jsp/jstl/fmt"%>
+
 <%@ taglib prefix="t"
     tagdir="/WEB-INF/tags"%>
 
@@ -15,13 +18,6 @@
         padding: 25px 32px;
         background: #f5f7fb;
         min-height: calc(100vh - 70px);
-    }
-
-    .page-title {
-        margin: 0 0 22px 0;
-        font-size: 30px;
-        font-weight: bold;
-        color: #111827;
     }
 
     .summary-grid {
@@ -79,6 +75,20 @@
         font-weight: normal;
     }
 
+    .summary-status {
+        font-size: 32px;
+        font-weight: bold;
+        color: #111827;
+    }
+
+    .summary-status.complete {
+        color: #16a34a;
+    }
+
+    .summary-status.open {
+        color: #f97316;
+    }
+
     .summary-link,
     .more-link {
         color: #6b7280;
@@ -89,6 +99,12 @@
     .summary-link {
         display: inline-block;
         margin-top: 14px;
+    }
+
+    .summary-link:hover,
+    .more-link:hover {
+        color: #111827;
+        text-decoration: underline;
     }
 
     .panel-grid {
@@ -142,6 +158,14 @@
         color: #374151;
         text-align: center;
         vertical-align: middle;
+    }
+
+    .clickable-row {
+        cursor: pointer;
+    }
+
+    .clickable-row:hover {
+        background: #f9fafb;
     }
 
     .text-left {
@@ -199,55 +223,6 @@
         background: #dbeafe;
     }
 
-    .closing-complete {
-        margin-bottom: 18px;
-        color: #16a34a;
-        font-size: 18px;
-        font-weight: bold;
-    }
-
-    .closing-open {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        height: 120px;
-        color: #374151;
-    }
-
-    .closing-open strong {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 18px;
-    }
-
-    .closing-open p {
-        margin: 0;
-        color: #6b7280;
-        font-size: 14px;
-    }
-
-    .closing-info {
-        width: 100%;
-        border-collapse: collapse;
-        border: 1px solid #e5e7eb;
-    }
-
-    .closing-info th {
-        width: 150px;
-        padding: 14px;
-        background: #22c55e;
-        color: #fff;
-        text-align: left;
-        font-size: 14px;
-    }
-
-    .closing-info td {
-        padding: 14px 18px;
-        border-bottom: 1px solid #e5e7eb;
-        font-size: 14px;
-        text-align: left;
-    }
-
     .notice-card {
         padding: 22px 24px;
     }
@@ -259,11 +234,12 @@
 </style>
 
 
+<jsp:useBean id="now" class="java.util.Date" />
+<fmt:formatDate var="today" value="${now}" pattern="yyyy-MM-dd" />
+
 <t:layout>
 
     <div class="dashboard-wrap">
-
-        <h1 class="page-title">점주 대시보드</h1>
 
         <div class="summary-grid">
 
@@ -277,22 +253,33 @@
             <div class="summary-card">
                 <div class="summary-title">오늘 입고 예정</div>
                 <div class="summary-count">${todayReceiptCount}<span>건</span></div>
-                <a href="${pageContext.request.contextPath}/owner/purchases?status=APPROVED"
+                <a href="${pageContext.request.contextPath}/owner/purchases?status=APPROVED&startDate=${today}&endDate=${today}"
                    class="summary-link">입고 예정 바로가기 &gt;</a>
             </div>
 
             <div class="summary-card">
                 <div class="summary-title">승인 대기 발주</div>
                 <div class="summary-count">${pendingPurchaseCount}<span>건</span></div>
-                <a href="${pageContext.request.contextPath}/owner/purchases"
+                <a href="${pageContext.request.contextPath}/owner/purchases?status=REQUESTED"
                    class="summary-link">발주 관리 바로가기 &gt;</a>
             </div>
 
             <div class="summary-card">
-                <div class="summary-title">미답변 문의</div>
-                <div class="summary-count">${unansweredInquiryCount}<span>건</span></div>
-                <a href="${pageContext.request.contextPath}/owner/inquiries"
-                   class="summary-link">문의사항 바로가기 &gt;</a>
+                <div class="summary-title">일일 마감 상태</div>
+
+                <c:choose>
+                    <c:when test="${not empty closing}">
+                        <div class="summary-status complete">마감 완료</div>
+                        <a href="${pageContext.request.contextPath}/owner/closings"
+                           class="summary-link">마감 내역 보기 &gt;</a>
+                    </c:when>
+
+                    <c:otherwise>
+                        <div class="summary-status open">영업중</div>
+                        <a href="${pageContext.request.contextPath}/owner/closings/new"
+                           class="summary-link">마감 처리하기 &gt;</a>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
         </div>
@@ -302,8 +289,8 @@
             <div class="panel-card">
                 <div class="panel-head">
                     <div class="panel-title">재고 부족 TOP5</div>
-                    <a href="${pageContext.request.contextPath}/owner/inventories"
-                       class="more-link">전체 보기 &gt;</a>
+                    <a href="${pageContext.request.contextPath}/owner/purchases/new"
+                       class="more-link">발주 요청 바로가기 &gt;</a>
                 </div>
 
                 <table class="data-list">
@@ -340,7 +327,7 @@
             <div class="panel-card">
                 <div class="panel-head">
                     <div class="panel-title">오늘 입고 예정</div>
-                    <a href="${pageContext.request.contextPath}/owner/purchases?status=APPROVED"
+                    <a href="${pageContext.request.contextPath}/owner/purchases?status=APPROVED&startDate=${today}&endDate=${today}"
                        class="more-link">전체 보기 &gt;</a>
                 </div>
 
@@ -355,26 +342,31 @@
 
                     <tbody>
                         <c:forEach var="r" items="${todayReceiptList}">
-						    <tr>
-						        <td>
-						            <span class="badge badge-blue">${r.RECEIPTID}</span>
-						        </td>
-						
-						        <td>
-						            ${r.MATERIALNAME}
-						            <c:if test="${r.EXTRACOUNT > 0}">
-						                외 ${r.EXTRACOUNT}건
-						            </c:if>
-						        </td>
-						
-						        <td>
-						            <a href="${pageContext.request.contextPath}/owner/purchases/${r.RECEIPTID}/receipt"
-						               class="detail-btn">
-						                상세보기
-						            </a>
-						        </td>
-						    </tr>
-						</c:forEach>
+                            <c:set var="targetId" value="${r.PURCHASEORDERID}" />
+                            <c:if test="${empty targetId}">
+                                <c:set var="targetId" value="${r.RECEIPTID}" />
+                            </c:if>
+
+                            <tr>
+                                <td>
+                                    <span class="badge badge-blue">${targetId}</span>
+                                </td>
+
+                                <td>
+                                    ${r.MATERIALNAME}
+                                    <c:if test="${r.EXTRACOUNT > 0}">
+                                        외 ${r.EXTRACOUNT}건
+                                    </c:if>
+                                </td>
+
+                                <td>
+                                    <a href="${pageContext.request.contextPath}/owner/purchases/${targetId}/receipt"
+                                       class="detail-btn">
+                                        상세보기
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
 
                         <c:if test="${empty todayReceiptList}">
                             <tr>
@@ -385,88 +377,6 @@
                         </c:if>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="panel-card">
-                <div class="panel-head">
-                    <div class="panel-title">미처리 발주</div>
-                    <a href="${pageContext.request.contextPath}/owner/purchases"
-                       class="more-link">전체 보기 &gt;</a>
-                </div>
-
-                <table class="data-list">
-                    <tbody>
-                        <c:forEach var="p" items="${purchaseStatusList}">
-                            <tr>
-                                <td class="text-left">
-                                    <span class="badge badge-orange">
-                                        <c:choose>
-                                            <c:when test="${p.STATUS eq 'REQUESTED'}">
-                                                승인 대기
-                                            </c:when>
-                                            <c:when test="${p.STATUS eq 'PARTIALLY_APPROVED'}">
-                                                부분 승인
-                                            </c:when>
-                                            <c:otherwise>
-                                                ${p.STATUS}
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </span>
-                                </td>
-
-                                <td class="text-right">${p.COUNT}건</td>
-                            </tr>
-                        </c:forEach>
-
-                        <c:if test="${empty purchaseStatusList}">
-                            <tr>
-                                <td colspan="2" class="empty-row">
-                                    미처리 발주가 없습니다.
-                                </td>
-                            </tr>
-                        </c:if>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="panel-card">
-                <div class="panel-head">
-                    <div class="panel-title">일일 마감 상태</div>
-                    <a href="${pageContext.request.contextPath}/owner/closings"
-                       class="more-link">마감 내역 보기 &gt;</a>
-                </div>
-
-                <c:choose>
-                    <c:when test="${not empty closing}">
-                        <div class="closing-complete">✓ 마감 완료</div>
-
-                        <table class="closing-info">
-                            <tr>
-                                <th>마감번호</th>
-                                <td>${closing.CLOSINGNO}</td>
-                            </tr>
-                            <tr>
-                                <th>영업일</th>
-                                <td>${closing.BUSINESSDATE}</td>
-                            </tr>
-                            <tr>
-                                <th>마감메모</th>
-                                <td>${closing.CLOSINGMEMO}</td>
-                            </tr>
-                            <tr>
-                                <th>마감일시</th>
-                                <td>${closing.CLOSINGDATE}</td>
-                            </tr>
-                        </table>
-                    </c:when>
-
-                    <c:otherwise>
-                        <div class="closing-open">
-                            <strong>아직 영업 중입니다.</strong>
-                            <p>오늘의 마감이 완료되지 않았습니다.</p>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
             </div>
 
         </div>
@@ -481,7 +391,13 @@
             <table class="data-list">
                 <tbody>
                     <c:forEach var="n" items="${noticeList}">
-                        <tr>
+                        <c:set var="noticeTargetId" value="${n.NOTICEID}" />
+                        <c:if test="${empty noticeTargetId}">
+                            <c:set var="noticeTargetId" value="${n.noticeId}" />
+                        </c:if>
+
+                        <tr class="clickable-row"
+                            onclick="location.href='${pageContext.request.contextPath}/owner/notices/${noticeTargetId}'">
                             <td style="width:15%;">
                                 <span class="badge badge-blue">공지</span>
                             </td>
@@ -504,4 +420,5 @@
     </div>
 
 </t:layout>
+
 

@@ -13,4 +13,6 @@ public class ClosingInventory {
     private Long currentQuantity;
     private Long materialId;
     private String materialName;
+    private String materialType;
+    private String materialCode;
 }

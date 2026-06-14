@@ -101,5 +101,32 @@ public class StoreDao {
                 storeId
         );
     }
+    
+    public Map<String, Object> selectOwnerByLoginId(SqlSession sqlSession,
+            				String keyword) {
+
+		return sqlSession.selectOne(
+					"storeMapper.selectOwnerByLoginId",
+					keyword
+		);
+		}
+		
+    public int countStoreName(SqlSession sqlSession,
+    						String storeName) {
+		
+		return sqlSession.selectOne(
+					"storeMapper.countStoreName",
+					storeName
+		);
+	}
+    
+    public int countStoreByOwnerUserNo(SqlSession sqlSession,
+		            Long ownerUserNo) {
+		
+		return sqlSession.selectOne(
+					"storeMapper.countStoreByOwnerUserNo",
+					ownerUserNo
+		);
+}
 }
 

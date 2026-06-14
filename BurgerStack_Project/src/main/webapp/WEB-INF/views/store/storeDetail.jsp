@@ -40,9 +40,50 @@
     .section-title {
         font-size: 22px;
         font-weight: 700;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
         padding-left: 12px;
         border-left: 5px solid #19c765;
+    }
+
+    .info-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 32px;
+        font-size: 14px;
+    }
+
+    .info-table th {
+        width: 180px;
+        background: #19c765;
+        color: #fff;
+        padding: 14px;
+        text-align: center;
+        font-weight: 700;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .info-table td {
+        padding: 14px 18px;
+        border-bottom: 1px solid #e5e7eb;
+        color: #111827;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-open {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-closed {
+        background: #fee2e2;
+        color: #b91c1c;
     }
 
     .form-grid {
@@ -55,6 +96,10 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+    }
+
+    .form-row.full {
+        grid-column: 1 / 3;
     }
 
     .form-row label {
@@ -78,6 +123,18 @@
         outline: none;
         border-color: #19c765;
         box-shadow: 0 0 0 2px rgba(25,199,101,0.15);
+    }
+
+    .readonly-box {
+        height: 42px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0 13px;
+        font-size: 15px;
+        background: #f9fafb;
+        color: #374151;
+        display: flex;
+        align-items: center;
     }
 
     .divider {
@@ -120,6 +177,7 @@
 
     .list-btn:hover {
         background: #f3f4f6;
+        color: #374151;
     }
 </style>
 </head>
@@ -139,6 +197,66 @@
 
             <h2 class="section-title">점포 정보</h2>
 
+            <table class="info-table">
+                <tr>
+                    <th>점포 코드</th>
+                    <td>
+                        <c:choose>
+                            <c:when test="${not empty store.storeCode}">
+                                ${store.storeCode}
+                            </c:when>
+                            <c:otherwise>
+                                S${store.storeId}
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>대표 점주</th>
+                    <td>
+                        <c:choose>
+                            <c:when test="${not empty store.ownerName}">
+                                ${store.ownerName}
+                            </c:when>
+                            <c:otherwise>
+                                -
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>상태</th>
+                    <td>
+                        <c:choose>
+                            <c:when test="${store.status eq 'OPEN'}">
+                                <span class="status-badge status-open">영업중</span>
+                            </c:when>
+                            <c:otherwise>
+                                <span class="status-badge status-closed">폐점</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>등록일</th>
+                    <td>
+                        <c:choose>
+                            <c:when test="${not empty store.createdAt}">
+                                ${store.createdAt.toString().replace('T',' ').substring(0,19)}
+                            </c:when>
+                            <c:otherwise>
+                                -
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
+            </table>
+
+            <h2 class="section-title">점포 수정</h2>
+
             <form action="${pageContext.request.contextPath}/admin/stores/${store.storeId}/update"
                   method="post"
                   onsubmit="return checkStoreUpdate();">
@@ -157,6 +275,21 @@
                     </div>
 
                     <div class="form-row">
+                        <label>점포 연락처</label>
+                        <input type="text"
+                               name="phone"
+                               value="${store.phone}"
+                               placeholder="예: 02-1234-5678">
+                    </div>
+
+                    <div class="form-row full">
+                        <label>주소</label>
+                        <input type="text"
+                               name="address"
+                               value="${store.address}">
+                    </div>
+
+                    <div class="form-row">
                         <label>상태</label>
                         <select name="status" id="status">
                             <option value="OPEN" ${store.status eq 'OPEN' ? 'selected' : ''}>
@@ -169,17 +302,17 @@
                     </div>
 
                     <div class="form-row">
-                        <label>연락처</label>
-                        <input type="text"
-                               name="phone"
-                               value="${store.phone}">
-                    </div>
-
-                    <div class="form-row">
-                        <label>주소</label>
-                        <input type="text"
-                               name="address"
-                               value="${store.address}">
+                        <label>대표 점주</label>
+                        <div class="readonly-box">
+                            <c:choose>
+                                <c:when test="${not empty store.ownerName}">
+                                    ${store.ownerName}
+                                </c:when>
+                                <c:otherwise>
+                                    -
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
                     </div>
 
                 </div>

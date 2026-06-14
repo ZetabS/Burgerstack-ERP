@@ -21,11 +21,21 @@ public class ReceiptService {
     @Autowired
 	private SqlSessionTemplate sqlSession;
 
-    public PageInfo getHistoryPageInfo(PagingRequest pagingRequest, String receiptType) {
-        return pagingRequest.toPageInfo(
-                receiptDao.getHistoryTotalCount(sqlSession, receiptType)
-        );
-    }
+    public PageInfo getHistoryPageInfo(PagingRequest pagingRequest,
+							            String receiptType,
+							            String startDate,
+							            String endDate,
+							            String keyword) {
+		return pagingRequest.toPageInfo(
+			receiptDao.getHistoryTotalCount(
+						sqlSession,
+						receiptType,
+						startDate,
+						endDate,
+						keyword
+					)
+			);
+	}
 
     public PageInfo getPlanPageInfo(PagingRequest pagingRequest, String status) {
         return pagingRequest.toPageInfo(
@@ -37,11 +47,22 @@ public class ReceiptService {
         return receiptDao.selectReceiptPlanList(sqlSession, pagingRequest, status);
     }
     
-    public List<Receipt> selectReceiptList(String receiptType) {
-        return receiptDao.selectReceiptList(receiptType);
-    }
+    public List<Receipt> selectReceiptList(PagingRequest pagingRequest,
+								            String receiptType,
+								            String startDate,
+								            String endDate,
+								            String keyword) {
+			return receiptDao.selectReceiptList(
+					sqlSession,
+					pagingRequest,
+					receiptType,
+					startDate,
+					endDate,
+					keyword
+				);
+	}
     
-    @Transactional // 하나라도 실패하면 전체 롤백
+    @Transactional
     public void processReceipt(Long purchaseOrderId,
                                ReceiptForm form,
                                Long createdBy) {
@@ -50,37 +71,26 @@ public class ReceiptService {
         Long storeId =
                 receiptDao.selectStoreIdByPurchaseOrderId(purchaseOrderId);
 
-        
         // RECEIPTS 테이블 저장
         Receipt receipt = new Receipt();
 
         receipt.setPurchaseOrderId(purchaseOrderId);
 
-        // 불량수량이 1개 이상 있는지 확인
-        boolean hasDefect = false;
+        // 사용자가 모달에서 입력한 비고 저장
+        String receiptMemo = form.getReceiptMemo();
 
-        for (ReceiptItem item : form.getItems()) {
-            if (item.getDefectQuantity() != null && item.getDefectQuantity() > 0) {
-                hasDefect = true;
-                break;
-            }
+        if (receiptMemo == null || receiptMemo.trim().isEmpty()) {
+            receiptMemo = "입고 처리";
         }
 
-        // 입고 메모 자동 설정
-        if (hasDefect) {
-            receipt.setReceiptMemo("불량 포함 입고");
-        } else {
-            receipt.setReceiptMemo("정상 입고");
-        }
+        receipt.setReceiptMemo(receiptMemo);
 
         receiptDao.insertReceipt(receipt);
 
         // 생성된 입고번호
         Long receiptId = receipt.getReceiptId();
 
-        
         // INVENTORY_TRANSACTIONS 생성
-        // 재고 변동 이력 헤더 생성
         ReceiptTransactionParam transactionParam =
                 new ReceiptTransactionParam(
                         storeId,
@@ -93,18 +103,45 @@ public class ReceiptService {
         Long inventoryTransactionId =
                 transactionParam.getInventoryTransactionId();
 
-        
         // 입고 상품 반복 처리
         for (ReceiptItem item : form.getItems()) {
 
             // 현재 입고번호 설정
             item.setReceiptId(receiptId);
 
-            
+            // null 방지 - 실입고 수량
+            Long receivedQuantity = item.getReceivedQuantity();
+
+            if (receivedQuantity == null) {
+                receivedQuantity = 0L;
+                item.setReceivedQuantity(receivedQuantity);
+            }
+
+            // null 방지 - 차이 수량
+            Long diffQuantity = item.getDefectQuantity();
+
+            if (diffQuantity == null) {
+                diffQuantity = 0L;
+                item.setDefectQuantity(diffQuantity);
+            }
+
+            // 차이 수량이 있는데 사유가 없으면 서버에서도 차단
+            if (diffQuantity != 0) {
+                String reason = item.getReceiptItemMemo();
+
+                if (reason == null || reason.trim().isEmpty()) {
+                    throw new IllegalArgumentException("차이 수량이 있는 품목은 사유를 선택해야 합니다.");
+                }
+            }
+
+            // 차이 수량이 없으면 사유 제거
+            if (diffQuantity == 0) {
+                item.setReceiptItemMemo(null);
+            }
+
             // RECEIPT_ITEMS 저장
             receiptDao.insertReceiptItem(item);
 
-            
             // 현재 재고 조회
             Long beforeQuantity =
                     receiptDao.selectCurrentQuantity(
@@ -112,18 +149,14 @@ public class ReceiptService {
                             item.getPurchaseOrderItemId()
                     );
 
-            // null 방지
-            Long receivedQuantity = item.getReceivedQuantity();
-
-            if (receivedQuantity == null) {
-                receivedQuantity = 0L;
+            if (beforeQuantity == null) {
+                beforeQuantity = 0L;
             }
 
             // 입고 후 재고 계산
             Long afterQuantity =
                     beforeQuantity + receivedQuantity;
 
-     
             // STORE_INVENTORIES 증가
             ReceiptInventoryParam inventoryParam =
                     new ReceiptInventoryParam(
@@ -141,13 +174,7 @@ public class ReceiptService {
                             item.getPurchaseOrderItemId()
                     );
 
-            System.out.println("storeId = " + storeId);
-            System.out.println("purchaseOrderItemId = " + item.getPurchaseOrderItemId());
-            System.out.println("storeInventoryId = " + storeInventoryId);
-
-
             // INVENTORY_TRANSACTION_ITEMS 저장
-            // 재고 변동 상세 이력 생성
             ReceiptTransactionItemParam itemParam =
                     new ReceiptTransactionItemParam(
                             inventoryTransactionId,
@@ -159,13 +186,11 @@ public class ReceiptService {
             receiptDao.insertInventoryTransactionItem(itemParam);
         }
 
-
         // 발주 상태 변경
         // APPROVED -> RECEIVED
         receiptDao.updatePurchaseOrderStatus(
                 purchaseOrderId
         );
-        
     }
     
     

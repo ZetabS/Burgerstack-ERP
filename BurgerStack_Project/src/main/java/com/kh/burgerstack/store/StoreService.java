@@ -76,5 +76,16 @@ public class StoreService {
         return storeDao.selectOwnerStoreList(storeId);
     }
     
+    public Map<String, Object> selectOwnerByLoginId(String keyword) {
+        return storeDao.selectOwnerByLoginId(sqlSession, keyword);
+    }
+
+    public int countStoreName(String storeName) {
+        return storeDao.countStoreName(sqlSession, storeName);
+    }
+    
+    public int countStoreByOwnerUserNo(Long ownerUserNo) {
+        return storeDao.countStoreByOwnerUserNo(sqlSession, ownerUserNo);
+    }
     
 }

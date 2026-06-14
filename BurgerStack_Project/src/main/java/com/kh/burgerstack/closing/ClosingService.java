@@ -17,9 +17,29 @@ public class ClosingService {
         this.sqlSession = sqlSession;
     }
 
-    public List<StoreClosing> selectOwnerClosingList(Long storeId) {
-        return closingDao.selectOwnerClosingList(sqlSession, storeId);
-    }
+    public List<StoreClosing> selectOwnerClosingList(Long storeId,
+										            String startDate,
+										            String endDate) {
+		return closingDao.selectOwnerClosingList(
+				sqlSession,
+				storeId,
+				startDate,
+				endDate
+		);
+	}
+    
+    public List<StoreClosing> selectAdminClosingList(Long storeId,
+										            String startDate,
+										            String endDate,
+										            String keyword) {
+		return closingDao.selectAdminClosingList(
+													sqlSession,
+													storeId,
+													startDate,
+													endDate,
+													keyword
+);
+}
 
     public List<StoreClosing> selectAdminClosingList() {
         return closingDao.selectAdminClosingList(sqlSession);
@@ -48,15 +68,36 @@ public class ClosingService {
                     closing.getStoreClosingId()
             );
 
+            Long systemQty = item.getSystemQuantity();
+            Long useQty = item.getPhysicalQuantity();
+            Long disposalQty = item.getDisposalQuantity();
+
+            if (systemQty == null) {
+                systemQty = 0L;
+            }
+
+            if (useQty == null) {
+                useQty = 0L;
+            }
+
+            if (disposalQty == null) {
+                disposalQty = 0L;
+            }
+
+            if (useQty + disposalQty > systemQty) {
+                throw new IllegalArgumentException(
+                        item.getMaterialNameSnapshot()
+                        + "의 실사용수량과 폐기 수량의 합은 전산재고보다 클 수 없습니다."
+                );
+            }
+
             result += closingDao.insertClosingItem(
                     sqlSession,
                     item
             );
 
             Long finalQuantity =
-                    item.getSystemQuantity()
-                    - item.getPhysicalQuantity()
-                    - item.getDisposalQuantity();
+                    systemQty - useQty - disposalQty;
 
             closingDao.updateInventoryQuantity(
                     sqlSession,

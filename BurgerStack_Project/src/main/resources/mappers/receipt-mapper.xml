@@ -20,20 +20,60 @@
 	        resultType="_int">
 	
 	    SELECT COUNT(*)
-	    FROM RECEIPTS
-	    WHERE
-	        (
-	            #{receiptType} IS NULL
-	            OR #{receiptType} = ''
-	            OR (
-	                #{receiptType} = 'NORMAL'
-	                AND RECEIPT_MEMO LIKE '%정상%'
+	    FROM (
+	        SELECT
+	            R.RECEIPT_ID
+	        FROM RECEIPTS R
+	        JOIN PURCHASE_ORDERS PO
+	          ON R.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+	        JOIN STORES S
+	          ON PO.STORE_ID = S.STORE_ID
+	        JOIN RECEIPT_ITEMS RI
+	          ON R.RECEIPT_ID = RI.RECEIPT_ID
+	
+	        WHERE 1 = 1
+	
+	        <if test="startDate != null and startDate != ''">
+	            AND TRUNC(R.RECEIVED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+	        </if>
+	
+	        <if test="endDate != null and endDate != ''">
+	            AND TRUNC(R.RECEIVED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+	        </if>
+	
+	        <if test="keyword != null and keyword != ''">
+	            AND S.STORE_NAME LIKE '%' || #{keyword} || '%'
+	        </if>
+	
+	        GROUP BY R.RECEIPT_ID
+	
+	        HAVING
+	            (
+	                #{receiptType} IS NULL
+	                OR #{receiptType} = ''
+	                OR #{receiptType} = 'ALL'
+	                OR (
+	                    #{receiptType} = 'NORMAL'
+	                    AND SUM(
+	                        CASE
+	                            WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+	                            THEN 1
+	                            ELSE 0
+	                        END
+	                    ) = 0
+	                )
+	                OR (
+	                    (#{receiptType} = 'DEFECT' OR #{receiptType} = 'DIFFERENCE')
+	                    AND SUM(
+	                        CASE
+	                            WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+	                            THEN 1
+	                            ELSE 0
+	                        END
+	                    ) &gt; 0
+	                )
 	            )
-	            OR (
-	                #{receiptType} = 'DEFECT'
-	                AND RECEIPT_MEMO LIKE '%불량%'
-	            )
-	        )
+	    )
 	
 	</select>
 
@@ -81,25 +121,96 @@
 	        resultType="com.kh.burgerstack.receipt.Receipt">
 	
 	    SELECT
-	        RECEIPT_ID AS receiptId,
-	        RECEIPT_MEMO AS receiptMemo,
-	        TO_CHAR(RECEIVED_AT, 'YYYY-MM-DD HH24:MI:SS') AS receivedAt,
-	        PURCHASE_ORDER_ID AS purchaseOrderId
-	    FROM RECEIPTS
-	    WHERE
+	        R.RECEIPT_ID AS receiptId,
+	
+	        'R'
+	        || TO_CHAR(R.RECEIVED_AT, 'YYYY')
+	        || LPAD(R.RECEIPT_ID, 4, '0') AS receiptCode,
+	
+	        R.RECEIPT_MEMO AS receiptMemo,
+	        R.RECEIVED_AT AS receivedAt,
+	        R.PURCHASE_ORDER_ID AS purchaseOrderId,
+	
+	        S.STORE_NAME AS storeName,
+	
+	        MIN(POI.MATERIAL_NAME_SNAPSHOT)
+	        || CASE
+	              WHEN COUNT(*) &gt; 1
+	              THEN ' 외 ' || (COUNT(*) - 1) || '건'
+	              ELSE ''
+	           END AS materialSummary,
+	
+	        CASE
+	            WHEN SUM(
+	                    CASE
+	                        WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+	                        THEN 1
+	                        ELSE 0
+	                    END
+	                 ) &gt; 0
+	            THEN 'DIFFERENCE'
+	            ELSE 'NORMAL'
+	        END AS receiptStatus
+	
+	    FROM RECEIPTS R
+	    JOIN PURCHASE_ORDERS PO
+	      ON R.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+	    JOIN STORES S
+	      ON PO.STORE_ID = S.STORE_ID
+	    JOIN RECEIPT_ITEMS RI
+	      ON R.RECEIPT_ID = RI.RECEIPT_ID
+	    JOIN PURCHASE_ORDER_ITEMS POI
+	      ON RI.PURCHASE_ORDER_ITEM_ID = POI.PURCHASE_ORDER_ITEM_ID
+	
+	    WHERE 1 = 1
+	
+	    <if test="startDate != null and startDate != ''">
+	        AND TRUNC(R.RECEIVED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="endDate != null and endDate != ''">
+	        AND TRUNC(R.RECEIVED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="keyword != null and keyword != ''">
+	        AND S.STORE_NAME LIKE '%' || #{keyword} || '%'
+	    </if>
+	
+	    GROUP BY
+	        R.RECEIPT_ID,
+	        R.RECEIPT_MEMO,
+	        R.RECEIVED_AT,
+	        R.PURCHASE_ORDER_ID,
+	        S.STORE_NAME
+	
+	    HAVING
 	        (
 	            #{receiptType} IS NULL
 	            OR #{receiptType} = ''
+	            OR #{receiptType} = 'ALL'
 	            OR (
 	                #{receiptType} = 'NORMAL'
-	                AND RECEIPT_MEMO LIKE '%정상%'
+	                AND SUM(
+	                    CASE
+	                        WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+	                        THEN 1
+	                        ELSE 0
+	                    END
+	                ) = 0
 	            )
 	            OR (
-	                #{receiptType} = 'DEFECT'
-	                AND RECEIPT_MEMO LIKE '%불량%'
+	                (#{receiptType} = 'DEFECT' OR #{receiptType} = 'DIFFERENCE')
+	                AND SUM(
+	                    CASE
+	                        WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+	                        THEN 1
+	                        ELSE 0
+	                    END
+	                ) &gt; 0
 	            )
 	        )
-	    ORDER BY RECEIPT_ID DESC
+	
+	    ORDER BY R.RECEIPT_ID DESC
 	
 	</select>
     
@@ -311,12 +422,40 @@
 	        resultType="com.kh.burgerstack.receipt.Receipt">
 	
 	    SELECT
-	        RECEIPT_ID AS receiptId,
-	        RECEIPT_MEMO AS receiptMemo,
-	        RECEIVED_AT AS receivedAt,
-	        PURCHASE_ORDER_ID AS purchaseOrderId
-	    FROM RECEIPTS
-	    WHERE RECEIPT_ID = #{receiptId}
+	        R.RECEIPT_ID AS receiptId,
+	
+	        'R'
+	        || TO_CHAR(R.RECEIVED_AT, 'YYYY')
+	        || LPAD(R.RECEIPT_ID, 4, '0') AS receiptCode,
+	
+	        'P'
+	        || TO_CHAR(PO.CREATED_AT, 'YYYY')
+	        || LPAD(PO.PURCHASE_ORDER_ID, 4, '0') AS purchaseCode,
+	
+	        R.RECEIPT_MEMO AS receiptMemo,
+	        R.RECEIVED_AT AS receivedAt,
+	        R.PURCHASE_ORDER_ID AS purchaseOrderId,
+	
+	        S.STORE_NAME AS storeName,
+	
+	        CASE
+	            WHEN EXISTS (
+	                SELECT 1
+	                FROM RECEIPT_ITEMS RI
+	                WHERE RI.RECEIPT_ID = R.RECEIPT_ID
+	                  AND NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+	            )
+	            THEN 'DIFFERENCE'
+	            ELSE 'NORMAL'
+	        END AS receiptStatus
+	
+	    FROM RECEIPTS R
+	    JOIN PURCHASE_ORDERS PO
+	      ON R.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+	    JOIN STORES S
+	      ON PO.STORE_ID = S.STORE_ID
+	
+	    WHERE R.RECEIPT_ID = #{receiptId}
 	
 	</select>
 	
@@ -330,17 +469,25 @@
 	        POI.MATERIAL_NAME_SNAPSHOT AS materialName,
 	        M.MATERIAL_TYPE AS materialType,
 	        POI.SUPPLY_PRICE_SNAPSHOT AS supplyPrice,
+	
 	        POI.REQUEST_QUANTITY AS requestQuantity,
+	
+	        NVL(POI.APPROVED_QUANTITY, POI.REQUEST_QUANTITY) AS approvedQuantity,
+	
 	        NVL(RI.RECEIVED_QUANTITY, 0) AS receivedQuantity,
 	        NVL(RI.DEFECT_QUANTITY, 0) AS defectQuantity,
 	        NVL(RI.RECEIPT_ITEM_MEMO, '-') AS receiptItemMemo,
+	
 	        POI.SUPPLY_PRICE_SNAPSHOT * NVL(RI.RECEIVED_QUANTITY, 0) AS amount
+	
 	    FROM RECEIPT_ITEMS RI
 	    JOIN PURCHASE_ORDER_ITEMS POI
 	      ON RI.PURCHASE_ORDER_ITEM_ID = POI.PURCHASE_ORDER_ITEM_ID
 	    JOIN MATERIALS M
 	      ON POI.MATERIAL_ID = M.MATERIAL_ID
+	
 	    WHERE RI.RECEIPT_ID = #{receiptId}
+	
 	    ORDER BY RI.RECEIPT_ITEM_ID
 	
 	</select>

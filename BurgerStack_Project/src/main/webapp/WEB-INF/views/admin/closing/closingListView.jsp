@@ -1,14 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ taglib prefix="c"
+    uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>관리자 마감 목록</title>
+<title>관리자 마감 이력</title>
 
 <style>
     .list-card {
@@ -16,51 +17,73 @@
         border: 1px solid #e5e7eb;
         border-radius: 14px;
         padding: 35px 40px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     .section-title {
-        margin-bottom: 25px;
+        margin-bottom: 10px;
         padding-left: 12px;
         border-left: 5px solid #19c765;
         font-size: 22px;
         font-weight: bold;
     }
 
-    .search-area {
+    .table-guide {
+        font-size: 13px;
+        color: #888;
+        margin-bottom: 20px;
+    }
+
+    .top-area {
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        gap: 8px;
         margin-bottom: 18px;
+        gap: 12px;
     }
 
-    .search-area input {
+    .filter-area {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-area input {
         height: 36px;
         border: 1px solid #d1d5db;
         border-radius: 8px;
         padding: 0 10px;
+        font-size: 13px;
     }
 
-    .search-btn {
+    .filter-area button,
+    .filter-area a {
         height: 36px;
-        padding: 0 16px;
-        border: none;
-        border-radius: 8px;
-        background: #374151;
-        color: white;
-        cursor: pointer;
-    }
-
-    .reset-link {
-        height: 36px;
-        line-height: 36px;
         padding: 0 14px;
         border-radius: 8px;
-        background: #e5e7eb;
-        color: #374151;
-        text-decoration: none;
         font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filter-area button {
+        border: none;
+        background: #19c765;
+        color: white;
+    }
+
+    .filter-area button:hover {
+        background: #16a34a;
+    }
+
+    .filter-area a {
+        border: 1px solid #d1d5db;
+        background: #fff;
+        color: #374151;
     }
 
     table {
@@ -84,14 +107,21 @@
         border-bottom: 1px solid #e5e7eb;
     }
 
-    tbody tr:hover {
+    tbody tr.clickable-row {
+        cursor: pointer;
+    }
+
+    tbody tr.clickable-row:hover {
         background: #f2f6ff;
     }
 
-    .detail-link {
-        color: #2563eb;
-        font-weight: bold;
-        text-decoration: none;
+    .text-left {
+        text-align: left;
+    }
+
+    .empty-row {
+        color: #888;
+        padding: 28px 10px;
     }
 </style>
 </head>
@@ -102,59 +132,103 @@
 
 <section class="list-card">
 
-    <h2 class="section-title">관리자 마감 목록</h2>
+    <h2 class="section-title">마감 이력</h2>
 
-    <form action="${pageContext.request.contextPath}/admin/closings"
-          method="get">
+    <p class="table-guide">
+        행을 클릭하면 상세 정보를 확인할 수 있습니다.
+    </p>
 
-        <div class="search-area">
-            <span>점포ID</span>
+    <div class="top-area">
 
-            <input type="number"
-                   name="storeId"
-                   value="${storeId}"
-                   placeholder="점포ID 입력">
+        <form class="filter-area"
+              action="${pageContext.request.contextPath}/admin/closings"
+              method="get">
 
-            <button type="submit" class="search-btn">
-                조회
-            </button>
+            <input type="date"
+                   name="startDate"
+                   value="${param.startDate}">
 
-            <a class="reset-link"
-               href="${pageContext.request.contextPath}/admin/closings">
-                전체
+            <span>~</span>
+
+            <input type="date"
+                   name="endDate"
+                   value="${param.endDate}">
+
+            <input type="text"
+                   name="keyword"
+                   value="${param.keyword}"
+                   placeholder="점포명 검색">
+
+            <button type="submit">조회</button>
+
+            <a href="${pageContext.request.contextPath}/admin/closings">
+                초기화
             </a>
-        </div>
 
-    </form>
+        </form>
+
+    </div>
 
     <table>
         <thead>
             <tr>
-                <th>마감번호</th>
-                <th>점포ID</th>
-                <th>영업일</th>
-                <th>마감메모</th>
-                <th>마감일시</th>
-                <th>상세</th>
+                <th style="width: 22%;">마감코드</th>
+                <th style="width: 20%;">점포명</th>
+                <th style="width: 20%;">영업일</th>
+                <th style="width: 38%;">비고</th>
             </tr>
         </thead>
 
         <tbody>
             <c:forEach var="c" items="${list}">
-                <tr>
-                    <td>${c.storeClosingId}</td>
-                    <td>${c.storeId}</td>
-                    <td>${c.businessDate}</td>
-                    <td>${c.closingMemo}</td>
-                    <td>${c.closedAt}</td>
+                <tr class="clickable-row"
+                    onclick="location.href='${pageContext.request.contextPath}/admin/closings/${c.storeClosingId}'">
+
                     <td>
-                        <a class="detail-link"
-                           href="${pageContext.request.contextPath}/admin/closings/${c.storeClosingId}">
-                            상세보기
-                        </a>
+                        <c:choose>
+                            <c:when test="${not empty c.closingCode}">
+                                ${c.closingCode}
+                            </c:when>
+                            <c:otherwise>
+                                C${c.storeClosingId}
+                            </c:otherwise>
+                        </c:choose>
                     </td>
+
+                    <td>
+                        <c:choose>
+                            <c:when test="${not empty c.storeName}">
+                                ${c.storeName}
+                            </c:when>
+                            <c:otherwise>
+                                -
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+
+                    <td>${c.businessDate}</td>
+
+                    <td class="text-left">
+                        <c:choose>
+                            <c:when test="${empty c.closingMemo}">
+                                -
+                            </c:when>
+                            <c:otherwise>
+                                ${c.closingMemo}
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+
                 </tr>
             </c:forEach>
+
+            <c:if test="${empty list}">
+                <tr>
+                    <td colspan="4" class="empty-row">
+                        마감 이력이 없습니다.
+                    </td>
+                </tr>
+            </c:if>
         </tbody>
     </table>
 

@@ -26,4 +26,5 @@ public class ReceiptItemDetail {
     private String receiptItemMemo;
 
     private Long amount;
+    private Long approvedQuantity;
 }

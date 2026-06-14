@@ -4,7 +4,6 @@
 
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html>
@@ -58,6 +57,10 @@
         gap: 8px;
     }
 
+    .info-row.full {
+        grid-column: 1 / 3;
+    }
+
     .info-row label {
         font-size: 14px;
         font-weight: 700;
@@ -65,7 +68,7 @@
     }
 
     .info-box {
-        height: 42px;
+        min-height: 42px;
         border: 1px solid #d1d5db;
         border-radius: 8px;
         padding: 0 13px;
@@ -74,6 +77,8 @@
         background: #f9fafb;
         color: #111827;
         font-size: 15px;
+        box-sizing: border-box;
+        word-break: keep-all;
     }
 
     .status-badge {
@@ -131,23 +136,73 @@
             <div class="info-grid">
 
                 <div class="info-row">
-                    <label>점포ID</label>
-                    <div class="info-box">${store.storeId}</div>
+                    <label>점포 코드</label>
+                    <div class="info-box">
+                        <c:choose>
+                            <c:when test="${not empty store.storeCode}">
+                                ${store.storeCode}
+                            </c:when>
+                            <c:otherwise>
+                                S${store.storeId}
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
 
                 <div class="info-row">
                     <label>점포명</label>
-                    <div class="info-box">${store.storeName}</div>
+                    <div class="info-box">
+                        <c:choose>
+                            <c:when test="${not empty store.storeName}">
+                                ${store.storeName}
+                            </c:when>
+                            <c:otherwise>
+                                -
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
 
                 <div class="info-row">
-                    <label>연락처</label>
-                    <div class="info-box">${store.phone}</div>
+                    <label>대표 점주</label>
+                    <div class="info-box">
+                        <c:choose>
+                            <c:when test="${not empty store.ownerName}">
+                                ${store.ownerName}
+                            </c:when>
+                            <c:otherwise>
+                                -
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
 
                 <div class="info-row">
+                    <label>점포 연락처</label>
+                    <div class="info-box">
+                        <c:choose>
+                            <c:when test="${not empty store.phone}">
+                                ${store.phone}
+                            </c:when>
+                            <c:otherwise>
+                                -
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
+
+                <div class="info-row full">
                     <label>주소</label>
-                    <div class="info-box">${store.address}</div>
+                    <div class="info-box">
+                        <c:choose>
+                            <c:when test="${not empty store.address}">
+                                ${store.address}
+                            </c:when>
+                            <c:otherwise>
+                                -
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
 
                 <div class="info-row">
@@ -166,18 +221,6 @@
                                 </span>
                             </c:when>
 
-                            <c:when test="${store.status eq '영업중'}">
-                                <span class="status-badge status-open">
-                                    영업중
-                                </span>
-                            </c:when>
-
-                            <c:when test="${store.status eq '폐점'}">
-                                <span class="status-badge status-closed">
-                                    폐점
-                                </span>
-                            </c:when>
-
                             <c:otherwise>
                                 <span class="status-badge status-rest">
                                     ${store.status}
@@ -190,7 +233,14 @@
                 <div class="info-row">
                     <label>등록일</label>
                     <div class="info-box">
-                        ${fn:replace(store.createdAt, 'T', ' ')}
+                        <c:choose>
+                            <c:when test="${not empty store.createdAt}">
+                                ${store.createdAt.toString().replace('T',' ').substring(0,19)}
+                            </c:when>
+                            <c:otherwise>
+                                -
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </div>
 
