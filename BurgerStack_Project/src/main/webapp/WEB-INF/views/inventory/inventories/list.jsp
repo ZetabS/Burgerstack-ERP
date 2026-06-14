@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="isOwner" value="${sessionScope.loginUser.owner}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
@@ -50,7 +50,7 @@
           <input type="text" id="material-name-input" name="materialName" class="form-control mr-3" placeholder="검색할 자재명을 입력하세요." value="${view.condition.materialName}" />
           <button type="submit" class="btn btn-primary">검색</button>
         </form>
-        <ui:DataTable>
+        <table:DataTable>
           <jsp:attribute name="thead">
             <tr>
               <c:if test="${isAdmin}">
@@ -69,21 +69,21 @@
             <c:forEach var="item" items="${view.list}">
               <c:url var="adjustUrl" value="/${role}/inventories/${item.inventoryId}/adjust" />
               <c:url var="editUrl" value="/owner/inventories/${item.inventoryId}/edit" />
-              <ui:TableRow>
+              <table:TableRow>
                 <c:if test="${isAdmin}">
-                  <ui:TextCell value="${item.storeName}" />
+                  <table:TextCell value="${item.storeName}" />
                 </c:if>
-                <ui:TextCell value="${item.materialName}" />
-                <ui:NumberCell value="${item.currentQuantity}" />
-                <ui:NumberCell value="${item.safetyQuantity}" />
+                <table:TextCell value="${item.materialName}" />
+                <table:NumberCell value="${item.currentQuantity}" />
+                <table:NumberCell value="${item.safetyQuantity}" />
                 <c:if test="${isOwner}">
-                  <ui:ActionCell href="${editUrl}">안전재고 조정</ui:ActionCell>
+                  <table:ActionCell href="${editUrl}">안전재고 조정</table:ActionCell>
                 </c:if>
-                <ui:ActionCell href="${adjustUrl}">조정</ui:ActionCell>
-              </ui:TableRow>
+                <table:ActionCell href="${adjustUrl}">조정</table:ActionCell>
+              </table:TableRow>
             </c:forEach>
           </jsp:attribute>
-        </ui:DataTable>
+        </table:DataTable>
         <t:pagination pageInfo="${view.pageInfo}" />
       </div>
     </t:layout>

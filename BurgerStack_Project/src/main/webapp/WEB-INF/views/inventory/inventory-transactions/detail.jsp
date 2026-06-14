@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
 <c:url var="backToList" value="/${role}/inventory-transactions" />
@@ -86,7 +86,7 @@
           <div class="card-header">변동 품목</div>
 
           <div class="card-body p-0">
-            <ui:DataTable>
+            <table:DataTable>
               <jsp:attribute name="thead">
                 <tr>
                   <th>자재명</th>
@@ -97,15 +97,15 @@
               </jsp:attribute>
               <jsp:attribute name="tbody">
                 <c:forEach var="item" items="${detail.list}">
-                  <ui:TableRow>
-                    <ui:TextCell value="${item.materialName}" />
-                    <ui:NumberCell value="${item.beforeQuantity}" />
-                    <ui:DeltaCell value="${item.changedQuantity}" />
-                    <ui:NumberCell value="${item.afterQuantity}" />
-                  </ui:TableRow>
+                  <table:TableRow>
+                    <table:TextCell value="${item.materialName}" />
+                    <table:NumberCell value="${item.beforeQuantity}" />
+                    <table:DeltaCell value="${item.changedQuantity}" />
+                    <table:NumberCell value="${item.afterQuantity}" />
+                  </table:TableRow>
                 </c:forEach>
               </jsp:attribute>
-            </ui:DataTable>
+            </table:DataTable>
           </div>
         </div>
 

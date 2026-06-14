@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
 <c:url var="inventoryTransactionListUrl" value="/${role}/inventory-transactions" />
@@ -41,7 +41,7 @@
           </select>
         </form>
 
-        <ui:DataTable>
+        <table:DataTable>
           <jsp:attribute name="thead">
             <tr>
               <th>변동 유형</th>
@@ -56,18 +56,18 @@
           <jsp:attribute name="tbody">
             <c:forEach var="item" items="${view.list}">
               <c:url var="detail" value="/${role}/inventory-transactions/${item.inventoryTransactionId}" />
-              <ui:TableRow clickable="true" href="${detail}">
-                <ui:InventoryTransactionTypeCell value="${item.transactionType}" />
+              <table:TableRow clickable="true" href="${detail}">
+                <table:InventoryTransactionTypeCell value="${item.transactionType}" />
                 <c:if test="${isAdmin}">
-                  <ui:TextCell value="${item.storeName}" />
+                  <table:TextCell value="${item.storeName}" />
                 </c:if>
-                <ui:TextCell value="${item.createdByName}" />
-                <ui:DateTimeCell value="${item.createdAt}" />
-                <ui:TextCell value="${item.reason}" />
-              </ui:TableRow>
+                <table:TextCell value="${item.createdByName}" />
+                <table:DateTimeCell value="${item.createdAt}" />
+                <table:TextCell value="${item.reason}" />
+              </table:TableRow>
             </c:forEach>
           </jsp:attribute>
-        </ui:DataTable>
+        </table:DataTable>
         <t:pagination pageInfo="${view.pageInfo}" />
       </div>
     </t:layout>
