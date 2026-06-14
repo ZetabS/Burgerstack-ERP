@@ -12,3 +12,7 @@
 .data-table__col-fit {
   width: 1%;
 }
+
+.data-table__text-cell {
+  max-width: 0;
+}
