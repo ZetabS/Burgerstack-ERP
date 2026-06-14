@@ -93,7 +93,9 @@
               <table:TableRow>
                 <table:TextFitCell value="${item.materialCode}" />
                 <table:TextCell value="${item.materialName}" />
-                <table:TextFitCell value="${item.materialType}" />
+                <table:FitCell>
+                  <display:MaterialTypeLabel value="${item.materialType}" />
+                </table:FitCell>
                 <table:NumberCell value="${item.beforeQuantity}" />
                 <table:DeltaCell value="${item.changedQuantity}" />
                 <table:NumberCell value="${item.afterQuantity}" />

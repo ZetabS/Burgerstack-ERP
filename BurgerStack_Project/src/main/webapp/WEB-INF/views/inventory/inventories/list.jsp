@@ -64,7 +64,7 @@
             <c:if test="${isAdmin}"><table:TextFitCell value="${item.storeName}" /></c:if>
             <table:TextFitCell value="${item.materialCode}" />
             <table:TextCell value="${item.materialName}" />
-            <table:TextFitCell value="${item.materialType}" />
+            <table:FitCell>${item.materialType}</table:FitCell>
             <table:NumberCell value="${item.currentQuantity}" />
             <table:NumberCell value="${item.safetyQuantity}" />
             <c:if test="${isOwner}"><table:ActionCell href="${editUrl}">안전재고 조정</table:ActionCell></c:if>
