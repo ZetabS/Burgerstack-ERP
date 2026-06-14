@@ -16,6 +16,8 @@ public class InventoryTransactionDetailItem {
     private Integer beforeQuantity;
     private Integer changedQuantity;
     private Integer afterQuantity;
+    private String materialCode;
+    private String materialType;
     private String materialName;
     private Integer inventoryTransactionId;
     private Integer storeInventoryId;

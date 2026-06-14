@@ -4,9 +4,10 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
-
-
 <c:set var="role" value="${sessionScope.loginUser.admin ? 'admin' : sessionScope.loginUser.owner ? 'owner' : null}" />
+
+<c:url var="cssUrl" value="/resources/css" />
+<c:url var="jsUrl" value="/resources/js" />
 
 <!DOCTYPE html>
 <html>
@@ -27,8 +28,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <%-- CSS --%>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout.css" />
+    <link rel="stylesheet" href="${cssUrl}/common.css" />
+    <link rel="stylesheet" href="${cssUrl}/layout.css" />
+    <link rel="stylesheet" href="${cssUrl}/table.css" />
   </head>
   <body>
     <div class="layout__container">
@@ -59,9 +61,7 @@
             <a class="layout__menubar-profile-role" href="${mypageUrl}">마이페이지</a>
           </div>
           <div class="layout__menubar-profile-role">
-            <if test="${role == 'owner'}">
-              ${sessionScope.loginUser.storeName}
-            </if>
+            <if test="${role == 'owner'}">${sessionScope.loginUser.storeName}</if>
             ${role == 'owner' ? '점주' : '총괄 관리자'}
           </div>
         </div>
@@ -81,5 +81,7 @@
       </div>
     </div>
     <t:alertify />
+
+    <script src="${jsUrl}/components.js"></script>
   </body>
 </html>

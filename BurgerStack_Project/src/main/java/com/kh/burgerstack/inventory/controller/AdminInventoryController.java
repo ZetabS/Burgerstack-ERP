@@ -41,7 +41,7 @@ public class AdminInventoryController {
                 loginUser);
 
         model.addAttribute("view", inventoryListView);
-        return "admin/inventories/list";
+        return "inventory/inventories/list";
     }
 
     @GetMapping("/{inventoryId}/adjust")
@@ -54,7 +54,7 @@ public class AdminInventoryController {
         InventoryDetail detail = inventoryService.getInventoryDetail(inventoryId, loginUser);
 
         model.addAttribute("detail", detail);
-        return "admin/inventories/adjust";
+        return "inventory/inventories/adjust";
     }
 
     @PostMapping("/{inventoryId}/adjust")

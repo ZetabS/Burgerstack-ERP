@@ -6,7 +6,9 @@
              , CURRENT_QUANTITY
              , SAFETY_QUANTITY
              , STORE_NAME
+             , MATERIAL_CODE
              , MATERIAL_NAME
+             , MATERIAL_TYPE
           FROM (
                 SELECT *
                   FROM (
@@ -16,6 +18,7 @@
                                      , I.CURRENT_QUANTITY
                                      , I.SAFETY_QUANTITY
                                      , S.STORE_NAME
+                                     , M.MATERIAL_CODE
                                      , M.MATERIAL_NAME
                                      , M.MATERIAL_TYPE
                                      , STORE_ID

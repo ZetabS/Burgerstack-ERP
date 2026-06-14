@@ -42,7 +42,7 @@ public class OwnerInventoryController {
                 loginUser);
 
         model.addAttribute("view", inventoryListView);
-        return "owner/inventories/list";
+        return "inventory/inventories/list";
     }
 
     @GetMapping("/{inventoryId}/adjust")
@@ -57,7 +57,7 @@ public class OwnerInventoryController {
                 loginUser);
 
         model.addAttribute("detail", detail);
-        return "owner/inventories/adjust";
+        return "inventory/inventories/adjust";
     }
 
     @PostMapping("/{inventoryId}/adjust")
@@ -91,7 +91,7 @@ public class OwnerInventoryController {
                 loginUser);
 
         model.addAttribute("detail", detail);
-        return "owner/inventories/edit";
+        return "inventory/inventories/edit";
     }
 
     @PostMapping("/{inventoryId}")
