@@ -15,15 +15,14 @@ import lombok.ToString;
 @ToString
 public class MaterialInventoryDto {
 
-    private Long materialId;
+    private Long materialId; // 자재 아이디
+    private String materialType; // 자재 종류 (예: 상온, 냉동, etc.)
+    private String materialName; // 자재명
+    private BigDecimal supplyPrice; // 공급가
+    private Long currentQuantity; // 현재 재고 수량
+    private Long safetyQuantity; // 안전 재고 수량
 
-    private String materialName;
-
-    private BigDecimal costPrice;
-
-    private Long currentQuantity;
-
-    private String status;
+    private String status; // 판매 상태 (예: 정상, 품절, 판매중지)
 
     // 화면에서 총 금액 보여주고 싶으면
     private BigDecimal buyPrice;

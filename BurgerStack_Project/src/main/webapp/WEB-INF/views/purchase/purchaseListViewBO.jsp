@@ -14,16 +14,40 @@
         text-align: left;
         width: 200px;
     }
+    td h6 {
+        margin: 0;
+    }
+    h6 .badge {
+        font-size: 0.8em;
+        padding: 0.25em 0.4em;
+        margin: 0;
+    }
+    .bg-secondary {
+        color: #ffffff !important;
+    }
+    .bg-success {
+        color: #ffffff !important;
+    }
+    .bg-danger {
+        color: #ffffff !important;
+    }
+    .bg-info {
+        color: #ffffff !important;
+    }
+    .bg-warning {
+        color: #ffffff !important;
+    }
 </style>
-    <!-- 레이아웃 작업 -->
-	<t:layout>
+<!-- 레이아웃 작업 -->
+<t:layout>
+    <div class="outer">
 
         <h2>발주 목록</h2>
 
         <div class="content-top">
         
             <div class="top-info">
-                <button class="button-primary" onclick="location.href='/burgerstack/owner/purchases/new'">발주 요청</button>
+                
             </div>
             <!-- 검색 -->
             <div class="search-area" align="right">
@@ -54,7 +78,7 @@
 
                         <option value="CANCELED"
                             ${condition.status eq 'CANCELED' ? 'selected' : ''}>
-                            취소
+                            발주 취소
                         </option>
 
                         <option value="RECEIVED"
@@ -63,31 +87,26 @@
                         </option>
                     </select>
                     <input type="date"
+                            id="startDate"
                             name="startDate"
+                            max="${today}"
                             value="${condition.startDate}"
-                            onchange="autoSearch()">
-
+                            onchange="validateDate()">
                     ~
-
                     <input type="date"
+                            id="endDate"
                             name="endDate"
+                            max="${today}"
                             value="${condition.endDate}"
-                            onchange="autoSearch()">
-                    <input type="text"
-                            name="keyword"
-                            value="${condition.keyword}"
-                            placeholder="품목명 입력">
-                    <button type="submit">
-                        <img src="..\..\resources\images\BS_logo2.png" style="width: 16px;"/>
-                        검색
-                    </button>
+                            onchange="validateDate();">
+
                 </form>             
             </div>
         </div>
         <table class="table2">
             <thead>
                 <tr>
-                    <th>발주번호</th>
+                    <th>발주코드</th>
                     <th>상태</th>
                     <th>품목요약</th>
                     <th>총액</th>
@@ -106,29 +125,29 @@
                 <c:forEach var="p" items="${list}">
                     <tr style="cursor:pointer;"
                         onclick="location.href='${pageContext.request.contextPath}/owner/purchases/${p.purchaseOrderId}'">
-                        <td>${p.purchaseOrderId}</td>
+                        <td>${p.purchaseCode}</td>
                         <td>
                             <c:choose>
                                 <c:when test="${p.status eq 'REQUESTED'}">
-                                    요청중
+                                    <h6><span class="badge bg-secondary">요청중</span></h6>
                                 </c:when>
                                 <c:when test="${p.status eq 'PARTIALLY_APPROVED'}">
-                                    부분승인
+                                    <h6><span class="badge bg-success">부분승인</span></h6>
                                 </c:when>
                                 <c:when test="${p.status eq 'APPROVED'}">
-                                    승인
+                                    <h6><span class="badge bg-success">승인</span></h6>
                                 </c:when>
                                 <c:when test="${p.status eq 'CANCELED'}">
-                                    발주취소
+                                    <h6><span class="badge bg-danger">발주취소</span></h6>
                                 </c:when>
                                 <c:when test="${p.status eq 'REJECTED'}">
-                                    반려
+                                    <h6><span class="badge bg-danger">반려</span></h6>
                                 </c:when>
                                 <c:when test="${p.status eq 'RECEIVED'}">
-                                    입고완료
+                                    <h6><span class="badge bg-info">입고완료</span></h6>
                                 </c:when>
                                 <c:otherwise>
-                                    배송중
+                                    <h6><span class="badge bg-warning">배송중</span></h6>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -139,13 +158,22 @@
                 </c:forEach>      
             </tbody>
         </table>
-        <br>
+        <div style="margin-top: 10px; text-align : right;">
+            <button class="button-primary" onclick="location.href='/burgerstack/owner/purchases/new'">발주 요청</button>
+        </div>
+
         <t:pagination pageInfo="${pageInfo}"></t:pagination>
-	</t:layout>
+        
+    </div>
+</t:layout>
 	
     <script>
         // 페이지 로드시 최초 실행
         $(document).ready(function () {
+
+            const today = new Date().toISOString().split('T')[0];
+
+            $('#endDate').attr('max', today);
 
             priceFormatting()
 
@@ -167,8 +195,46 @@
             });
         }
 
+        // 검색어 변경시 자동 검색
         function autoSearch() {
             document.getElementById("searchForm").submit();
+        }
+
+        // 날짜 유효성 검사
+        function validateDate() {
+
+            const startDate =
+                document.getElementById('startDate');
+
+            const endDate =
+                document.getElementById('endDate');
+
+            const today =
+                new Date().toISOString().split('T')[0];
+
+            endDate.max = today;
+
+            if(endDate.value > today) {
+
+                alert('종료일은 오늘 이후로 선택할 수 없습니다.');
+
+                endDate.value = today;
+
+                return;
+            }
+
+            if(startDate.value &&
+            endDate.value &&
+            startDate.value > endDate.value) {
+
+                alert('시작일은 종료일보다 클 수 없습니다.');
+
+                startDate.value = endDate.value;
+
+                return;
+            }
+
+            autoSearch();
         }
 
         let typing = false;
@@ -189,17 +255,23 @@
         // 5초마다 새로고침
         function refreshPurchaseList() {
 
+            if(typing){
+                return;
+            }
+
             $.ajax({
                 url : window.location.href,
                 success : function(html) {
+
                     $("#purchaseListBody").html(
-                        $(html).find("#purchaseListBody").html()
+                        $(html)
+                        .find("#purchaseListBody")
+                        .html()
                     );
 
                     priceFormatting();
                 }
             });
-            
         }
 
         setInterval(refreshPurchaseList, 5000);

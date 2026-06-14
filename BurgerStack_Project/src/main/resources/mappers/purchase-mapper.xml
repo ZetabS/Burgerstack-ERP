@@ -13,9 +13,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     SELECT
         M.MATERIAL_ID        AS materialId,
         M.MATERIAL_NAME      AS materialName,
-        M.SUPPLY_PRICE       AS costPrice,
+        M.SUPPLY_PRICE       AS supplyPrice,
+        M.MATERIAL_TYPE      AS materialType,
 
         NVL(I.CURRENT_QUANTITY,0) AS currentQuantity,
+        NVL(I.SAFETY_QUANTITY,0) AS safetyQuantity,
+
 
         (M.SUPPLY_PRICE * NVL(I.CURRENT_QUANTITY,0)) AS buyPrice,
 
@@ -27,7 +30,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ON M.MATERIAL_ID = I.MATERIAL_ID
         AND I.STORE_ID = #{storeId}
 
-    ORDER BY M.MATERIAL_NAME
+    ORDER BY
+        (NVL(I.SAFETY_QUANTITY,0) - NVL(I.CURRENT_QUANTITY,0)) DESC,
+        CASE M.MATERIAL_TYPE
+            WHEN 'AF' THEN 1
+            WHEN 'RF' THEN 2
+            WHEN 'FF' THEN 3
+            WHEN 'PK' THEN 4
+            WHEN 'KW' THEN 5
+            WHEN 'ET' THEN 6
+            ELSE 99
+        END,
+        M.MATERIAL_NAME
 
 </select>
 
@@ -55,6 +69,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ) RN,
 
             PO.PURCHASE_ORDER_ID AS purchaseOrderId,
+            'P'
+            || TO_CHAR(PO.CREATED_AT,'YYYY')
+            || LPAD(PO.PURCHASE_ORDER_ID,4,'0')
+            AS purchaseCode,
             PO.STORE_ID          AS storeId,
             S.STORE_NAME         AS storeName,
             PO.STATUS            AS status,
@@ -62,7 +80,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             PO.ORDER_MEMO        AS orderMemo,
             TO_CHAR(
                 PO.CREATED_AT,
-                'YYYY.MM.DD'
+                'YYYY-MM-DD HH24:MI'
             ) AS createdAt,
 
             (
@@ -262,40 +280,73 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     SELECT
         P.PURCHASE_ORDER_ID,
+
+        'P'
+        || TO_CHAR(P.CREATED_AT,'YYYY')
+        || LPAD(P.PURCHASE_ORDER_ID,4,'0')
+        AS PURCHASE_CODE,
+
+        P.STORE_ID,
+        S.STORE_NAME,
+
+        U.USER_NAME,
+        CASE U.ROLE
+            WHEN 'ADMIN' THEN '관리자'
+            WHEN 'OWNER' THEN '점주'
+        END AS ROLE,
+
+        P.CREATED_AT,
+
+        NVL(P.ORDER_MEMO,'-') AS ORDER_MEMO,
+
         P.STATUS,
+
         M.MATERIAL_ID,
+
+        M.MATERIAL_TYPE
+        || TO_CHAR(P.CREATED_AT,'YYYY')
+        || LPAD(M.MATERIAL_ID,4,'0')
+        AS MATERIAL_CODE,
+
         M.MATERIAL_NAME,
+
         M.MATERIAL_TYPE,
+
         I.SUPPLY_PRICE_SNAPSHOT,
+
         INV.CURRENT_QUANTITY,
+
         I.REQUEST_QUANTITY,
+
         NVL(I.APPROVED_QUANTITY,0)
             AS APPROVED_QUANTITY,
-        (I.REQUEST_QUANTITY
-            - NVL(I.APPROVED_QUANTITY,0))
-            AS REJECT_QUANTITY,
-        I.REJECT_REASON,
+
         (
-            NVL(I.APPROVED_QUANTITY,0)
+            I.REQUEST_QUANTITY
             * I.SUPPLY_PRICE_SNAPSHOT
-        ) AS TOTAL_PRICE
+        ) AS TOTAL_PRICE,
+
+        I.REJECT_REASON
 
     FROM PURCHASE_ORDERS P
 
     JOIN PURCHASE_ORDER_ITEMS I
-      ON P.PURCHASE_ORDER_ID
-       = I.PURCHASE_ORDER_ID
-    JOIN MATERIALS M
-      ON I.MATERIAL_ID
-       = M.MATERIAL_ID
-    JOIN STORE_INVENTORIES INV
-      ON INV.MATERIAL_ID
-       = M.MATERIAL_ID
-     AND INV.STORE_ID
-       = P.STORE_ID
+      ON P.PURCHASE_ORDER_ID = I.PURCHASE_ORDER_ID
 
-    WHERE P.PURCHASE_ORDER_ID
-        = #{purchaseOrderId}
+    JOIN MATERIALS M
+      ON I.MATERIAL_ID = M.MATERIAL_ID
+
+    JOIN STORE_INVENTORIES INV
+      ON INV.MATERIAL_ID = M.MATERIAL_ID
+     AND INV.STORE_ID = P.STORE_ID
+
+    JOIN STORES S
+      ON S.STORE_ID = P.STORE_ID
+
+    JOIN USERS U
+      ON U.USER_NO = S.OWNER_USER_NO
+
+    WHERE P.PURCHASE_ORDER_ID = #{purchaseOrderId}
 
 </select>
 
@@ -363,37 +414,45 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 </update>
 
-    <select id="findTopN">
-        SELECT T.*
-          FROM (
-                SELECT PURCHASE_ORDER_ID
-                     , 'PO-' || EXTRACT(YEAR FROM SYSDATE) || '-' || LPAD(PURCHASE_ORDER_ID, 4, '0') AS PURCHASE_CODE
-                     , ITEMS.TOTAL_AMOUNT
-                     , CASE WHEN PO.STATUS = 'REQUESTED'          THEN '요청'
-                            WHEN PO.STATUS = 'PARTIALLY_APPROVED' THEN '부분 승인'
-                            WHEN PO.STATUS = 'APPROVED'           THEN '승인'
-                            WHEN PO.STATUS = 'REJECTED'           THEN '반려'
-                            WHEN PO.STATUS = 'CANCELED'           THEN '취소'
-                            WHEN PO.STATUS = 'RECEIVED'           THEN '입고'
-                            END AS STATUS
-                     , PO.CREATED_AT
-                     , STORE_NAME
-                     , STORE_ID
-                  FROM PURCHASE_ORDERS PO
-                  JOIN (
-                        SELECT SUM(SUPPLY_PRICE_SNAPSHOT * REQUEST_QUANTITY) AS TOTAL_AMOUNT
-                             , PURCHASE_ORDER_ID
-                          FROM PURCHASE_ORDER_ITEMS
-                          GROUP BY PURCHASE_ORDER_ID
-                       ) ITEMS
-                 USING ( PURCHASE_ORDER_ID )
-                  JOIN STORES S
-                 USING ( STORE_ID )
-                 ORDER BY PO.CREATED_AT DESC
-                        , PURCHASE_ORDER_ID DESC
-               ) T
-         WHERE ROWNUM &lt;= #{count}
-    </select>
+<update id="updateOrderMemo">
+
+    UPDATE PURCHASE_ORDERS
+       SET ORDER_MEMO = #{orderMemo}
+     WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
+
+</update>
+
+<select id="findTopN">
+    SELECT T.*
+        FROM (
+            SELECT PURCHASE_ORDER_ID
+                    , 'PO-' || EXTRACT(YEAR FROM SYSDATE) || '-' || LPAD(PURCHASE_ORDER_ID, 4, '0') AS PURCHASE_CODE
+                    , ITEMS.TOTAL_AMOUNT
+                    , CASE WHEN PO.STATUS = 'REQUESTED'          THEN '요청'
+                        WHEN PO.STATUS = 'PARTIALLY_APPROVED' THEN '부분 승인'
+                        WHEN PO.STATUS = 'APPROVED'           THEN '승인'
+                        WHEN PO.STATUS = 'REJECTED'           THEN '반려'
+                        WHEN PO.STATUS = 'CANCELED'           THEN '취소'
+                        WHEN PO.STATUS = 'RECEIVED'           THEN '입고'
+                        END AS STATUS
+                    , PO.CREATED_AT
+                    , STORE_NAME
+                    , STORE_ID
+                FROM PURCHASE_ORDERS PO
+                JOIN (
+                    SELECT SUM(SUPPLY_PRICE_SNAPSHOT * REQUEST_QUANTITY) AS TOTAL_AMOUNT
+                            , PURCHASE_ORDER_ID
+                        FROM PURCHASE_ORDER_ITEMS
+                        GROUP BY PURCHASE_ORDER_ID
+                    ) ITEMS
+                USING ( PURCHASE_ORDER_ID )
+                JOIN STORES S
+                USING ( STORE_ID )
+                ORDER BY PO.CREATED_AT DESC
+                    , PURCHASE_ORDER_ID DESC
+            ) T
+        WHERE ROWNUM &lt;= #{count}
+</select>
 
     <select id="getPurchaseOrderStatistics">
         SELECT COUNT(CASE WHEN STATUS = 'REQUESTED' THEN 1 END) AS REQUESTED_COUNT
