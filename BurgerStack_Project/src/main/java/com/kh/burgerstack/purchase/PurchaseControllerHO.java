@@ -25,15 +25,14 @@ import com.kh.burgerstack.store.StoreDao;
 import com.kh.burgerstack.store.StoreService;
 import com.kh.burgerstack.store.dto.StoreOption;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-
 
 /*
 * ==================
 *   관리자 컨트롤러
 * ==================
 */
-
 
 @Controller
 @RequestMapping("admin")
@@ -45,14 +44,15 @@ public class PurchaseControllerHO {
     @Autowired
     private StoreDao storeDao;
 
-    // 발주 목록
-    @GetMapping("purchases")
+    // 발주 목록 및 승인 대기 목록 처리
+    @GetMapping({ "purchases", "purchases/pending" })
     public String purchaseList(
-        @RequestParam(required = false) Long storeId,
-        PurchaseSearchDto condition,
-        PagingRequest pagingRequest,
-        HttpSession session,
-        Model model){
+            @RequestParam(required = false) Long storeId,
+            PurchaseSearchDto condition,
+            PagingRequest pagingRequest,
+            HttpSession session,
+            HttpServletRequest request, // 요청 경로 확인을 위해 추가
+            Model model) {
 
         // 1. 발주 목록 조회
         ArrayList<PurchaseDto> list = purchaseService.searchPurchaseList(pagingRequest, condition, session);
@@ -63,33 +63,35 @@ public class PurchaseControllerHO {
 
         PageInfo pageInfo = pagingRequest.toPageInfo(totalCount);
 
-            System.out.println("request storeId = " + storeId);
-            System.out.println("condition before = " + condition);
+        // System.out.println("request storeId = " + storeId);
+        // System.out.println("condition before = " + condition);
 
-            condition.setStoreId(storeId);
+        condition.setStoreId(storeId);
 
-            System.out.println("condition after = " + condition);
+        // System.out.println("condition after = " + condition);
 
-        
         // 2. Model에 담기
         model.addAttribute("list", list);
         model.addAttribute("pageInfo", pageInfo);
         model.addAttribute("condition", condition);
         model.addAttribute("storeList", storeOptions);
 
-        // 3. View 지정
-        return "purchase/purchaseListViewHO";
+        // 3. View 지정 (요청 경로에 따른 분기 처리)
+        String requestURI = request.getRequestURI();
+        if (requestURI.contains("/pending")) {
+            return "purchase/purchaseApprovalList"; // 승인 대기 발주 페이지
+        }
+
+        return "purchase/purchaseListViewHO"; // 기존 발주 이력 목록 페이지
     }
 
     // 발주 상세보기
     @GetMapping("purchases/{id}")
     public ModelAndView purchaseDetail(
             @PathVariable("id") Long purchaseOrderId,
-            ModelAndView mv
-    ) {
+            ModelAndView mv) {
 
-        List<PurchaseOrderDetailDto> detail =
-            purchaseService.getPurchaseOrderDetail(purchaseOrderId);
+        List<PurchaseOrderDetailDto> detail = purchaseService.getPurchaseOrderDetail(purchaseOrderId);
 
         PurchaseOrderDto storeInfo = purchaseService.selectPurchaseOrder(purchaseOrderId);
 
@@ -106,8 +108,7 @@ public class PurchaseControllerHO {
             @PathVariable("id") Long purchaseOrderId,
             ModelAndView mv) {
 
-        List<PurchaseOrderDetailDto> list =
-                purchaseService.getPurchaseOrderDetail(purchaseOrderId);
+        List<PurchaseOrderDetailDto> list = purchaseService.getPurchaseOrderDetail(purchaseOrderId);
 
         mv.addObject("purchaseOrderId", purchaseOrderId);
         mv.addObject("list", list);
@@ -121,8 +122,7 @@ public class PurchaseControllerHO {
     @PostMapping("purchases/{id}/approve")
     public String processPurchase(
             @PathVariable("id") Long purchaseOrderId,
-            PurchaseApprovalRequestDto request
-    ) {
+            PurchaseApprovalRequestDto request) {
 
         purchaseService.processPurchase(
                 purchaseOrderId,
@@ -134,11 +134,11 @@ public class PurchaseControllerHO {
     // 취소 처리
     @PostMapping("purchases/{id}/cancel")
     public String cancelPurchase(@PathVariable("id") Long purchaseOrderId,
-                                HttpSession session) {
+            HttpSession session) {
 
         purchaseService.cancelPurchase(purchaseOrderId, session);
 
         return "redirect:/admin/purchases";
     }
-    
+
 }

@@ -36,8 +36,6 @@
 
 
     <h2>발주 요청</h2>
-    
-    <br>
 
     <form action="${pageContext.request.contextPath}/owner/purchases" method="post">
         <!-- 검색 / 필터 -->

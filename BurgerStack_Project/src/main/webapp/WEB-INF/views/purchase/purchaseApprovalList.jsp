@@ -42,7 +42,7 @@
     <!-- 레이아웃 작업 -->
 	<t:layout>
     <div class="outer">
-        <h2>발주 목록</h2>
+        <h2>승인 대기 목록</h2>
         
         <div class="content-top">
             <div class="top-info">
@@ -52,53 +52,19 @@
             <div class="search-area" align="right">
                 <form method="get" id="searchForm">
 
-                        <select name="storeId" onchange="autoSearch()">
-                            <option value="">전체점포</option>
+                    <select name="storeId" onchange="autoSearch()">
+                        <option value="">전체점포</option>
 
-                            <c:forEach var="store" items="${storeList}">
-                                <option value="${store.storeId}"
-                                    <c:if test="${param.storeId == store.storeId}">
-                                        selected="selected"
-                                    </c:if>>
-                                    ${store.storeName}
-                                </option>
-                            </c:forEach>
-                        </select>
-
-                    <select name="status" onchange="autoSearch()">
-
-                        <option value="">전체상태</option>
-
-                        <option value="REQUESTED"
-                            ${condition.status eq 'REQUESTED' ? 'selected' : ''}>
-                            요청중
-                        </option>
-
-                        <option value="PARTIALLY_APPROVED"
-                            ${condition.status eq 'PARTIALLY_APPROVED' ? 'selected' : ''}>
-                            부분 승인
-                        </option>
-
-                        <option value="APPROVED"
-                            ${condition.status eq 'APPROVED' ? 'selected' : ''}>
-                            승인
-                        </option>
-
-                        <option value="REJECTED"
-                            ${condition.status eq 'REJECTED' ? 'selected' : ''}>
-                            반려
-                        </option>
-
-                        <option value="CANCELED"
-                            ${condition.status eq 'CANCELED' ? 'selected' : ''}>
-                            취소
-                        </option>
-
-                        <option value="RECEIVED"
-                            ${condition.status eq 'RECEIVED' ? 'selected' : ''}>
-                            입고완료
-                        </option>
+                        <c:forEach var="store" items="${storeList}">
+                            <option value="${store.storeId}"
+                                <c:if test="${param.storeId == store.storeId}">
+                                    selected="selected"
+                                </c:if>>
+                                ${store.storeName}
+                            </option>
+                        </c:forEach>
                     </select>
+                    
                     <input type="date"
                             id="startDate"
                             name="startDate"
@@ -120,7 +86,6 @@
                 <tr>
                     <th>발주코드</th>
                     <th>점포명</th>
-                    <th>상태</th>
                     <th>품목요약</th>
                     <th>총액</th>
                     <th>요청일</th>
@@ -136,39 +101,16 @@
                     </tr>
                 </c:if>
                 <c:forEach var="p" items="${list}">
-                    <tr style="cursor:pointer;"
-                        onclick="location.href='${pageContext.request.contextPath}/admin/purchases/${p.purchaseOrderId}'">
-                        <td>${p.purchaseCode}</td>
-                        <td>${p.storeName}</td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${p.status eq 'REQUESTED'}">
-                                    <h6><span class="badge bg-secondary">요청중</span></h6>
-                                </c:when>
-                                <c:when test="${p.status eq 'PARTIALLY_APPROVED'}">
-                                    <h6><span class="badge bg-success">부분승인</span></h6>
-                                </c:when>
-                                <c:when test="${p.status eq 'APPROVED'}">
-                                    <h6><span class="badge bg-success">승인</span></h6>
-                                </c:when>
-                                <c:when test="${p.status eq 'CANCELED'}">
-                                    <h6><span class="badge bg-danger">발주취소</span></h6>
-                                </c:when>
-                                <c:when test="${p.status eq 'REJECTED'}">
-                                    <h6><span class="badge bg-danger">반려</span></h6>
-                                </c:when>
-                                <c:when test="${p.status eq 'RECEIVED'}">
-                                    <h6><span class="badge bg-info">입고완료</span></h6>
-                                </c:when>
-                                <c:otherwise>
-                                    <h6><span class="badge bg-warning">배송중</span></h6>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>${p.itemSummary}</td>
-                        <td class="comma-number">${p.totalAmount}</td>
-                        <td>${p.createdAt}</td>
-                    </tr>
+                    <c:if test="${p.status eq 'REQUESTED'}">
+                        <tr style="cursor:pointer;"
+                            onclick="location.href='${pageContext.request.contextPath}/admin/purchases/${p.purchaseOrderId}'">
+                            <td>${p.purchaseCode}</td>
+                            <td>${p.storeName}</td>
+                            <td>${p.itemSummary}</td>
+                            <td class="comma-number">${p.totalAmount}</td>
+                            <td>${p.createdAt}</td>
+                        </tr>
+                    </c:if>
                 </c:forEach>      
             </tbody>
         </table>

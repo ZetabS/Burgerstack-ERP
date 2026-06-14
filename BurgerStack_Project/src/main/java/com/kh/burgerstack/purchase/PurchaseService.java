@@ -58,7 +58,7 @@ public class PurchaseService {
             condition.setStoreId(loginUser.getStoreId());
         }
 
-        System.out.println("최종 condition = " + condition);
+        // System.out.println("최종 condition = " + condition);
 
         return purchaseDao.searchPurchaseList(
                 pagingRequest,

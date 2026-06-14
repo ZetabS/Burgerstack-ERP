@@ -106,7 +106,7 @@
         <table class="table2">
             <thead>
                 <tr>
-                    <th>발주번호</th>
+                    <th>발주코드</th>
                     <th>상태</th>
                     <th>품목요약</th>
                     <th>총액</th>

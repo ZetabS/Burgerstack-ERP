@@ -38,8 +38,8 @@
     <div class="layout__menu-title">발주 관리</div>
 
     <ul class="layout__submenu">
-      <li><a href="/burgerstack/admin/purchases?status=REQUESTED">승인 대기 발주</a></li>
-      <li><a href="/burgerstack/admin/purchases">발주 이력</a></li>
+      <li><a href="/burgerstack/admin/purchases/pending">발주 승인 대기</a></li>
+      <li><a href="/burgerstack/admin/purchases">발주 목록</a></li>
     </ul>
   </div>
 
