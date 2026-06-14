@@ -91,9 +91,17 @@ input {
 					</td>
 				</tr>
 				<tr>
-					<th>비밀번호</th>
-					<td><input type="password" name="password"
-						placeholder="변경할 비밀번호 입력"></td>
+				    <th>비밀번호</th>
+				    <td>
+				        <input type="text"
+				               id="password"
+				               readonly>
+				
+				        <button type="button"
+				                onclick="resetPassword()">
+				            초기화
+				        </button>
+				    </td>
 				</tr>
 				<tr>
 					<th>이름</th>
@@ -108,11 +116,6 @@ input {
 				<tr>
 					<th>이메일</th>
 					<td><input type="email" name="email" value="${user.email}">
-					</td>
-				</tr>
-				<tr>
-					<th>등록일시</th>
-					<td><input type="text" value="${user.createdAt}" readonly>
 					</td>
 				</tr>
 				<tr>
@@ -136,5 +139,26 @@ input {
 					취소</button>
 			</div>
 		</form>
+
+			<script>
+				function resetPassword(){
+				
+				    const chars =
+				        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+				        "abcdefghijklmnopqrstuvwxyz" +
+				        "0123456789";
+				
+				    let pwd = "";
+				
+				    for(let i=0; i<10; i++){
+				        pwd += chars.charAt(
+				            Math.floor(Math.random() * chars.length)
+				        );
+				    }
+				
+				    document.getElementById("tempPwd").value = pwd;
+				}
+			</script>
+				
 		
 	</t:layout>
