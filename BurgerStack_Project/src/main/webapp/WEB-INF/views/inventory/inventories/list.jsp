@@ -53,15 +53,11 @@
         <table:DataTable>
           <jsp:attribute name="thead">
             <tr>
-              <c:if test="${isAdmin}">
-                <th>점포명</th>
-              </c:if>
+              <c:if test="${isAdmin}"><th>점포명</th></c:if>
               <th>자재명</th>
               <th>현재 수량</th>
               <th>안전재고 수량</th>
-              <c:if test="${isOwner}">
-                <th>안전재고 조정</th>
-              </c:if>
+              <c:if test="${isOwner}"><th>안전재고 조정</th></c:if>
               <th>조정</th>
             </tr>
           </jsp:attribute>
@@ -70,15 +66,11 @@
               <c:url var="adjustUrl" value="/${role}/inventories/${item.inventoryId}/adjust" />
               <c:url var="editUrl" value="/owner/inventories/${item.inventoryId}/edit" />
               <table:TableRow>
-                <c:if test="${isAdmin}">
-                  <table:TextCell value="${item.storeName}" />
-                </c:if>
+                <c:if test="${isAdmin}"><table:TextCell value="${item.storeName}" /></c:if>
                 <table:TextCell value="${item.materialName}" />
                 <table:NumberCell value="${item.currentQuantity}" />
                 <table:NumberCell value="${item.safetyQuantity}" />
-                <c:if test="${isOwner}">
-                  <table:ActionCell href="${editUrl}">안전재고 조정</table:ActionCell>
-                </c:if>
+                <c:if test="${isOwner}"><table:ActionCell href="${editUrl}">안전재고 조정</table:ActionCell></c:if>
                 <table:ActionCell href="${adjustUrl}">조정</table:ActionCell>
               </table:TableRow>
             </c:forEach>

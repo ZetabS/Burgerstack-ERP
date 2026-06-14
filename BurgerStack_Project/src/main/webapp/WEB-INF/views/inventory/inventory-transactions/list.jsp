@@ -45,9 +45,7 @@
           <jsp:attribute name="thead">
             <tr>
               <th>변동 유형</th>
-              <c:if test="${isAdmin}">
-                <th>점포명</th>
-              </c:if>
+              <c:if test="${isAdmin}"><th>점포명</th></c:if>
               <th>처리자</th>
               <th class="text-right">처리 일시</th>
               <th>사유</th>
@@ -58,9 +56,7 @@
               <c:url var="detail" value="/${role}/inventory-transactions/${item.inventoryTransactionId}" />
               <table:TableRow clickable="true" href="${detail}">
                 <table:InventoryTransactionTypeCell value="${item.transactionType}" />
-                <c:if test="${isAdmin}">
-                  <table:TextCell value="${item.storeName}" />
-                </c:if>
+                <c:if test="${isAdmin}"><table:TextCell value="${item.storeName}" /></c:if>
                 <table:TextCell value="${item.createdByName}" />
                 <table:DateTimeCell value="${item.createdAt}" />
                 <table:TextCell value="${item.reason}" />
