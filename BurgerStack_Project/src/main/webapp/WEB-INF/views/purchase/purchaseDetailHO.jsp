@@ -184,9 +184,7 @@
 
                         <!-- 승인수량 -->
                         <td>
-                            <input type="number"
-                                value="${item.approvedQuantity}"
-                                disabled>
+                            ${item.approvedQuantity}
                         </td>
 
                         <!-- 반려수량 -->
