@@ -1,7 +1,16 @@
+/*
+  테이블 헤더 색상 지정
+  이거 없는 게 더 깔끔한 것 같긴 한데
+  와이어프레임대로 반영했습니다.
+*/
+.data-table thead tr {
+  background-color: #19c765;
+  color: white;
+}
+
 .data-table th,
 .data-table td {
   vertical-align: middle;
-  overflow: hidden;
   white-space: nowrap;
 }
 
@@ -15,4 +24,5 @@
 
 .data-table__text-cell {
   max-width: 0;
+  overflow: hidden;
 }
