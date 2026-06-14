@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="datetime" uri="/WEB-INF/tld/datetime.tld" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
@@ -19,15 +20,8 @@
 
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-3 font-weight-bold">변동 번호</div>
-
-          <div class="col-sm-9">${detail.inventoryTransactionId}</div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-sm-3 font-weight-bold">변동 유형</div>
-
-          <div class="col-sm-9">${detail.transactionType}</div>
+          <div class="col-sm-3 font-weight-bold">변동 코드</div>
+          <div class="col-sm-9">${detail.inventoryTransactionCode}</div>
         </div>
 
         <c:if test="${isAdmin}">
@@ -38,15 +32,18 @@
         </c:if>
 
         <div class="row mb-3">
-          <div class="col-sm-3 font-weight-bold">처리자</div>
+          <div class="col-sm-3 font-weight-bold">변동 유형</div>
+          <div class="col-sm-9">${detail.transactionType}</div>
+        </div>
 
+        <div class="row mb-3">
+          <div class="col-sm-3 font-weight-bold">처리자</div>
           <div class="col-sm-9">${detail.createdByName}</div>
         </div>
 
         <div class="row mb-3">
           <div class="col-sm-3 font-weight-bold">처리 일시</div>
-
-          <div class="col-sm-9">${detail.createdAt}</div>
+          <div class="col-sm-9"><c:out value="${datetime:formatDateTime(detail.createdAt)}" /></div>
         </div>
 
         <div class="row mb-3">
@@ -82,7 +79,9 @@
         <table:DataTable>
           <jsp:attribute name="thead">
             <tr>
+              <th>자재 코드</th>
               <th>자재명</th>
+              <th>자재 유형</th>
               <th class="text-right">변동 전 수량</th>
               <th>변동 수량</th>
               <th>변동 후 수량</th>
@@ -91,7 +90,9 @@
           <jsp:attribute name="tbody">
             <c:forEach var="item" items="${detail.list}">
               <table:TableRow>
+                <table:TextFitCell value="${item.materialCode}" />
                 <table:TextCell value="${item.materialName}" />
+                <table:TextFitCell value="${item.materialType}" />
                 <table:NumberCell value="${item.beforeQuantity}" />
                 <table:DeltaCell value="${item.changedQuantity}" />
                 <table:NumberCell value="${item.afterQuantity}" />

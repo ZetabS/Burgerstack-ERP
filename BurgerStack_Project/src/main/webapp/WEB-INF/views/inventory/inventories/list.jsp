@@ -47,7 +47,9 @@
       <jsp:attribute name="thead">
         <tr>
           <c:if test="${isAdmin}"><th>점포명</th></c:if>
+          <th>자재 코드</th>
           <th>자재명</th>
+          <th>자재 유형</th>
           <th class="text-right">현재 수량</th>
           <th class="text-right">안전재고 수량</th>
           <c:if test="${isOwner}"><th>안전재고 조정</th></c:if>
@@ -60,7 +62,9 @@
           <c:url var="editUrl" value="/owner/inventories/${item.inventoryId}/edit" />
           <table:TableRow>
             <c:if test="${isAdmin}"><table:TextFitCell value="${item.storeName}" /></c:if>
+            <table:TextFitCell value="${item.materialCode}" />
             <table:TextCell value="${item.materialName}" />
+            <table:TextFitCell value="${item.materialType}" />
             <table:NumberCell value="${item.currentQuantity}" />
             <table:NumberCell value="${item.safetyQuantity}" />
             <c:if test="${isOwner}"><table:ActionCell href="${editUrl}">안전재고 조정</table:ActionCell></c:if>

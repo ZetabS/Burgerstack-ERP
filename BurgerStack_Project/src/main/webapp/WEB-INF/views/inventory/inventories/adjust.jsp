@@ -55,7 +55,7 @@
 
           <div class="mb-3">
             <label for="transactionMemo" class="form-label">비고</label>
-            <textarea class="form-control" id="transactionMemo" name="transactionMemo" placeholder="추가 설명이 필요한 경우 입력하세요." rows="5"></textarea>
+            <textarea class="form-control" id="transactionMemo" name="transactionMemo" placeholder="추가 설명이 필요한 경우 입력하세요." rows="5" style="resize: none;"></textarea>
           </div>
         </div>
       </div>

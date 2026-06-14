@@ -16,5 +16,7 @@ public class InventoryListItem {
     private Integer currentQuantity;
     private Integer safetyQuantity;
     private String storeName;
+    private String materialCode;
     private String materialName;
+    private String materialType;
 }

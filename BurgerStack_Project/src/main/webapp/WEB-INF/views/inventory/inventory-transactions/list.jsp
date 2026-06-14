@@ -37,8 +37,9 @@
     <table:DataTable>
       <jsp:attribute name="thead">
         <tr>
-          <th>변동 유형</th>
+          <th>변동 이력 코드</th>
           <c:if test="${isAdmin}"><th>점포명</th></c:if>
+          <th>변동 유형</th>
           <th>처리자</th>
           <th class="text-right">처리 일시</th>
           <th>사유</th>
@@ -48,8 +49,9 @@
         <c:forEach var="item" items="${view.list}">
           <c:url var="detail" value="/${role}/inventory-transactions/${item.inventoryTransactionId}" />
           <table:TableRow clickable="true" href="${detail}">
-            <table:InventoryTransactionTypeCell value="${item.transactionType}" />
+            <table:TextFitCell value="${item.inventoryTransactionCode}" />
             <c:if test="${isAdmin}"><table:TextFitCell value="${item.storeName}" /></c:if>
+            <table:InventoryTransactionTypeCell value="${item.transactionType}" />
             <table:TextFitCell value="${item.createdByName}" />
             <table:DateTimeCell value="${item.createdAt}" />
             <table:TextCell value="${item.reason}" />
