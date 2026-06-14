@@ -3,7 +3,7 @@
 <%@ attribute name="variant" required="false" type="java.lang.String" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<td class="data-table__col-fit">
+<td class="data-table__col-fit text-center">
   <span class="badge badge-${empty variant ? 'secondary' : variant}">
     <c:out value="${value}" />
   </span>

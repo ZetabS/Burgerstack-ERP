@@ -3,7 +3,7 @@
 <%@ attribute name="onclick" required="false" type="java.lang.String" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<td class="data-table__col-fit">
+<td class="data-table__col-fit text-center">
   <c:choose>
     <c:when test="${not empty href}">
       <a href="${href}" class="btn btn-sm btn-outline-primary">
