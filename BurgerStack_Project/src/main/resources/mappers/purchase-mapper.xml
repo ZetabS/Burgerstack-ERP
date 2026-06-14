@@ -414,37 +414,45 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 </update>
 
-    <select id="findTopN">
-        SELECT T.*
-          FROM (
-                SELECT PURCHASE_ORDER_ID
-                     , 'PO-' || EXTRACT(YEAR FROM SYSDATE) || '-' || LPAD(PURCHASE_ORDER_ID, 4, '0') AS PURCHASE_CODE
-                     , ITEMS.TOTAL_AMOUNT
-                     , CASE WHEN PO.STATUS = 'REQUESTED'          THEN '요청'
-                            WHEN PO.STATUS = 'PARTIALLY_APPROVED' THEN '부분 승인'
-                            WHEN PO.STATUS = 'APPROVED'           THEN '승인'
-                            WHEN PO.STATUS = 'REJECTED'           THEN '반려'
-                            WHEN PO.STATUS = 'CANCELED'           THEN '취소'
-                            WHEN PO.STATUS = 'RECEIVED'           THEN '입고'
-                            END AS STATUS
-                     , PO.CREATED_AT
-                     , STORE_NAME
-                     , STORE_ID
-                  FROM PURCHASE_ORDERS PO
-                  JOIN (
-                        SELECT SUM(SUPPLY_PRICE_SNAPSHOT * REQUEST_QUANTITY) AS TOTAL_AMOUNT
-                             , PURCHASE_ORDER_ID
-                          FROM PURCHASE_ORDER_ITEMS
-                          GROUP BY PURCHASE_ORDER_ID
-                       ) ITEMS
-                 USING ( PURCHASE_ORDER_ID )
-                  JOIN STORES S
-                 USING ( STORE_ID )
-                 ORDER BY PO.CREATED_AT DESC
-                        , PURCHASE_ORDER_ID DESC
-               ) T
-         WHERE ROWNUM &lt;= #{count}
-    </select>
+<update id="updateOrderMemo">
+
+    UPDATE PURCHASE_ORDERS
+       SET ORDER_MEMO = #{orderMemo}
+     WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
+
+</update>
+
+<select id="findTopN">
+    SELECT T.*
+        FROM (
+            SELECT PURCHASE_ORDER_ID
+                    , 'PO-' || EXTRACT(YEAR FROM SYSDATE) || '-' || LPAD(PURCHASE_ORDER_ID, 4, '0') AS PURCHASE_CODE
+                    , ITEMS.TOTAL_AMOUNT
+                    , CASE WHEN PO.STATUS = 'REQUESTED'          THEN '요청'
+                        WHEN PO.STATUS = 'PARTIALLY_APPROVED' THEN '부분 승인'
+                        WHEN PO.STATUS = 'APPROVED'           THEN '승인'
+                        WHEN PO.STATUS = 'REJECTED'           THEN '반려'
+                        WHEN PO.STATUS = 'CANCELED'           THEN '취소'
+                        WHEN PO.STATUS = 'RECEIVED'           THEN '입고'
+                        END AS STATUS
+                    , PO.CREATED_AT
+                    , STORE_NAME
+                    , STORE_ID
+                FROM PURCHASE_ORDERS PO
+                JOIN (
+                    SELECT SUM(SUPPLY_PRICE_SNAPSHOT * REQUEST_QUANTITY) AS TOTAL_AMOUNT
+                            , PURCHASE_ORDER_ID
+                        FROM PURCHASE_ORDER_ITEMS
+                        GROUP BY PURCHASE_ORDER_ID
+                    ) ITEMS
+                USING ( PURCHASE_ORDER_ID )
+                JOIN STORES S
+                USING ( STORE_ID )
+                ORDER BY PO.CREATED_AT DESC
+                    , PURCHASE_ORDER_ID DESC
+            ) T
+        WHERE ROWNUM &lt;= #{count}
+</select>
 
     <select id="getPurchaseOrderStatistics">
         SELECT COUNT(CASE WHEN STATUS = 'REQUESTED' THEN 1 END) AS REQUESTED_COUNT

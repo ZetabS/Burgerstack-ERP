@@ -165,16 +165,39 @@ public class PurchaseControllerBO {
     @PostMapping("purchases/{id}/edit")
     public String updatePurchase(
             @PathVariable Long id,
-            @RequestParam String itemsJson,
+            @RequestParam(required = false) String itemsJson,
+            @RequestParam(required = false) String orderMemo,
             HttpSession session) throws Exception {
+
+        if (itemsJson == null || itemsJson.isBlank()) {
+            throw new IllegalArgumentException("선택된 발주 품목이 없습니다.");
+        }
 
         ObjectMapper mapper = new ObjectMapper();
 
-        List<PurchaseOrderItemDto> items = mapper.readValue(itemsJson,
+        List<PurchaseOrderItemDto> items = mapper.readValue(
+                itemsJson,
                 new TypeReference<List<PurchaseOrderItemDto>>() {
                 });
 
-        purchaseService.updatePurchase(id, items, session);
+        if (items.isEmpty()) {
+            throw new IllegalArgumentException("선택된 발주 품목이 없습니다.");
+        }
+
+        for (PurchaseOrderItemDto item : items) {
+
+            if (item.getRequestQuantity() > 1000) {
+                throw new IllegalArgumentException(
+                        "주문 수량은 1000개를 초과할 수 없습니다.");
+            }
+
+            if (item.getRequestQuantity() < 1) {
+                throw new IllegalArgumentException(
+                        "주문 수량은 1개 이상이어야 합니다.");
+            }
+        }
+
+        purchaseService.updatePurchase(id, items, orderMemo, session);
 
         return "redirect:/owner/purchases/" + id;
     }

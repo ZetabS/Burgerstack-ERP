@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<title>발주 요청 페이지 조회</title>
+<title>발주 요청 페이지</title>
 <style>
     .disabled-row {
         opacity: 0.5;
@@ -50,11 +50,7 @@
                 <option value="주방용품">주방용품</option>
                 <option value="기타">기타</option>
             </select>
-
             <input type="text" placeholder="검색어 입력" id="keyword">
-            <button class="search-btn" id="searchBtn">  
-                    <!-- <img src="" alt="검색"/> -->
-            </button>
         </div>
 
         <table class="table2 main-table">
@@ -91,7 +87,9 @@
                             </c:choose>
                         </td>
                         <td class="item-name">${m.materialName}</td>
-                        <td class="unit-price comma-number" data-price="${m.supplyPrice}">${m.supplyPrice}</td>
+                        <td class="unit-price comma-number" data-price="${m.supplyPrice}">
+                            ${m.supplyPrice}
+                        </td>
                         <td class="stock">${m.currentQuantity}</td>
                         <td class="safety-stock">${m.safetyQuantity}</td>
                         <td>
@@ -172,8 +170,6 @@
                             결제
                         </button>
                     </div>
-
-
                 </div>
             </jsp:body>
         </t:sidebar>

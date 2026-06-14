@@ -90,6 +90,21 @@ public class PurchaseDao {
                 purchaseOrderId);
     }
 
+    public int updateOrderMemo(
+            Long purchaseOrderId,
+            String orderMemo,
+            SqlSessionTemplate sqlSession) {
+
+        Map<String, Object> param = new HashMap<>();
+
+        param.put("purchaseOrderId", purchaseOrderId);
+        param.put("orderMemo", orderMemo);
+
+        return sqlSession.update(
+                "com.kh.burgerstack.purchase.PurchaseMapper.updateOrderMemo",
+                param);
+    }
+
     public PurchaseDto selectPurchase(Long id, SqlSessionTemplate sqlSession) {
         return sqlSession.selectOne("com.kh.burgerstack.purchase.PurchaseMapper.selectPurchase", id);
     }

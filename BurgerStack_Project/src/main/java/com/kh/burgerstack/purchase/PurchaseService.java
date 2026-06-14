@@ -170,6 +170,7 @@ public class PurchaseService {
     @Transactional
     public void updatePurchase(Long purchaseOrderId,
             List<PurchaseOrderItemDto> items,
+            String orderMemo,
             HttpSession session) {
 
         LoginUser user = (LoginUser) session.getAttribute("loginUser");
@@ -207,6 +208,8 @@ public class PurchaseService {
 
         // TOTAL 재계산
         purchaseDao.updateTotalAmount(purchaseOrderId, sqlSession);
+        // ORDER_MEMO 업데이트
+        purchaseDao.updateOrderMemo(purchaseOrderId, orderMemo, sqlSession);
     }
 
     @Transactional
