@@ -48,10 +48,10 @@
         <tr>
           <c:if test="${isAdmin}"><th>점포명</th></c:if>
           <th>자재명</th>
-          <th>현재 수량</th>
-          <th>안전재고 수량</th>
+          <th class="text-right">현재 수량</th>
+          <th class="text-right">안전재고 수량</th>
           <c:if test="${isOwner}"><th>안전재고 조정</th></c:if>
-          <th>조정</th>
+          <th class="text-center">조정</th>
         </tr>
       </jsp:attribute>
       <jsp:attribute name="tbody">
@@ -59,7 +59,7 @@
           <c:url var="adjustUrl" value="/${role}/inventories/${item.inventoryId}/adjust" />
           <c:url var="editUrl" value="/owner/inventories/${item.inventoryId}/edit" />
           <table:TableRow>
-            <c:if test="${isAdmin}"><table:TextCell value="${item.storeName}" /></c:if>
+            <c:if test="${isAdmin}"><table:TextFitCell value="${item.storeName}" /></c:if>
             <table:TextCell value="${item.materialName}" />
             <table:NumberCell value="${item.currentQuantity}" />
             <table:NumberCell value="${item.safetyQuantity}" />

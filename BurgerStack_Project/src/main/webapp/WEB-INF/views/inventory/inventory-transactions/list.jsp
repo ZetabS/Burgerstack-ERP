@@ -49,8 +49,8 @@
           <c:url var="detail" value="/${role}/inventory-transactions/${item.inventoryTransactionId}" />
           <table:TableRow clickable="true" href="${detail}">
             <table:InventoryTransactionTypeCell value="${item.transactionType}" />
-            <c:if test="${isAdmin}"><table:TextCell value="${item.storeName}" /></c:if>
-            <table:TextCell value="${item.createdByName}" />
+            <c:if test="${isAdmin}"><table:TextFitCell value="${item.storeName}" /></c:if>
+            <table:TextFitCell value="${item.createdByName}" />
             <table:DateTimeCell value="${item.createdAt}" />
             <table:TextCell value="${item.reason}" />
           </table:TableRow>
