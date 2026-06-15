@@ -112,6 +112,11 @@
 
                                 <%-- 첨부파일 목록 td 안 전체 교체 --%>
                                 <div id="file-list-container">
+                                    <div id="file-upload-guide" style="color : #AAAAAA; font-size : 12px;
+                                            ${not empty notice.fileList ? 'display : none;' : ''}">
+                                        첨부파일 1개당 크기는 10MB, 최대 5개 까지 업로드 가능합니다. <br>
+                                        exe, bat, cmd 등 일부 파일 확장자는 업로드 할 수 없습니다.
+                                    </div>
                                     <%-- 수정 모드: DB에서 불러온 기존 파일 직접 렌더 --%>
                                     <c:forEach items="${notice.fileList}" var="file">
                                         <c:set var="lowerName" value="${fn:toLowerCase(file.originalName)}" />
@@ -144,16 +149,14 @@
 
                 <div align="center" style="margin-top: 10px;">
                     <br>
-                    <c:choose>
-                        <c:when test="${not empty notice}">
-                            <button class="button-danger" type="button" onclick="history.back();">취소하기</button>
-                        </c:when>
-                        <c:otherwise>
-                            <button class="button-danger" type="reset">초기화</button>
-                        </c:otherwise>
-                    </c:choose>
+                    <button class="button-secondary" type="button" onclick="location.href='${pageContext.request.contextPath}/admin/notices'">
+                        목록으로
+                    </button>
+                    <button class="button-danger" type="reset">
+                        초기화
+                    </button>
                     <button class="button-primary" type="submit">
-                        ${not empty notice ? '수정완료' : '등록하기'}
+                        ${not empty notice ? "수정완료" : "등록하기"}
                     </button>
                 </div>
             </form>
@@ -248,7 +251,14 @@
                         idx += (typeof op.insert === 'string') ? op.insert.length : 1;
                     });
                     item.remove();
+
+                    if(uploadedFiles.length === 0 && document.querySelectorAll('.js-file-item').length === 0) {
+                        document.getElementById('file-upload-guide').style.display = 'block';
+                    }
                 };
+                // 파일 추가시 안내 문구 숨기기
+                document.getElementById("file-upload-guide").style.display = 'none';
+
                 item.appendChild(delBtn);
                 container.appendChild(item);
             }
@@ -296,6 +306,9 @@
                     const icon = file.type.startsWith('image/') ? '🖼️' : '📄';
                     addFileItemToList(icon + ' ' + file.name, file.fileId);
                 });
+
+                // 파일 추가시 안내 문구 숨기기
+                document.getElementById("file-upload-guide").style.display = 'none';
                 syncInputFiles();
             }
 
@@ -327,6 +340,10 @@
                         uploadedFiles = uploadedFiles.filter(f => f.fileId !== fileId);
                         item.remove();
                         syncInputFiles();
+
+                        if(uploadedFiles.length === 0 && document.querySelectorAll('.js-file-item').length === 0) {
+                            document.getElementById('file-upload-guide').style.display = 'block';
+                        }
                     };
                     item.appendChild(delBtn);
                 }
@@ -359,6 +376,12 @@
                 hidden.name = 'deleteFileIds';
                 hidden.value = fileId;
                 container.appendChild(hidden);
+
+                if(uploadedFiles.length === 0
+                && document.querySelectorAll('.js-file-item').length === 0
+                && document.querySelectorAll('.db-file-item').length === 0) {
+                    document.getElementById('file-upload-guide').style.display = 'block';
+                }
             }
             
         </script>

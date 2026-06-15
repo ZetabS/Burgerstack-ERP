@@ -22,10 +22,15 @@ public class StoreService {
     @Autowired
     private SqlSession sqlSession;
 
+
     @Transactional
     public int insertStore(Store store, String createStockYn) {
 
         int result = storeDao.insertStore(store);
+
+        if (result > 0) {
+            storeDao.insertStoreInventories(store.getStoreId());
+        }
 
         return result;
     }
@@ -84,8 +89,16 @@ public class StoreService {
         return storeDao.countStoreName(sqlSession, storeName);
     }
     
+    public int countStorePhone(String phone) {
+        return storeDao.countStorePhone(sqlSession, phone);
+    }
+    
     public int countStoreByOwnerUserNo(Long ownerUserNo) {
         return storeDao.countStoreByOwnerUserNo(sqlSession, ownerUserNo);
+    }
+    
+    public int countStorePhoneForUpdate(Store store) {
+        return storeDao.countStorePhoneForUpdate(sqlSession, store);
     }
     
 }

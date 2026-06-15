@@ -251,11 +251,14 @@
             </div>
 
             <div class="summary-card">
-                <div class="summary-title">오늘 입고 예정</div>
-                <div class="summary-count">${todayReceiptCount}<span>건</span></div>
-                <a href="${pageContext.request.contextPath}/owner/purchases?status=APPROVED&startDate=${today}&endDate=${today}"
-                   class="summary-link">입고 예정 바로가기 &gt;</a>
-            </div>
+			    <div class="summary-title">오늘 입고 예정</div>
+			    <div class="summary-count">${todayReceiptCount}<span>건</span></div>
+			
+			    <a href="${pageContext.request.contextPath}/owner/receipts/planned?status=ALL"
+			       class="summary-link">
+			        입고 예정 바로가기 &gt;
+			    </a>
+			</div>
 
             <div class="summary-card">
                 <div class="summary-title">승인 대기 발주</div>
