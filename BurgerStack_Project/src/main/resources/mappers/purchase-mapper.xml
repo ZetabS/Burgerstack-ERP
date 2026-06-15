@@ -70,7 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
             PO.PURCHASE_ORDER_ID AS purchaseOrderId,
             'P'
-            || TO_CHAR(PO.CREATED_AT,'YYYY')
+            || EXTRACT(YEAR FROM PO.CREATED_AT)
             || LPAD(PO.PURCHASE_ORDER_ID,4,'0')
             AS purchaseCode,
             PO.STORE_ID          AS storeId,
@@ -279,7 +279,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         P.PURCHASE_ORDER_ID,
 
         'P'
-        || TO_CHAR(P.CREATED_AT,'YYYY')
+        || EXTRACT(YEAR FROM P.CREATED_AT)
         || LPAD(P.PURCHASE_ORDER_ID,4,'0')
         AS PURCHASE_CODE,
 
@@ -301,7 +301,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         M.MATERIAL_ID,
 
         M.MATERIAL_TYPE
-        || TO_CHAR(P.CREATED_AT,'YYYY')
+        || EXTRACT(YEAR FROM M.CREATED_AT)
         || LPAD(M.MATERIAL_ID,4,'0')
         AS MATERIAL_CODE,
 

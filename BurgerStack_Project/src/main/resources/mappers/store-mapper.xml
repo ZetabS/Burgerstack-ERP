@@ -31,7 +31,6 @@
         INSERT INTO STORES
         (
             STORE_ID,
-            STORE_CODE,
             STORE_NAME,
             PHONE,
             ADDRESS,
@@ -42,7 +41,6 @@
         VALUES
         (
             #{storeId},
-            'S' || TO_CHAR(SYSDATE, 'YYYY') || LPAD(#{storeId}, 4, '0'),
             #{storeName},
             #{phone},
             #{address},
@@ -144,7 +142,7 @@
         <if test="keyword != null and keyword != ''">
             AND (
                 STORE_NAME LIKE '%' || #{keyword} || '%'
-                OR STORE_CODE LIKE '%' || #{keyword} || '%'
+                OR ('S' || EXTRACT(YEAR FROM CREATED_AT) || LPAD(STORE_ID, 4, '0')) LIKE '%' || #{keyword} || '%'
                 OR PHONE LIKE '%' || #{keyword} || '%'
                 OR ADDRESS LIKE '%' || #{keyword} || '%'
             )
@@ -195,7 +193,7 @@
         <if test="keyword != null and keyword != ''">
             AND (
                 STORE_NAME LIKE '%' || #{keyword} || '%'
-                OR STORE_CODE LIKE '%' || #{keyword} || '%'
+                OR ('S' || EXTRACT(YEAR FROM CREATED_AT) || LPAD(STORE_ID, 4, '0')) LIKE '%' || #{keyword} || '%'
                 OR PHONE LIKE '%' || #{keyword} || '%'
                 OR ADDRESS LIKE '%' || #{keyword} || '%'
             )
@@ -267,7 +265,9 @@
 
         SELECT
             STORE_ID AS storeId,
-            STORE_CODE AS storeCode,
+            'S'
+            || EXTRACT(YEAR FROM CREATED_AT)
+            || LPAD(STORE_ID, 4, '0') AS storeCode,
             STORE_NAME AS storeName,
             PHONE AS phone,
             ADDRESS AS address,

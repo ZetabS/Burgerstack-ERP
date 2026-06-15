@@ -176,7 +176,7 @@
             R.RECEIPT_ID AS receiptId,
 
             'R'
-            || TO_CHAR(R.RECEIVED_AT, 'YYYY')
+            || EXTRACT(YEAR FROM R.RECEIVED_AT)
             || LPAD(R.RECEIPT_ID, 4, '0') AS receiptCode,
 
             R.RECEIPT_MEMO AS receiptMemo,
@@ -460,11 +460,11 @@
             R.RECEIPT_ID AS receiptId,
 
             'R'
-            || TO_CHAR(R.RECEIVED_AT, 'YYYY')
+            || EXTRACT(YEAR FROM R.RECEIVED_AT)
             || LPAD(R.RECEIPT_ID, 4, '0') AS receiptCode,
 
             'P'
-            || TO_CHAR(PO.CREATED_AT, 'YYYY')
+            || EXTRACT(YEAR FROM PO.CREATED_AT)
             || LPAD(PO.PURCHASE_ORDER_ID, 4, '0') AS purchaseCode,
 
             R.RECEIPT_MEMO AS receiptMemo,
@@ -501,7 +501,7 @@
             resultType="com.kh.burgerstack.receipt.ReceiptItemDetail">
 
         SELECT
-            M.MATERIAL_CODE AS materialCode,
+            M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS materialCode,
             POI.MATERIAL_NAME_SNAPSHOT AS materialName,
             M.MATERIAL_TYPE AS materialType,
             POI.SUPPLY_PRICE_SNAPSHOT AS supplyPrice,
@@ -536,7 +536,7 @@
 
         SELECT
             POI.PURCHASE_ORDER_ITEM_ID AS purchaseOrderItemId,
-            M.MATERIAL_CODE AS materialCode,
+            M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS materialCode,
             M.MATERIAL_TYPE AS materialType,
             POI.MATERIAL_NAME_SNAPSHOT AS materialName,
 
