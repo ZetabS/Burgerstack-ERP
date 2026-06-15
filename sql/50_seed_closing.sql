@@ -1,0 +1,13 @@
+-- =========================================================
+-- 50_seed_closing.sql
+-- 역할:
+--   - 점포 마감 전용 시나리오 데이터 시딩
+-- 50. 점포 마감 시나리오 데이터
+-- 담당 범위:
+--   - STORE_CLOSINGS
+--   - STORE_CLOSING_ITEMS
+--   - 필요 시 INVENTORY_TRANSACTIONS 연계
+-- 작성 원칙:
+--   - BUSINESS_DATE 중복 금지
+--   - SYSTEM_QUANTITY / PHYSICAL_QUANTITY / DISPOSAL_QUANTITY 정합성 유지
+-- =========================================================
