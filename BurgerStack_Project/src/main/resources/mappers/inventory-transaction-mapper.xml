@@ -59,6 +59,7 @@
 
     <select id="findInventoryTransactionListItems">
         SELECT INVENTORY_TRANSACTION_ID
+             , 'T' || TO_CHAR(CREATED_AT, 'YYYY') || LPAD(INVENTORY_TRANSACTION_ID, 4, '0') AS INVENTORY_TRANSACTION_CODE
              , CASE WHEN TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
                     WHEN TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
                     WHEN TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
@@ -79,7 +80,7 @@
                                      , T.REASON
                                      , T.CREATED_AT
                                      , T.CREATED_BY
-                                     , U.USER_NAME AS CREATED_BY_NAME
+                                     , CASE WHEN U.ROLE = 'OWNER' THEN '점주 ' || U.USER_NAME ELSE U.USER_NAME END AS CREATED_BY_NAME
                                      , S.STORE_NAME
                                      , STORE_ID
                                   FROM INVENTORY_TRANSACTIONS T
@@ -121,18 +122,19 @@
     </select>
 
     <select id="getInventoryTransactionDetailById">
-        SELECT INVENTORY_TRANSACTION_ID
-             , CASE WHEN TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
-                    WHEN TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
-                    WHEN TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
+        SELECT T.INVENTORY_TRANSACTION_ID AS INVENTORY_TRANSACTION_ID
+             , 'T' || TO_CHAR(T.CREATED_AT, 'YYYY') || LPAD(T.INVENTORY_TRANSACTION_ID, 4, '0') AS INVENTORY_TRANSACTION_CODE
+             , CASE WHEN T.TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
+                    WHEN T.TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
+                    WHEN T.TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
                 END AS TRANSACTION_TYPE
              , T.REASON
              , T.TRANSACTION_MEMO
-             , T.CREATED_AT
-             , T.CREATED_BY
-             , U.USER_NAME AS CREATED_BY_NAME
-             , S.STORE_NAME
-             , STORE_ID
+             , T.CREATED_AT AS CREATED_AT
+             , T.CREATED_BY AS CREATED_BY
+             , CASE WHEN U.ROLE = 'OWNER' THEN '점주 ' || U.USER_NAME ELSE U.USER_NAME END AS CREATED_BY_NAME
+             , S.STORE_NAME AS STORE_NAME
+             , STORE_ID AS STORE_ID
           FROM INVENTORY_TRANSACTIONS T
           JOIN USERS U
           ON ( T.CREATED_BY = U.USER_NO )
@@ -146,6 +148,8 @@
              , BEFORE_QUANTITY
              , AFTER_QUANTITY - BEFORE_QUANTITY AS CHANGED_QUANTITY
              , AFTER_QUANTITY
+             , M.MATERIAL_CODE
+             , M.MATERIAL_TYPE
              , MATERIAL_NAME
              , INVENTORY_TRANSACTION_ID
              , STORE_INVENTORY_ID
@@ -153,8 +157,17 @@
           FROM INVENTORY_TRANSACTION_ITEMS
           JOIN STORE_INVENTORIES
          USING ( STORE_INVENTORY_ID )
-          JOIN MATERIALS
+          JOIN MATERIALS M
          USING ( MATERIAL_ID )
          WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
+         ORDER BY CASE M.MATERIAL_TYPE
+                    WHEN 'AF' THEN 1
+                    WHEN 'RF' THEN 2
+                    WHEN 'FF' THEN 3
+                    WHEN 'PK' THEN 4
+                    WHEN 'KW' THEN 5
+                    ELSE 6
+                  END,
+                  M.MATERIAL_CODE
     </select>
 </mapper>

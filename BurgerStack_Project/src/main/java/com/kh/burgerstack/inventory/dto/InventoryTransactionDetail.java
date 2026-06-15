@@ -16,6 +16,7 @@ import lombok.ToString;
 @ToString
 public class InventoryTransactionDetail {
     private Integer inventoryTransactionId;
+    private String inventoryTransactionCode;
     private String transactionType;
     private String reason;
     private String transactionMemo;
