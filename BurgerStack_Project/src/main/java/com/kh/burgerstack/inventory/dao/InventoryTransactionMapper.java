@@ -20,9 +20,12 @@ public interface InventoryTransactionMapper {
         public InventoryTransaction findById(
                         @Param("inventoryTransactionId") int inventoryTransactionId);
 
-        public int insertItems(
+        public InventoryTransactionItem findItemById(
+                        @Param("inventoryTransactionItemId") int inventoryTransactionItemId);
+
+        public int insertItem(
                         @Param("inventoryTransactionId") int inventoryTransactionId,
-                        @Param("list") List<InventoryTransactionItem> list);
+                        @Param("item") InventoryTransactionItem item);
 
         public List<InventoryTransactionItem> findItemsByTransactionId(
                         @Param("inventoryTransactionId") int inventoryTransactionId);

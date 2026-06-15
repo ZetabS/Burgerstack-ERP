@@ -32,24 +32,30 @@
          WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
     </select>
 
-    <insert id="insertItems">
+    <insert id="insertItem">
+        <selectKey keyProperty="item.inventoryTransactionItemId" resultType="int" order="BEFORE">
+            SELECT SEQ_INV_TX_ITEM.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO INVENTORY_TRANSACTION_ITEMS (
-              INVENTORY_TRANSACTION_ITEM_ID
-            , BEFORE_QUANTITY
-            , AFTER_QUANTITY
-            , INVENTORY_TRANSACTION_ID
-            , STORE_INVENTORY_ID
-        ) VALUES
-        <foreach collection="list" item="item" separator=",">
-        (
-              SEQ_INV_TX_ITEM.NEXTVAL
-            , #{item.beforeQuantity}
-            , #{item.afterQuantity}
-            , #{inventoryTransactionId}
-            , #{item.storeInventoryId}
-        )
-        </foreach>
+               INVENTORY_TRANSACTION_ITEM_ID
+             , BEFORE_QUANTITY
+             , AFTER_QUANTITY
+             , INVENTORY_TRANSACTION_ID
+             , STORE_INVENTORY_ID
+          ) VALUES (
+               #{item.inventoryTransactionItemId}
+             , #{item.beforeQuantity}
+             , #{item.afterQuantity}
+             , #{inventoryTransactionId}
+             , #{item.storeInventoryId}
+          )
     </insert>
+
+    <select id="findItemById">
+        SELECT *
+          FROM INVENTORY_TRANSACTION_ITEMS
+         WHERE INVENTORY_TRANSACTION_ITEM_ID = #{inventoryTransactionItemId}
+    </select>
 
     <select id="findItemsByTransactionId">
         SELECT *
