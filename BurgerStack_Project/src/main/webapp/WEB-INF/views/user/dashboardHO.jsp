@@ -57,7 +57,7 @@
         <table:Table isEmpty="${empty view.recentPurchaseOrderList}" emptyMessage="최근 발주 요청이 없습니다.">
           <jsp:attribute name="thead">
             <tr>
-              <th class="text-left">발주번호</th>
+              <th class="text-left">발주코드</th>
               <th class="text-left">점포명</th>
               <th class="text-right">금액</th>
               <th class="text-left">상태</th>
