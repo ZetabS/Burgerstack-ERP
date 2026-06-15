@@ -114,7 +114,7 @@ h1 {
 
 				<form
 					action="/burgerstack/owner/inquiries/new"
-					method="post" enctype="multipart/form-data">
+					method="post">
 					<div class="form-group">
 						<input type="text" name="title" class="input-title"
 							placeholder="제목을 입력해주세요." required>
@@ -130,10 +130,6 @@ h1 {
 							onclick="location.href='/burgerstack/admin/dashboard'">
 							이전으로</button>
 					</div>
-				    <div class="file-area">
-				        <label>첨부파일</label>
-				        <input type="file" name="uploadFile">
-				    </div>
 				</form>
 			</div>
 		</div>

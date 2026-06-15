@@ -63,7 +63,6 @@ public class InquiryControllerBO {
 	// 문의사항 등록 기능
 	@PostMapping("inquiries/new")
 	public String InquiryEnroll(Inquiry inquiry,
-	                            @RequestParam("uploadFile") MultipartFile uploadFile,
 	                            HttpSession session) {
 
 	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
@@ -74,7 +73,7 @@ public class InquiryControllerBO {
 	        return "redirect:/auth/login";
 	    }
 
-	    inquiryServiceBO.InquiryEnroll(inquiry, uploadFile);
+	    inquiryServiceBO.InquiryEnroll(inquiry);
 
 	    return "redirect:/owner/inquiries";
 	}

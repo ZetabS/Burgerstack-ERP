@@ -33,13 +33,13 @@
   - view.pageInfo : <t:pagination>에 전달할 PageInfo
 --%>
 
-<c:url var="baseUrl" value="/burgerstack/owner/inquiries" />
+<c:url var="baseUrl" value="/example/patterns/list" />
 
 <t:layout>
-  <layout:ListPage title="문의사항 목록 페이지" description="">
+  <layout:ListPage title="목록 페이지 패턴" description="필터, 검색, 테이블, 페이지네이션을 포함한 표준 목록 화면 예제입니다.">
     <jsp:attribute name="actions">
       <%-- actions 슬롯은 페이지 헤더 오른쪽에 배치됩니다. 초기화, 등록, 다운로드 같은 페이지 단위 액션을 둡니다. --%>
-      <a href="${baseUrl}" class="btn btn-secondary">목록으로</a>
+      <a href="${baseUrl}" class="btn btn-secondary">초기화</a>
     </jsp:attribute>
 
     <jsp:attribute name="toolbar">
@@ -56,33 +56,35 @@
 
         <layout:Toolbar>
           <jsp:attribute name="left">
-		    <select name="condition" class="form-control mr-2">
-		
-		        <option value="title"
-		            ${condition == 'title' ? 'selected' : ''}>
-		            제목
-		        </option>
-		
-		        <option value="content"
-		            ${condition == 'content' ? 'selected' : ''}>
-		            내용
-		        </option>
-		
-		        <option value="inquiryId"
-		            ${condition == 'inquiryId' ? 'selected' : ''}>
-		            글번호
-		        </option>
-		
-		    </select>
-            
+            <%--
+              left 슬롯은 필터 그룹입니다.
+              select는 일반 HTML을 그대로 사용하고, 도메인 라벨만 display 태그로 통일합니다.
+            --%>
+            <select name="materialType" class="form-control mr-2 js-submit-on-change">
+              <option value="">전체 유형</option>
+              <c:forEach var="type" items="${view.materialTypes}">
+                <option value="${type}" ${view.condition.materialType eq type ? 'selected' : ''}>
+                  <display:MaterialTypeLabel value="${type}" />
+                </option>
+              </c:forEach>
+            </select>
+
+            <%--
+              체크박스는 Bootstrap form-check에 ds-toolbar-checkbox를 추가합니다.
+              ds-toolbar-checkbox는 체크박스와 라벨의 수직 중앙 정렬만 보정하는 디자인 시스템 hook입니다.
+            --%>
+            <div class="form-check ds-toolbar-checkbox">
+              <input class="form-check-input js-submit-on-change" type="checkbox" name="belowSafetyStock" value="true" id="example-below-safety" ${view.condition.belowSafetyStock ? 'checked' : ''} />
+              <label class="form-check-label" for="example-below-safety">안전재고 미만</label>
+            </div>
           </jsp:attribute>
 
-          <jsp:attribute name="right">          
+          <jsp:attribute name="right">
             <%--
               right 슬롯은 검색바나 주요 보조 액션을 둡니다.
               SearchBar는 input-group과 submit 버튼 조합만 표준화합니다.
             --%>
-            <common:SearchBar name="keyword" value="${keyword}" placeholder="검색" />
+            <common:SearchBar name="materialName" value="${view.condition.materialName}" placeholder="자재명 검색" />
           </jsp:attribute>
         </layout:Toolbar>
       </form>
@@ -93,19 +95,23 @@
         table:Table은 thead와 tbody를 명시적으로 받습니다.
         isEmpty를 넘기면 tbody 대신 emptyMessage가 표시됩니다.
       --%>
-      <table:Table isEmpty="${empty inquiryList}" emptyMessage="조회된 문의사항이 없습니다.">
+      <table:Table isEmpty="${empty view.list}" emptyMessage="예제 데이터가 없습니다.">
         <jsp:attribute name="thead">
           <tr>
-            <th class="text-center">No</th>
-            <th class="text-right">제목</th>
-            <th class="text-right">등록일</th>
-            <th class="text-center">답변상태</th>
+            <th>자재 코드</th>
+            <th>자재명</th>
+            <th class="text-center">자재 유형</th>
+            <th class="text-right">현재 수량</th>
+            <th class="text-right">안전재고 수량</th>
+            <th class="text-right">예상 금액</th>
+            <th class="text-right">최근 입고일</th>
+            <th class="text-center">작업</th>
           </tr>
         </jsp:attribute>
 
         <jsp:attribute name="tbody">
-          <c:forEach var="inq" items="${inquiryList}">
-            <c:url var="detailUrl" value="${pageContext.request.contextPath}/owner/inquiries/${inq.inquiryId}" />
+          <c:forEach var="item" items="${view.list}">
+            <c:url var="detailUrl" value="/example/patterns/detail" />
             <c:url var="formUrl" value="/example/patterns/form" />
 
             <%--
@@ -113,10 +119,16 @@
               버튼 셀과 함께 쓰는 경우에는 행 클릭 정책이 업무 화면과 충돌하지 않는지 확인하세요.
             --%>
             <table:TableRow clickable="true" href="${detailUrl}">
-              <table:TextFitCell value="${inq.inquiryId}" />
-              <table:TextCell value="${inq.title}" />
-              <table:DateTimeCell value="${inq.createdAt}" />
-              <table:TextCell value="${inq.title}" />
+              <table:TextFitCell value="${item.materialCode}" />
+              <table:TextCell value="${item.materialName}" />
+              <table:FitCell>
+                <display:MaterialTypeLabel value="${item.materialType}" />
+              </table:FitCell>
+              <table:NumberCell value="${item.currentQuantity}" />
+              <table:NumberCell value="${item.safetyQuantity}" />
+              <table:MoneyCell value="${item.estimatedAmount}" suffix="원" />
+              <table:DateCell value="${item.lastReceivedDate}" />
+              <table:ActionLinkCell href="${formUrl}">수정</table:ActionLinkCell>
             </table:TableRow>
           </c:forEach>
         </jsp:attribute>
