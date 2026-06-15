@@ -120,6 +120,14 @@ public class StoreDao {
 		);
 	}
     
+    public int countStorePhone(SqlSession sqlSession, String phone) {
+
+        return sqlSession.selectOne(
+                "storeMapper.countStorePhone",
+                phone
+        );
+    }
+    
     public int countStoreByOwnerUserNo(SqlSession sqlSession,
 		            Long ownerUserNo) {
 		
@@ -127,6 +135,27 @@ public class StoreDao {
 					"storeMapper.countStoreByOwnerUserNo",
 					ownerUserNo
 		);
-}
+    }
+    
+    public int insertStoreInventories(Long storeId) {
+        return sqlSessionTemplate.insert(
+                "storeMapper.insertStoreInventories",
+                storeId
+        );
+    }
+    
+    public int insertMissingStoreInventoriesForOpenStores() {
+        return sqlSessionTemplate.insert(
+                "storeMapper.insertMissingStoreInventoriesForOpenStores"
+        );
+    }
+    
+    public int countStorePhoneForUpdate(SqlSession sqlSession, Store store) {
+
+        return sqlSession.selectOne(
+                "storeMapper.countStorePhoneForUpdate",
+                store
+        );
+    }
 }
 

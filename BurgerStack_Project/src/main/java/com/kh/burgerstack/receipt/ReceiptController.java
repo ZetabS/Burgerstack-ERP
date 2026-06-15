@@ -114,19 +114,42 @@ public class ReceiptController {
 	 	// 입고 예정 목록 조회 - 점주
 	    @GetMapping("/owner/receipts/planned")
 	    public String planned(@RequestParam(required = false, defaultValue = "") String status,
+	                          @RequestParam(required = false, defaultValue = "") String startDate,
+	                          @RequestParam(required = false, defaultValue = "") String endDate,
+	                          @RequestParam(required = false, defaultValue = "") String keyword,
 	                          PagingRequest pagingRequest,
 	                          HttpServletRequest request,
 	                          Model model) {
 	
-	        PageInfo pageInfo = receiptService.getPlanPageInfo(pagingRequest, status);
+	        PageInfo pageInfo =
+	                receiptService.getPlanPageInfo(
+	                        pagingRequest,
+	                        status,
+	                        startDate,
+	                        endDate,
+	                        keyword
+	                );
 	
 	        if (pageInfo.isCurrentPageOutOfRange()) {
-	            return "redirect:/owner/receipts/planned?status=" + status;
+	            return "redirect:/owner/receipts/planned"
+	                    + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
 	        }
 	
 	        model.addAttribute("pageInfo", pageInfo);
 	        model.addAttribute("status", status);
-	        model.addAttribute("list", receiptService.selectReceiptPlanList(pagingRequest, status));
+	        model.addAttribute("startDate", startDate);
+	        model.addAttribute("endDate", endDate);
+	        model.addAttribute("keyword", keyword);
+	
+	        model.addAttribute("list",
+	                receiptService.selectReceiptPlanList(
+	                        pagingRequest,
+	                        status,
+	                        startDate,
+	                        endDate,
+	                        keyword
+	                )
+	        );
 	
 	        return "receipt/receiptPlanList";
 	    }
