@@ -5,7 +5,7 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/dashboard.css" />
 
-<t:layout headerTitle="관리자 대시보드">
+<t:layout>
   <div class="dashboard-wrap">
     <div class="summary-grid">
       <div class="summary-card">
