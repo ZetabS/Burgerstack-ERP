@@ -1,59 +1,38 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<c:url var="inventoryListUrl" value="/owner/inventories" />
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<c:url var="baseUrl" value="/owner/inventories" />
 <c:url var="editAction" value="/owner/inventories/${detail.inventoryId}" />
 
 <t:layout>
-  <div class="outer container py-4">
-    <h2 class="mb-4">안전재고 조정</h2>
+  <layout:Page title="안전재고 조정">
+    <jsp:attribute name="actions">
+      <common:ReturnLink href="${baseUrl}">목록으로</common:ReturnLink>
+    </jsp:attribute>
 
-    <form action="${editAction}" method="post">
-      <div class="card mb-4">
-        <div class="card-header">재고 정보</div>
+    <jsp:body>
+      <form action="${editAction}" method="post">
+        <layout:Section title="기본 정보">
+          <common:FieldList>
+            <layout:FieldRow label="자재명">${detail.materialName}</layout:FieldRow>
+            <layout:FieldRow label="현재 수량">${detail.currentQuantity}</layout:FieldRow>
+            <layout:FieldRow label="안전재고 수량">${detail.safetyQuantity}</layout:FieldRow>
+          </common:FieldList>
+        </layout:Section>
 
-        <div class="card-body">
-          <div class="row mb-3">
-            <div class="col-sm-3 fw-bold">자재명</div>
-            <div class="col-sm-9">${detail.materialName}</div>
-          </div>
-
-          <div class="row mb-3">
-            <div class="col-sm-3 fw-bold">현재 수량</div>
-            <div class="col-sm-9">${detail.currentQuantity}</div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3 fw-bold">안전재고 수량</div>
-            <div class="col-sm-9">${detail.safetyQuantity}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card mb-4">
-        <div class="card-header">안전재고 입력</div>
-
-        <div class="card-body">
-          <div class="mb-3">
-            <label for="safetyQuantity" class="form-label">안전재고 수량</label>
+        <layout:Section title="안전재고 입력">
+          <layout:FieldRow label="안전재고 수량" inputId="safetyQuantity">
             <input type="number" class="form-control" id="safetyQuantity" name="safetyQuantity" value="${detail.safetyQuantity}" min="0" required />
-          </div>
-        </div>
-      </div>
+          </layout:FieldRow>
+        </layout:Section>
 
-      <div class="d-flex justify-content-end">
-        <a href="${inventoryListUrl}" class="btn btn-secondary mr-2 back-to-list-btn">목록으로</a>
-        <button type="submit" class="btn btn-primary">저장</button>
-      </div>
-    </form>
-  </div>
+        <common:Actions>
+          <common:ReturnLink href="${baseUrl}">목록으로</common:ReturnLink>
+          <button type="submit" class="btn btn-primary">저장</button>
+        </common:Actions>
+      </form>
+    </jsp:body>
+  </layout:Page>
 </t:layout>
-<script>
-  $(".back-to-list-btn").on("click", (e) => {
-    const listUrl = sessionStorage.getItem("inventoryListUrl");
-    if (listUrl) {
-      e.preventDefault();
-      window.location.href = listUrl;
-    }
-  });
-</script>

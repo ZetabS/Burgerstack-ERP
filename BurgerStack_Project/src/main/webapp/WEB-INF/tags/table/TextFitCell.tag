@@ -2,6 +2,6 @@
 <%@ attribute name="value" required="true" type="java.lang.String" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<td class="data-table__col-fit">
+<td class="ds-table__col-fit">
   <c:out value="${value}" />
 </td>

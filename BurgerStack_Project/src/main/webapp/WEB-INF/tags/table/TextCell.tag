@@ -2,6 +2,6 @@
 <%@ attribute name="value" required="true" type="java.lang.String" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<td class="data-table__text-cell text-truncate">
+<td class="ds-table__text-cell text-truncate">
   <c:out value="${value}" />
 </td>

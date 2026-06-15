@@ -25,6 +25,6 @@
   </c:when>
 </c:choose>
 
-<span class="badge badge-${variant}">
+<span class="ds-display-badge badge badge-${variant}">
   <display:PurchaseStatusLabel value="${value}" />
 </span>
