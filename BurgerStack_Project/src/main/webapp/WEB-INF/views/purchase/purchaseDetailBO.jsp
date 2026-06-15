@@ -2,202 +2,221 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<title>발주 상세 조회</title>
+<title>목록상세보기</title>
 <style>
-    table.table2 tbody tr:hover {
-        background-color: #f5f5f5;
-    }
-    .content-top{
-        display: flex;
-    }
-    .top-info {
-        text-align: left;
-        width: 200px;
-    }
-    .top-info div{
-        padding: 5px;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-    }
-    th {
-        background: #19c765;
-        color: white;
-        padding: 14px;
-        text-align: center;
-        font-weight: bold;
-    }
-    td {
-        padding: 14px;
-        border-bottom: 1px solid #e5e7eb;
-        text-align: center;
-    }
-    .info-table th {
-        width: 180px;
-    }
-
-    .info-table td {
-        text-align: left;
-        padding-left: 20px;
-    }
-    td h6 {
-        margin: 0;
-    }
-    h6 .badge {
-        font-size: 0.8em;
-        padding: 0.25em 0.4em;
-        margin: 0;
-    }
-    .bg-secondary {
-        color: #ffffff !important;
-    }
-    .bg-success {
-        color: #ffffff !important;
-    }
-    .bg-danger {
-        color: #ffffff !important;
-    }
-    .bg-info {
-        color: #ffffff !important;
-    }
-    .bg-warning {
-        color: #ffffff !important;
+    .button-area{
+        margin:5px;
     }
 </style>
-
 <!-- 레이아웃 작업 -->
 <t:layout>
-<div class="outer">
-    <h2>발주 상세 보기</h2>
 
-    <table class="info-table">
-        <tr>
-            <th>발주코드</th>
-            <td>${list[0].purchaseCode}</td>
-            <th>상태</th>
-            <td>
-                <c:choose>
-                    <c:when test="${list[0].status eq 'REQUESTED'}">
-                        <h6><span class="badge bg-secondary">요청중</span></h6>
-                    </c:when>
-                    <c:when test="${list[0].status eq 'PARTIALLY_APPROVED'}">
-                        <h6><span class="badge bg-success">부분승인</span></h6>
-                    </c:when>
-                    <c:when test="${list[0].status eq 'APPROVED'}">
-                        <h6><span class="badge bg-success">승인</span></h6>
-                    </c:when>
-                    <c:when test="${list[0].status eq 'CANCELED'}">
-                        <h6><span class="badge bg-danger">발주취소</span></h6>
-                    </c:when>
-                    <c:when test="${list[0].status eq 'REJECTED'}">
-                        <h6><span class="badge bg-danger">반려</span></h6>
-                    </c:when>
-                    <c:when test="${list[0].status eq 'RECEIVED'}">
-                        <h6><span class="badge bg-info">입고완료</span></h6>
-                    </c:when>
-                    <c:otherwise>
-                        <h6><span class="badge bg-warning">배송중</span></h6>
-                    </c:otherwise>
-                </c:choose>
-            </td>
-        </tr>
-        <tr>
-            <th>비고</th>
-            <td colspan="3">${list[0].orderMemo}</td>    
-        </tr>
-    </table>
+<layout:Page
+    title="발주 상세 보기"
+    description="발주 상세 정보를 조회합니다.">
 
-    <br>
+    <jsp:body>
 
-    <h3>요청 품목</h3>
-    <table class="table2">
-        <thead>
-            <tr>
-                <th>자재 코드</th>
-                <th>자재 유형</th>
-                <th>자재명</th>
-                <th>재고 수량</th>
-                <th>요청 수량</th>
-                <th>공급가</th>
-                <th>자재별 금액</th>
-            </tr>
-        </thead>
-        <tbody>
-            <c:forEach var="item" items="${list}">
-                <tr class="item-row ${item.status eq 'REQUESTED' ? '' : 'disabled-row'}">
-                    <td>${item.materialCode}</td>
+        <layout:Section
+            title="발주 정보"
+            description="발주 기본 정보를 조회합니다.">
 
-                    <td class="item-type">
-                        <c:choose>
-                            <c:when test="${item.materialType eq 'AF'}">상온</c:when>
-                            <c:when test="${item.materialType eq 'RF'}">냉장</c:when>
-                            <c:when test="${item.materialType eq 'FF'}">냉동</c:when>
-                            <c:when test="${item.materialType eq 'PK'}">건자재</c:when>
-                            <c:when test="${item.materialType eq 'KW'}">주방용품</c:when>
-                            <c:when test="${item.materialType eq 'ET'}">기타</c:when>
-                            <c:otherwise>${item.materialType}</c:otherwise>
-                        </c:choose>
-                    </td>
+            <common:FieldList>
 
-                    <td>${item.materialName}</td>
+                <layout:FieldRow label="발주코드">
+                    ${list[0].purchaseCode}
+                </layout:FieldRow>
 
-                    <td>${item.currentQuantity}</td>
+                <layout:FieldRow label="상태">
 
-                    <td>${item.requestQuantity}</td>
+                    <display:PurchaseStatusBadge
+                        value="${list[0].status}" />
 
-                    <td class="comma-number">${item.supplyPriceSnapshot}</td>
+                </layout:FieldRow>
 
-                    <td class="comma-number">
-                        <c:set var="rowTotal" value="${item.requestQuantity * item.supplyPriceSnapshot}" />
-                        ${rowTotal}
-                    </td>
-                </tr>
-            </c:forEach>
-        </tbody>
-    </table>
+                <layout:FieldRow label="점포명">
+                    ${list[0].storeName}
+                </layout:FieldRow>
 
-    <br><br>
+                <layout:FieldRow label="요청자">
+                    ${list[0].userName}
+                    (${list[0].role eq 'OWNER'
+                        ? '점주'
+                        : (list[0].role eq 'ADMIN'
+                            ? '관리자'
+                            : list[0].role)})
+                </layout:FieldRow>
 
-    <div class="bottom-area" >
-        <div class="total-price-area">
-            <div>총 결제금액</div>
+                <layout:FieldRow label="요청일시">
+                    ${list[0].createdAt.toString().replace('T',' ')}
+                </layout:FieldRow>
+
+                <layout:FieldRow label="비고">
+                    ${empty list[0].orderMemo ? '-' : list[0].orderMemo}
+                </layout:FieldRow>
+
+            </common:FieldList>
+
+        </layout:Section>
+
+        <br>
+
+        <layout:TableSection
+            title="요청 품목"
+            description="발주된 자재 목록입니다.">
+                <table:Table
+                isEmpty="${empty list}"
+                emptyMessage="조회된 품목이 없습니다.">
+
+                <jsp:attribute name="thead">
+
+                    <tr>
+                        <th>자재코드</th>
+                        <th>자재유형</th>
+                        <th>자재명</th>
+                        <th>재고수량</th>
+                        <th>요청수량</th>
+
+                        <c:if test="${list[0].status eq 'APPROVED'
+                                || list[0].status eq 'PARTIALLY_APPROVED'
+                                || list[0].status eq 'REJECTED'}">
+
+                            <th>승인수량</th>
+                            <th>반려수량</th>
+                            <th>반려사유</th>
+
+                        </c:if>
+
+                        <th>공급가</th>
+                        <th>자재별 금액</th>
+
+                    </tr>
+
+                </jsp:attribute>
+
+                <jsp:attribute name="tbody">
+
+                    <c:forEach var="item" items="${list}">
+
+                        <table:TableRow>
+
+                            <table:TextFitCell
+                                value="${item.materialCode}" />
+
+                            <table:FitCell>
+
+                                <display:MaterialTypeLabel
+                                    value="${item.materialType}" />
+
+                            </table:FitCell>
+
+                            <table:TextCell
+                                value="${item.materialName}" />
+
+                            <table:NumberCell
+                                value="${item.currentQuantity}" />
+
+                            <table:NumberCell
+                                value="${item.requestQuantity}" />
+
+                            <c:if test="${list[0].status eq 'APPROVED'
+                                    || list[0].status eq 'PARTIALLY_APPROVED'
+                                    || list[0].status eq 'REJECTED'}">
+
+                                <table:NumberCell
+                                    value="${item.approvedQuantity}" />
+
+                                <table:NumberCell
+                                    value="${item.requestQuantity - item.approvedQuantity}" />
+
+                                <table:TextCell
+                                    value="${empty item.rejectReason ? '-' : item.rejectReason}" />
+
+                            </c:if>
+
+                            <table:MoneyCell
+                                value="${item.supplyPriceSnapshot}"
+                                suffix="원" />
+
+                            <table:MoneyCell
+                                value="${item.requestQuantity * item.supplyPriceSnapshot}"
+                                suffix="원" />
+
+                        </table:TableRow>
+
+                    </c:forEach>
+
+                </jsp:attribute>
+
+                
+
+            </table:Table>
+
+        </layout:TableSection>
+
+        <layout:Section
+            title="결제 정보">
+
             <c:set var="total" value="0"/>
+
             <c:forEach var="item" items="${list}">
-                <c:set var="rowTotal" value="${item.requestQuantity * item.supplyPriceSnapshot}" />
-                <c:set var="total" value="${total + rowTotal}" />
+                <c:set var="total"
+                    value="${total + item.totalPrice}"/>
             </c:forEach>
-            <h2><span class="comma-number">${total}</span>원</h2>
-        </div>
 
-        <div class="button-group" style="display:flex; gap:10px; align-items:center;">
-            <button type="button" class="button-secondary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
-            <c:if test="${list[0].status eq 'REQUESTED'}">
+            
+            <h3>
+                총 결제금액 :
+                <fmt:formatNumber value="${total}" pattern="#,###"/>원
+            </h3>
 
-                <button class="button-primary"
-                        onclick="location.href='${pageContext.request.contextPath}/owner/purchases/${list[0].purchaseOrderId}/edit'">
-                    수정
+        </layout:Section>
+
+        <common:Actions>
+
+            <div class="button-area">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        onclick="location.href='${pageContext.request.contextPath}/owner/purchases'">
+                    목록
                 </button>
+            </div>
+            
+                <c:if test="${list[0].status eq 'REQUESTED'}">
+                    <div class="button-area">
+                        <button class="btn btn-primary"
+                                onclick="location.href='${pageContext.request.contextPath}/owner/purchases/${list[0].purchaseOrderId}/edit'">
+                            수정
+                        </button>
+                    </div>
+                    <div class="button-area">
+                        <form action="${pageContext.request.contextPath}/owner/purchases/${list[0].purchaseOrderId}/cancel"
+                            method="post">
 
-                <form action="${pageContext.request.contextPath}/owner/purchases/${list[0].purchaseOrderId}/cancel"
-                    method="post">
+                            <button class="btn btn-danger"
+                                    type="submit"
+                                    onclick="return confirm('발주를 취소하시겠습니까?')">
+                                발주 취소
+                            </button>
 
-                    <button class="button-danger"
-                            type="submit"
-                            onclick="return confirm('발주를 취소하시겠습니까?')">
-                        발주 취소
-                    </button>
+                        </form>
+                    </div>
+                </c:if>
+            </div>
+        </common:Actions>
 
-                </form>
+    </jsp:body>
 
-            </c:if>
-        </div>
-    </div>
-</div>
+</layout:Page>
+
 </t:layout>
-
 <script>
     // 금액 포멧팅
     // 클래스가 'comma-number'인 모든 태그 선택

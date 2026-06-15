@@ -2,8 +2,17 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <title>발주 수정 페이지</title>
 <style>
+    .button-area{
+        margin:5px;
+    }
     .disabled-row {
         opacity: 0.5;
         pointer-events: none;
@@ -31,106 +40,150 @@
 </style>
 <!-- 레이아웃 작업 -->
 <t:layout>
-<div class="outer">
-    <h2>발주 수정</h2>
+
+<layout:Page
+    title="발주 수정"
+    description="기존 발주 내역을 수정합니다.">
 
     <form action="${pageContext.request.contextPath}/owner/purchases/${purchase.purchaseOrderId}/edit" method="post">
         <!-- 검색 / 필터 -->
-        <div class="search-area" align="rignt">
-            <select id="typeFilter">
-                <option hidden selected disabled>자재 유형</option>
-                <option value="">전체</option>
-                <option value="상온">상온</option>
-                <option value="냉장">냉장</option>
-                <option value="냉동">냉동</option>
-                <option value="건자재">건자재</option>
-                <option value="주방용품">주방용품</option>
-                <option value="기타">기타</option>
-            </select>
+        <layout:Section
+            title="검색 조건"
+            description="자재 유형 및 자재명을 기준으로 조회합니다.">
 
-            <input type="text" placeholder="검색어 입력" id="keyword">
-        </div>
+            <div class="d-flex justify-content-end align-items-center">
 
-        <table class="table2 main-table">
-            <thead>
-                <tr>
-                    <th>
-                        <div class="check-all" onclick="toggleCheckSaftyQty()">선택</div>
-                    </th>
-                    <th>자재 유형</th>
-                    <th>자재명</th>
-                    <th>공급가</th>
-                    <th>재고 수량</th>
-                    <th>안전재고 수량</th>
-                    <th>요청 수량</th>
-                    <th>자재별 금액</th>
-                </tr>
-            </thead>
+                <select id="typeFilter"
+                        class="form-control mr-2"
+                        style="width:160px;">
 
-            <tbody>
-                <c:forEach var="m" items="${materialList}">
+                    <option hidden selected disabled>
+                        자재 유형
+                    </option>
 
-                    <c:set var="qty" value="0"/>
-                    <c:set var="checked" value="false"/>
+                    <option value="">전체</option>
+                    <option value="상온">상온</option>
+                    <option value="냉장">냉장</option>
+                    <option value="냉동">냉동</option>
+                    <option value="건자재">건자재</option>
+                    <option value="주방용품">주방용품</option>
+                    <option value="기타">기타</option>
 
-                    <c:forEach var="p" items="${purchase.items}">
-                        <c:if test="${p.materialId eq m.materialId}">
-                            <c:set var="qty" value="${p.requestQuantity}"/>
-                            <c:set var="checked" value="true"/>
-                        </c:if>
-                    </c:forEach>
+                </select>
 
-                    <tr class="item-row ${m.status eq 'ACTIVE' ? '' : 'disabled-row'}" data-id="${m.materialId}">
-                        <td>
-                            <input type="checkbox" class="row-check" ${checked ? 'checked="checked"' : ''}>
-                        </td>
-                        <td class="item-type">
-                            <c:choose>
-                                <c:when test="${m.materialType eq 'AF'}">상온</c:when>
-                                <c:when test="${m.materialType eq 'RF'}">냉장</c:when>
-                                <c:when test="${m.materialType eq 'FF'}">냉동</c:when>
-                                <c:when test="${m.materialType eq 'PK'}">건자재</c:when>
-                                <c:when test="${m.materialType eq 'KW'}">주방용품</c:when>
-                                <c:when test="${m.materialType eq 'ET'}">기타</c:when>
-                                <c:otherwise>${m.materialType}</c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td class="item-name">${m.materialName}</td>
-                        <td class="unit-price comma-number" data-price="${m.supplyPrice}">
-                            ${m.supplyPrice}
-                        </td>
-                        <td class="stock">${m.currentQuantity}</td>
-                        <td class="safety-stock">${m.safetyQuantity}</td>
-                        <td>
-                            <input type="number"
-                                class="qty-input"
-                                value="${qty}"
-                                min="0"
-                                max="1000">
-                        </td>
-                        <td class="total-price">0</td>
+                <input type="text"
+                    id="keyword"
+                    class="form-control"
+                    style="width:250px;"
+                    placeholder="자재명 검색">
+
+                <button type="button"
+                        class="btn btn-secondary ml-2"
+                        onclick="resetFilter()">
+                    필터 초기화
+                </button>
+
+            </div>
+
+        </layout:Section>
+
+        <layout:TableSection
+            title="발주 수정 목록"
+            description="수정할 품목과 수량을 선택하세요.">
+            <table class="table2 main-table">
+                <thead>
+                    <tr>
+                        <th>
+                            <div class="check-all" onclick="toggleCheckSaftyQty()">선택</div>
+                        </th>
+                        <th>자재 유형</th>
+                        <th>자재명</th>
+                        <th>공급가</th>
+                        <th>재고 수량</th>
+                        <th>안전재고 수량</th>
+                        <th>요청 수량</th>
+                        <th>자재별 금액</th>
                     </tr>
-                </c:forEach>
-                <tr>
-                    <td colspan="2">총 금액</td>
-                    <td colspan="5"></td>
-                    <td>
-                        <h3 class="main-total-amount">0원</h3>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                </thead>
 
+                <tbody>
+                    <c:forEach var="m" items="${materialList}">
+
+                        <c:set var="qty" value="0"/>
+                        <c:set var="checked" value="false"/>
+
+                        <c:forEach var="p" items="${purchase.items}">
+                            <c:if test="${p.materialId eq m.materialId}">
+                                <c:set var="qty" value="${p.requestQuantity}"/>
+                                <c:set var="checked" value="true"/>
+                            </c:if>
+                        </c:forEach>
+
+                        <tr class="item-row ${m.status eq 'ACTIVE' ? '' : 'disabled-row'}" data-id="${m.materialId}">
+                            <td>
+                                <input type="checkbox" class="row-check" ${checked ? 'checked="checked"' : ''}>
+                            </td>
+                            <td class="item-type">
+                                <c:choose>
+                                    <c:when test="${m.materialType eq 'AF'}">상온</c:when>
+                                    <c:when test="${m.materialType eq 'RF'}">냉장</c:when>
+                                    <c:when test="${m.materialType eq 'FF'}">냉동</c:when>
+                                    <c:when test="${m.materialType eq 'PK'}">건자재</c:when>
+                                    <c:when test="${m.materialType eq 'KW'}">주방용품</c:when>
+                                    <c:when test="${m.materialType eq 'ET'}">기타</c:when>
+                                    <c:otherwise>${m.materialType}</c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="item-name">${m.materialName}</td>
+                            <td class="unit-price comma-number" data-price="${m.supplyPrice}">
+                                ${m.supplyPrice}
+                            </td>
+                            <td class="stock">${m.currentQuantity}</td>
+                            <td class="safety-stock">${m.safetyQuantity}</td>
+                            <td>
+                                <input type="number"
+                                    class="qty-input"
+                                    value="${qty}"
+                                    min="0"
+                                    max="1000">
+                            </td>
+                            <td class="total-price">0</td>
+                        </tr>
+                    </c:forEach>
+                    <tr>
+                        <td colspan="2">총 금액</td>
+                        <td colspan="5"></td>
+                        <td>
+                            <h3 class="main-total-amount">0원</h3>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </layout:TableSection>
         <input type="hidden" name="itemsJson" id="itemsJson">
 
-        <br>
+        <common:Actions>
 
-        
+            <div class="button-area">
+                <button type="button"
+                        class="btn btn-secondary"
+                        onclick="location.href='${pageContext.request.contextPath}/owner/purchases'">
 
-        <div class="middle-area">
-            <button type="button" class="button-secondary" onclick="location.href = '${pageContext.request.contextPath}/owner/purchases'"> 목록 </button>
-            <button type="button" class="button-primary" onclick="openSidebar()"> 저장 </button>
-        </div>
+                    목록
+
+                </button>
+            </div>
+            
+            <div class="button-area">
+                <button type="button"
+                        class="btn btn-primary"
+                        onclick="openSidebar()">
+
+                    저장
+
+                </button>
+            </div>
+        </common:Actions>
 
 
         <!-- 사이드 바 -->
@@ -192,10 +245,10 @@
         </t:sidebar>
 
 
-
     </form>
-    
-</div>
+
+</layout:Page>
+
 </t:layout>
 
 
@@ -533,29 +586,42 @@ $('form').on('keydown', function(e) {
 });
 
 // 필터링 함수
+$('#keyword').on('input', function() {
+    filterMaterials();
+});
+
 function filterMaterials() {
 
-    let selectedType =
-        $('#typeFilter').val().trim();
+    const selectedType =
+        $('#typeFilter').val() || '';
 
-    let keyword =
-        $('#keyword').val().trim().toLowerCase();
+    const keyword =
+        $('#keyword')
+            .val()
+            .trim()
+            .toLowerCase();
 
     $('.item-row').each(function() {
 
-        let $row = $(this);
+        const $row = $(this);
 
-        let materialType =
-            $row.find('.item-type').text().trim();
+        const materialType =
+            $row.find('.item-type')
+                .text()
+                .trim();
 
-        let materialName =
-            $row.find('.item-name').text().trim().toLowerCase();
+        const materialName =
+            $row.find('.item-name')
+                .text()
+                .trim()
+                .toLowerCase();
 
-        let typeMatch =
+        const typeMatch =
             selectedType === '' ||
             materialType === selectedType;
 
-        let keywordMatch =
+        const keywordMatch =
+            keyword === '' ||
             materialName.includes(keyword);
 
         if(typeMatch && keywordMatch) {
@@ -590,4 +656,11 @@ $('#keyword').on('input', function() {
 $('#searchBtn').on('click', function() {
     filterMaterials();
 });
+function resetFilter() {
+
+    $('#typeFilter').val('');
+    $('#keyword').val('');
+
+    filterMaterials();
+}
 </script>

@@ -244,7 +244,7 @@
 
 </t:layout>
 	
-    <script>
+<script>
 document.addEventListener("DOMContentLoaded", function() {
 
     const searchForm = document.getElementById("searchForm");
@@ -421,4 +421,4 @@ document.addEventListener("DOMContentLoaded", function() {
 
     syncDateLimit();
 });
-    </script>
+</script>
