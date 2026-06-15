@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,14 +19,15 @@ public class InquiryServiceBO {
 
 	}
 
-	public List<Inquiry> InquiryList(Long storeId, String condition, String keyword, int page, int limit) {
+	public List<Inquiry> InquiryList(Long storeId, String condition, String keyword, String answerStatus, int page, int limit) {
         int offset = (page - 1) * limit;
         RowBounds rowBounds = new RowBounds(offset, limit);
-        return inquiryDaoBO.InquiryList(storeId, condition, keyword, rowBounds);
+
+        return inquiryDaoBO.InquiryList(storeId, condition, keyword, answerStatus, rowBounds);
     }
 
-    public int getTotalCount(Long storeId, String condition, String keyword) {
-        return inquiryDaoBO.getTotalCount(storeId, condition, keyword);
+    public int getTotalCount(Long storeId, String condition, String keyword, String answerStatus) {
+        return inquiryDaoBO.getTotalCount(storeId, condition, keyword, answerStatus);
     }
 
 	public Inquiry InquiryListDetail(long inquiryId) {

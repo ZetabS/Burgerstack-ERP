@@ -15,12 +15,12 @@ public class InquiryDaoHO {
 	
 	private final InquiryMapper inquiryMapper;
 	
-	public List<Inquiry> InquiryList(String condition, String keyword, RowBounds rowBounds) {
-        return inquiryMapper.InquiryListHO(condition, keyword, rowBounds);
+	public List<Inquiry> InquiryList(String condition, String keyword, String answerStatus, RowBounds rowBounds) {
+        return inquiryMapper.InquiryListHO(condition, keyword, answerStatus, rowBounds);
     }
 
-    public int getTotalCount(String condition, String keyword) {
-        return inquiryMapper.getTotalCountHO(condition, keyword);
+    public int getTotalCount(String condition, String keyword, String answerStatus) {
+        return inquiryMapper.getTotalCountHO(condition, keyword, answerStatus);
     }
 
 	public Inquiry InquiryListDetail(long inquiryId) {

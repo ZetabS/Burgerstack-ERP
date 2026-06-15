@@ -7,6 +7,7 @@
 <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
 <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
 <%--
   상세 페이지 패턴 예제입니다.
 
@@ -28,11 +29,34 @@
   - detail.history : 상세 화면 안에 같이 보여줄 이력 목록 DTO
 --%>
 
-<c:url var="listUrl" value="burgerstack/admin/inquiries" />
-<c:url var="formUrl" value="/burgerstack/admin/inquiries/${inquiryId}/edit" />
+<%--
+  c:url은 context-path(/burgerstack)를 자동으로 붙여줍니다.
+  따라서 value에는 /burgerstack을 직접 쓰지 않습니다.
+--%>
+<c:url var="listUrl" value="/admin/inquiries" />
+
+<%--
+  수정 URL에 사용할 문의번호를 준비합니다.
+
+  상세 Mapper에서 INQUIRY_ID를 조회하지 않으면 inquiry.inquiryId가 비어 있을 수 있습니다.
+  그래서 먼저 inquiry.inquiryId를 사용하고, 비어 있으면 PathVariable로 넘어온 inquiryId를 사용합니다.
+--%>
+<c:set var="currentInquiryId" value="${inquiry.inquiryId}" />
+
+<c:if test="${empty currentInquiryId}">
+  <c:set var="currentInquiryId" value="${inquiryId}" />
+</c:if>
+
+<%--
+  최종 수정 페이지 URL입니다.
+  최종 결과 예시:
+  /burgerstack/admin/inquiries/9/edit
+--%>
+<c:url var="formUrl" value="/admin/inquiries/${currentInquiryId}/edit" />
 
 <t:layout>
   <layout:Page title="문의사항 상세 페이지" description="">
+
     <jsp:attribute name="actions">
       <%-- 헤더 오른쪽에는 목록 복귀, 수정 이동 같은 페이지 단위 액션을 둡니다. --%>
       <common:ReturnLink href="${listUrl}">목록으로</common:ReturnLink>
@@ -42,14 +66,30 @@
     <jsp:body>
       <layout:Section title="제목" description="${inquiry.title}">
         <common:FieldList>
+
           <%-- 단순 텍스트 값은 FieldRow body에 바로 출력합니다. --%>
           <layout:FieldRow label="문의 등록일">
             <c:out value="${fn:replace(inquiry.createdAt, 'T', ' ')}" />
           </layout:FieldRow>
-          <layout:FieldRow label="문의 내용">${inquiry.content}</layout:FieldRow>
-          <layout:FieldRow label="답변 등록일">
-            <c:out value="${fn:replace(inquiry.answeredAt, 'T', ' ')}" />
+
+          <%-- 문의 내용 --%>
+          <layout:FieldRow label="문의 내용">
+            <c:out value="${inquiry.content}" />
           </layout:FieldRow>
+
+          <%-- 답변 등록일 --%>
+          <layout:FieldRow label="답변 등록일">
+            <c:choose>
+              <c:when test="${empty inquiry.answeredAt}">
+                <span class="answer-content">아직 등록된 답변이 없습니다.</span>
+              </c:when>
+              <c:otherwise>
+                <c:out value="${fn:replace(inquiry.answeredAt, 'T', ' ')}" />
+              </c:otherwise>
+            </c:choose>
+          </layout:FieldRow>
+
+          <%-- 답변 내용 --%>
           <layout:FieldRow label="답변">
             <c:choose>
               <c:when test="${empty inquiry.answerContent}">

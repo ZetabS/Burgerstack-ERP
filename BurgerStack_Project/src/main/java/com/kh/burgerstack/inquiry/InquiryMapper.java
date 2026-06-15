@@ -4,8 +4,9 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import com.kh.burgerstack.dashboard.dto.AdminDashboardInquiryListItem;
 import org.apache.ibatis.session.RowBounds;
+
+import com.kh.burgerstack.dashboard.dto.AdminDashboardInquiryListItem;
 
 @Mapper
 public interface InquiryMapper {
@@ -15,20 +16,27 @@ public interface InquiryMapper {
 	int insertInquiryFile(InquiryFile file);
 
 	// 점주 문의사항 목록조회
-	List<Inquiry> InquiryList(@Param("storeId") Long storeId, @Param("condition") String condition,
-			@Param("keyword") String keyword, RowBounds rowBounds);
+	List<Inquiry> InquiryList(@Param("storeId") Long storeId,
+	                          @Param("condition") String condition,
+			                  @Param("keyword") String keyword,
+			                  @Param("answerStatus") String answerStatus,
+			                  RowBounds rowBounds);
 
-	int getTotalCount(@Param("storeId") Long storeId, @Param("condition") String condition,
-			@Param("keyword") String keyword);
+	int getTotalCount(@Param("storeId") Long storeId,
+	                  @Param("condition") String condition,
+			          @Param("keyword") String keyword,
+			          @Param("answerStatus") String answerStatus);
 	
 	
 	// 본사 문의사항 목록조회
 	List<Inquiry> InquiryListHO(@Param("condition") String condition,
-			@Param("keyword") String keyword, RowBounds rowBounds);
+			                    @Param("keyword") String keyword,
+			                    @Param("answerStatus") String answerStatus,
+			                    RowBounds rowBounds);
 
 	int getTotalCountHO(@Param("condition") String condition,
-			@Param("keyword") String keyword);
-	
+			            @Param("keyword") String keyword,
+			            @Param("answerStatus") String answerStatus);
 	
 	
 
@@ -41,6 +49,7 @@ public interface InquiryMapper {
 	int InquiryEditHO(Inquiry i);
 
 	int InquiryDeleteHO(long inquiryId);
-   public List<AdminDashboardInquiryListItem> findTopN(
+
+    public List<AdminDashboardInquiryListItem> findTopN(
             @Param("count") int count);
 }

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.kh.burgerstack.inquiry.InquiryMapper">
 	
+	<!-- 문의사항 등록 -->
 	<insert id="inquiryEnroll" parameterType="com.kh.burgerstack.inquiry.Inquiry">
 	    <selectKey keyProperty="inquiryId" resultType="long" order="BEFORE">
 	        SELECT SEQ_INQ.NEXTVAL FROM DUAL
@@ -14,12 +16,14 @@
 	        , STORE_ID
 	    )
 	    VALUES(
-	          #{inquiryId}  , #{title}
+	          #{inquiryId}
+	        , #{title}
 	        , #{content}
 	        , #{storeId}                   
 	    )
 	</insert>
 	
+	<!-- 문의사항 첨부파일 등록 -->
 	<insert id="insertInquiryFile"
         parameterType="InquiryFile">
 
@@ -42,32 +46,82 @@
 	
 	</insert>
 	
+	<!-- 점주 문의사항 목록조회 -->
 	<select id="InquiryList" resultType="com.kh.burgerstack.inquiry.Inquiry">
-	    SELECT INQUIRY_ID AS inquiryId, TITLE, CONTENT, ANSWER_CONTENT AS answerContent, CREATED_AT AS createdAt 
+	    SELECT INQUIRY_ID AS inquiryId
+	         , TITLE
+	         , CONTENT
+	         , ANSWER_CONTENT AS answerContent
+	         , ANSWERED_AT AS answeredAt
+	         , CREATED_AT AS createdAt 
 	    FROM INQUIRIES
-	    WHERE STORE_ID = #{storeId} AND DELETED_AT IS NULL
+	    WHERE STORE_ID = #{storeId}
+	      AND DELETED_AT IS NULL
+
+	    <!-- 문의 필터 : 답변전 -->
+	    <if test="answerStatus != null and answerStatus == 'REQUESTED'">
+	        AND ANSWERED_AT IS NULL
+	    </if>
+
+	    <!-- 문의 필터 : 답변완료 -->
+	    <if test="answerStatus != null and answerStatus == 'ANSWERED'">
+	        AND ANSWERED_AT IS NOT NULL
+	    </if>
+
 	    <if test="keyword != null and keyword != ''">
 	        <choose>
-	            <when test="condition == 'title'"> AND TITLE LIKE '%' || #{keyword} || '%' </when>
-	            <when test="condition == 'content'"> AND CONTENT LIKE '%' || #{keyword} || '%' </when>
-	            <when test="condition == 'inquiryId'"> AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'title'">
+	                AND TITLE LIKE '%' || #{keyword} || '%'
+	            </when>
+
+	            <when test="condition == 'content'">
+	                AND CONTENT LIKE '%' || #{keyword} || '%'
+	            </when>
+
+	            <when test="condition == 'inquiryId'">
+	                AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%'
+	            </when>
 	        </choose>
 	    </if>
+
 	    ORDER BY INQUIRY_ID DESC
 	</select>
 	
+	<!-- 점주 문의사항 총 개수 조회 -->
 	<select id="getTotalCount" resultType="int">
-	    SELECT COUNT(*) FROM INQUIRIES
-	    WHERE STORE_ID = #{storeId} AND DELETED_AT IS NULL
+	    SELECT COUNT(*)
+	    FROM INQUIRIES
+	    WHERE STORE_ID = #{storeId}
+	      AND DELETED_AT IS NULL
+
+	    <!-- 문의 필터 : 답변전 -->
+	    <if test="answerStatus != null and answerStatus == 'REQUESTED'">
+	        AND ANSWERED_AT IS NULL
+	    </if>
+
+	    <!-- 문의 필터 : 답변완료 -->
+	    <if test="answerStatus != null and answerStatus == 'ANSWERED'">
+	        AND ANSWERED_AT IS NOT NULL
+	    </if>
+
 	    <if test="keyword != null and keyword != ''">
 	        <choose>
-	            <when test="condition == 'title'"> AND TITLE LIKE '%' || #{keyword} || '%' </when>
-	            <when test="condition == 'content'"> AND CONTENT LIKE '%' || #{keyword} || '%' </when>
-	            <when test="condition == 'inquiryId'"> AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'title'">
+	                AND TITLE LIKE '%' || #{keyword} || '%'
+	            </when>
+
+	            <when test="condition == 'content'">
+	                AND CONTENT LIKE '%' || #{keyword} || '%'
+	            </when>
+
+	            <when test="condition == 'inquiryId'">
+	                AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%'
+	            </when>
 	        </choose>
 	    </if>
 	</select>
 	
+	<!-- 문의사항 상세 조회 -->
 	<select id="InquiryListDetail" resultType="com.kh.burgerstack.inquiry.Inquiry">
 	    SELECT  
 	        TITLE AS title, 
@@ -79,6 +133,7 @@
 	    WHERE INQUIRY_ID = #{inquiryId}
 	</select>
 	
+	<!-- 점주 문의사항 수정 -->
 	<update id="InquiryEdit" parameterType="com.kh.burgerstack.inquiry.Inquiry">
 		 UPDATE INQUIRIES	
    			SET	TITLE = #{title} 
@@ -86,25 +141,37 @@
 		  WHERE INQUIRY_ID = #{inquiryId}	
 	</update>
 	
+	<!-- 점주 문의사항 삭제 -->
 	<delete id="InquiryDelete">
 		DELETE 
 		  FROM INQUIRIES
 		 WHERE INQUIRY_ID = #{inquiryId}
 	</delete>
 	
-	<!-- 점주 문의사항 목록조회  -->
+	<!-- 본사 문의사항 목록조회 -->
 	<select id="InquiryListHO" resultType="com.kh.burgerstack.inquiry.Inquiry">
 	    SELECT
 	        I.INQUIRY_ID AS inquiryId,
 	        I.TITLE,
 	        I.CONTENT,
 	        I.ANSWER_CONTENT AS answerContent,
+	        I.ANSWERED_AT AS answeredAt,
 	        I.CREATED_AT AS createdAt,
 	        S.STORE_NAME AS storeName
 	    FROM INQUIRIES I
 	    JOIN STORES S
 	      ON I.STORE_ID = S.STORE_ID
 	    WHERE I.DELETED_AT IS NULL
+
+	    <!-- 문의 필터 : 답변전 -->
+	    <if test="answerStatus != null and answerStatus == 'REQUESTED'">
+	        AND I.ANSWERED_AT IS NULL
+	    </if>
+
+	    <!-- 문의 필터 : 답변완료 -->
+	    <if test="answerStatus != null and answerStatus == 'ANSWERED'">
+	        AND I.ANSWERED_AT IS NOT NULL
+	    </if>
 	
 	    <if test="keyword != null and keyword != ''">
 	        <choose>
@@ -125,20 +192,40 @@
 	    ORDER BY I.INQUIRY_ID DESC
 	</select>
 	
-	
-	
+	<!-- 본사 문의사항 총 개수 조회 -->
 	<select id="getTotalCountHO" resultType="int">
-	    SELECT COUNT(*) FROM INQUIRIES
+	    SELECT COUNT(*)
+	    FROM INQUIRIES
 	    WHERE DELETED_AT IS NULL
+
+	    <!-- 문의 필터 : 답변전 -->
+	    <if test="answerStatus != null and answerStatus == 'REQUESTED'">
+	        AND ANSWERED_AT IS NULL
+	    </if>
+
+	    <!-- 문의 필터 : 답변완료 -->
+	    <if test="answerStatus != null and answerStatus == 'ANSWERED'">
+	        AND ANSWERED_AT IS NOT NULL
+	    </if>
+
 	    <if test="keyword != null and keyword != ''">
 	        <choose>
-	            <when test="condition == 'title'"> AND TITLE LIKE '%' || #{keyword} || '%' </when>
-	            <when test="condition == 'content'"> AND CONTENT LIKE '%' || #{keyword} || '%' </when>
-	            <when test="condition == 'inquiryId'"> AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%' </when>
+	            <when test="condition == 'title'">
+	                AND TITLE LIKE '%' || #{keyword} || '%'
+	            </when>
+
+	            <when test="condition == 'content'">
+	                AND CONTENT LIKE '%' || #{keyword} || '%'
+	            </when>
+
+	            <when test="condition == 'inquiryId'">
+	                AND TO_CHAR(INQUIRY_ID) LIKE '%' || #{keyword} || '%'
+	            </when>
 	        </choose>
 	    </if>
 	</select>
 	
+	<!-- 본사 문의사항 답변 등록/수정 -->
 	<update id="InquiryEditHO"
 	        parameterType="com.kh.burgerstack.inquiry.Inquiry">
 		
@@ -149,8 +236,7 @@
 	
 	</update>
 	
-	
-	
+	<!-- 본사 문의사항 답변 삭제 -->
 	<update id="InquiryDeleteHO" parameterType="com.kh.burgerstack.inquiry.Inquiry">
 	    UPDATE INQUIRIES
 	       SET ANSWER_CONTENT = NULL,
@@ -158,6 +244,7 @@
 	     WHERE INQUIRY_ID = #{inquiryId}
 	</update>
 	
+	<!-- 관리자 대시보드 최근 문의사항 TOP N 조회 -->
     <select id="findTopN">
         SELECT T.*
           FROM (
@@ -179,4 +266,5 @@
                ) T
          WHERE ROWNUM &lt;= #{count}
     </select>
+
 </mapper>

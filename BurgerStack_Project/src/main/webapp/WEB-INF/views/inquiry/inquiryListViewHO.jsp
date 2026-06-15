@@ -57,6 +57,36 @@
 
         <layout:Toolbar>
           <jsp:attribute name="left">
+
+            <%-- 문의 필터 --%>
+            <%-- onchange="this.form.submit();" : 답변전/답변완료 선택 시 검색 버튼 없이 바로 조회됩니다. --%>
+            <%-- 문의 필터 --%>
+			<select name="answerStatus" class="form-control mr-2" onchange="this.form.submit();">
+			
+			    <%-- 처음 목록 진입 시 보여줄 placeholder --%>
+			    <option value="" disabled hidden
+			        ${empty answerStatus ? 'selected' : ''}>
+			        문의 필터
+			    </option>
+			
+			    <%-- 전체 조회 --%>
+			    <option value="ALL"
+			        ${answerStatus == 'ALL' ? 'selected' : ''}>
+			        전체
+			    </option>
+			
+			    <option value="REQUESTED"
+			        ${answerStatus == 'REQUESTED' ? 'selected' : ''}>
+			        문의
+			    </option>
+			
+			    <option value="ANSWERED"
+			        ${answerStatus == 'ANSWERED' ? 'selected' : ''}>
+			        답변완료
+			    </option>
+			
+			</select>
+
 		    <select name="condition" class="form-control mr-2">
 		
 		        <option value="title"

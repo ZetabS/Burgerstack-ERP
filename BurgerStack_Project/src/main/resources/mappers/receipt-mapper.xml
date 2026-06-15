@@ -4,40 +4,36 @@
 <mapper namespace="ReceiptMapper">
 
     <!-- 입고 예정 목록 총 갯수 -->
-    <select id="getPlanTotalCount"
-            parameterType="map"
-            resultType="_int">
-
-        SELECT COUNT(*)
-        FROM PURCHASE_ORDERS PO
-        WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
-
-        <if test="status != null and status != '' and status != 'ALL'">
-            AND PO.STATUS = #{status}
-        </if>
-
-        <if test="startDate != null and startDate != ''">
-            AND TRUNC(PO.CREATED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
-        </if>
-
-        <if test="endDate != null and endDate != ''">
-            AND TRUNC(PO.CREATED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
-        </if>
-
-        <if test="keyword != null and keyword != ''">
-            AND (
-                TO_CHAR(PO.PURCHASE_ORDER_ID) LIKE '%' || #{keyword} || '%'
-                OR PO.ORDER_MEMO LIKE '%' || #{keyword} || '%'
-                OR EXISTS (
-                    SELECT 1
-                    FROM PURCHASE_ORDER_ITEMS POI2
-                    WHERE POI2.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
-                      AND POI2.MATERIAL_NAME_SNAPSHOT LIKE '%' || #{keyword} || '%'
-                )
-            )
-        </if>
-
-    </select>
+	<select id="getPlanTotalCount"
+	        parameterType="map"
+	        resultType="_int">
+	
+	    SELECT COUNT(*)
+	    FROM PURCHASE_ORDERS PO
+	    WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
+	
+	    <if test="status != null and status != '' and status != 'ALL'">
+	        AND PO.STATUS = #{status}
+	    </if>
+	
+	    <if test="startDate != null and startDate != ''">
+	        AND TRUNC(PO.CREATED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="endDate != null and endDate != ''">
+	        AND TRUNC(PO.CREATED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="keyword != null and keyword != ''">
+	        AND EXISTS (
+	            SELECT 1
+	            FROM PURCHASE_ORDER_ITEMS POI2
+	            WHERE POI2.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+	              AND POI2.MATERIAL_NAME_SNAPSHOT LIKE '%' || #{keyword} || '%'
+	        )
+	    </if>
+	
+	</select>
 
 
     <!-- 입고 이력 목록 총 갯수 -->
@@ -105,66 +101,62 @@
 
 
     <!-- 입고 예정 목록 리스트 조회 -->
-    <select id="selectReceiptPlanList"
-            parameterType="map"
-            resultType="purchaseOrder">
-
-        SELECT
-              PO.PURCHASE_ORDER_ID AS purchaseOrderId
-            , PO.TOTAL_AMOUNT AS totalAmount
-            , PO.STATUS AS status
-            , PO.CREATED_AT AS createdAt
-
-            , MIN(POI.MATERIAL_NAME_SNAPSHOT)
-              || CASE
-                    WHEN COUNT(*) &gt; 1
-                    THEN ' 외 ' || (COUNT(*) - 1) || '건'
-                    ELSE ''
-                 END AS materialSummary
-
-        FROM PURCHASE_ORDERS PO
-        JOIN PURCHASE_ORDER_ITEMS POI
-          ON PO.PURCHASE_ORDER_ID = POI.PURCHASE_ORDER_ID
-
-        WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
-
-        <if test="status != null and status != '' and status != 'ALL'">
-            AND PO.STATUS = #{status}
-        </if>
-
-        <if test="startDate != null and startDate != ''">
-            AND TRUNC(PO.CREATED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
-        </if>
-
-        <if test="endDate != null and endDate != ''">
-            AND TRUNC(PO.CREATED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
-        </if>
-
-        <if test="keyword != null and keyword != ''">
-            AND (
-                TO_CHAR(PO.PURCHASE_ORDER_ID) LIKE '%' || #{keyword} || '%'
-                OR PO.ORDER_MEMO LIKE '%' || #{keyword} || '%'
-                OR EXISTS (
-                    SELECT 1
-                    FROM PURCHASE_ORDER_ITEMS POI2
-                    WHERE POI2.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
-                      AND POI2.MATERIAL_NAME_SNAPSHOT LIKE '%' || #{keyword} || '%'
-                )
-            )
-        </if>
-
-        GROUP BY
-              PO.PURCHASE_ORDER_ID
-            , PO.TOTAL_AMOUNT
-            , PO.ORDER_MEMO
-            , PO.STATUS
-            , PO.CREATED_AT
-            , PO.UPDATED_AT
-            , PO.STORE_ID
-
-        ORDER BY PO.CREATED_AT DESC
-
-    </select>
+	<select id="selectReceiptPlanList"
+	        parameterType="map"
+	        resultType="purchaseOrder">
+	
+	    SELECT
+	          PO.PURCHASE_ORDER_ID AS purchaseOrderId
+	        , PO.TOTAL_AMOUNT AS totalAmount
+	        , PO.STATUS AS status
+	        , PO.CREATED_AT AS createdAt
+	
+	        , MIN(POI.MATERIAL_NAME_SNAPSHOT)
+	          || CASE
+	                WHEN COUNT(*) &gt; 1
+	                THEN ' 외 ' || (COUNT(*) - 1) || '건'
+	                ELSE ''
+	             END AS materialSummary
+	
+	    FROM PURCHASE_ORDERS PO
+	    JOIN PURCHASE_ORDER_ITEMS POI
+	      ON PO.PURCHASE_ORDER_ID = POI.PURCHASE_ORDER_ID
+	
+	    WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
+	
+	    <if test="status != null and status != '' and status != 'ALL'">
+	        AND PO.STATUS = #{status}
+	    </if>
+	
+	    <if test="startDate != null and startDate != ''">
+	        AND TRUNC(PO.CREATED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="endDate != null and endDate != ''">
+	        AND TRUNC(PO.CREATED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+	    </if>
+	
+	    <if test="keyword != null and keyword != ''">
+	        AND EXISTS (
+	            SELECT 1
+	            FROM PURCHASE_ORDER_ITEMS POI2
+	            WHERE POI2.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+	              AND POI2.MATERIAL_NAME_SNAPSHOT LIKE '%' || #{keyword} || '%'
+	        )
+	    </if>
+	
+	    GROUP BY
+	          PO.PURCHASE_ORDER_ID
+	        , PO.TOTAL_AMOUNT
+	        , PO.ORDER_MEMO
+	        , PO.STATUS
+	        , PO.CREATED_AT
+	        , PO.UPDATED_AT
+	        , PO.STORE_ID
+	
+	    ORDER BY PO.CREATED_AT DESC
+	
+	</select>
 
 
     <!-- 입고 이력 목록 조회 -->

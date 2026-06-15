@@ -16,16 +16,17 @@ public class InquiryDaoBO {
 	public int InquiryEnroll(Inquiry inquiry) {
 		return inquiryMapper.inquiryEnroll(inquiry);
 	}
+
 	public int insertInquiryFile(InquiryFile file) {
 	    return inquiryMapper.insertInquiryFile(file);
 	}
 
-	public List<Inquiry> InquiryList(Long storeId, String condition, String keyword, RowBounds rowBounds) {
-        return inquiryMapper.InquiryList(storeId, condition, keyword, rowBounds);
+	public List<Inquiry> InquiryList(Long storeId, String condition, String keyword, String answerStatus, RowBounds rowBounds) {
+        return inquiryMapper.InquiryList(storeId, condition, keyword, answerStatus, rowBounds);
     }
 
-    public int getTotalCount(Long storeId, String condition, String keyword) {
-        return inquiryMapper.getTotalCount(storeId, condition, keyword);
+    public int getTotalCount(Long storeId, String condition, String keyword, String answerStatus) {
+        return inquiryMapper.getTotalCount(storeId, condition, keyword, answerStatus);
     }
 
 	public Inquiry InquiryListDetail(long inquiryId) {

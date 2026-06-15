@@ -21,7 +21,10 @@ public class ReceiptController {
     private ReceiptService receiptService;
 
     // 입고 검수 등록 화면 - 점주
-    @GetMapping("/owner/purchases/{purchaseId}/receipt")
+    // URL 변경:
+    // 기존 /owner/purchases/{purchaseId}/receipt
+    // 변경 /owner/receipts/{purchaseId}/receipt
+    @GetMapping("/owner/receipts/{purchaseId}/receipt")
     public ModelAndView checkForm(@PathVariable Long purchaseId,
                                   ModelAndView mv) {
 
@@ -40,58 +43,58 @@ public class ReceiptController {
         return mv;
     }
 
-		 // 입고 이력 목록 조회 - 점주 / 관리자 공통
-		    @GetMapping({"/owner/receipts", "/admin/receipts"})
-		    public String history(@RequestParam(required = false, defaultValue = "") String receiptType,
-		                          @RequestParam(required = false, defaultValue = "") String startDate,
-		                          @RequestParam(required = false, defaultValue = "") String endDate,
-		                          @RequestParam(required = false, defaultValue = "") String keyword,
-		                          PagingRequest pagingRequest,
-		                          HttpServletRequest request,
-		                          Model model) {
-		        
-		        PageInfo pageInfo =
-		                receiptService.getHistoryPageInfo(
-		                        pagingRequest,
-		                        receiptType,
-		                        startDate,
-		                        endDate,
-		                        keyword
-		                );
-		
-		        if (pageInfo.isCurrentPageOutOfRange()) {
-		
-		            if (request.getRequestURI().contains("/admin/")) {
-		                return "redirect:/admin/receipts"
-		                        + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
-		            }
-		
-		            return "redirect:/owner/receipts"
-		                    + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
-		        }
-		
-		        model.addAttribute("pageInfo", pageInfo);
-		        model.addAttribute("receiptType", receiptType);
-		        model.addAttribute("startDate", startDate);
-		        model.addAttribute("endDate", endDate);
-		        model.addAttribute("keyword", keyword);
-		
-		        model.addAttribute("list",
-		                receiptService.selectReceiptList(
-		                        pagingRequest,
-		                        receiptType,
-		                        startDate,
-		                        endDate,
-		                        keyword
-		                )
-		        );
-		
-		        if (request.getRequestURI().contains("/admin/")) {
-		            return "receipt/adminReceiptHistoryList";
-		        }
-		
-		        return "receipt/receiptHistoryList";
-		    }
+    // 입고 이력 목록 조회 - 점주 / 관리자 공통
+    @GetMapping({"/owner/receipts", "/admin/receipts"})
+    public String history(@RequestParam(required = false, defaultValue = "") String receiptType,
+                          @RequestParam(required = false, defaultValue = "") String startDate,
+                          @RequestParam(required = false, defaultValue = "") String endDate,
+                          @RequestParam(required = false, defaultValue = "") String keyword,
+                          PagingRequest pagingRequest,
+                          HttpServletRequest request,
+                          Model model) {
+        
+        PageInfo pageInfo =
+                receiptService.getHistoryPageInfo(
+                        pagingRequest,
+                        receiptType,
+                        startDate,
+                        endDate,
+                        keyword
+                );
+
+        if (pageInfo.isCurrentPageOutOfRange()) {
+
+            if (request.getRequestURI().contains("/admin/")) {
+                return "redirect:/admin/receipts"
+                        + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
+            }
+
+            return "redirect:/owner/receipts"
+                    + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
+        }
+
+        model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("receiptType", receiptType);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        model.addAttribute("keyword", keyword);
+
+        model.addAttribute("list",
+                receiptService.selectReceiptList(
+                        pagingRequest,
+                        receiptType,
+                        startDate,
+                        endDate,
+                        keyword
+                )
+        );
+
+        if (request.getRequestURI().contains("/admin/")) {
+            return "receipt/adminReceiptHistoryList";
+        }
+
+        return "receipt/receiptHistoryList";
+    }
 
     // 입고 이력 상세 조회 - 점주 / 관리자 공통
     @GetMapping({"/owner/receipts/{receiptId}", "/admin/receipts/{receiptId}"})
@@ -111,62 +114,62 @@ public class ReceiptController {
         return mv;
     }
 
-	 	// 입고 예정 목록 조회 - 점주
-	    @GetMapping("/owner/receipts/planned")
-	    public String planned(@RequestParam(required = false, defaultValue = "") String status,
-	                          @RequestParam(required = false, defaultValue = "") String startDate,
-	                          @RequestParam(required = false, defaultValue = "") String endDate,
-	                          @RequestParam(required = false, defaultValue = "") String keyword,
-	                          PagingRequest pagingRequest,
-	                          HttpServletRequest request,
-	                          Model model) {
-	
-	        PageInfo pageInfo =
-	                receiptService.getPlanPageInfo(
-	                        pagingRequest,
-	                        status,
-	                        startDate,
-	                        endDate,
-	                        keyword
-	                );
-	
-	        if (pageInfo.isCurrentPageOutOfRange()) {
-	            return "redirect:/owner/receipts/planned"
-	                    + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
-	        }
-	
-	        model.addAttribute("pageInfo", pageInfo);
-	        model.addAttribute("status", status);
-	        model.addAttribute("startDate", startDate);
-	        model.addAttribute("endDate", endDate);
-	        model.addAttribute("keyword", keyword);
-	
-	        model.addAttribute("list",
-	                receiptService.selectReceiptPlanList(
-	                        pagingRequest,
-	                        status,
-	                        startDate,
-	                        endDate,
-	                        keyword
-	                )
-	        );
-	
-	        return "receipt/receiptPlanList";
-	    }
-    
-	 // 발주 입고 처리 - 점주
-	    @PostMapping("/owner/purchases/{purchaseId}/receipt")
-	    public String processReceipt(@PathVariable Long purchaseId,
-	                                 ReceiptForm form) {
-	
-	        Long createdBy = 1L; // 로그인 붙기 전 임시 사용자 ID
-	
-	        receiptService.processReceipt(purchaseId, form, createdBy);
-	
-	        return "redirect:/owner/receipts";
+    // 입고 예정 목록 조회 - 점주
+    @GetMapping("/owner/receipts/planned")
+    public String planned(@RequestParam(required = false, defaultValue = "") String status,
+                          @RequestParam(required = false, defaultValue = "") String startDate,
+                          @RequestParam(required = false, defaultValue = "") String endDate,
+                          @RequestParam(required = false, defaultValue = "") String keyword,
+                          PagingRequest pagingRequest,
+                          HttpServletRequest request,
+                          Model model) {
+
+        PageInfo pageInfo =
+                receiptService.getPlanPageInfo(
+                        pagingRequest,
+                        status,
+                        startDate,
+                        endDate,
+                        keyword
+                );
+
+        if (pageInfo.isCurrentPageOutOfRange()) {
+            return "redirect:/owner/receipts/planned"
+                    + pageInfo.getLastAvailablePageQueryString(request.getQueryString());
+        }
+
+        model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("status", status);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        model.addAttribute("keyword", keyword);
+
+        model.addAttribute("list",
+                receiptService.selectReceiptPlanList(
+                        pagingRequest,
+                        status,
+                        startDate,
+                        endDate,
+                        keyword
+                )
+        );
+
+        return "receipt/receiptPlanList";
     }
     
-    
-    
-    
+    // 입고 처리 - 점주
+    // URL 변경:
+    // 기존 /owner/purchases/{purchaseId}/receipt
+    // 변경 /owner/receipts/{purchaseId}/receipt
+    @PostMapping("/owner/receipts/{purchaseId}/receipt")
+    public String processReceipt(@PathVariable Long purchaseId,
+                                 ReceiptForm form) {
+
+        Long createdBy = 1L; // 로그인 붙기 전 임시 사용자 ID
+
+        receiptService.processReceipt(purchaseId, form, createdBy);
+
+        return "redirect:/owner/receipts";
+    }
+
 }
