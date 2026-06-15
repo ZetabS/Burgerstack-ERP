@@ -55,17 +55,15 @@ public class NoticeController {
         model.addAttribute("pageInfo", pagingRequest.toPageInfo(totalCount));
 
         ArrayList<Notice> list = noticeService.selectNoticeList(pagingRequest);
-
+        
         DateTimeFormatter formatterList   = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        DateTimeFormatter formatterDetail = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+        
         for (Notice n : list) {
             if (n.getCreatedAt() != null) {
                 n.setListDate(n.getCreatedAt().format(formatterList));
-                n.setDetailDate(n.getCreatedAt().format(formatterDetail));
             }
         }
-
+        
         model.addAttribute("notices", list);
         return "notice/noticeListViewHO";
     }
@@ -75,9 +73,10 @@ public class NoticeController {
      * 공지사항 글작성 페이지 진입
      */
     @GetMapping({"/new", "new"})
-    public String noticeEnrollForm(HttpSession session) {
+    public String noticeEnrollForm(HttpSession session, Model model) {
         // 글쓰기 페이지 진입 시 세션의 Quill 이미지 목록 초기화
-        session.removeAttribute("quillImageFiles");
+        model.addAttribute("notice", null);
+    	session.removeAttribute("quillImageFiles");
         return "notice/noticeEnrollForm";
     }
 
