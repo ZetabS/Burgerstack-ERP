@@ -34,6 +34,7 @@
 --%>
 
 <c:url var="baseUrl" value="/burgerstack/owner/inquiries" />
+<c:url var="bUrl" value="/burgerstack/owner/dashboard" />
 
 <t:layout>
   <layout:ListPage title="문의사항 목록 페이지" description="">
@@ -107,6 +108,7 @@
           <c:forEach var="inq" items="${inquiryList}">
             <c:url var="detailUrl" value="${pageContext.request.contextPath}/owner/inquiries/${inq.inquiryId}" />
             <c:url var="formUrl" value="/example/patterns/form" />
+            <c:set var="inquiryStatus" value="${empty inq.answerContent ? 'REQUESTED' : 'ANSWERED'}"></c:set>
 
             <%--
               TableRow에 clickable과 href를 주면 행 클릭 이동을 위한 data 속성이 붙습니다.
@@ -116,7 +118,9 @@
               <table:TextFitCell value="${inq.inquiryId}" />
               <table:TextCell value="${inq.title}" />
               <table:DateTimeCell value="${inq.createdAt}" />
-              <table:TextCell value="${inq.title}" />
+              <table:FitCell align="left">
+              	<display:InquiryStatusBadge value="${inquiryStatus}"/>
+              </table:FitCell>
             </table:TableRow>
           </c:forEach>
         </jsp:attribute>
