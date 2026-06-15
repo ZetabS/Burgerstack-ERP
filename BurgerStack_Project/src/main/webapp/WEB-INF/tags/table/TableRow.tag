@@ -5,12 +5,12 @@
 
 <c:choose>
   <c:when test="${clickable and not empty href}">
-    <tr data-clickable data-href="${href}">
+    <tr class="ds-table-row" data-clickable data-href="${href}">
       <jsp:doBody />
     </tr>
   </c:when>
   <c:otherwise>
-    <tr>
+    <tr class="ds-table-row">
       <jsp:doBody />
     </tr>
   </c:otherwise>

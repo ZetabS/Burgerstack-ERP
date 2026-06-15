@@ -1,0 +1,183 @@
+/* ==========================================================================
+   Layout
+   페이지 골격과 상단 헤더/툴바
+   ========================================================================== */
+
+.ds-page {
+  /* 상세/수정 페이지 전체 컨테이너 */
+}
+
+.ds-list-page {
+  /* 목록 페이지 전체 컨테이너 */
+}
+
+.ds-page-header {
+  /* 페이지 제목/액션 영역 */
+}
+
+.ds-toolbar {
+  /* 목록 필터/검색 툴바 */
+}
+
+.ds-toolbar__left {
+  /* 툴바 왼쪽 필터 그룹 */
+}
+
+.ds-toolbar__right {
+  /* 툴바 오른쪽 검색/액션 그룹 */
+}
+
+/* 툴바 체크박스 위아래로 미묘한 불일치 해결 */
+.ds-toolbar-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  padding-left: 0;
+  min-height: 38px;
+  white-space: nowrap;
+}
+
+.ds-toolbar-checkbox .form-check-input {
+  position: static;
+  margin: 0 0.5rem 0 0;
+}
+
+.ds-toolbar-checkbox .form-check-label {
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+/* ==========================================================================
+   Table
+   데이터 테이블의 기본 정책과 셀 유형별
+   ========================================================================== */
+
+.ds-table-section {
+  /* 테이블을 담는 카드 섹션 */
+}
+
+.ds-table-wrapper {
+  /* 테이블 스크롤/폭 처리 */
+}
+
+/*
+  테이블 헤더 색상 지정
+  이거 없는 게 더 깔끔한 것 같긴 한데
+  와이어프레임대로 반영했습니다.
+*/
+.ds-table thead tr {
+  background-color: #19c765;
+  color: #fff;
+}
+
+/* 테이블의 기본 셀 정렬 정책 */
+.ds-table th,
+.ds-table td {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* 클릭 가능한 행에만 커서 표시 */
+.ds-table [data-clickable]:hover {
+  cursor: pointer;
+}
+
+.ds-table-row {
+  /* 행 단위 상태 표현 */
+}
+
+/* 폭을 최소화해야 하는 셀 */
+.ds-table__col-fit {
+  width: 1%;
+}
+
+/* 긴 텍스트는 셀 폭을 넘기지 않도록 처리 */
+.ds-table__text-cell {
+  max-width: 0;
+  overflow: hidden;
+}
+
+.ds-table__empty-row {
+  /* 빈 데이터 행 */
+}
+
+/* 금액/수량/일시처럼 숫자 폭이 흔들리면 안 되는 값 */
+.ds-numeric {
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Common
+   상세/폼 내부 조립 컴포넌트
+   ========================================================================== */
+
+.ds-section {
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+}
+
+.ds-section .card-header {
+  border-bottom: 1px solid #e9ecef;
+  background-color: #fff;
+  padding: 1rem;
+}
+
+.ds-section .card-body {
+  padding: 0 1rem;
+}
+
+.ds-field-list {
+  /* 라벨/값 행 묶음 */
+}
+
+.ds-field-row {
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid #edf0f2;
+  padding: 0.75rem 0;
+}
+
+.ds-field-row:last-child {
+  border-bottom: 0;
+}
+
+.ds-field-row > .col-sm-3 {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.ds-field-row > .col-sm-9 {
+  color: #212529;
+}
+
+.ds-actions {
+  /* 폼/상세 하단 액션 영역 */
+}
+
+.ds-return-link {
+  /* 목록 복귀 링크 버튼 */
+}
+
+.ds-search-bar {
+  /* 검색 입력 그룹 */
+}
+
+.ds-empty-state {
+  /* 빈 상태 메시지 */
+}
+
+/* ==========================================================================
+   Display
+   도메인 상태/유형 표시용 label, badge
+   ========================================================================== */
+
+.ds-display-label {
+  /* 텍스트 라벨 표시 */
+}
+
+.ds-display-badge {
+  /* 배지 표시 */
+}

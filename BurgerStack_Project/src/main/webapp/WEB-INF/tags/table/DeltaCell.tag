@@ -3,7 +3,7 @@
 <%@ attribute name="suffix" required="false" type="java.lang.String" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<td class="data-table__col-fit text-right">
+<td class="ds-table__col-fit text-right">
   <c:choose>
     <c:when test="${value > 0}">
       <span class="text-success">+<c:out value="${value}" /><c:out value="${suffix}" /></span>

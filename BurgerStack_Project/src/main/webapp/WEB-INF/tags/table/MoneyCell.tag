@@ -4,6 +4,6 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<td class="data-table__col-fit text-right">
+<td class="ds-numeric ds-table__col-fit text-right">
   <c:if test="${not empty value}"><fmt:formatNumber value="${value}" pattern="#,###" />${suffix}</c:if>
 </td>

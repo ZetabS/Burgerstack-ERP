@@ -13,6 +13,6 @@
   </c:when>
 </c:choose>
 
-<span class="badge badge-${variant}">
+<span class="ds-display-badge badge badge-${variant}">
   <display:StoreStatusLabel value="${value}" />
 </span>
