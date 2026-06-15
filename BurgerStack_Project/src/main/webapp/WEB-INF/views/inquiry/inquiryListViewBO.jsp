@@ -40,7 +40,7 @@
   <layout:ListPage title="문의사항 목록 페이지" description="">
     <jsp:attribute name="actions">
       <%-- actions 슬롯은 페이지 헤더 오른쪽에 배치됩니다. 초기화, 등록, 다운로드 같은 페이지 단위 액션을 둡니다. --%>
-      <a href="${baseUrl}" class="btn btn-secondary">목록으로</a>
+      <a href="${bUrl}" class="btn btn-secondary">목록으로</a>
     </jsp:attribute>
 
     <jsp:attribute name="toolbar">
@@ -106,8 +106,8 @@
 
         <jsp:attribute name="tbody">
           <c:forEach var="inq" items="${inquiryList}">
-            <c:url var="detailUrl" value="${pageContext.request.contextPath}/owner/inquiries/${inq.inquiryId}" />
-            <c:url var="formUrl" value="/example/patterns/form" />
+            <c:url var="detailUrl" value="/owner/inquiries/${inq.inquiryId}" />
+            <c:url var="formUrl" value="/inquiries/{inquiryId}" />
             <c:set var="inquiryStatus" value="${empty inq.answerContent ? 'REQUESTED' : 'ANSWERED'}"></c:set>
 
             <%--

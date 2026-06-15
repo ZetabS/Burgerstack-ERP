@@ -48,7 +48,7 @@
 		WHERE USER_NO = #{userNo}
 	</update>
 
-	<select id="OwnerList" parameterType="map" resultType="User">
+	<select id="OwnerList" parameterType="map" resultType="com.kh.burgerstack.user.User">
 
 		SELECT 'U' || TO_CHAR(SYSDATE,'YYYY')
 

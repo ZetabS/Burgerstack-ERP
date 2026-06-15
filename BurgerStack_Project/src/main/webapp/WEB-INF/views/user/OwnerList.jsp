@@ -107,9 +107,9 @@
 
         <jsp:attribute name="tbody">
           <c:forEach var="u" items="${ownerList}">
-            <c:url var="detailUrl" value="$/admin/users/${u.userId}" />
+            <c:url var="detailUrl" value="/admin/users/${u.userId}" />
             <c:url var="formUrl" value="/admin/users/${u.userId}" />
-            <c:set var="u.Status" value="${empty inq.answerContent ? 'INACTIVE' : 'ACTIVE'}"></c:set>
+            <c:set var="u.status" value="${empty u.status ? 'INACTIVE' : 'ACTIVE'}"></c:set>
 
             <%--
               TableRow에 clickable과 href를 주면 행 클릭 이동을 위한 data 속성이 붙습니다.
@@ -119,9 +119,9 @@
               <table:TextFitCell value="${u.displayNo}" />
               <table:TextCell value="${u.userId}" />
               <table:TextCell value="${u.userName}" />
-              <table:DateTimeCell value="${fn:replace(user.createdAt, 'T', ' ')}" />
+              <table:DateTimeCell value="${u.createdAt}" />
               <table:FitCell align="left">
-              	<display:InquiryStatusBadge value="${u.Status}"/>
+              	<display:InquiryStatusBadge value="${u.status}"/>
               </table:FitCell>
             </table:TableRow>
           </c:forEach>
