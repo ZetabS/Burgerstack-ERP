@@ -221,12 +221,15 @@
                            value="${item.purchaseOrderItemId}" />
 
                     <input type="number"
-                           class="form-control form-control-sm received-qty"
-                           name="items[${status.index}].receivedQuantity"
-                           value="${item.approvedQuantity}"
-                           min="0"
-                           data-approved="${item.approvedQuantity}"
-                           data-price="${item.supplyPrice}" />
+					       class="form-control form-control-sm received-qty"
+					       name="items[${status.index}].receivedQuantity"
+					       value="${item.approvedQuantity}"
+					       min="0"
+					       max="1000"
+					       step="1"
+					       data-approved="${item.approvedQuantity}"
+					       data-max="1000"
+					       data-price="${item.supplyPrice}" />
                   </td>
 
                   <td class="text-right">
@@ -367,11 +370,17 @@
 
       let receivedQty = Number(receivedInput.value || 0);
       let approvedQty = Number(receivedInput.dataset.approved || 0);
+      let maxQty = Number(receivedInput.dataset.max || 1000);
       let price = Number(receivedInput.dataset.price || 0);
 
       if (receivedQty < 0) {
         receivedQty = 0;
         receivedInput.value = 0;
+      }
+
+      if (receivedQty > maxQty) {
+        receivedQty = maxQty;
+        receivedInput.value = maxQty;
       }
 
       let diffQty = receivedQty - approvedQty;
