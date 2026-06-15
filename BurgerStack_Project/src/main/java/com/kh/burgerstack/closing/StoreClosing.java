@@ -15,7 +15,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class StoreClosing {
-
     private Long storeClosingId;
 
     private LocalDate businessDate;
@@ -26,6 +25,6 @@ public class StoreClosing {
 
     // 관리자 마감 목록/상세에서 사용
     private String storeName;
-    
+
     private String closingCode;
 }

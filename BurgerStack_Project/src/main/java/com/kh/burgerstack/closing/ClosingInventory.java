@@ -8,7 +8,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ClosingInventory {
-
     private Long storeInventoryId;
     private Long currentQuantity;
     private Long materialId;
