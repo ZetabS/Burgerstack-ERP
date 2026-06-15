@@ -34,11 +34,11 @@
   - view.pageInfo : <t:pagination>에 전달할 PageInfo
 --%>
 
-<c:url var="baseUrl" value="/burgerstack/admin/" />
-<c:url var="bUrl" value="/burgerstack/admin/dashboard" />
+<c:url var="baseUrl" value="/admin/users" />
+<c:url var="bUrl" value="/admin/dashboard" />
 
 <t:layout>
-  <layout:ListPage title="문의사항 목록 페이지" description="">
+  <layout:ListPage title="점주 목록 페이지" description="">
     <jsp:attribute name="actions">
       <%-- actions 슬롯은 페이지 헤더 오른쪽에 배치됩니다. 초기화, 등록, 다운로드 같은 페이지 단위 액션을 둡니다. --%>
       <a href="${bUrl}" class="btn btn-secondary">이전으로</a>
@@ -94,7 +94,7 @@
         table:Table은 thead와 tbody를 명시적으로 받습니다.
         isEmpty를 넘기면 tbody 대신 emptyMessage가 표시됩니다.
       --%>
-      <table:Table isEmpty="${empty inquiryList}" emptyMessage="조회된 문의사항이 없습니다.">
+      <table:Table isEmpty="${empty ownerList}" emptyMessage="조회된 문의사항이 없습니다.">
         <jsp:attribute name="thead">
           <tr>
             <th class="text-center">No</th>
@@ -107,8 +107,8 @@
 
         <jsp:attribute name="tbody">
           <c:forEach var="u" items="${ownerList}">
-            <c:url var="detailUrl" value="${pageContext.request.contextPath}/admin/users/${u.userId}" />
-            <c:url var="formUrl" value="/example/patterns/form" />
+            <c:url var="detailUrl" value="$/admin/users/${u.userId}" />
+            <c:url var="formUrl" value="/admin/users/${u.userId}" />
             <c:set var="u.Status" value="${empty inq.answerContent ? 'INACTIVE' : 'ACTIVE'}"></c:set>
 
             <%--

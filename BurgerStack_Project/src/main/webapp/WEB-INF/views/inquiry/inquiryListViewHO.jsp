@@ -33,8 +33,8 @@
   - view.pageInfo : <t:pagination>에 전달할 PageInfo
 --%>
 
-<c:url var="baseUrl" value="/burgerstack/admin/inquiries" />
-<c:url var="bUrl" value="/burgerstack/admin/dashboard" />
+<c:url var="baseUrl" value="/admin/inquiries" />
+<c:url var="bUrl" value="/admin/dashboard" />
 
 <t:layout>
   <layout:ListPage title="문의사항 목록 페이지" description="">
@@ -107,7 +107,7 @@
 
         <jsp:attribute name="tbody">
           <c:forEach var="inq" items="${inquiryList}">
-            <c:url var="detailUrl" value="${pageContext.request.contextPath}/admin/inquiries/${inq.inquiryId}" />
+            <c:url var="detailUrl" value="/admin/inquiries/${inq.inquiryId}" />
             <c:url var="formUrl" value="/example/patterns/form" />
             <c:set var="inquiryStatus" value="${empty inq.answerContent ? 'REQUESTED' : 'ANSWERED'}"></c:set>
 
