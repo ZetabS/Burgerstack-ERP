@@ -30,71 +30,10 @@ public class InquiryServiceHO {
 		return inquiryDaoHO.InquiryListDetail(inquiryId);
 	}
 
-	public int InquiryEdit(
-	        Inquiry inquiry,
-	        MultipartFile uploadFile) {
+	public int InquiryEdit(Inquiry inquiry) {
 
-	    int result =
-	        inquiryDaoHO.InquiryEdit(inquiry);
+	    return inquiryDaoHO.InquiryEdit(inquiry);
 
-	    if(result > 0
-	       && uploadFile != null
-	       && !uploadFile.isEmpty()) {
-
-	        String originalName =
-	                uploadFile.getOriginalFilename();
-
-	        String storedName =
-	                UUID.randomUUID()
-	                + "_"
-	                + originalName;
-
-	        String savePath =
-	                "C:/upload/inquiry/";
-
-	        File dir =
-	                new File(savePath);
-
-	        if(!dir.exists()) {
-	            dir.mkdirs();
-	        }
-
-	        try {
-
-	            uploadFile.transferTo(
-	                new File(
-	                    savePath + storedName
-	                )
-	            );
-
-	            InquiryFile file =
-	                    new InquiryFile();
-
-	            file.setInquiryId(
-	                    inquiry.getInquiryId());
-
-	            file.setOriginalName(
-	                    originalName);
-
-	            file.setStoredName(
-	                    storedName);
-
-	            file.setStoragePath(
-	                    savePath);
-
-	            file.setAttachTarget(
-	                    "A");
-
-	            inquiryDaoHO
-	                .insertInquiryFile(file);
-
-	        } catch(Exception e) {
-
-	            e.printStackTrace();
-	        }
-	    }
-
-	    return result;
 	}
 
 	public int InquiryDelete(long inquiryId) {

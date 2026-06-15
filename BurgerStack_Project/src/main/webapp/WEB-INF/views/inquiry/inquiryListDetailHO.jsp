@@ -162,11 +162,6 @@
 					onclick="location.href='burgerstack/admin/inquiries'">목록으로</button>
 
 			</div>
-			<hr>
-
-			<div class="file-area">
-				<label>첨부파일</label> <input type="file" name="uploadFile">
-			</div>
 		</div>
 	</t:layout>
 
