@@ -1,19 +1,26 @@
 package com.kh.burgerstack.closing;
 
+import com.kh.burgerstack.inventory.service.InventoryService;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kh.burgerstack.inventory.dto.InventoryChangeItem;
+import com.kh.burgerstack.inventory.dto.InventoryStoreClosingChangeCommand;
+import com.kh.burgerstack.user.LoginUser;
+
 @Service
 public class ClosingService {
+    private final InventoryService inventoryService;
     private final ClosingDao closingDao;
     private final SqlSession sqlSession;
 
-    public ClosingService(ClosingDao closingDao, SqlSession sqlSession) {
+    public ClosingService(ClosingDao closingDao, SqlSession sqlSession, InventoryService inventoryService) {
         this.closingDao = closingDao;
         this.sqlSession = sqlSession;
+        this.inventoryService = inventoryService;
     }
 
     public List<StoreClosing> selectOwnerClosingList(Long storeId,
@@ -55,7 +62,7 @@ public class ClosingService {
     }
 
     @Transactional
-    public int insertClosing(StoreClosing closing, List<StoreClosingItem> itemList) {
+    public int insertClosing(StoreClosing closing, List<StoreClosingItem> itemList, LoginUser loginUser) {
         int result = closingDao.insertClosing(sqlSession, closing);
 
         for (StoreClosingItem item : itemList) {
@@ -88,15 +95,22 @@ public class ClosingService {
             result += closingDao.insertClosingItem(
                     sqlSession,
                     item);
-
-            Long finalQuantity = systemQty - useQty - disposalQty;
-
-            closingDao.updateInventoryQuantity(
-                    sqlSession,
-                    item.getStoreInventoryId(),
-                    finalQuantity);
         }
 
+        List<InventoryChangeItem> inventoryChangeItems = itemList.stream()
+                .map((StoreClosingItem item) -> {
+                    int deltaQuantity = -item.getPhysicalQuantity().intValue() - item.getDisposalQuantity().intValue();
+                    return new InventoryChangeItem(item.getStoreInventoryId().intValue(), deltaQuantity);
+                }).filter((InventoryChangeItem item) -> item.getDeltaQuantity() != 0).toList();
+
+        InventoryStoreClosingChangeCommand inventoryStoreClosingChangeCommand = new InventoryStoreClosingChangeCommand(
+                loginUser,
+                inventoryChangeItems,
+                closing.getClosingMemo(),
+                closing.getStoreClosingId().intValue(),
+                loginUser.getStoreId().intValue());
+
+        inventoryService.change(inventoryStoreClosingChangeCommand);
         return result;
     }
 

@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kh.burgerstack.user.LoginUser;
+
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class ClosingController {
     private final ClosingService closingService;
@@ -98,8 +102,11 @@ public class ClosingController {
             @RequestParam List<Long> physicalQuantity,
             @RequestParam List<Long> disposalQuantity,
             @RequestParam(required = false) List<String> closingItemMemo,
-            RedirectAttributes ra) {
-        Long storeId = 1L; // 나중에 로그인 세션에서 꺼내기
+            RedirectAttributes ra,
+            HttpSession session) {
+
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        Long storeId = loginUser.getStoreId();
 
         StoreClosing closing = new StoreClosing();
         closing.setBusinessDate(LocalDate.parse(businessDate));
@@ -169,7 +176,7 @@ public class ClosingController {
         }
 
         try {
-            closingService.insertClosing(closing, itemList);
+            closingService.insertClosing(closing, itemList, loginUser);
             ra.addFlashAttribute("msg", "마감이 등록되었습니다.");
         } catch (DuplicateKeyException e) {
             ra.addFlashAttribute("msg", "이미 마감된 영업일입니다.");
