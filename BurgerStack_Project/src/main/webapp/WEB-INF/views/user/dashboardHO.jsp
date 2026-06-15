@@ -149,6 +149,7 @@
         responsive: true,
         maintainAspectRatio: true,
         cutout: "65%",
+        events: [],
         layout: {
           padding: 10,
         },
@@ -173,6 +174,7 @@
         responsive: true,
         maintainAspectRatio: true,
         cutout: "65%",
+        events: [],
         layout: {
           padding: 10,
         },
