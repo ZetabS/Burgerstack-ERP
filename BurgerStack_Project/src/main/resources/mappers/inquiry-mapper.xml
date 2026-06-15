@@ -162,7 +162,7 @@
         SELECT T.*
           FROM (
                 SELECT INQUIRY_ID
-                     , 'I' || EXTRACT(YEAR FROM SYSDATE) || LPAD(INQUIRY_ID, 4, '0') AS INQUIRY_CODE
+                     , 'I' || EXTRACT(YEAR FROM I.CREATED_AT) || LPAD(INQUIRY_ID, 4, '0') AS INQUIRY_CODE
                      , TITLE
                      , CASE WHEN ANSWERED_AT IS NULL     THEN 'REQUESTED'
                             WHEN ANSWERED_AT IS NOT NULL THEN 'ANSWERED'
