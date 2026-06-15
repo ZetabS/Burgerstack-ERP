@@ -1,152 +1,70 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 
-<title>Insert title here</title>
-<style>
-/* 화면 레이아웃 및 스타일 간이 정의 */
-body {
-	margin: 0;
-	font-family: 'Malgun Gothic', sans-serif;
-	background-color: #f4f5f7;
-}
+<%--
+  폼 페이지 패턴 예제입니다.
 
-.container {
-	display: flex;
-	min-height: 100vh;
-}
+  기본 구조:
+  1. 폼 전용 Page 컴포넌트는 따로 두지 않습니다.
+     <layout:Page>의 본문에 업무별 <form>을 직접 작성합니다.
+  2. 입력 그룹은 <layout:Section>으로 나눕니다.
+  3. 각 입력은 <layout:FieldRow>로 라벨/입력 정렬을 통일합니다.
+  4. 저장/취소 버튼은 <common:Actions>에 둡니다.
 
-/* 메인 콘텐츠 영역 */
-.main-content {
-    flex: 1;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-}
+  주의:
+  - <layout:Page>에서 actions 슬롯을 사용하므로 <jsp:body>를 반드시 명시합니다.
+  - select option은 과하게 추상화하지 않고 일반 HTML로 작성합니다.
+  - 도메인 코드의 표시만 display 태그를 사용합니다.
 
-.form-container {
-    width: 100%;
-    max-width: 2000px;
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  필요한 taglib 지시어:
+  - layout 컴포넌트: <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+  - common 컴포넌트: <%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+  - display 컴포넌트: <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
+--%>
 
-    margin-top: 0;
-}
+<c:url var="listUrl" value="/admin/inquiries" />
+<c:url var="submitUrl" value="/admin/inquiries/${inquiryId}" />
 
-h1 {
-	text-align: center;
-	font-size: 28px;
-	color: #333;
-	margin-bottom: 30px;
-}
+<t:layout>
+  <layout:Page title="문의사항 작성" description="">
 
-/* 폼 요소 스타일 */
-.form-group {
-	margin-bottom: 20px;
-	position: relative;
-}
+    <jsp:body>
+      <%--
+        form 태그는 컴포넌트가 숨기지 않습니다.
+        action, method, hidden input, CSRF 같은 업무별 요구사항을 화면에서 명확히 드러내기 위함입니다.
+      --%>
+      <form action="${submitUrl}" method="post">
+        <input type="hidden" name="inventoryId" value="${inquiry.inquiryId}" />
 
-.input-title {
-	width: 100%;
-	padding: 12px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	box-sizing: border-box;
-	font-size: 16px;
-}
-.textarea-content {
-	width: 100%;
-	height: 300px;
-	padding: 12px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	box-sizing: border-box;
-	font-size: 15px;
-	resize: none;
-}
-.btn-area{
-    text-align:center;
-    margin-top:30px;
-}
+        <layout:Section title="문의사항 답변을 작성해주세요." description="">
 
-.btn-area button{
-    width:150px;
-    height:45px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:16px;
-}
+		  <%-- number input은 min, required 같은 HTML 제약을 화면에서 직접 선언합니다. --%>
+          <layout:FieldRow label="제목" inputId="safetyQuantity" help="제목을 입력하시오.">
+            <input type="text" class="title" id="title" name="title" value="${inquiry.title}" required readonly />
+          </layout:FieldRow>
 
-#saveBtn{
-    margin-right:10px;
-	background: #007bff;
-	color: white;    
-}
+          <%-- textarea는 업무에 맞게 rows를 직접 선택합니다. --%>
+          <layout:FieldRow label="내용" inputId="memo" help="문의사항을 입력하시오.">
+            <textarea class="form-control" id="content" name="content" rows="4" readonly><c:out value="${inquiry.content}"/></textarea>
+          </layout:FieldRow>
+          
+          <%-- textarea는 업무에 맞게 rows를 직접 선택합니다. --%>
+          <layout:FieldRow label="답변" inputId="memo" help="답변을 입력하시오.">
+            <textarea class="form-control" id="answerContent" name="answerContent" rows="4"><c:out value="${inquiry.answerContent}" /></textarea>
+          </layout:FieldRow>          
+          
+        </layout:Section>
 
-#homeBtn{
-    margin-left:0;
-	background: #6c757d;
-	color: white;    
-}
-#deleteBtn {
-	margin-right: 10px;
-	background: #FF5B5B;
-	color: white;
-}
-.layout__main .main-content{
-    padding-top:0 !important;
-    margin-top:0 !important;
-}
-
-.layout__main .form-container{
-    margin-top:0 !important;
-}
-</style>
-
-
-	<t:layout>
-
-		<div class="main-content">
-			<div class="form-container">
-				<h1>문의사항 수정</h1>
-
-				<form
-					action="/burgerstack/admin/inquiries/${inquiryId}"
-					method="post">
-					<div class="form-group">
-					    <strong>제목</strong><br>
-					    ${inquiry.title}
-					</div>
-					
-					<div class="form-group">
-					    <strong>문의내용</strong><br>
-					    ${inquiry.content}
-					</div>
-					
-					<div class="form-group">
-					    <textarea name="answerContent"
-					              class="textarea-content"
-					              required>${inquiry.answerContent}</textarea>
-					</div>
-					
-					<div class="btn-area">
-						<button type="submit" id="saveBtn">등록 및 수정</button>
-	
-					<button type="submit" id="deleteBtn"
-					        formaction="/burgerstack/admin/inquiries/${inquiryId}/delete">
-					    삭제
-					</button>
-	
-						<button type="button" id="homeBtn"
-							onclick="location.href='/burgerstack/admin/inquiries'">
-							목록으로</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</t:layout>
+        <common:Actions>
+          <%-- 취소/저장 순서를 일관되게 유지합니다. --%>
+          <common:ReturnLink href="${listUrl}">목록으로</common:ReturnLink>
+          <button type="submit" class="btn btn-primary ml-2">저장</button>
+        </common:Actions>
+      </form>
+    </jsp:body>
+  </layout:Page>
+</t:layout>

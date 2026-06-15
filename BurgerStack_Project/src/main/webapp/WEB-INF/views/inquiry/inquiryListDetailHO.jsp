@@ -36,7 +36,7 @@
     <jsp:attribute name="actions">
       <%-- 헤더 오른쪽에는 목록 복귀, 수정 이동 같은 페이지 단위 액션을 둡니다. --%>
       <common:ReturnLink href="${listUrl}">목록으로</common:ReturnLink>
-      <a href="${formUrl}" class="btn btn-primary ml-2">수정</a>
+      <a href="${formUrl}" class="btn btn-primary ml-2">답변 및 수정</a>
     </jsp:attribute>
 
     <jsp:body>
