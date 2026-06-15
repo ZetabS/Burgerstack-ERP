@@ -15,28 +15,31 @@ import com.kh.burgerstack.inventory.vo.InventoryTransactionItem;
 
 @Mapper
 public interface InventoryTransactionMapper {
-        public int insert(InventoryTransaction inventoryTransaction);
+    public int insert(InventoryTransaction inventoryTransaction);
 
-        public InventoryTransaction findById(
-                        @Param("inventoryTransactionId") int inventoryTransactionId);
+    public InventoryTransaction findById(
+            @Param("inventoryTransactionId") int inventoryTransactionId);
 
-        public int insertItems(
-                        @Param("inventoryTransactionId") int inventoryTransactionId,
-                        @Param("list") List<InventoryTransactionItem> list);
+    public InventoryTransactionItem findItemById(
+            @Param("inventoryTransactionItemId") int inventoryTransactionItemId);
 
-        public List<InventoryTransactionItem> findItemsByTransactionId(
-                        @Param("inventoryTransactionId") int inventoryTransactionId);
+    public int insertItem(
+            @Param("inventoryTransactionId") int inventoryTransactionId,
+            @Param("item") InventoryTransactionItem item);
 
-        public List<InventoryTransactionListItem> findInventoryTransactionListItems(
-                        @Param("condition") InventoryTransactionSearchCondition condition,
-                        @Param("paging") PagingRequest paging);
+    public List<InventoryTransactionItem> findItemsByTransactionId(
+            @Param("inventoryTransactionId") int inventoryTransactionId);
 
-        public int count(
-                        @Param("condition") InventoryTransactionSearchCondition condition);
+    public List<InventoryTransactionListItem> findInventoryTransactionListItems(
+            @Param("condition") InventoryTransactionSearchCondition condition,
+            @Param("paging") PagingRequest paging);
 
-        public InventoryTransactionDetail getInventoryTransactionDetailById(
-                        @Param("inventoryTransactionId") int inventoryTransactionId);
+    public int count(
+            @Param("condition") InventoryTransactionSearchCondition condition);
 
-        public List<InventoryTransactionDetailItem> findInventoryTransactionDetailItems(
-                        @Param("inventoryTransactionId") int inventoryTransactionId);
+    public InventoryTransactionDetail getInventoryTransactionDetailById(
+            @Param("inventoryTransactionId") int inventoryTransactionId);
+
+    public List<InventoryTransactionDetailItem> findInventoryTransactionDetailItems(
+            @Param("inventoryTransactionId") int inventoryTransactionId);
 }

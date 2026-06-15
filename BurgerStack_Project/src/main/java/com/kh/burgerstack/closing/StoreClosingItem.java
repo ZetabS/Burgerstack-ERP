@@ -12,7 +12,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class StoreClosingItem {
-
     private Long storeClosingItemId;
 
     private Long systemQuantity;
