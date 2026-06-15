@@ -8,7 +8,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
 
-<div class="ds-list-page container-fluid js-store-current-url">
+<div class="ds-list-page container js-store-current-url">
   <c:choose>
     <c:when test="${not empty actions}">
       <layout:PageHeader title="${title}" description="${description}">
