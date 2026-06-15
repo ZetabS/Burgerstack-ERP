@@ -125,7 +125,6 @@
                 <th>자재별 금액</th>
             </tr>
         </thead>
-
         <tbody>
             <c:forEach var="item" items="${list}">
                 <tr class="item-row ${item.status eq 'REQUESTED' ? '' : 'disabled-row'}">

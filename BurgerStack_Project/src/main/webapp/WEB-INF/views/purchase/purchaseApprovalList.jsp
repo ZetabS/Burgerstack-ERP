@@ -78,6 +78,7 @@
                             max="${today}"
                             value="${condition.endDate}"
                             onchange="validateDate();">
+                    <button type="reset" class="button-secondary">초기화</button>
                 </form>
             </div>
         </div>
