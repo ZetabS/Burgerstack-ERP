@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.purchase.dto.PurchaseApprovalItemDto;
 import com.kh.burgerstack.purchase.dto.PurchaseApprovalRequestDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
@@ -122,11 +123,25 @@ public class PurchaseControllerHO {
     @PostMapping("purchases/{id}/approve")
     public String processPurchase(
             @PathVariable("id") Long purchaseOrderId,
-            PurchaseApprovalRequestDto request) {
+            PurchaseApprovalRequestDto request,
+            @RequestParam(required = false)
+            String bulkRejectReason) {
 
         purchaseService.processPurchase(
                 purchaseOrderId,
                 request.getItems());
+
+        if (bulkRejectReason != null &&
+            !bulkRejectReason.isBlank()) {
+
+            for (PurchaseApprovalItemDto item
+                    : request.getItems()) {
+
+                item.setRejectReason(
+                    bulkRejectReason
+                );
+            }
+        }
 
         return "redirect:/admin/purchases/" + purchaseOrderId;
     }

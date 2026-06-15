@@ -1,255 +1,203 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-
-<style>
-.page-title {
-    font-size: 30px;
-    font-weight: 700;
-    margin-bottom: 28px;
-}
-
-.search-area {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 18px;
-}
-
-.search-area input {
-    height: 36px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    padding: 0 12px;
-    font-size: 14px;
-}
-
-.search-area button,
-.search-area a {
-    height: 36px;
-    border: none;
-    border-radius: 8px;
-    padding: 0 14px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-}
-
-.search-area button {
-    background: #ff6b00;
-    color: white;
-}
-
-.search-area button:hover {
-    background: #e45f00;
-}
-
-.search-area a {
-    background: #fff;
-    color: #374151;
-    border: 1px solid #d1d5db;
-}
-
-.table-guide {
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 15px;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 15px;
-    background: #fff;
-}
-
-.table thead th {
-    background: #f8fafc;
-    color: #374151;
-    font-weight: 700;
-    border-top: 1px solid #e5e7eb;
-    border-bottom: 2px solid #d1d5db;
-    padding: 14px 12px;
-    text-align: center;
-}
-
-.table tbody td {
-    border-bottom: 1px solid #e5e7eb;
-    padding: 14px 12px;
-    vertical-align: middle;
-    text-align: center;
-}
-
-.table tbody tr:hover {
-    background: #fff7ed;
-}
-
-.clickable-row {
-    cursor: pointer;
-}
-
-.text-left {
-    text-align: left !important;
-}
-
-.status-badge {
-    display: inline-block;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.status-normal {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.status-diff {
-    background: #ffedd5;
-    color: #c2410c;
-}
-
-.empty-row {
-    text-align: center;
-    color: #888;
-    padding: 28px 12px !important;
-}
-</style>
-</head>
-
-<body>
+<c:url var="baseUrl" value="/owner/receipts" />
 
 <t:layout>
 
-    <h2 class="page-title">입고 이력</h2>
+  <layout:Page title="입고 이력" description="입고 완료된 이력을 조회하고 상세 정보를 확인할 수 있습니다.">
 
-    <p class="table-guide">
-        행을 클릭하면 상세 정보를 확인할 수 있습니다.
-    </p>
+    <jsp:attribute name="actions">
+      <a href="${baseUrl}" class="btn btn-secondary">초기화</a>
+    </jsp:attribute>
 
-    <!-- 기간 필터 -->
-    <form class="search-area"
-          method="get"
-          action="${pageContext.request.contextPath}/owner/receipts">
+    <jsp:body>
 
-        <input type="date"
-               name="startDate"
-               value="${param.startDate}">
+      <layout:Section title="조회 조건">
+        <form id="searchForm"
+              action="${baseUrl}"
+              method="get">
 
-        <span>~</span>
+          <input type="hidden" name="page" value="1" />
 
-        <input type="date"
-               name="endDate"
-               value="${param.endDate}">
+          <div class="d-flex justify-content-end align-items-center mb-3">
 
-        <button type="submit">
-            조회
-        </button>
+            <input type="date"
+                   class="form-control mr-2"
+                   style="width: 150px;"
+                   name="startDate"
+                   id="startDate"
+                   value="${param.startDate}" />
 
-        <a href="${pageContext.request.contextPath}/owner/receipts">
-            초기화
-        </a>
-    </form>
+            <span class="mr-2">~</span>
 
-    <table class="table">
-        <thead>
+            <input type="date"
+                   class="form-control mr-2"
+                   style="width: 150px;"
+                   name="endDate"
+                   id="endDate"
+                   value="${param.endDate}" />
+
+            <button type="submit" class="btn btn-dark">
+              조회
+            </button>
+
+          </div>
+        </form>
+      </layout:Section>
+
+      <layout:TableSection title="입고 이력 목록" description="행을 클릭하면 상세 정보를 확인할 수 있습니다.">
+
+        <table:Table isEmpty="${empty list}" emptyMessage="입고 이력이 없습니다.">
+
+          <jsp:attribute name="thead">
             <tr>
-                <th style="width: 18%;">입고 코드</th>
-                <th style="width: 42%;">품목요약</th>
-                <th style="width: 18%;">상태</th>
-                <th style="width: 22%;">입고 완료일시</th>
+              <th>입고 코드</th>
+              <th>품목요약</th>
+              <th class="text-center">상태</th>
+              <th class="text-center">입고 완료일시</th>
             </tr>
-        </thead>
+          </jsp:attribute>
 
-        <tbody>
+          <jsp:attribute name="tbody">
             <c:forEach var="r" items="${list}">
-                <tr class="clickable-row"
-                    onclick="location.href='${pageContext.request.contextPath}/owner/receipts/${r.receiptId}'">
+              <c:url var="detailUrl" value="/owner/receipts/${r.receiptId}" />
 
-                    <td>
-                        <c:choose>
-                            <c:when test="${not empty r.receiptCode}">
-                                ${r.receiptCode}
-                            </c:when>
-                            <c:otherwise>
-                                R${r.receiptId}
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
+              <c:set var="receiptCodeText" value="${r.receiptCode}" />
+              <c:if test="${empty receiptCodeText}">
+                <c:set var="receiptCodeText" value="R${r.receiptId}" />
+              </c:if>
 
-                    <td class="text-left">
-                        <c:choose>
-                            <c:when test="${not empty r.materialSummary}">
-                                ${r.materialSummary}
-                            </c:when>
-                            <c:otherwise>
-                                -
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
+              <table:TableRow clickable="true" href="${detailUrl}">
 
-                    <td>
-                        <c:choose>
-                            <c:when test="${r.receiptStatus eq 'DIFFERENCE'}">
-                                <span class="status-badge status-diff">
-                                    차이 있음
-                                </span>
-                            </c:when>
+                <table:TextFitCell value="${receiptCodeText}" />
 
-                            <c:when test="${r.receiptStatus eq 'NORMAL'}">
-                                <span class="status-badge status-normal">
-                                    정상 입고
-                                </span>
-                            </c:when>
+                <table:TextCell value="${empty r.materialSummary ? '-' : r.materialSummary}" />
 
-                            <c:otherwise>
-                                <span class="status-badge status-normal">
-                                    ${r.receiptStatus}
-                                </span>
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
+                <table:FitCell>
+                  <c:choose>
+                    <c:when test="${r.receiptStatus eq 'DIFFERENCE'}">
+                      <span class="badge badge-warning">차이 있음</span>
+                    </c:when>
 
-                    <td>
-                        <c:choose>
-                            <c:when test="${not empty r.receivedAt}">
-                                ${r.receivedAt.toString().replace('T',' ').substring(0,19)}
-                            </c:when>
-                            <c:otherwise>
-                                -
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-                </tr>
+                    <c:when test="${r.receiptStatus eq 'NORMAL'}">
+                      <span class="badge badge-success">정상 입고</span>
+                    </c:when>
+
+                    <c:otherwise>
+                      <span class="badge badge-secondary">
+                        ${r.receiptStatus}
+                      </span>
+                    </c:otherwise>
+                  </c:choose>
+                </table:FitCell>
+
+                <table:FitCell>
+                  <c:choose>
+                    <c:when test="${not empty r.receivedAt}">
+                      ${r.receivedAt.toString().replace('T', ' ')}
+                    </c:when>
+                    <c:otherwise>
+                      <span class="text-muted">-</span>
+                    </c:otherwise>
+                  </c:choose>
+                </table:FitCell>
+
+              </table:TableRow>
             </c:forEach>
+          </jsp:attribute>
 
-            <c:if test="${empty list}">
-                <tr>
-                    <td colspan="4" class="empty-row">
-                        입고 이력이 없습니다.
-                    </td>
-                </tr>
-            </c:if>
-        </tbody>
-    </table>
+        </table:Table>
 
-    <ui:pagination pageInfo="${pageInfo}"></ui:pagination>
+      </layout:TableSection>
 
+      <div class="mt-3 d-flex justify-content-center">
+        <ui:pagination pageInfo="${pageInfo}" />
+      </div>
+
+    </jsp:body>
+  </layout:Page>
 </t:layout>
 
-</body>
-</html>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const searchForm = document.getElementById("searchForm");
+    const startDate = document.getElementById("startDate");
+    const endDate = document.getElementById("endDate");
+
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return year + "-" + month + "-" + day;
+    }
+
+    const today = new Date();
+    const yesterday = new Date();
+
+    yesterday.setDate(today.getDate() - 1);
+
+    const todayText = formatDate(today);
+    const yesterdayText = formatDate(yesterday);
+
+    if (startDate) {
+      startDate.setAttribute("max", yesterdayText);
+    }
+
+    if (endDate) {
+      endDate.setAttribute("max", todayText);
+    }
+
+    function validateDateRange() {
+      const startValue = startDate.value;
+      const endValue = endDate.value;
+
+      if (startValue !== "" && startValue >= todayText) {
+        alert("시작일은 오늘 이전 날짜만 선택할 수 있습니다.");
+        startDate.value = "";
+        startDate.focus();
+        return false;
+      }
+
+      if (endValue !== "" && endValue > todayText) {
+        alert("종료일은 오늘까지만 선택할 수 있습니다.");
+        endDate.value = "";
+        endDate.focus();
+        return false;
+      }
+
+      if (startValue !== "" && endValue !== "" && startValue > endValue) {
+        alert("시작일은 종료일보다 늦을 수 없습니다.");
+        startDate.focus();
+        return false;
+      }
+
+      return true;
+    }
+
+    if (searchForm) {
+      searchForm.addEventListener("submit", function(e) {
+        if (!validateDateRange()) {
+          e.preventDefault();
+        }
+      });
+    }
+
+    if (startDate) {
+      startDate.addEventListener("change", function() {
+        validateDateRange();
+      });
+    }
+
+    if (endDate) {
+      endDate.addEventListener("change", function() {
+        validateDateRange();
+      });
+    }
+  });
+</script>

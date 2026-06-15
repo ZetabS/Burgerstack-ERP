@@ -11,7 +11,6 @@ import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.purchase.PurchaseOrder;
 
-import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ReceiptService {
 
@@ -37,15 +36,38 @@ public class ReceiptService {
 			);
 	}
 
-    public PageInfo getPlanPageInfo(PagingRequest pagingRequest, String status) {
-        return pagingRequest.toPageInfo(
-                receiptDao.getPlanTotalCount(sqlSession, status)
-        );
-    }
+    public PageInfo getPlanPageInfo(PagingRequest pagingRequest,
+						            String status,
+						            String startDate,
+						            String endDate,
+						            String keyword) {
+						
+						return pagingRequest.toPageInfo(
+						receiptDao.getPlanTotalCount(
+						sqlSession,
+						status,
+						startDate,
+						endDate,
+						keyword
+						)
+						);
+						}
 
-    public List<PurchaseOrder> selectReceiptPlanList(PagingRequest pagingRequest, String status) {
-        return receiptDao.selectReceiptPlanList(sqlSession, pagingRequest, status);
-    }
+    public List<PurchaseOrder> selectReceiptPlanList(PagingRequest pagingRequest,
+						            String status,
+						            String startDate,
+						            String endDate,
+						            String keyword) {
+						
+						return receiptDao.selectReceiptPlanList(
+						sqlSession,
+						pagingRequest,
+						status,
+						startDate,
+						endDate,
+						keyword
+						);
+						}
     
     public List<Receipt> selectReceiptList(PagingRequest pagingRequest,
 								            String receiptType,

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import org.springframework.dao.DuplicateKeyException;
+
 import com.kh.burgerstack.common.pagination.PagingRequest;
 
 @Controller
@@ -34,6 +36,7 @@ public class StoreController {
                               RedirectAttributes ra) {
 
         if (store.getOwnerUserNo() == null) {
+            keepStoreForm(ra, store, phone1, phone2, phone3, detailAddress);
             ra.addFlashAttribute("msg", "점주 계정을 선택해주세요.");
             return "redirect:/admin/stores/new";
         }
@@ -42,6 +45,8 @@ public class StoreController {
                 storeService.countStoreByOwnerUserNo(store.getOwnerUserNo());
 
         if (ownerStoreCount > 0) {
+            store.setOwnerUserNo(null);
+            keepStoreForm(ra, store, phone1, phone2, phone3, detailAddress);
             ra.addFlashAttribute("msg", "이미 점포에 연결된 점주입니다.");
             return "redirect:/admin/stores/new";
         }
@@ -50,12 +55,38 @@ public class StoreController {
                 storeService.countStoreName(store.getStoreName());
 
         if (duplicateCount > 0) {
+            keepStoreForm(ra, store, phone1, phone2, phone3, detailAddress);
             ra.addFlashAttribute("msg", "이미 등록된 점포명입니다.");
+            return "redirect:/admin/stores/new";
+        }
+
+        phone1 = phone1 == null ? "" : phone1.trim();
+        phone2 = phone2 == null ? "" : phone2.trim();
+        phone3 = phone3 == null ? "" : phone3.trim();
+
+        if (!phone1.matches("\\d{3}")
+                || !phone2.matches("\\d{4}")
+                || !phone3.matches("\\d{4}")) {
+
+            keepStoreForm(ra, store, phone1, phone2, phone3, detailAddress);
+            ra.addFlashAttribute("msg", "연락처는 3자리 - 4자리 - 4자리 숫자로 입력해주세요.");
             return "redirect:/admin/stores/new";
         }
 
         String phone =
                 phone1 + "-" + phone2 + "-" + phone3;
+
+        int phoneCount =
+                storeService.countStorePhone(phone);
+
+        System.out.println("[점포등록] phone = " + phone);
+        System.out.println("[점포등록] phoneCount = " + phoneCount);
+
+        if (phoneCount > 0) {
+            keepStoreForm(ra, store, phone1, phone2, phone3, detailAddress);
+            ra.addFlashAttribute("msg", "이미 등록된 연락처입니다.");
+            return "redirect:/admin/stores/new";
+        }
 
         String address = store.getAddress();
 
@@ -75,6 +106,24 @@ public class StoreController {
 
         return "common/errorPage";
     }
+    
+    private void keepStoreForm(RedirectAttributes ra,
+	            Store store,
+	            String phone1,
+	            String phone2,
+	            String phone3,
+	            String detailAddress) {
+	
+	ra.addFlashAttribute("store", store);
+	ra.addFlashAttribute("phone1", phone1);
+	ra.addFlashAttribute("phone2", phone2);
+	ra.addFlashAttribute("phone3", phone3);
+	ra.addFlashAttribute("detailAddress", detailAddress);
+	
+	if (store.getOwnerUserNo() != null) {
+	ra.addFlashAttribute("selectedOwnerText", "선택된 점주 유지됨");
+	}
+	}
 
     // 점포 등록 화면
     @GetMapping("new")
@@ -126,13 +175,42 @@ public class StoreController {
 	 	// 점포 수정 처리
 	    @PostMapping("/{storeId}/update")
 	    public String updateStore(@PathVariable("storeId") Long storeId,
-	                              Store store) {
+	                              Store store,
+	                              RedirectAttributes ra) {
 	
 	        store.setStoreId(storeId);
 	
-	        int result = storeService.updateStore(store);
+	        if (store.getPhone() == null
+	                || !store.getPhone().matches("\\d{3}-\\d{4}-\\d{4}")) {
 	
-	        if (result > 0) {
+	            ra.addFlashAttribute("msg", "연락처는 3자리-4자리-4자리 형식으로 입력해주세요.");
+	            return "redirect:/admin/stores/" + storeId;
+	        }
+	
+	        if ("OPEN".equals(store.getStatus())) {
+	            int phoneCount =
+	                    storeService.countStorePhoneForUpdate(store);
+	
+	            System.out.println("[점포수정] storeId = " + storeId);
+	            System.out.println("[점포수정] phone = " + store.getPhone());
+	            System.out.println("[점포수정] phoneCount = " + phoneCount);
+	
+	            if (phoneCount > 0) {
+	                ra.addFlashAttribute("msg", "이미 등록된 연락처입니다.");
+	                return "redirect:/admin/stores/" + storeId;
+	            }
+	        }
+	
+	        try {
+	            int result = storeService.updateStore(store);
+	
+	            if (result > 0) {
+	                ra.addFlashAttribute("msg", "점포 정보가 수정되었습니다.");
+	                return "redirect:/admin/stores/" + storeId;
+	            }
+	
+	        } catch (DuplicateKeyException e) {
+	            ra.addFlashAttribute("msg", "이미 등록된 연락처입니다.");
 	            return "redirect:/admin/stores/" + storeId;
 	        }
 	

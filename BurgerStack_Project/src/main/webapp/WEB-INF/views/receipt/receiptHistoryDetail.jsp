@@ -1,341 +1,167 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>   
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-
-<style>
-    .page-title {
-        font-size: 30px;
-        font-weight: 700;
-        margin-bottom: 28px;
-    }
-
-    .info-card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 14px;
-        padding: 24px 28px;
-        margin-bottom: 24px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-    }
-
-    .info-grid {
-        display: grid;
-        grid-template-columns: 160px 1fr 160px 1fr;
-        row-gap: 16px;
-        column-gap: 14px;
-        align-items: center;
-    }
-
-    .info-label {
-        color: #6b7280;
-        font-weight: 700;
-        font-size: 14px;
-    }
-
-    .info-value {
-        color: #111827;
-        font-size: 15px;
-    }
-
-    .info-value a {
-        color: #ff6b00;
-        font-weight: 700;
-        text-decoration: none;
-    }
-
-    .info-value a:hover {
-        text-decoration: underline;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 700;
-    }
-
-    .status-normal {
-        background: #dcfce7;
-        color: #166534;
-    }
-
-    .status-diff {
-        background: #ffedd5;
-        color: #c2410c;
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 15px;
-        margin-top: 0;
-        background: #fff;
-    }
-
-    .table thead th {
-        background: #f8fafc;
-        color: #374151;
-        font-weight: 700;
-        border-top: 1px solid #e5e7eb;
-        border-bottom: 2px solid #d1d5db;
-        padding: 14px 12px;
-        text-align: center;
-    }
-
-    .table tbody td,
-    .table tbody th {
-        border-bottom: 1px solid #e5e7eb;
-        padding: 14px 12px;
-        vertical-align: middle;
-        text-align: center;
-    }
-
-    .table tbody tr:hover {
-        background: #fff7ed;
-    }
-
-    .text-right {
-        text-align: right !important;
-    }
-
-    .text-left {
-        text-align: left !important;
-    }
-
-    .total-row th,
-    .total-row td {
-        background: #f9fafb;
-        font-weight: 700;
-    }
-
-    .total-price {
-        color: #ff6b00;
-        font-size: 17px;
-        font-weight: 700;
-    }
-
-    .memo-box {
-	    margin-top: 22px;
-	    background: #fff;
-	    border: 1px solid #e5e7eb;
-	    border-radius: 14px;
-	    padding: 18px 24px;
-	    text-align: left;
-	}
-	
-	.memo-title {
-	    margin-bottom: 10px;
-	    color: #374151;
-	    font-weight: 700;
-	    font-size: 15px;
-	}
-	
-	.memo-content {
-	    min-height: 36px;
-	    color: #4b5563;
-	    line-height: 1.6;
-	    white-space: normal;
-	    text-align: left;
-	    display: block;
-	}
-
-    .btn-area {
-        margin-top: 24px;
-        text-align: center;
-    }
-
-    .list-btn {
-        display: inline-block;
-        padding: 9px 18px;
-        background: #374151;
-        color: #fff !important;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none !important;
-    }
-
-    .list-btn:hover {
-        background: #1f2937;
-        color: #fff !important;
-        text-decoration: none !important;
-    }
-</style>
-</head>
-
-<body>
+<c:url var="listUrl" value="/owner/receipts" />
+<c:url var="purchaseUrl" value="/owner/purchases/${receipt.purchaseOrderId}" />
 
 <t:layout>
+  <layout:Page title="입고 이력 상세" description="입고 기본 정보와 품목별 상세 내역을 확인할 수 있습니다.">
 
-    <h2 class="page-title">입고 이력 상세</h2>
+    <jsp:attribute name="actions">
+      <common:ReturnLink href="${listUrl}">목록으로</common:ReturnLink>
+    </jsp:attribute>
 
-    <!-- 입고 기본 정보 -->
-    <div class="info-card">
-        <div class="info-grid">
+    <jsp:body>
 
-            <div class="info-label">입고 코드</div>
-            <div class="info-value">
-                <c:choose>
-                    <c:when test="${not empty receipt.receiptCode}">
-                        ${receipt.receiptCode}
-                    </c:when>
-                    <c:otherwise>
-                        R${receipt.receiptId}
-                    </c:otherwise>
-                </c:choose>
-            </div>
+      <layout:Section title="입고 기본 정보">
 
-            <div class="info-label">발주 코드</div>
-            <div class="info-value">
-                <a href="${pageContext.request.contextPath}/owner/purchases/${receipt.purchaseOrderId}">
-				    <c:choose>
-				        <c:when test="${not empty receipt.purchaseCode}">
-				            ${receipt.purchaseCode}
-				        </c:when>
-				        <c:otherwise>
-				            P${receipt.purchaseOrderId}
-				        </c:otherwise>
-				    </c:choose>
-				</a>
-            </div>
+        <layout:FieldRow label="입고 코드">
+          <c:choose>
+            <c:when test="${not empty receipt.receiptCode}">
+              ${receipt.receiptCode}
+            </c:when>
+            <c:otherwise>
+              R${receipt.receiptId}
+            </c:otherwise>
+          </c:choose>
+        </layout:FieldRow>
 
-            <div class="info-label">입고 상태</div>
-            <div class="info-value">
-                <c:choose>
-                    <c:when test="${receipt.receiptStatus eq 'DIFFERENCE'}">
-                        <span class="status-badge status-diff">차이 있음</span>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="status-badge status-normal">정상 입고</span>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-
-            <div class="info-label">입고 완료일시</div>
-            <div class="info-value">
-                <c:choose>
-                    <c:when test="${not empty receipt.receivedAt}">
-                        ${receipt.receivedAt.toString().replace('T',' ').substring(0,19)}
-                    </c:when>
-                    <c:otherwise>
-                        -
-                    </c:otherwise>
-                </c:choose>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- 상세 품목 테이블 -->
-    <table class="table">
-        <thead>
-            <tr>
-                <th>자재 코드</th>
-                <th>자재명</th>
-                <th>자재 유형</th>
-                <th>단가</th>
-                <th>승인 수량</th>
-                <th>요청 수량</th>
-                <th>실입고 수량</th>
-                <th>차이 수량</th>
-                <th>사유</th>
-                <th>금액</th>
-            </tr>
-        </thead>
-
-        <tbody>
+        <layout:FieldRow label="발주 코드">
+          <a href="${purchaseUrl}">
             <c:choose>
-                <c:when test="${empty itemList}">
-                    <tr>
-                        <td colspan="10" align="center">
-                            입고 상세 내역이 없습니다.
-                        </td>
-                    </tr>
-                </c:when>
-
-                <c:otherwise>
-                    <c:set var="totalPrice" value="0" />
-
-                    <c:forEach var="item" items="${itemList}">
-                        <tr>
-                            <td>${item.materialCode}</td>
-                            <td class="text-left">${item.materialName}</td>
-
-                            <td>
-                                <c:choose>
-                                    <c:when test="${item.materialType eq 'AF'}">상온</c:when>
-                                    <c:when test="${item.materialType eq 'RF'}">냉장</c:when>
-                                    <c:when test="${item.materialType eq 'FF'}">냉동</c:when>
-                                    <c:when test="${item.materialType eq 'PK'}">포장재</c:when>
-                                    <c:when test="${item.materialType eq 'KW'}">주방용품</c:when>
-                                    <c:otherwise>${item.materialType}</c:otherwise>
-                                </c:choose>
-                            </td>
-
-                            <td class="text-right">
-                                <fmt:formatNumber value="${item.supplyPrice}" pattern="#,###" />원
-                            </td>
-
-                            <td>${item.approvedQuantity}</td>
-                            <td>${item.requestQuantity}</td>
-                            <td>${item.receivedQuantity}</td>
-                            <td>${item.defectQuantity}</td>
-
-                            <td>
-                                <c:choose>
-                                    <c:when test="${empty item.receiptItemMemo}">
-                                        -
-                                    </c:when>
-                                    <c:otherwise>
-                                        ${item.receiptItemMemo}
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-
-                            <td class="text-right">
-                                <fmt:formatNumber value="${item.amount}" pattern="#,###" />원
-                            </td>
-                        </tr>
-
-                        <c:set var="totalPrice" value="${totalPrice + item.amount}" />
-                    </c:forEach>
-
-                    <tr class="total-row">
-                        <th colspan="9" class="text-right">총 금액</th>
-                        <td class="text-right">
-                            <span class="total-price">
-                                <fmt:formatNumber value="${totalPrice}" pattern="#,###" />원
-                            </span>
-                        </td>
-                    </tr>
-                </c:otherwise>
+              <c:when test="${not empty receipt.purchaseCode}">
+                ${receipt.purchaseCode}
+              </c:when>
+              <c:otherwise>
+                P${receipt.purchaseOrderId}
+              </c:otherwise>
             </c:choose>
-        </tbody>
-    </table>
+          </a>
+        </layout:FieldRow>
 
-    <!-- 비고 -->
-    <div class="memo-box">
-	    <div class="memo-title">비고</div>
-	    <div class="memo-content"><c:choose><c:when test="${empty receipt.receiptMemo}">-</c:when><c:otherwise>${receipt.receiptMemo}</c:otherwise></c:choose></div>
-	</div>
+        <layout:FieldRow label="입고 상태">
+          <c:choose>
+            <c:when test="${receipt.receiptStatus eq 'DIFFERENCE'}">
+              <span class="badge badge-warning">차이 있음</span>
+            </c:when>
+            <c:otherwise>
+              <span class="badge badge-success">정상 입고</span>
+            </c:otherwise>
+          </c:choose>
+        </layout:FieldRow>
 
-    <div class="btn-area">
-        <a class="list-btn"
-           href="${pageContext.request.contextPath}/owner/receipts">
-            목록으로
-        </a>
-    </div>
+        <layout:FieldRow label="입고 완료일시">
+          <c:choose>
+            <c:when test="${not empty receipt.receivedAt}">
+              ${receipt.receivedAt.toString().replace('T', ' ')}
+            </c:when>
+            <c:otherwise>
+              <span class="text-muted">-</span>
+            </c:otherwise>
+          </c:choose>
+        </layout:FieldRow>
 
+      </layout:Section>
+
+      <layout:TableSection title="상세 품목" description="입고 처리된 품목별 수량과 금액을 확인합니다.">
+
+        <table:Table isEmpty="${empty itemList}" emptyMessage="입고 상세 내역이 없습니다.">
+
+          <jsp:attribute name="thead">
+            <tr>
+              <th>자재 코드</th>
+              <th>자재명</th>
+              <th class="text-center">자재 유형</th>
+              <th class="text-right">단가</th>
+              <th class="text-right">승인 수량</th>
+              <th class="text-right">요청 수량</th>
+              <th class="text-right">실입고 수량</th>
+              <th class="text-right">차이 수량</th>
+              <th>사유</th>
+              <th class="text-right">금액</th>
+            </tr>
+          </jsp:attribute>
+
+          <jsp:attribute name="tbody">
+            <c:set var="totalPrice" value="0" />
+
+            <c:forEach var="item" items="${itemList}">
+              <table:TableRow>
+
+                <table:TextFitCell value="${item.materialCode}" />
+
+                <table:TextCell value="${item.materialName}" />
+
+                <table:FitCell>
+                  <c:choose>
+                    <c:when test="${item.materialType eq 'AF'}">상온</c:when>
+                    <c:when test="${item.materialType eq 'RF'}">냉장</c:when>
+                    <c:when test="${item.materialType eq 'FF'}">냉동</c:when>
+                    <c:when test="${item.materialType eq 'PK'}">포장재</c:when>
+                    <c:when test="${item.materialType eq 'KW'}">주방용품</c:when>
+                    <c:otherwise>${item.materialType}</c:otherwise>
+                  </c:choose>
+                </table:FitCell>
+
+                <table:MoneyCell value="${item.supplyPrice}" suffix="원" />
+
+                <table:NumberCell value="${item.approvedQuantity}" />
+
+                <table:NumberCell value="${item.requestQuantity}" />
+
+                <table:NumberCell value="${item.receivedQuantity}" />
+
+                <table:DeltaCell value="${item.defectQuantity}" />
+
+                <table:TextCell value="${empty item.receiptItemMemo ? '-' : item.receiptItemMemo}" />
+
+                <table:MoneyCell value="${item.amount}" suffix="원" />
+
+              </table:TableRow>
+
+              <c:set var="totalPrice" value="${totalPrice + item.amount}" />
+            </c:forEach>
+
+            <c:if test="${not empty itemList}">
+              <tr class="font-weight-bold">
+                <td colspan="9" class="text-right">총 금액</td>
+                <td class="text-right">
+                  <span class="font-weight-bold">
+                    <fmt:formatNumber value="${totalPrice}" pattern="#,###" />원
+                  </span>
+                </td>
+              </tr>
+            </c:if>
+          </jsp:attribute>
+
+        </table:Table>
+
+      </layout:TableSection>
+
+      <layout:Section title="비고">
+        <layout:FieldRow label="입고 메모">
+          <c:choose>
+            <c:when test="${empty receipt.receiptMemo}">
+              <span class="text-muted">-</span>
+            </c:when>
+            <c:otherwise>
+              ${receipt.receiptMemo}
+            </c:otherwise>
+          </c:choose>
+        </layout:FieldRow>
+      </layout:Section>
+
+      <common:Actions>
+        <common:ReturnLink href="${listUrl}">목록으로</common:ReturnLink>
+      </common:Actions>
+
+    </jsp:body>
+
+  </layout:Page>
 </t:layout>
-
-</body>
-</html>

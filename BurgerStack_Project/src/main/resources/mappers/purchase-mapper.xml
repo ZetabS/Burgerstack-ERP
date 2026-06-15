@@ -78,10 +78,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             PO.STATUS            AS status,
             PO.TOTAL_AMOUNT      AS totalAmount,
             PO.ORDER_MEMO        AS orderMemo,
-            TO_CHAR(
-                PO.CREATED_AT,
-                'YYYY-MM-DD HH24:MI'
-            ) AS createdAt,
+            PO.CREATED_AT        AS createdAt,
 
             (
                 SELECT
