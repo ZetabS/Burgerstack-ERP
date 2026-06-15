@@ -28,8 +28,8 @@
   - detail.history : 상세 화면 안에 같이 보여줄 이력 목록 DTO
 --%>
 
-<c:url var="listUrl" value="burgerstack/admin/inquiries" />
-<c:url var="formUrl" value="/burgerstack/admin/inquiries/${inquiryId}/edit" />
+<c:url var="listUrl" value="/admin/inquiries" />
+<c:url var="formUrl" value="/admin/inquiries/${inquiryId}/edit" />
 
 <t:layout>
   <layout:Page title="문의사항 상세 페이지" description="">

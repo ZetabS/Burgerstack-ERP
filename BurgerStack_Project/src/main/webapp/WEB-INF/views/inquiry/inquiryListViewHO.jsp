@@ -108,7 +108,7 @@
         <jsp:attribute name="tbody">
           <c:forEach var="inq" items="${inquiryList}">
             <c:url var="detailUrl" value="/admin/inquiries/${inq.inquiryId}" />
-            <c:url var="formUrl" value="/example/patterns/form" />
+            <c:url var="formUrl" value="/admin/inquiries/${inq.inquiryId}" />
             <c:set var="inquiryStatus" value="${empty inq.answerContent ? 'REQUESTED' : 'ANSWERED'}"></c:set>
 
             <%--
