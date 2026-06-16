@@ -42,9 +42,6 @@
       --%>
      <form action="${submitUrl}" method="post">
 		  <input type="hidden" name="userNo" value="${user.userNo}" />
-		  
-		  <%-- [이 부분 추가] 기존 상태 값을 그대로 폼에 담아 보냅니다 --%>
-		  <input type="hidden" name="status" value="${user.status}" /> 
 		
 		  <layout:Section title="문의사항을 작성해주세요." description="">
 	      <layout:FieldRow label="아이디" inputId="safetyQuantity" help="아이디를 입력하시오.">
