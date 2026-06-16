@@ -44,7 +44,7 @@ public class LoginController {
 	    
 	    // 3. 점주 계정 로그인 제약 조건 체크 (관리자는 제외)
 	    if(!"ADMIN".equals(loginUser.getRole())) {
-	        boolean isStoreOpen = "영업중".equals(loginUser.getStoreStatus()); // DB 값 확인 필요
+	        boolean isStoreOpen = "OPEN".equals(loginUser.getStoreStatus()); // DB 값 확인 필요
 	        boolean isAccountActive = "ACTIVE".equals(loginUser.getStatus());
 	        
 	        if (!isStoreOpen || !isAccountActive) {
