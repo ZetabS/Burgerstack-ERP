@@ -3,26 +3,12 @@
 <mapper namespace="com.kh.burgerstack.material.MaterialMapper">
 
     <!-- ResultMap -->
-    <resultMap id="MaterialWithFilesMap" type="Material">
-        <id     property="materialId"   column="MATERIAL_ID"/>
-        <result property="materialCode" column="MATERIAL_CODE"/>
-        <result property="materialName" column="MATERIAL_NAME"/>
-        <result property="materialType" column="MATERIAL_TYPE"/>
-        <result property="supplyPrice"  column="SUPPLY_PRICE"/>
-        <result property="details"      column="DETAILS"/>
-        <result property="status"       column="STATUS"/>
-        <result property="createdAt"    column="CREATED_AT"/>
-        <result property="updatedAt"    column="UPDATED_AT"/>
-        <collection property="materialFiles" ofType="MaterialFile">
-            <id     property="materialFileId" column="MATERIAL_FILE_ID"/>
-            <result property="originalName"   column="ORIGINAL_NAME"/>
-            <result property="storedName"     column="STORED_NAME"/>
-            <result property="storagePath"    column="STORAGE_PATH"/>
-            <result property="createdAt"      column="FILE_CREATED_AT"/>
-            <result property="deletedAt"      column="DELETED_AT"/>
-            <result property="materialId"     column="MF_MATERIAL_ID"/>
-        </collection>
-    </resultMap>
+    <resultMap id="MaterialWithFilesMap" type="Material" autoMapping="true">
+    <id property="materialId" column="MATERIAL_ID"/>
+    <collection property="materialFiles" ofType="MaterialFile" autoMapping="true">
+        <id property="materialFileId" column="MATERIAL_FILE_ID"/>
+    </collection>
+</resultMap>
 
     <!-- 자재 등록 -->
     <insert id="insert" parameterType="Material">
@@ -53,30 +39,42 @@
            ON (MF.MATERIAL_ID = #{materialId} AND MF.DELETED_AT IS NULL)
         
         <!-- 1. 기존에 살아있는 이미지 파일이 이미 있다면? -> 새 파일로 정보 덮어쓰기(UPDATE) -->
-        WHEN MATCHED THEN
-            UPDATE SET
-                MF.ORIGINAL_NAME = #{originalName}
-              , MF.STORED_NAME   = #{storedName}
-              , MF.STORAGE_PATH  = #{storagePath}
-              , MF.CREATED_AT    = SYSDATE
+          WHEN MATCHED THEN
+	    UPDATE
+	       SET MF.ORIGINAL_NAME = #{originalName}
+	         , MF.STORED_NAME   = #{storedName}
+	         , MF.STORAGE_PATH  = #{storagePath}
+	         , MF.CREATED_AT    = SYSDATE
               
         <!-- 2. 기존에 등록된 이미지 파일이 없다면? -> 신규 데이터 삽입(INSERT) -->
-        WHEN NOT MATCHED THEN
-            INSERT (
-                MF.MATERIAL_FILE_ID
-              , MF.ORIGINAL_NAME
-              , MF.STORED_NAME
-              , MF.STORAGE_PATH
-              , MF.MATERIAL_ID
-            ) VALUES (
-                SEQ_MAT_FILE.NEXTVAL
-              , #{originalName}
-              , #{storedName}
-              , #{storagePath}
-              , #{materialId}
-            )
+       WHEN NOT MATCHED THEN
+           INSERT (MF.MATERIAL_FILE_ID
+                 , MF.ORIGINAL_NAME
+                 , MF.STORED_NAME
+                 , MF.STORAGE_PATH
+                 , MF.MATERIAL_ID)
+            VALUES (SEQ_MAT_FILE.NEXTVAL
+                  , #{originalName}
+                  , #{storedName}
+                  , #{storagePath}
+                  , #{materialId})
     </insert>
 
+	<!-- 신규 자재 등록 시 전 점포에 재고(초기화) 등록 -->
+	<insert id="insertInventoryStores" parameterType="long">
+	    INSERT INTO STORE_INVENTORIES (STORE_INVENTORY_ID
+	    							 , CURRENT_QUANTITY
+	    							 , SAFETY_QUANTITY
+	    							 , STORE_ID, MATERIAL_ID)
+	    SELECT SEQ_STORE_INV.NEXTVAL
+	    	 , 0
+	    	 , 0
+	    	 , S.STORE_ID
+	    	 , #{materialId}
+	      FROM STORES S
+	     WHERE S.STATUS = 'OPEN'
+	</insert>
+	
     <!-- 전체 목록 조회 -->
     <select id="selectMaterialList" resultMap="MaterialWithFilesMap">
         SELECT M.MATERIAL_ID
@@ -183,6 +181,7 @@
                                </choose>
              , SUPPLY_PRICE  = #{supplyPrice}
              , DETAILS       = #{details}
+             , STATUS        = #{status}
              , UPDATED_AT    = SYSDATE
          WHERE MATERIAL_ID   = #{materialId}
            AND STATUS        != 'INACTIVE'
