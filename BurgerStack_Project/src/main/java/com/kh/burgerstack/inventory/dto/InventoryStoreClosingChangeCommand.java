@@ -22,9 +22,5 @@ public class InventoryStoreClosingChangeCommand implements InventoryChangeComman
 
     private final Integer receiptId = null;
     private final TransactionType transactionType = TransactionType.STORE_CLOSING;
-
-    @Override
-    public String getReason() {
-        return transactionType.getLabel();
-    }
+    private final String reason = "일일 마감 반영";
 }

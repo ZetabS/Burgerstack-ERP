@@ -22,9 +22,5 @@ public class InventoryReceiptChangeCommand implements InventoryChangeCommand {
 
     private final Integer storeClosingId = null;
     private final TransactionType transactionType = TransactionType.RECEIPT;
-
-    @Override
-    public String getReason() {
-        return transactionType.getLabel();
-    }
+    private final String reason = "발주 입고 반영";
 }
