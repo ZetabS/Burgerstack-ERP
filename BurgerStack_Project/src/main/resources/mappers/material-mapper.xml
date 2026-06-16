@@ -15,20 +15,21 @@
         <selectKey keyProperty="materialId" resultType="long" order="BEFORE">
             SELECT SEQ_MATERIAL.NEXTVAL FROM DUAL
         </selectKey>
-    
-        INSERT INTO MATERIALS(MATERIAL_ID
-                            , MATERIAL_NAME
-                            , MATERIAL_TYPE
-                            , SUPPLY_PRICE
-                            , DETAILS)
-                       VALUES(#{materialId}
-                            , #{materialName}
-                            , <choose>
-                                <when test="materialType != null and materialType != '' and materialType != 'NULL' and materialType != 'null'">#{materialType}</when>
-                                <otherwise>'ET'</otherwise>
-                              </choose>
-                            , #{supplyPrice}
-                            , #{details})
+	        INSERT INTO MATERIALS(MATERIAL_ID
+	                            , MATERIAL_CODE
+	                            , MATERIAL_NAME
+	                            , MATERIAL_TYPE
+	                            , SUPPLY_PRICE
+	                            , DETAILS)
+	                       VALUES(#{materialId}
+	                            , 'MT' || TO_CHAR(SYSDATE, 'YYYY') || LPAD(#{materialId}, 4, '0')
+	                            , #{materialName}
+	                            , <choose>
+	                                <when test="materialType != null and materialType != '' and materialType != 'NULL' and materialType != 'null'">#{materialType}</when>
+	                                <otherwise>'ET'</otherwise>
+	                              </choose>
+	                            , #{supplyPrice}
+	                            , #{details})
     </insert>
 
 
@@ -77,78 +78,65 @@
 	
     <!-- 전체 목록 조회 -->
     <select id="selectMaterialList" resultMap="MaterialWithFilesMap">
-        SELECT M.MATERIAL_ID
-             , M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS MATERIAL_CODE
-             , M.MATERIAL_NAME
-             , M.MATERIAL_TYPE
-             , M.SUPPLY_PRICE
-             , M.STATUS
-             , MF.MATERIAL_FILE_ID
-             , MF.STORED_NAME
-             , MF.STORAGE_PATH
-             , MF.ORIGINAL_NAME
-             , MF.CREATED_AT  AS FILE_CREATED_AT
-             , MF.DELETED_AT
-             , MF.MATERIAL_ID AS MF_MATERIAL_ID
-          FROM MATERIALS M
-          LEFT OUTER JOIN (
-              SELECT MATERIAL_FILE_ID
-                   , MATERIAL_ID
-                   , STORED_NAME
-                   , STORAGE_PATH
-                   , ORIGINAL_NAME
-                   , CREATED_AT
-                   , DELETED_AT
-                FROM MATERIAL_FILES
-               WHERE DELETED_AT IS NULL
-                 AND MATERIAL_FILE_ID IN (
-                     SELECT MIN(MATERIAL_FILE_ID)
-                       FROM MATERIAL_FILES
-                      WHERE DELETED_AT IS NULL
-                      GROUP BY MATERIAL_ID
-                 )
-          ) MF ON M.MATERIAL_ID = MF.MATERIAL_ID
-         WHERE M.STATUS != 'INACTIVE'
-         ORDER BY CASE MATERIAL_TYPE
-		             WHEN 'AF' THEN 1  -- 상온식품
-		             WHEN 'RF' THEN 2  -- 냉장식품
-		             WHEN 'FF' THEN 3  -- 냉동식품
-		             WHEN 'PK' THEN 4  -- 포장재
-		             WHEN 'KW' THEN 5  -- 주방용품
-		             ELSE 6            -- 기타(ET)
-		         END ASC
-    </select>
+	    SELECT M.MATERIAL_ID
+	         , M.MATERIAL_CODE
+	         , M.MATERIAL_NAME
+	         , M.MATERIAL_TYPE
+	         , M.SUPPLY_PRICE
+	         , M.STATUS
+	         , MF.MATERIAL_FILE_ID
+	         , MF.STORED_NAME
+	         , MF.STORAGE_PATH
+	         , MF.ORIGINAL_NAME
+	         , MF.CREATED_AT  AS FILE_CREATED_AT
+	         , MF.DELETED_AT
+	         , MF.MATERIAL_ID AS MF_MATERIAL_ID
+	      FROM MATERIALS M
+	      LEFT OUTER JOIN (
+	          SELECT MATERIAL_FILE_ID
+	               , MATERIAL_ID
+	               , STORED_NAME
+	               , STORAGE_PATH
+	               , ORIGINAL_NAME
+	               , CREATED_AT
+	               , DELETED_AT
+	            FROM MATERIAL_FILES
+	           WHERE DELETED_AT IS NULL
+	             AND MATERIAL_FILE_ID IN (
+	                 SELECT MIN(MATERIAL_FILE_ID)
+	                   FROM MATERIAL_FILES
+	                  WHERE DELETED_AT IS NULL
+	                  GROUP BY MATERIAL_ID
+	             )
+	      ) MF ON M.MATERIAL_ID = MF.MATERIAL_ID
+	     
+	     <if test="materialType != null and materialType != ''">
+	       AND M.MATERIAL_TYPE = #{materialType}
+	     </if>
+	     <if test="keyword != null and keyword != ''">
+	       AND M.MATERIAL_NAME LIKE '%' || #{keyword} || '%'
+	     </if>
+	     ORDER BY CASE M.MATERIAL_TYPE
+	                 WHEN 'AF' THEN 1
+	                 WHEN 'RF' THEN 2
+	                 WHEN 'FF' THEN 3
+	                 WHEN 'PK' THEN 4
+	                 WHEN 'KW' THEN 5
+	                 ELSE 6
+	             END ASC
+	</select>
 
     <!-- 상세 조회 (첨부파일 전체) -->
-    <select id="materialDetail" parameterType="long" resultMap="MaterialWithFilesMap">
-        SELECT M.MATERIAL_ID
-             , M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS MATERIAL_CODE
-             , M.MATERIAL_NAME
-             , M.MATERIAL_TYPE
-             , M.SUPPLY_PRICE
-             , M.DETAILS
-             , M.STATUS
-             , M.CREATED_AT
-             , M.UPDATED_AT
-             , MF.MATERIAL_FILE_ID
-             , MF.STORED_NAME
-             , MF.STORAGE_PATH
-             , MF.ORIGINAL_NAME
-             , MF.CREATED_AT  AS FILE_CREATED_AT
-             , MF.DELETED_AT
-             , MF.MATERIAL_ID AS MF_MATERIAL_ID
-          FROM MATERIALS M
-          LEFT OUTER JOIN MATERIAL_FILES MF
-            ON M.MATERIAL_ID = MF.MATERIAL_ID
-           AND MF.DELETED_AT IS NULL
-         WHERE M.MATERIAL_ID = #{materialId}
-           AND M.STATUS != 'INACTIVE'
-    </select>
+    <select id="materialDetail" parameterType="long" resultType="string">
+	    SELECT DETAILS 
+	      FROM MATERIALS 
+	     WHERE MATERIAL_ID = #{materialId}
+	</select>
 
     <!-- 단건 조회 (수정 화면 복원용) -->
     <select id="selectMaterial" parameterType="long" resultMap="MaterialWithFilesMap">
         SELECT M.MATERIAL_ID
-             , M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS MATERIAL_CODE
+             , M.MATERIAL_CODE
              , M.MATERIAL_NAME
              , M.MATERIAL_TYPE
              , M.SUPPLY_PRICE
@@ -168,7 +156,6 @@
             ON M.MATERIAL_ID = MF.MATERIAL_ID
            AND MF.DELETED_AT IS NULL
          WHERE M.MATERIAL_ID = #{materialId}
-           AND M.STATUS != 'INACTIVE'
     </select>
 
     <!-- 자재 수정 -->
@@ -184,15 +171,5 @@
              , STATUS        = #{status}
              , UPDATED_AT    = SYSDATE
          WHERE MATERIAL_ID   = #{materialId}
-           AND STATUS        != 'INACTIVE'
     </update>
-
-    <!-- 자재 삭제 (INACTIVE 처리) -->
-    <update id="deleteMaterial" parameterType="long">
-        UPDATE MATERIALS
-           SET STATUS = 'INACTIVE'
-         WHERE MATERIAL_ID   = #{materialId}
-           AND STATUS        != 'INACTIVE'
-    </update>
-
 </mapper>

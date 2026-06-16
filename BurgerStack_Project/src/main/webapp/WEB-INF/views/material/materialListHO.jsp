@@ -174,7 +174,6 @@
                             <!-- 하단 고정 버튼 -->
                             <div class="drawer-buttons">
                                 <button type="button" class="button-secondary" id="btnEditMaterial">수정하기</button>
-                                <button type="button" class="button-danger" id="btnDeleteMaterial">삭제하기</button>
                             </div>
                         </div>
                     </div>
@@ -348,7 +347,7 @@
                         statusEl.innerHTML = (material.status === 'ACTIVE') ? '판매중' : '판매 중단';
                         statusEl.className = (material.status === 'ACTIVE') ? 'card-badge badge-success' : 'card-badge badge-danger';
                         
-                        // 이벤트 바인딩 (수정/삭제 버튼)
+                        // 이벤트 바인딩 (수정 버튼)
                         this.bindEvents(materialId);
                     }
 
@@ -375,23 +374,6 @@
                         editBtn.onclick = () => {
                             window.location.href = this.contextPath + "/admin/materials/" + materialId + "/edit";
                         };
-                    }
-
-                    const deleteBtn = document.getElementById('btnDeleteMaterial');
-                    if (deleteBtn) {
-                        deleteBtn.onclick = () => {
-                            this.deleteMaterial(materialId);
-                        };
-                    }
-                },
-
-                deleteMaterial: function(materialId) {
-                    if (confirm("정말 삭제하시겠습니까?")) {
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = this.contextPath + '/admin/materials/' + materialId + '/status';
-                        document.body.appendChild(form);
-                        form.submit();
                     }
                 },
 
