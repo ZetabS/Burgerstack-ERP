@@ -101,7 +101,7 @@
             <th class="text-right">점주 아이디</th>
             <th class="text-right">점포명</th>
             <th class="text-right">등록일</th>
-            <th class="text-center">답변상태</th>
+            <th class="text-center">상태</th>
           </tr>
         </jsp:attribute>
 
