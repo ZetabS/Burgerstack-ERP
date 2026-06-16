@@ -29,7 +29,7 @@
 
         <layout:Section title="조정 입력">
           <layout:FieldRow label="조정 후 수량" inputId="afterQuantity">
-            <input type="number" class="form-control" id="afterQuantity" name="afterQuantity" value="${detail.currentQuantity}" min="0" required />
+            <input type="number" class="form-control" id="afterQuantity" name="afterQuantity" value="${detail.currentQuantity}" min="0" max="1000" required />
           </layout:FieldRow>
 
           <layout:FieldRow label="사유" inputId="reason">
