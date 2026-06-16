@@ -25,46 +25,39 @@ public class InquiryControllerBO {
 	
 	// 점주 문의사항 목록 조회 페이지
 	@GetMapping("inquiries")
-    public String InquiryList(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "condition", defaultValue = "title") String condition,
-            @RequestParam(value = "keyword", required = false) String keyword,
+	public String InquiryList(
+			com.kh.burgerstack.common.pagination.PagingRequest pi,
+			@RequestParam(value = "page", defaultValue = "1") int page,
+			@RequestParam(value = "condition", required = false) String condition,
+			@RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "answerStatus", required = false) String answerStatus,
-            HttpSession session,
-            Model model) {
+			HttpSession session, Model model) {
 
 		if (keyword != null) {
-	        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
-	    }		
+			keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+		}		
 		
-        Long storeId = ((LoginUser) session.getAttribute("loginUser")).getStoreId();
-
-        int limit = 10;
+		Long storeId = ((LoginUser) session.getAttribute("loginUser")).getStoreId();
+		int limit = 10; 
 
         int totalCount = inquiryServiceBO.getTotalCount(storeId, condition, keyword, answerStatus);
 
-        int maxPage = (int) Math.ceil((double) totalCount / limit);
-        int startPage = (((page - 1) / 10) * 10) + 1;
-        int endPage = startPage + 9;
-
-        if(endPage > maxPage) {
-            endPage = maxPage;
-        }
+		com.kh.burgerstack.common.pagination.PageInfo pageInfo = pi.toPageInfo(totalCount);
 
         List<Inquiry> inquiryList = inquiryServiceBO.InquiryList(storeId, condition, keyword, answerStatus, page, limit);
 
-        model.addAttribute("inquiryList", inquiryList);
-        model.addAttribute("maxPage", maxPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
-        model.addAttribute("currentPage", page);
+		java.util.Map<String, Object> view = new java.util.HashMap<>();
+		view.put("pageInfo", pageInfo);
 
-        model.addAttribute("condition", condition);
-        model.addAttribute("keyword", keyword);
+		model.addAttribute("inquiryList", inquiryList);
+		model.addAttribute("condition", condition);
+		model.addAttribute("keyword", keyword);
         model.addAttribute("answerStatus", answerStatus);
+		model.addAttribute("view", view); 
 
-        return "inquiry/inquiryListViewBO";
-    }
+		return "inquiry/inquiryListViewBO";
+	}
+	
 	
 
 	// 문의사항 등록 페이지
@@ -165,6 +158,14 @@ public class InquiryControllerBO {
 		        i.setContent(org.springframework.web.util.HtmlUtils.htmlEscape(i.getContent()));
 		    }		    	
 		    
+		    Inquiry originalInquiry = inquiryServiceBO.InquiryListDetail(i.getInquiryId());
+		    
+		    if(originalInquiry != null && originalInquiry.getAnswerContent() != null && !originalInquiry.getAnswerContent().trim().isEmpty()) {
+		    	session.setAttribute("alertMsg", "본사 답변이 완료된 문의사항은 수정할 수 없습니다.");
+		    	mv.setViewName("redirect:/owner/inquiries");
+		    	return mv;
+		    }
+		    
 		    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 		    if (loginUser != null) {
 		        i.setStoreId(loginUser.getStoreId());
@@ -190,6 +191,7 @@ public class InquiryControllerBO {
 		    
 		    return mv;
 		}
+		
 	@PostMapping("inquiries/{inquiryId}/delete")
 	public String inquiryDelete(@PathVariable long inquiryId,
 	                            Inquiry i,

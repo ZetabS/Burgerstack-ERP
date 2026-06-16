@@ -52,7 +52,7 @@ public class NoticeService {
             // 물리 파일 롤백 삭제
             if (fileList != null && !fileList.isEmpty()) {
                 for (NoticeFile file : fileList) {
-                    String fullPath = file.getStoragePath() + "/" + file.getStoredName();
+                    String fullPath = file.getStoragePath() + "/";
                     java.io.File targetFile = new java.io.File(fullPath);
                     if (targetFile.exists()) {
                         targetFile.delete();

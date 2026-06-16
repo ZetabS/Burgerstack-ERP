@@ -38,4 +38,8 @@ public class InquiryDaoHO {
     public List<AdminDashboardInquiryListItem> findRecent(int count) {
         return inquiryMapper.findTopN(count);
     }
+
+    public int countUnanswerd() {
+        return inquiryMapper.countUnanswered();
+    }
 }

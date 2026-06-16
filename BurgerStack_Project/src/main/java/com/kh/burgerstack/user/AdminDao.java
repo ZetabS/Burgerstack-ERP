@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.kh.burgerstack.common.pagination.PagingRequest;
+
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -29,31 +31,22 @@ public class AdminDao {
 		return userMapper.NewOwner(u);
 	}
 
-	// 점주 목록 조회
-	public List<User> OwnerList(String status,
-	                            String keyword) {
+	public List<User> OwnerList(String status, String keyword, PagingRequest pi) {
 
-		/*
-		 * MyBatis Mapper로 넘길 검색 조건 Map입니다.
-		 *
-		 * status:
-		 * ""          전체
-		 * "ACTIVE"    영업중
-		 * "INACTIVE"  폐점
-		 *
-		 * keyword:
-		 * 아이디 또는 점주명 검색어
-		 */
-		Map<String, String> param = new HashMap<>();
+	    Map<String, Object> param = new HashMap<>();
 
-		/*
-		 * null이 들어오면 MyBatis if문에서 처리하기 불편할 수 있으므로
-		 * 빈 문자열로 바꿔서 넘깁니다.
-		 */
-		param.put("status", status == null ? "" : status);
-		param.put("keyword", keyword == null ? "" : keyword);
+	    param.put("status", status);
+	    param.put("keyword", keyword);
 
-		return userMapper.OwnerList(param);
+	    int currentPage = pi.getPage(); 
+	    int size = 10; 
+	    int startRow = (currentPage - 1) * size + 1;
+	    int endRow = currentPage * size;
+
+	    param.put("startRow", startRow);
+	    param.put("endRow", endRow);
+
+	    return userMapper.OwnerList(param);
 	}
 
 	// 점주 상세 조회
@@ -70,5 +63,16 @@ public class AdminDao {
 	public int OwnerUpdate(User user) {
 		return userMapper.OwnerUpdate(user);
 	}
+
+	public int getOwnerCount(String status, String keyword) {
+		
+	Map<String, String> param = new HashMap<>();
+	param.put("status", status);
+	param.put("keyword", keyword);
+		
+	return userMapper.getOwnerCount(param);
+	}
+
+
 
 }

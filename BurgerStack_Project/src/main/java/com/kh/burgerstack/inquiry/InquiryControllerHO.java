@@ -22,69 +22,39 @@ public class InquiryControllerHO {
 	private InquiryServiceHO inquiryServiceHO;
 	
 	// 본사 문의사항 목록조회 페이지
-	@GetMapping("inquiries")
-    public String InquiryList(
-            // 현재 페이지 번호
-            @RequestParam(value = "page", defaultValue = "1") int page,
+		@GetMapping("inquiries")
+	    public String InquiryList(
+	    		com.kh.burgerstack.common.pagination.PagingRequest pi,
+	            @RequestParam(value = "page", defaultValue = "1") int page,
+	            @RequestParam(value = "condition", required = false) String condition,
+	            @RequestParam(value = "keyword", required = false) String keyword,
+           		// 문의 필터 : 문의 필터, 전체, 답변전, 답변완료
+            	@RequestParam(value = "answerStatus", required = false) String answerStatus,
+	            HttpSession session, Model model) {
+			
+			if (keyword != null) {
+		        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+		    }
+			
+	        int limit = 10;
 
-            // 검색 조건 : 제목, 내용, 글번호
-            @RequestParam(value = "condition", defaultValue = "title") String condition,
+        int totalCount = inquiryServiceHO.getTotalCount(condition, keyword, answerStatus);
+	        
+	        com.kh.burgerstack.common.pagination.PageInfo pageInfo = pi.toPageInfo(totalCount);
 
-            // 검색어
-            @RequestParam(value = "keyword", required = false) String keyword,
+	        // 3. 목록 데이터 조회
+	        List<Inquiry> inquiryList = inquiryServiceHO.InquiryList(condition, keyword, answerStatus, page, limit);
 
-            // 문의 필터 : 문의 필터, 전체, 답변전, 답변완료
-            @RequestParam(value = "answerStatus", required = false) String answerStatus,
+	        model.addAttribute("inquiryList", inquiryList);
+	        model.addAttribute("pageInfo", pageInfo); 
+	        model.addAttribute("condition", condition);
+	        model.addAttribute("keyword", keyword);
+		    // 문의 필터 선택값 유지용 데이터
+        	model.addAttribute("answerStatus", answerStatus);
 
-            HttpSession session,
-            Model model) {
-		
-		if (keyword != null) {
-	        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+	        return "inquiry/inquiryListViewHO";
 	    }
 		
-        int limit = 10;
-
-        // 전체 문의사항 개수 조회
-        // 검색 조건, 검색어, 문의 필터 값을 같이 넘깁니다.
-        int totalCount = inquiryServiceHO.getTotalCount(condition, keyword, answerStatus);
-
-        // 최대 페이지 수 계산
-        int maxPage = (int) Math.ceil((double) totalCount / limit);
-
-        // 페이지 네비게이션 시작 번호
-        int startPage = (((page - 1) / 10) * 10) + 1;
-
-        // 페이지 네비게이션 끝 번호
-        int endPage = startPage + 9;
-
-        // endPage가 maxPage보다 크면 maxPage로 보정
-        if(endPage > maxPage) {
-            endPage = maxPage;
-        }
-
-        // 현재 페이지에 보여줄 문의사항 목록 조회
-        List<Inquiry> inquiryList = inquiryServiceHO.InquiryList(condition, keyword, answerStatus, page, limit);
-
-        // 목록 데이터
-        model.addAttribute("inquiryList", inquiryList);
-
-        // 페이징 데이터
-        model.addAttribute("maxPage", maxPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
-        model.addAttribute("currentPage", page);
-
-        // 검색 조건 유지용 데이터
-        model.addAttribute("condition", condition);
-        model.addAttribute("keyword", keyword);
-
-        // 문의 필터 선택값 유지용 데이터
-        model.addAttribute("answerStatus", answerStatus);
-
-        return "inquiry/inquiryListViewHO";
-    }
-
 	// 본사 문의사항 상세 조회 페이지
 	@GetMapping("inquiries/{inquiryId}")
 	public String InquiryListDetail(@PathVariable long inquiryId, Model model) {

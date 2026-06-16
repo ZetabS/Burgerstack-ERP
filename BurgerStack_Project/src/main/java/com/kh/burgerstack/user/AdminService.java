@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.burgerstack.common.pagination.PagingRequest;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,7 +31,7 @@ public class AdminService {
 
 	// 점주 목록 조회
 	public List<User> OwnerList(String status,
-	                            String keyword) {
+            String keyword, PagingRequest pi) {
 
 		/*
 		 * Controller에서 받은 검색 조건을 DAO로 그대로 넘깁니다.
@@ -42,7 +44,7 @@ public class AdminService {
 		 * keyword 값:
 		 * 아이디 또는 점주명 검색어
 		 */
-		return adminDao.OwnerList(status, keyword);
+	    return adminDao.OwnerList(status, keyword, pi);
 	}
 
 	// 점주 상세 조회
@@ -60,4 +62,7 @@ public class AdminService {
 		return adminDao.OwnerUpdate(user);
 	}
 
+	public int getOwnerCount(String status, String keyword) {
+		return adminDao.getOwnerCount(status, keyword);
+	}
 }

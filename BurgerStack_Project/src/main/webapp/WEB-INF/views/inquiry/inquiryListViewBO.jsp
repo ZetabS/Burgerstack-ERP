@@ -33,20 +33,14 @@
   - view.pageInfo : <t:pagination>에 전달할 PageInfo
 --%>
 
-<%--
-  c:url은 context-path(/burgerstack)를 자동으로 붙여줍니다.
-  그래서 value에는 /burgerstack을 직접 쓰지 않고, 실제 Controller 매핑 경로만 작성합니다.
---%>
 <c:url var="baseUrl" value="/owner/inquiries" />
-<c:url var="bUrl" value="/owner/dashboard" />
 
 <t:layout>
   <layout:ListPage title="문의사항 목록 페이지" description="">
 
     <jsp:attribute name="actions">
       <%-- actions 슬롯은 페이지 헤더 오른쪽에 배치됩니다. 초기화, 등록, 다운로드 같은 페이지 단위 액션을 둡니다. --%>
-      <%-- 목록 페이지에서 이전으로 버튼을 누르면 점주 대시보드로 이동합니다. --%>
-      <a href="${bUrl}" class="btn btn-secondary">이전으로</a>
+      <a href="${baseUrl}" class="btn btn-secondary">초기화</a>
     </jsp:attribute>
 
     <jsp:attribute name="toolbar">

@@ -111,77 +111,58 @@
 
 	</update>
 
-
-	<!-- 점주 목록 조회 -->
-	<select id="OwnerList" parameterType="map" resultMap="userResultMap">
-
-		SELECT
-			  'U'
-			  || TO_CHAR(CREATED_AT, 'YYYY')
-			  || LPAD(USER_NO, 4, '0') AS DISPLAY_NO
-
-			, USER_NO
-			, USER_ID
-			, USER_NAME
-			, PHONE
-			, EMAIL
-			, ROLE
-			, STATUS
-			, CREATED_AT
-
-		FROM USERS
-
-		WHERE ROLE = 'OWNER'
-
-		<!--
-			상태 필터입니다.
-
-			status 값:
-			빈 문자열  -> 전체 조회
-			ACTIVE    -> 영업중
-			INACTIVE  -> 폐점
-		-->
-		<if test="status != null and status != ''">
-			AND STATUS = #{status}
-		</if>
-
-		<!--
-			검색어 조건입니다.
-
-			점주 아이디 또는 점주명으로 검색합니다.
-		-->
-		<if test="keyword != null and keyword != ''">
-			AND (
-				   USER_ID LIKE '%' || #{keyword} || '%'
-				OR USER_NAME LIKE '%' || #{keyword} || '%'
-			)
-		</if>
-
-		ORDER BY CREATED_AT DESC
-
+	<select id="OwnerList" parameterType="map" resultType="com.kh.burgerstack.user.User">
+	    SELECT * FROM (
+	        SELECT ROWNUM RNUM, A.* FROM (
+	            SELECT 'U' || EXTRACT(YEAR FROM CREATED_AT)
+	                   || LPAD(USER_NO,4,'0') AS DISPLAY_NO
+	                 , USER_ID
+	                 , USER_NAME
+	                 , PHONE
+	                 , EMAIL
+					, ROLE
+					, STATUS
+	                 , CREATED_AT
+	                 , STATUS
+	            FROM USERS
+	            WHERE ROLE = 'OWNER'
+	
+	            <if test="status != null and status != ''">
+	                AND STATUS = #{status}
+	            </if>
+	
+	            <if test="keyword != null and keyword != ''">
+	                AND (
+	                    USER_ID LIKE '%' || #{keyword} || '%'
+	                    OR USER_NAME LIKE '%' || #{keyword} || '%'
+	                )
+	            </if>
+	
+	            ORDER BY CREATED_AT DESC
+	        ) A
+	    )
+	    WHERE 
+	    <choose>
+	        <when test="startRow != null and endRow != null">
+	            RNUM BETWEEN #{startRow} AND #{endRow}
+	        </when>
+	        <otherwise>
+	            RNUM BETWEEN 1 AND 10
+	        </otherwise>
+	    </choose>
 	</select>
 
-
-	<!-- 점주 상세 조회 -->
-	<select id="OwnerListDetail"
-	        parameterType="String"
-	        resultMap="userResultMap">
-
-		<!--
-			기존 코드에는 resultType 또는 resultMap이 없었습니다.
-
-			MyBatis select는 결과를 어떤 객체에 담을지 알아야 하므로
-			resultMap="userResultMap"을 반드시 지정해야 합니다.
-		-->
-		SELECT
-			  USER_NO
-			, USER_ID
-			, USER_NAME
-			, PHONE
-			, EMAIL
-			, ROLE
-			, STATUS
-			, CREATED_AT
+	<select id="OwnerListDetail" parameterType="User">
+		SELECT 
+		  USER_NO
+		, USER_ID
+		, USER_NAME
+		, PHONE
+		, EMAIL
+		, ROLE
+		, STATUS
+		, CREATED_AT
+		, STATUS
 		FROM USERS
 		WHERE USER_ID = #{userId}
 
@@ -218,5 +199,20 @@
 		WHERE USER_ID = #{userId}
 
 	</update>
+
+	<select id="getOwnerCount" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM USERS
+	    WHERE ROLE = 'OWNER'
+	    <if test="status != null and status != ''">
+	        AND STATUS = #{status}
+	    </if>
+	    <if test="keyword != null and keyword != ''">
+	        AND (
+	            USER_ID LIKE '%' || #{keyword} || '%'
+	            OR USER_NAME LIKE '%' || #{keyword} || '%'
+	        )
+	    </if>
+	</select>
 
 </mapper>

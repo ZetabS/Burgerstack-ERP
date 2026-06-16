@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface MaterialMapper {
-    public int insert(Material m);
+    public int materialInsert(Material m);
 
     public int materialFileInsert(MaterialFile materialFile);
 

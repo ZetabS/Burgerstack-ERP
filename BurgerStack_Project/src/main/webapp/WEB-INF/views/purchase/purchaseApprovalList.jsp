@@ -277,9 +277,15 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // 점포 변경시 자동 조회
-    if(storeId){
+    // 점포/상태 변경시 자동 조회
+    // 날짜 변경시 자동 조회
+    [storeId,status,startDate,endDate].forEach(function(target){
 
-        storeId.addEventListener(
+        if(!target){
+            return;
+        }
+
+        target.addEventListener(
             "change",
             function(){
 
@@ -289,7 +295,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         );
-    }
+    });
 
     // 날짜 변경
     startDate.addEventListener(

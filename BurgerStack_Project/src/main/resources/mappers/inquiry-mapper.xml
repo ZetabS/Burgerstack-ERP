@@ -266,5 +266,10 @@
                ) T
          WHERE ROWNUM &lt;= #{count}
     </select>
-
+    <select id="countUnanswered">
+        SELECT COUNT(*)
+          FROM INQUIRIES
+         WHERE ANSWERED_AT IS NULL
+           AND DELETED_AT IS NULL
+    </select>
 </mapper>

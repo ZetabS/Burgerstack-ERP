@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.kh.burgerstack.inquiry.Inquiry;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -159,57 +161,40 @@ public class AdminController {
 	// 점주 목록 조회
 	@GetMapping("users")
 	public String OwnerList(
-	        /*
-	         * JSP에서 상태 필터 select name을 status로 보냄
-	         *
-	         * <select name="status">
-	         *
-	         * 따라서 Controller도 status로 받아야 함
-	         */
-	        @RequestParam(value = "status", required = false, defaultValue = "") String status,
+			// 🚨 1. 페이징을 자동으로 처리해줄 PagingRequest 객체를 맨 앞에 추가합니다.
+			com.kh.burgerstack.common.pagination.PagingRequest pi,
+			@RequestParam(value = "page", defaultValue = "1") int page, // 현재 페이지 번호 안전장치
+			String status,
+			String keyword,
+			Model model) {
 
-	        /*
-	         * 검색어
-	         *
-	         * <common:SearchBar name="keyword" ... />
-	         *
-	         * 따라서 keyword로 받음
-	         */
-	        @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+		if (keyword != null) {
+			keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+		}
 
-	        Model model) {
+		System.out.println("status = " + status);
+		System.out.println("keyword = " + keyword);
 
-	    if (keyword != null) {
-	        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
-	    }
+		// 🚨 2. [필수 추가] 페이징 계산을 위해 먼저 검색 조건에 맞는 '전체 점주 수'를 조회해야 합니다.
+		// (만약 adminService에 이 메서드가 없다면 뒤이어 나오는 '💡 서비스/매퍼 체크'를 확인해 주세요!)
+		int totalCount = adminService.getOwnerCount(status, keyword); 
 
-	    System.out.println("status = " + status);
-	    System.out.println("keyword = " + keyword);
+		// 🚨 3. 프로젝트 공통 규격으로 PageInfo 객체 생성
+		com.kh.burgerstack.common.pagination.PageInfo pageInfo = pi.toPageInfo(totalCount);
 
-	    List<User> ownerList = adminService.OwnerList(status, keyword);
-	    
-	    model.addAttribute("keyword", keyword);
-	    model.addAttribute("ownerList", ownerList);
+		// 🚨 4. 목록 조회 시 페이징 정보(pi 또는 page, limit)를 서비스단으로 넘겨주어야 합니다.
+		// (보통 프로젝트 구조상 pi를 통째로 넘기거나, page와 limit을 따로 넘깁니다. 여기서는 pi를 넘기는 규격으로 작성했습니다.)
+		List<User> ownerList = adminService.OwnerList(status, keyword, pi);
+		
+		// 5. 화면(JSP)으로 데이터 수송
+		model.addAttribute("keyword", keyword);
+		model.addAttribute("status", status);
+		model.addAttribute("ownerList", ownerList);
+		model.addAttribute("pageInfo", pageInfo); // ✨ <t:pagination pageInfo="${pageInfo}" /> 가 정상 작동합니다.
 
-	    /*
-	     * JSP 검색창 값 유지용
-	     *
-	     * <common:SearchBar name="keyword" value="${keyword}" ... />
-	     */
-	    model.addAttribute("keyword", keyword);
-
-	    /*
-	     * JSP 상태 필터 선택 유지용
-	     *
-	     * ${param.status}를 쓰고 있긴 하지만,
-	     * model에도 담아두면 나중에 ${status}로도 쓸 수 있음
-	     */
-	    model.addAttribute("status", status);
-
-	    return "user/OwnerList";
+		return "user/OwnerList";
 	}
 	
-	// 점주 상세 조회
 	@GetMapping("users/{userId}")
 	public String OwnerListDetail(@PathVariable String userId, Model model) {
 

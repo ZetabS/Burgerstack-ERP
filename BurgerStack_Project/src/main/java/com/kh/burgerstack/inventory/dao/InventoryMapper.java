@@ -1,6 +1,6 @@
 package com.kh.burgerstack.inventory.dao;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,7 +15,7 @@ import com.kh.burgerstack.inventory.vo.StoreInventory;
 @Mapper
 public interface InventoryMapper {
 
-    public ArrayList<InventoryListItem> findInventoryListItems(
+    public List<InventoryListItem> findInventoryListItems(
             @Param("condition") InventorySearchCondition condition,
             @Param("paging") PagingRequest pagingRequest);
 

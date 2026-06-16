@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.common.template.XssDefencePolicy;
 import com.kh.burgerstack.purchase.dto.MaterialInventoryDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
 import com.kh.burgerstack.purchase.dto.PurchaseOrderDetailDto;
@@ -123,7 +124,11 @@ public class PurchaseControllerBO {
             }
         }
 
-        purchaseService.createPurchase(items, orderMemo, session);
+        if (orderMemo.length() > 100) {
+            throw new IllegalArgumentException("100자 초과");
+        }
+
+        purchaseService.createPurchase(items, XssDefencePolicy.defence(orderMemo), session);
 
         return "redirect:/owner/purchases";
     }
@@ -197,7 +202,11 @@ public class PurchaseControllerBO {
             }
         }
 
-        purchaseService.updatePurchase(id, items, orderMemo, session);
+        if (orderMemo.length() > 100) {
+            throw new IllegalArgumentException("100자 초과");
+        }
+
+        purchaseService.updatePurchase(id, items, XssDefencePolicy.defence(orderMemo), session);
 
         return "redirect:/owner/purchases/" + id;
     }

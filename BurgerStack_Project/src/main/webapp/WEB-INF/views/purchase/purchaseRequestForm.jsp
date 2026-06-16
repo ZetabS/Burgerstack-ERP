@@ -54,6 +54,7 @@
                     id="keyword"
                     class="form-control"
                     style="width:250px;"
+                    maxlength="20"
                     placeholder="자재명 검색">
 
                 <button type="button"
@@ -188,8 +189,9 @@
                             name="orderMemo"
                             id="orderMemo"
                             rows="4"
-                            style="width:100%; resize:none;"
-                            placeholder="발주 관련 요청사항을 입력하세요."></textarea>
+                            maxlength="100"
+                            placeholder="발주 관련 요청사항을 입력하세요. (100자 제한)"
+                            style="width:100%; resize:none;"></textarea>
                         <br>
                         <button type="button"
                                 class="button-primary"
@@ -622,4 +624,12 @@ function resetFilter() {
 
     filterMaterials();
 }
+
+// 발주 메모 입력 100자 제한
+$('#orderMemo').on('input', function () {
+
+    if ($(this).val().length > 100) {
+        $(this).val($(this).val().substring(0, 100));
+    }
+});
 </script>

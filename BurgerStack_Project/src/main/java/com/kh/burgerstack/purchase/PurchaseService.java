@@ -58,7 +58,7 @@ public class PurchaseService {
             condition.setStoreId(loginUser.getStoreId());
         }
 
-        // System.out.println("최종 condition = " + condition);
+        // System.out.println("최종 condition = " + condition); searchPurchaseApprovalList
 
         return purchaseDao.searchPurchaseList(
                 pagingRequest,
@@ -86,6 +86,60 @@ public class PurchaseService {
         }
 
         return purchaseDao.selectPurchaseCount(
+                condition,
+                sqlSession);
+    }
+
+    // 승인대기 목록 조회
+    public ArrayList<PurchaseDto> searchPurchaseApprovalList(
+            PagingRequest pagingRequest,
+            PurchaseSearchDto condition,
+            HttpSession session) {
+
+        // 로그인 세션 값 불러오기
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        // 검색 조건 설정
+        if ("ADMIN".equals(loginUser.getRole())) {
+
+            condition.setAdmin(true);
+
+        } else {
+
+            condition.setAdmin(false);
+
+            // 점주만 자신의 점포로 강제 제한
+            condition.setStoreId(loginUser.getStoreId());
+        }
+
+        // System.out.println("최종 condition = " + condition); 
+
+        return purchaseDao.searchPurchaseApprovalList(
+                pagingRequest,
+                condition,
+                sqlSession);
+    }
+
+    public int selectPurchaseApprovalCount(
+            PurchaseSearchDto condition,
+            HttpSession session) {
+
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        condition.setStoreId(loginUser.getStoreId());
+
+        if ("ADMIN".equals(loginUser.getRole())) {
+
+            condition.setAdmin(true);
+
+        } else {
+
+            condition.setAdmin(false);
+
+            condition.setStoreId(loginUser.getStoreId());
+        }
+
+        return purchaseDao.selectPurchaseApprovalCount(
                 condition,
                 sqlSession);
     }

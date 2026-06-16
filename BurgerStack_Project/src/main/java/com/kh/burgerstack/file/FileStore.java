@@ -28,6 +28,11 @@ public class FileStore {
     	    "msi", "dll", "so", "dylib"					// 라이브러리/설치파일
     	);
     
+    private static final List<String> ALLOWED_EXTENSIONS = List.of(
+            "jpg", "jpeg", "png", "gif", "webp", // 이미지
+            "pdf", "hwp", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt" // 문서
+        );
+    
     public FileStore(FileStoreProperties properties) {
         this.root = Path.of(properties.getRoot())
                 .toAbsolutePath()
@@ -104,13 +109,18 @@ public class FileStore {
 
         String originalName = extractOriginalName(multipartFile);
         String extension = extractExtension(originalName);
-
-        // ✅ 금지 확장자 체크
+        
+        // 1. 화이트리스트 검증
+        if (!ALLOWED_EXTENSIONS.contains(extension.toLowerCase())) {
+            throw new IllegalArgumentException("업로드할 수 없는 파일 형식입니다. (" + extension + ")");
+        }
+        
+        // 2. 블랙리스트 검증
         if (BLOCKED_EXTENSIONS.contains(extension.toLowerCase())) {
             throw new IllegalArgumentException("업로드할 수 없는 파일 형식입니다. (" + extension + ")");
         }
 
-        // ✅ 단일 파일 크기 체크
+        // 3. 단일 파일 크기 검증
         if (multipartFile.getSize() > MAX_FILE_SIZE) {
             throw new IllegalArgumentException(
                 "파일 크기가 너무 큽니다. (최대 " + (MAX_FILE_SIZE / 1024 / 1024) + "MB)");
@@ -138,7 +148,7 @@ public class FileStore {
         }
     }
     
-    // ✅ 다중 파일 개수 검증 메서드 추가 (컨트롤러에서 호출)
+    // 4. 다중 파일 갯수 검증
     public void validateFileCount(MultipartFile[] files) {
         if (files == null) return;
         long nonEmptyCount = Arrays.stream(files)

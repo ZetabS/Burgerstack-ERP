@@ -1,137 +1,49 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core"%>
-
-<title>문의사항 수정</title>
-
-<style>
-/* 화면 레이아웃 및 스타일 간이 정의 */
-body {
-	margin: 0;
-	font-family: 'Malgun Gothic', sans-serif;
-	background-color: #f4f5f7;
-}
-
-.container {
-	display: flex;
-	min-height: 100vh;
-}
-
-/* 메인 콘텐츠 영역 */
-.main-content {
-	flex: 1;
-	padding: 40px;
-	display: flex;
-	justify-content: center;
-}
-
-.form-container {
-	width: 100%;
-	max-width: 900px;
-	background: #fff;
-	padding: 30px;
-	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-	text-align: center;
-	font-size: 28px;
-	color: #333;
-	margin-bottom: 30px;
-}
-
-/* 폼 요소 스타일 */
-.form-group {
-	margin-bottom: 20px;
-	position: relative;
-}
-
-.input-title {
-	width: 100%;
-	padding: 12px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	box-sizing: border-box;
-	font-size: 16px;
-}
-
-.textarea-content {
-	width: 100%;
-	height: 300px;
-	padding: 12px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	box-sizing: border-box;
-	font-size: 15px;
-	resize: none;
-}
-
-.btn-area {
-    text-align: center;
-    margin-top: 30px;
-}
-
-.btn-area button {
-    width: 150px;
-    height: 45px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-#saveBtn {
-    margin-right: 10px;
-	background: #007bff;
-	color: white;    
-}
-
-#homeBtn {
-    margin-left: 0;
-	background: #6c757d;
-	color: white;    
-}
-
-#deleteBtn {
-	margin-right: 10px;
-	background: #FF5B5B;
-	color: white;
-}
-</style>
-
-<%--
-	c:url은 context-path(/burgerstack)를 자동으로 붙여줍니다.
-	따라서 value에는 /burgerstack을 직접 쓰지 않습니다.
---%>
-<c:url var="updateUrl" value="/owner/inquiries/${inquiryId}" />
-<c:url var="deleteUrl" value="/owner/inquiries/${inquiryId}/delete" />
 <c:url var="listUrl" value="/owner/inquiries" />
 
 <t:layout>
+  <layout:Page title="문의사항 작성" description="">
 
-	<div class="main-content">
-		<div class="form-container">
-			<h1>문의사항 수정</h1>
+    <jsp:body>
+    
+      <c:set var="isAnswered" value="${not empty inquiry.answerContent}" />
 
-			<%--
-				문의사항 수정 form입니다.
-				최종 요청 URL 예시:
-				/burgerstack/owner/inquiries/11
-			--%>
-			<form action="${updateUrl}" method="post">
+      <form action="${submitUrl}" method="post">
+        <input type="hidden" name="inventoryId" value="${inquiry.inquiryId}" />
 
-		  <%-- number input은 min, required 같은 HTML 제약을 화면에서 직접 선언합니다. --%>
+        <layout:Section title="문의사항을 작성해주세요." description="">
+          
+          <c:if test="${isAnswered}">
+            <div class="alert alert-warning text-center mb-4" role="alert" style="font-weight: bold; font-size: 0.95rem;">
+              ⚠️ 본사 답변이 등록된 문의사항은 내용을 수정할 수 없습니다.
+            </div>
+          </c:if>
+
           <layout:FieldRow label="제목" inputId="safetyQuantity" help="제목을 입력하시오.">
-            <input type="text" class="title" id="title" name="title" maxlength="100" value="${inquiry.title}" required />
+            <input type="text" class="title" id="title" name="title" maxlength="100" value="${inquiry.title}" required 
+                   ${isAnswered ? 'disabled' : ''} />
           </layout:FieldRow>
 
-          <%-- textarea는 업무에 맞게 rows를 직접 선택합니다. --%>
           <layout:FieldRow label="내용" inputId="memo" help="최대 1000자까지 입력 가능합니다.">
-            <textarea class="form-control" id="content" name="content" rows="4" maxlength="1000"><c:out value="${inquiry.content}" /></textarea>
+            <textarea class="form-control" id="content" name="content" rows="4" maxlength="1000" 
+                      ${isAnswered ? 'disabled' : ''}><c:out value="${inquiry.content}" /></textarea>
           </layout:FieldRow>
         </layout:Section>
 
+        <common:Actions>
+          <common:ReturnLink href="${listUrl}">목록으로</common:ReturnLink>
+          
+          <c:if test="${not isAnswered}">
+            <button type="submit" class="btn btn-primary ml-2">저장</button>
+          </c:if>
+        </common:Actions>
+      </form>
+    </jsp:body>
+  </layout:Page>
 </t:layout>

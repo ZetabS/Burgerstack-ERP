@@ -91,14 +91,14 @@
                         <tr>
                             <th>유형</th>
                             <td>
-                                <select id="materialType" name="materialType">
+                                <select id="materialType" name="materialType" required>
                                     <option value="AF" ${material.materialType == 'AF' ? 'selected' : ''}>상온식품</option>
                                     <option value="RF" ${material.materialType == 'RF' ? 'selected' : ''}>냉장식품</option>
                                     <option value="FF" ${material.materialType == 'FF' ? 'selected' : ''}>냉동식품</option>
                                     <option value="PK" ${material.materialType == 'PK' ? 'selected' : ''}>포장재</option>
                                     <option value="KW" ${material.materialType == 'KW' ? 'selected' : ''}>주방용품</option>
                                     <option value="ET" ${material.materialType == 'ET' ? 'selected' : ''}>기타</option>
-                                    <option value="NULL" disabled hidden ${empty material ? 'selected' : ''}>----------- 유형 선택 -----------</option>
+                                    <option value="" disabled selected hidden>----------- 유형 선택 -----------</option>
                                 </select>
                             </td>
                         </tr>
@@ -125,8 +125,9 @@
                             <th>상세정보</th>
                             <td>
                                 <div class="material-info-p">
-                                <textarea name="details" id="material-detail">${material.details}</textarea>
-                            </div>
+                                    <textarea name="details" id="material-detail" maxlength="800"
+                                              oninput="checkLength(this)">${material.details}</textarea>
+                                </div>
                             </td>
                         </tr>
                     </table>
@@ -147,6 +148,34 @@
             </form>
         </div>
         <script>
+
+            // 텍스트 길이 체크
+            function checkLength(el) {
+                const maxLength = el.getAttribute('maxlength');
+                const currentLength = el.value.length;
+            }
+            
+            // 파일 확장자 화이트리스트 검증
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // 허용할 이미지 확장자 리스트
+                const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                const fileName = file.name.toLowerCase();
+                const extension = fileName.substring(fileName.lastIndexOf('.') + 1);
+
+                if (!allowedExtensions.includes(extension)) {
+                    alert("이미지 파일(jpg, jpeg, png, gif, webp)만 업로드 가능합니다.");
+                    this.value = ''; // 선택된 파일 초기화
+                    document.getElementById("imagePreview").style.display = "none";
+                    document.getElementById("uploadText").style.display = "block";
+                    return;
+                }
+
+                previewImage(this);
+            });
+
             // 이미지 프리뷰
             function previewImage(input) {
                 const file = input.files[0];
@@ -163,6 +192,7 @@
                 };
                 reader.readAsDataURL(file);
             }
+
             // textarea : 유형 선택에 따른 양식 출력
             // 각 유형별 양식 정의 (객체로 관리)
             const templates = {

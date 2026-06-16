@@ -38,7 +38,7 @@ public class AdminDashboardService {
                 null,
                 true),
                 sqlSession);
-        int inquiryCount = 0;
+        int inquiryCount = inquiryDao.countUnanswerd();
 
         int belowSafetyInventoryCount = inventoryDao.count(new InventorySearchCondition(
                 null,

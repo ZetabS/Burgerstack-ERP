@@ -34,5 +34,7 @@ public interface UserMapper {
 
 	// 점주 목록 조회
 	// status, keyword를 Map으로 넘기기 때문에 XML에서 #{status}, #{keyword}로 사용 가능
-	public List<User> OwnerList(Map<String, String> param);
+	public List<User> OwnerList(Map<String, Object> param);
+
+	public int getOwnerCount(Map<String, String> param);
 }

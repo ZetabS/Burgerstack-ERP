@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.common.template.XssDefencePolicy;
 import com.kh.burgerstack.purchase.dto.PurchaseApprovalItemDto;
 import com.kh.burgerstack.purchase.dto.PurchaseApprovalRequestDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
@@ -45,8 +46,8 @@ public class PurchaseControllerHO {
     @Autowired
     private StoreDao storeDao;
 
-    // 발주 목록 및 승인 대기 목록 처리
-    @GetMapping({ "purchases", "purchases/pending" })
+    // 발주 목록
+    @GetMapping({ "purchases"})
     public String purchaseList(
             @RequestParam(required = false) Long storeId,
             PurchaseSearchDto condition,
@@ -83,6 +84,57 @@ public class PurchaseControllerHO {
             return "purchase/purchaseApprovalList"; // 승인 대기 발주 페이지
         }
  
+        return "purchase/purchaseListViewHO"; // 기존 발주 이력 목록 페이지
+    }
+
+    // 승인 대기 목록
+    @GetMapping({"purchases/pending" })
+    public String purchaseApprovalList(
+            @RequestParam(required = false) Long storeId,
+            PurchaseSearchDto condition,
+            PagingRequest pagingRequest,
+            HttpSession session,
+            HttpServletRequest request, // 요청 경로 확인을 위해 추가
+            Model model) {
+
+
+
+
+        // 1. 발주 목록 조회
+        ArrayList<PurchaseDto> list = purchaseService.searchPurchaseApprovalList(pagingRequest, condition, session);
+
+        List<StoreOption> storeOptions = storeDao.getStoreOptions();
+
+        int totalCount = purchaseService.selectPurchaseApprovalCount(condition, session);
+
+        PageInfo pageInfo = pagingRequest.toPageInfo(totalCount);
+
+        System.out.println("list size 11= " + list.size());
+        System.out.println("totalCount 11= " + totalCount);
+
+        // System.out.println("request storeId = " + storeId);
+        // System.out.println("condition before = " + condition);
+
+        condition.setStoreId(storeId);
+
+        // System.out.println("condition after = " + condition);
+
+        // 2. Model에 담기
+        model.addAttribute("list", list);
+        model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("condition", condition);
+        model.addAttribute("storeList", storeOptions);
+
+
+        System.out.println("list size = " + list.size());
+        System.out.println("totalCount = " + totalCount);
+        
+        // 3. View 지정 (요청 경로에 따른 분기 처리)
+        String requestURI = request.getRequestURI();
+        if (requestURI.contains("/pending")) {
+            return "purchase/purchaseApprovalList"; // 승인 대기 발주 페이지
+        }
+
         return "purchase/purchaseListViewHO"; // 기존 발주 이력 목록 페이지
     }
 
@@ -131,6 +183,15 @@ public class PurchaseControllerHO {
                 purchaseOrderId,
                 request.getItems());
 
+
+        if (bulkRejectReason != null) {
+            bulkRejectReason = bulkRejectReason.trim();
+        }
+
+        if (bulkRejectReason.length() > 10) {
+            throw new IllegalArgumentException("10자 초과");
+        }
+
         if (bulkRejectReason != null &&
             !bulkRejectReason.isBlank()) {
 
@@ -138,7 +199,7 @@ public class PurchaseControllerHO {
                     : request.getItems()) {
 
                 item.setRejectReason(
-                    bulkRejectReason
+                    XssDefencePolicy.defence(bulkRejectReason)
                 );
             }
         }

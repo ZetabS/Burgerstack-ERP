@@ -14,6 +14,7 @@ import lombok.ToString;
 public class InventoryListItem {
     private Integer inventoryId;
     private Integer currentQuantity;
+    private Integer shortageQuantity;
     private Integer safetyQuantity;
     private String storeName;
     private String materialCode;

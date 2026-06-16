@@ -52,4 +52,6 @@ public interface InquiryMapper {
 
     public List<AdminDashboardInquiryListItem> findTopN(
             @Param("count") int count);
+
+    public int countUnanswered();
 }
