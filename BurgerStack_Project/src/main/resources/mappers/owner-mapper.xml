@@ -45,7 +45,7 @@
 	
 	    SELECT COUNT(*)
 	    FROM PURCHASE_ORDERS
-	    WHERE STATUS = 'APPROVED'
+	    WHERE STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
 	      AND STORE_ID = #{storeId}
 	
 	</select>
@@ -109,16 +109,17 @@
 	    SELECT *
 	    FROM (
 	        SELECT
-	            PO.PURCHASE_ORDER_ID AS purchaseOrderId,
-	            PO.PURCHASE_ORDER_ID AS receiptId,
-	            MIN(POI.MATERIAL_NAME_SNAPSHOT) AS materialName,
-	            COUNT(*) - 1 AS extraCount
+	            PO.PURCHASE_ORDER_ID AS "purchaseOrderId",
+	            PO.PURCHASE_ORDER_ID AS "receiptId",
+	            PO.STATUS AS "status",
+	            MIN(POI.MATERIAL_NAME_SNAPSHOT) AS "materialName",
+	            COUNT(*) - 1 AS "extraCount"
 	        FROM PURCHASE_ORDERS PO
 	        JOIN PURCHASE_ORDER_ITEMS POI
 	          ON PO.PURCHASE_ORDER_ID = POI.PURCHASE_ORDER_ID
-	        WHERE PO.STATUS = 'APPROVED'
+	        WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
 	          AND PO.STORE_ID = #{storeId}
-	        GROUP BY PO.PURCHASE_ORDER_ID
+	        GROUP BY PO.PURCHASE_ORDER_ID, PO.STATUS
 	        ORDER BY PO.PURCHASE_ORDER_ID DESC
 	    )
 	    WHERE ROWNUM &lt;= 3
