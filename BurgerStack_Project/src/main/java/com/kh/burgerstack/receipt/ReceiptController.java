@@ -122,12 +122,19 @@ public class ReceiptController {
             HttpServletRequest request,
             Model model) {
 
+        LoginUser loginUser =
+                (LoginUser) request.getSession().getAttribute("loginUser");
+
+        Long storeId =
+                receiptService.selectStoreIdByOwnerUserNo(loginUser.getUserNo());
+
         PageInfo pageInfo = receiptService.getPlanPageInfo(
                 pagingRequest,
                 status,
                 startDate,
                 endDate,
-                keyword);
+                keyword,
+                storeId);
 
         if (pageInfo.isCurrentPageOutOfRange()) {
             return "redirect:/owner/receipts/planned"
@@ -146,7 +153,8 @@ public class ReceiptController {
                         status,
                         startDate,
                         endDate,
-                        keyword));
+                        keyword,
+                        storeId));
 
         return "receipt/receiptPlanList";
     }

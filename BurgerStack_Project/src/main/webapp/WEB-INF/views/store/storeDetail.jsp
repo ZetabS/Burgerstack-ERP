@@ -2,6 +2,7 @@
 
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
 
@@ -116,15 +117,29 @@
           </layout:FieldRow>
 
           <layout:FieldRow label="등록일">
-            <c:choose>
-              <c:when test="${not empty store.createdAt}">
-                ${store.createdAt.toString().replace('T', ' ')}
-              </c:when>
-              <c:otherwise>
-                <span class="text-muted">-</span>
-              </c:otherwise>
-            </c:choose>
-          </layout:FieldRow>
+		  <c:choose>
+		    <c:when test="${not empty store.createdAt}">
+		
+		      <c:set var="createdAtText"
+		             value="${fn:replace(store.createdAt.toString(), 'T', ' ')}" />
+		
+		      <c:choose>
+		        <c:when test="${fn:length(createdAtText) == 16}">
+		          ${createdAtText}:00
+		        </c:when>
+		
+		        <c:otherwise>
+		          ${fn:substring(createdAtText, 0, 19)}
+		        </c:otherwise>
+		      </c:choose>
+		
+		    </c:when>
+		
+		    <c:otherwise>
+		      <span class="text-muted">-</span>
+		    </c:otherwise>
+		  </c:choose>
+		</layout:FieldRow>
 
         </layout:Section>
 

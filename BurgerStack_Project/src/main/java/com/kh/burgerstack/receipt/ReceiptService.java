@@ -48,31 +48,33 @@ public class ReceiptService {
             String status,
             String startDate,
             String endDate,
-            String keyword) {
+            String keyword,
+            Long storeId) {
 
-        return pagingRequest.toPageInfo(
-                receiptDao.getPlanTotalCount(
-                        sqlSession,
-                        status,
-                        startDate,
-                        endDate,
-                        keyword));
-    }
+		return pagingRequest.toPageInfo(
+		receiptDao.getPlanTotalCount(
+		status,
+		startDate,
+		endDate,
+		keyword,
+		storeId));
+}
 
-    public List<PurchaseOrder> selectReceiptPlanList(PagingRequest pagingRequest,
+    public List<ReceiptPlanDto> selectReceiptPlanList(PagingRequest pagingRequest,
             String status,
             String startDate,
             String endDate,
-            String keyword) {
+            String keyword,
+            Long storeId) {
 
-        return receiptDao.selectReceiptPlanList(
-                sqlSession,
-                pagingRequest,
-                status,
-                startDate,
-                endDate,
-                keyword);
-    }
+		return receiptDao.selectReceiptPlanList(
+		pagingRequest,
+		status,
+		startDate,
+		endDate,
+		keyword,
+		storeId);
+}
 
     public List<Receipt> selectReceiptList(PagingRequest pagingRequest,
             String receiptType,
@@ -86,6 +88,10 @@ public class ReceiptService {
                 startDate,
                 endDate,
                 keyword);
+    }
+    
+    public Long selectStoreIdByOwnerUserNo(Long ownerUserNo) {
+        return receiptDao.selectStoreIdByOwnerUserNo(ownerUserNo);
     }
 
     @Transactional

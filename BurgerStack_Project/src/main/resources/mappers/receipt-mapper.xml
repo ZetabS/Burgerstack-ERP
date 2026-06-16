@@ -11,6 +11,7 @@
 	    SELECT COUNT(*)
 	    FROM PURCHASE_ORDERS PO
 	    WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
+	      AND PO.STORE_ID = #{storeId}
 	
 	    <if test="status != null and status != '' and status != 'ALL'">
 	        AND PO.STATUS = #{status}
@@ -103,26 +104,27 @@
     <!-- 입고 예정 목록 리스트 조회 -->
 	<select id="selectReceiptPlanList"
 	        parameterType="map"
-	        resultType="purchaseOrder">
+	        resultType="com.kh.burgerstack.receipt.ReceiptPlanDto">
 	
 	    SELECT
-	          PO.PURCHASE_ORDER_ID AS purchaseOrderId
-	        , PO.TOTAL_AMOUNT AS totalAmount
-	        , PO.STATUS AS status
-	        , PO.CREATED_AT AS createdAt
+	          PO.PURCHASE_ORDER_ID AS "purchaseOrderId"
+	        , PO.TOTAL_AMOUNT AS "totalAmount"
+	        , PO.STATUS AS "status"
+	        , PO.CREATED_AT AS "createdAt"
 	
 	        , MIN(POI.MATERIAL_NAME_SNAPSHOT)
 	          || CASE
 	                WHEN COUNT(*) &gt; 1
 	                THEN ' 외 ' || (COUNT(*) - 1) || '건'
 	                ELSE ''
-	             END AS materialSummary
+	             END AS "materialSummary"
 	
 	    FROM PURCHASE_ORDERS PO
 	    JOIN PURCHASE_ORDER_ITEMS POI
 	      ON PO.PURCHASE_ORDER_ID = POI.PURCHASE_ORDER_ID
 	
 	    WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
+	      AND PO.STORE_ID = #{storeId}
 	
 	    <if test="status != null and status != '' and status != 'ALL'">
 	        AND PO.STATUS = #{status}
@@ -269,6 +271,17 @@
         WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
 
     </select>
+    
+    <!-- 점주 회원번호로 점포번호 조회 -->
+	<select id="selectStoreIdByOwnerUserNo"
+	        parameterType="long"
+	        resultType="long">
+	
+	    SELECT STORE_ID
+	    FROM STORES
+	    WHERE OWNER_USER_NO = #{ownerUserNo}
+	
+	</select>
 
 
     <!-- RECEIPTS 저장 -->

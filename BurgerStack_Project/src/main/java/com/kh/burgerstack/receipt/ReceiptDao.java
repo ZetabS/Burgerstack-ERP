@@ -61,24 +61,24 @@ public class ReceiptDao {
 		);
 }
     
-    public int getPlanTotalCount(SqlSessionTemplate sqlSession,
-					            String status,
-					            String startDate,
-					            String endDate,
-					            String keyword) {
-					
-					Map<String, Object> map = new HashMap<>();
-					
-					map.put("status", status);
-					map.put("startDate", startDate);
-					map.put("endDate", endDate);
-					map.put("keyword", keyword);
-					
-					return sqlSession.selectOne(
-					"ReceiptMapper.getPlanTotalCount",
-					map
-					);
-					}
+    public int getPlanTotalCount(String status,
+            String startDate,
+            String endDate,
+            String keyword,
+            Long storeId) {
+
+			Map<String, Object> param = new HashMap<>();
+			
+			param.put("status", status);
+			param.put("startDate", startDate);
+			param.put("endDate", endDate);
+			param.put("keyword", keyword);
+			param.put("storeId", storeId);
+			
+				return sqlSession.selectOne(
+				"ReceiptMapper.getPlanTotalCount",
+				param);
+}
 
     public List<PurchaseOrder> selectReceiptPlanList(
             SqlSessionTemplate sqlSession,
@@ -104,8 +104,37 @@ public class ReceiptDao {
                 )
         );
     }
-
     
+    public List<ReceiptPlanDto> selectReceiptPlanList(PagingRequest pagingRequest,
+            String status,
+            String startDate,
+            String endDate,
+            String keyword,
+            Long storeId) {
+
+			Map<String, Object> param = new HashMap<>();
+			
+			param.put("status", status);
+			param.put("startDate", startDate);
+			param.put("endDate", endDate);
+			param.put("keyword", keyword);
+			param.put("storeId", storeId);
+
+				return sqlSession.selectList(
+				"ReceiptMapper.selectReceiptPlanList",
+				param,
+				new RowBounds(
+				pagingRequest.getOffset(),
+				pagingRequest.getLimit()));
+}
+    
+    public Long selectStoreIdByOwnerUserNo(Long ownerUserNo) {
+
+        return sqlSession.selectOne(
+                "ReceiptMapper.selectStoreIdByOwnerUserNo",
+                ownerUserNo);
+    }
+
     
     public Long selectStoreIdByPurchaseOrderId(Long purchaseOrderId) {
         return sqlSession.selectOne("ReceiptMapper.selectStoreIdByPurchaseOrderId", purchaseOrderId);
