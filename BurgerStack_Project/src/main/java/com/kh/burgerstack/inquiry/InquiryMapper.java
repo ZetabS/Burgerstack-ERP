@@ -43,4 +43,6 @@ public interface InquiryMapper {
 	int InquiryDeleteHO(long inquiryId);
    public List<AdminDashboardInquiryListItem> findTopN(
             @Param("count") int count);
+
+    public int countUnanswered();
 }
