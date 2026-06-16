@@ -185,103 +185,93 @@
             <br>
 
             <form class="search-form"
-                    action="${pageContext.request.contextPath}/admin/materials"
-                    method="get">
+                action="${pageContext.request.contextPath}/admin/materials"
+                method="get">
 
-                    <div class="search-area">
+                <div class="search-area">
 
-                        <select name="materialType" onchange="this.form.submit()">
-                            <option value="" ${empty param.materialType ? 'selected' : ''}>모두보기</option>
-                            <option value="AF" ${param.materialType eq 'AF' ? 'selected' : ''}>상온식품</option>
-                            <option value="RF" ${param.materialType eq 'RF' ? 'selected' : ''}>냉장식품</option>
-                            <option value="FF" ${param.materialType eq 'FF' ? 'selected' : ''}>냉동식품</option>
-                            <option value="PK" ${param.materialType eq 'PK' ? 'selected' : ''}>포장재</option>
-                            <option value="KW" ${param.materialType eq 'KW' ? 'selected' : ''}>주방용품</option>
-                            <option value="ET" ${param.materialType eq 'ET' ? 'selected' : ''}>기타</option>
-                        </select>
+                    <select name="materialType" onchange="MaterialDrawer.filterMaterials()">
+                        <option value="" ${empty param.materialType ? 'selected' : ''}>모두보기</option>
+                        <option value="AF" ${param.materialType eq 'AF' ? 'selected' : ''}>상온식품</option>
+                        <option value="RF" ${param.materialType eq 'RF' ? 'selected' : ''}>냉장식품</option>
+                        <option value="FF" ${param.materialType eq 'FF' ? 'selected' : ''}>냉동식품</option>
+                        <option value="PK" ${param.materialType eq 'PK' ? 'selected' : ''}>포장재</option>
+                        <option value="KW" ${param.materialType eq 'KW' ? 'selected' : ''}>주방용품</option>
+                        <option value="ET" ${param.materialType eq 'ET' ? 'selected' : ''}>기타</option>
+                    </select>
 
-                        <div class="search-box">
-
-                            <input type="text"
-                                name="keyword"
-                                placeholder="자재명 검색"
-                                value="${param.keyword}">
-
-                            <button type="submit"
-                                    class="search-btn">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
-
-                            </button>
-
-                        </div>
-
-                        <a class="reset-btn btn btn-danger btn-sm"href="${pageContext.request.contextPath}/admin/materials">
-                            초기화
-                        </a>
-
+                    <div class="search-box">
+                        <input type="text" id="keywordInput" name="keyword" 
+                               placeholder="자재명 검색" value="${param.keyword}"
+                               onkeyup="MaterialDrawer.filterMaterials()">
+                        <button type="button" class="search-btn" onclick="MaterialDrawer.filterMaterials()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+                        </button>
                     </div>
-
-                </form>
-            <c:forEach var="targetType" items="${['AF', 'RF', 'FF', 'PK', 'KW', 'ET']}">
-                
-                <c:set var="hasItem" value="false" />
-                <c:forEach var="check" items="${materials}">
-                    <c:if test="${check.materialType eq targetType}">
-                        <c:set var="hasItem" value="true" />
+                    <a class="reset-btn btn btn-danger btn-sm"href="${pageContext.request.contextPath}/admin/materials">
+                        초기화
+                    </a>
+                </div>
+            </form>
+            <div id="product-list-container">
+                <c:forEach var="targetType" items="${['AF', 'RF', 'FF', 'PK', 'KW', 'ET']}">
+                    <c:set var="hasItem" value="false" />
+                    <c:forEach var="check" items="${materials}">
+                        <c:if test="${check.materialType eq targetType}">
+                            <c:set var="hasItem" value="true" />
+                        </c:if>
+                    </c:forEach>
+                    
+                    <c:if test="${hasItem}">
+                        <div class="category-section" data-type="${targetType}">
+                            <h2 class="category-title">
+                                <c:choose>
+                                    <c:when test="${targetType eq 'AF'}">상온식품</c:when>
+                                    <c:when test="${targetType eq 'RF'}">냉장식품</c:when>
+                                    <c:when test="${targetType eq 'FF'}">냉동식품</c:when>
+                                    <c:when test="${targetType eq 'PK'}">포장재</c:when>
+                                    <c:when test="${targetType eq 'KW'}">주방용품</c:when>
+                                    <c:otherwise>기타</c:otherwise>
+                                </c:choose>
+                            </h2>
+                            
+                            <div class="product-grid">
+                                <c:forEach var="m" items="${materials}">
+                                    <c:if test="${m.materialType eq targetType}">
+                                        <div class="img-wrap"
+                                            onclick="MaterialDrawer.getDetail('${m.materialId}', '${m.materialName}')"
+                                            data-details="${m.details}">
+                                            <b>${m.materialName}</b>
+                                            <c:choose>
+                                                <c:when test="${not empty m.materialFiles}">
+                                                    <img src="${pageContext.request.contextPath}/material-files/${m.materialFiles[0].storedName}" 
+                                                        alt="${m.materialName}"
+                                                        onerror="this.src='${pageContext.request.contextPath}/resources/images/BS_logo1.svg'">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <img src="${pageContext.request.contextPath}/resources/images/BS_logo1.svg" 
+                                                        alt="${m.materialName}">
+                                                </c:otherwise>
+                                            </c:choose>
+                                            
+                                            <div class="card-info">
+                                                
+                                                <span style="color: #65a30d; font-weight: bold; font-size: 15px;">
+                                                    <fmt:formatNumber value="${m.supplyPrice}" pattern="#,###" />원
+                                                </span>
+                                                <span class="card-badge ${m.status eq 'ACTIVE' ? 'badge-success' : 'badge-danger'}">
+                                                    ${m.status eq 'ACTIVE' ? '판매중' : '판매 중단'}
+                                                </span>
+                                            
+                                            </div>
+                                        </div>
+                                    </c:if>
+                                </c:forEach>
+                            </div>
+                        </div>
                     </c:if>
                 </c:forEach>
-                
-                <c:if test="${hasItem}">
-                    <div class="category-section">
-                        <h2 class="category-title">
-                            <c:choose>
-                                <c:when test="${targetType eq 'AF'}">상온식품</c:when>
-                                <c:when test="${targetType eq 'RF'}">냉장식품</c:when>
-                                <c:when test="${targetType eq 'FF'}">냉동식품</c:when>
-                                <c:when test="${targetType eq 'PK'}">포장재</c:when>
-                                <c:when test="${targetType eq 'KW'}">주방용품</c:when>
-                                <c:otherwise>기타</c:otherwise>
-                            </c:choose>
-                        </h2>
-                        
-                        <div class="product-grid">
-                            <c:forEach var="m" items="${materials}">
-                                <c:if test="${m.materialType eq targetType}">
-                                    <div class="img-wrap"
-                                         onclick="MaterialDrawer.getDetail('${m.materialId}', '${m.materialName}')"
-                                         data-details="${m.details}">
-                                        <b>${m.materialName}</b>
-                                        <c:choose>
-                                            <c:when test="${not empty m.materialFiles}">
-                                                <img src="${pageContext.request.contextPath}/material-files/${m.materialFiles[0].storedName}" 
-                                                    alt="${m.materialName}"
-                                                    onerror="this.src='${pageContext.request.contextPath}/resources/images/BS_logo1.svg'">
-                                            </c:when>
-                                            <c:otherwise>
-                                                <img src="${pageContext.request.contextPath}/resources/images/BS_logo1.svg" 
-                                                    alt="${m.materialName}">
-                                            </c:otherwise>
-                                        </c:choose>
-                                        
-                                        <div class="card-info">
-                                            
-                                            <span style="color: #65a30d; font-weight: bold; font-size: 15px;">
-                                                <fmt:formatNumber value="${m.supplyPrice}" pattern="#,###" />원
-                                            </span>
-                                            <span class="card-badge ${m.status eq 'ACTIVE' ? 'badge-success' : 'badge-danger'}">
-                                                ${m.status eq 'ACTIVE' ? '판매중' : '판매 중단'}
-                                            </span>
-                                        
-                                        </div>
-                                    </div>
-                                </c:if>
-                            </c:forEach>
-                        </div>
-                    </div>
-                </c:if>
-                
-            </c:forEach>
+            </div>
         </div>
             
         <script>
@@ -374,6 +364,38 @@
                             window.location.href = this.contextPath + "/admin/materials/" + materialId + "/edit";
                         };
                     }
+                },
+
+                filterMaterials: function() {
+                    const type = document.querySelector('select[name="materialType"]').value;
+                    const keyword = document.getElementById('keywordInput').value.toLowerCase();
+                    const sections = document.querySelectorAll('.category-section');
+
+                    sections.forEach(section => {
+                        const sectionType = section.getAttribute('data-type');
+                        const cards = section.querySelectorAll('.img-wrap');
+                        
+                        let sectionVisible = false;
+
+                        cards.forEach(card => {
+                            const name = card.querySelector('b').innerText.toLowerCase();
+                            
+                            // 조건 1: 카테고리가 일치하거나, 전체보기(type="")인 경우
+                            // 조건 2: 자재명에 키워드가 포함된 경우
+                            const typeMatch = (type === "" || sectionType === type);
+                            const keywordMatch = name.includes(keyword);
+
+                            if (typeMatch && keywordMatch) {
+                                card.style.display = 'flex';
+                                sectionVisible = true; // 카드가 하나라도 보이면 섹션도 보여야 함
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+
+                        // 카테고리 섹션 자체를 보일지 말지 결정
+                        section.style.display = sectionVisible ? 'block' : 'none';
+                    });
                 },
 
                 open: function() {

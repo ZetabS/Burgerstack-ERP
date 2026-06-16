@@ -178,7 +178,7 @@
 
                     <div class="search-area">
 
-                        <select name="materialType" onchange="this.form.submit()">
+                        <select name="materialType" onchange="MaterialDrawer.filterMaterials()">
                             <option value="" ${empty param.materialType ? 'selected' : ''}>모두보기</option>
                             <option value="AF" ${param.materialType eq 'AF' ? 'selected' : ''}>상온식품</option>
                             <option value="RF" ${param.materialType eq 'RF' ? 'selected' : ''}>냉장식품</option>
@@ -190,10 +190,9 @@
 
                         <div class="search-box">
 
-                            <input type="text"
-                                name="keyword"
-                                placeholder="자재명 검색"
-                                value="${param.keyword}">
+                            <input type="text" id="keywordInput" name="keyword" 
+                                   placeholder="자재명 검색" value="${param.keyword}"
+                                   onkeyup="MaterialDrawer.filterMaterials()">
 
                             <button type="submit"
                                     class="search-btn">
@@ -221,7 +220,7 @@
                 </c:forEach>
                 
                 <c:if test="${hasItem}">
-                    <div class="category-section">
+                    <div class="category-section" data-type="${targetType}">
                         <h2 class="category-title">
                             <c:choose>
                                 <c:when test="${targetType eq 'AF'}">상온식품</c:when>
@@ -237,8 +236,8 @@
                             <c:forEach var="m" items="${materials}">
                                 <c:if test="${m.materialType eq targetType}">
                                     <div class="img-wrap"
-                                         onclick="MaterialDrawer.getDetail('${m.materialId}', '${m.materialName}')"
-                                         data-details="${m.details}">
+                                        onclick="MaterialDrawer.getDetail('${m.materialId}', '${m.materialName}')"
+                                        data-details="${m.details}">
                                         <b>${m.materialName}</b>
                                         <c:choose>
                                             <c:when test="${not empty m.materialFiles}">
@@ -285,16 +284,6 @@
                     }${!vs.last ? ',' : ''}
                 </c:forEach>
             ];
-
-            // function showDetail(materialId) {
-            //     const material = materialData.find(m => m.id == materialId);
-            //     if (material) {
-            //         // 모달창 체우기
-            //         document.getElementById('modalName').innerText = material.name;
-            //         document.getElementById('modalDetails').innerText = material.details;
-            //     }
-            // }
-            
             const MaterialDrawer = {
                 contextPath: "",
 
@@ -351,6 +340,38 @@
                             console.error("오류 발생: " + error);
                             alert("상세정보를 불러오는데 실패했습니다.");
                         }
+                    });
+                },
+
+                filterMaterials: function() {
+                    const type = document.querySelector('select[name="materialType"]').value;
+                    const keyword = document.getElementById('keywordInput').value.toLowerCase();
+                    const sections = document.querySelectorAll('.category-section');
+
+                    sections.forEach(section => {
+                        const sectionType = section.getAttribute('data-type');
+                        const cards = section.querySelectorAll('.img-wrap');
+                        
+                        let sectionVisible = false;
+
+                        cards.forEach(card => {
+                            const name = card.querySelector('b').innerText.toLowerCase();
+                            
+                            // 조건 1: 카테고리가 일치하거나, 전체보기(type="")인 경우
+                            // 조건 2: 자재명에 키워드가 포함된 경우
+                            const typeMatch = (type === "" || sectionType === type);
+                            const keywordMatch = name.includes(keyword);
+
+                            if (typeMatch && keywordMatch) {
+                                card.style.display = 'flex';
+                                sectionVisible = true; // 카드가 하나라도 보이면 섹션도 보여야 함
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+
+                        // 카테고리 섹션 자체를 보일지 말지 결정
+                        section.style.display = sectionVisible ? 'block' : 'none';
                     });
                 },
 
