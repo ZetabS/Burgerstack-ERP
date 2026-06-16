@@ -72,9 +72,6 @@ public class InquiryControllerHO {
 		
 		model.addAttribute("inquiry",i);
 		
-		System.out.println("조회값 = " + i.getAnswerContent());
-		System.out.println("길이 = " + i.getAnswerContent().length());
-		
 		return"inquiry/inquiryEditHO";
 	}
 
@@ -83,9 +80,6 @@ public class InquiryControllerHO {
 	public ModelAndView InquiryEdit(
 	        @PathVariable Long inquiryId,
 	        Inquiry i,
-	        @RequestParam(value="uploadFile",
-            required=false)
-	        MultipartFile uploadFile,
 	        ModelAndView mv,
 	        HttpSession session) {
 		
@@ -94,7 +88,7 @@ public class InquiryControllerHO {
 
 	    i.setInquiryId(inquiryId);
 
-	    int result = inquiryServiceHO.InquiryEdit(i, uploadFile);
+	    int result = inquiryServiceHO.InquiryEdit(i);
 
 	    if(result > 0) {
 

@@ -2,6 +2,10 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %> 
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %> 
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %> 
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 
 <style>
     table.table2 tbody tr:hover {
@@ -40,239 +44,377 @@
 </style>
 <!-- 레이아웃 작업 -->
 <t:layout>
-    <div class="outer">
 
-        <h2>발주 목록</h2>
+    <layout:Page
+        title="발주 목록"
+        description="발주 요청 내역을 조회합니다.">
 
-        <div class="content-top">
-        
-            <div class="top-info">
-                
-            </div>
-            <!-- 검색 -->
-            <div class="search-area" align="right">
-                <form method="get" id="searchForm">
-                    <select name="status" onchange="autoSearch()">
+        <jsp:attribute name="actions">
+            <button
+                type="button"
+                class="btn btn-primary"
+                onclick="location.href='${pageContext.request.contextPath}/owner/purchases/new'">
+                발주 요청
+            </button>
+        </jsp:attribute>
 
-                        <option value="">전체상태</option>
+        <jsp:body>
 
-                        <option value="REQUESTED"
-                            ${condition.status eq 'REQUESTED' ? 'selected' : ''}>
-                            요청중
-                        </option>
+            <!-- 검색 조건 -->
+            <layout:Section title="검색 조건">
 
-                        <option value="PARTIALLY_APPROVED"
-                            ${condition.status eq 'PARTIALLY_APPROVED' ? 'selected' : ''}>
-                            부분 승인
-                        </option>
+                <form id="searchForm"
+                    method="get">
 
-                        <option value="APPROVED"
-                            ${condition.status eq 'APPROVED' ? 'selected' : ''}>
-                            승인
-                        </option>
+                    <input type="hidden"
+                        name="page"
+                        value="1"/>
 
-                        <option value="REJECTED"
-                            ${condition.status eq 'REJECTED' ? 'selected' : ''}>
-                            반려
-                        </option>
+                    <div class="d-flex justify-content-end align-items-center flex-wrap">
 
-                        <option value="CANCELED"
-                            ${condition.status eq 'CANCELED' ? 'selected' : ''}>
-                            발주 취소
-                        </option>
+                        <!-- 상태 -->
+                        <select name="status"
+                                id="status"
+                                class="form-control mr-2"
+                                style="width:180px;">
 
-                        <option value="RECEIVED"
-                            ${condition.status eq 'RECEIVED' ? 'selected' : ''}>
-                            입고완료
-                        </option>
-                    </select>
-                    <input type="date"
+                            <option value="">전체상태</option>
+
+                            <option value="REQUESTED"
+                                ${condition.status eq 'REQUESTED' ? 'selected' : ''}>
+                                요청중
+                            </option>
+
+                            <option value="PARTIALLY_APPROVED"
+                                ${condition.status eq 'PARTIALLY_APPROVED' ? 'selected' : ''}>
+                                부분승인
+                            </option>
+
+                            <option value="APPROVED"
+                                ${condition.status eq 'APPROVED' ? 'selected' : ''}>
+                                승인
+                            </option>
+
+                            <option value="REJECTED"
+                                ${condition.status eq 'REJECTED' ? 'selected' : ''}>
+                                반려
+                            </option>
+
+                            <option value="CANCELED"
+                                ${condition.status eq 'CANCELED' ? 'selected' : ''}>
+                                취소
+                            </option>
+
+                            <option value="RECEIVED"
+                                ${condition.status eq 'RECEIVED' ? 'selected' : ''}>
+                                입고완료
+                            </option>
+
+                        </select>
+
+                        <!-- 기간 -->
+                        <input type="date"
+                            class="form-control mr-2"
+                            style="width:150px;"
                             id="startDate"
                             name="startDate"
-                            max="${today}"
-                            value="${condition.startDate}"
-                            onchange="validateDate()">
-                    ~
-                    <input type="date"
+                            value="${condition.startDate}" />
+
+                        <span class="mr-2">~</span>
+
+                        <input type="date"
+                            class="form-control mr-2"
+                            style="width:150px;"
                             id="endDate"
                             name="endDate"
-                            max="${today}"
-                            value="${condition.endDate}"
-                            onchange="validateDate();">
+                            value="${condition.endDate}" />
 
-                </form>             
-            </div>
-        </div>
-        <table class="table2">
-            <thead>
-                <tr>
-                    <th>발주코드</th>
-                    <th>상태</th>
-                    <th>품목요약</th>
-                    <th>총액</th>
-                    <th>요청일</th>
-                </tr>
-            </thead>
-            
-            <tbody id="purchaseListBody">
-                <c:if test="${empty list}">
-                    <tr>
-                        <td colspan="5" style="text-align:center;">
-                            조회된 정보가 없습니다.
-                        </td>
-                    </tr>
-                </c:if>
-                <c:forEach var="p" items="${list}">
-                    <tr style="cursor:pointer;"
-                        onclick="location.href='${pageContext.request.contextPath}/owner/purchases/${p.purchaseOrderId}'">
-                        <td>${p.purchaseCode}</td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${p.status eq 'REQUESTED'}">
-                                    <h6><span class="badge bg-secondary">요청중</span></h6>
-                                </c:when>
-                                <c:when test="${p.status eq 'PARTIALLY_APPROVED'}">
-                                    <h6><span class="badge bg-success">부분승인</span></h6>
-                                </c:when>
-                                <c:when test="${p.status eq 'APPROVED'}">
-                                    <h6><span class="badge bg-success">승인</span></h6>
-                                </c:when>
-                                <c:when test="${p.status eq 'CANCELED'}">
-                                    <h6><span class="badge bg-danger">발주취소</span></h6>
-                                </c:when>
-                                <c:when test="${p.status eq 'REJECTED'}">
-                                    <h6><span class="badge bg-danger">반려</span></h6>
-                                </c:when>
-                                <c:when test="${p.status eq 'RECEIVED'}">
-                                    <h6><span class="badge bg-info">입고완료</span></h6>
-                                </c:when>
-                                <c:otherwise>
-                                    <h6><span class="badge bg-warning">배송중</span></h6>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>${p.itemSummary}</td>
-                        <td class="comma-number">${p.totalAmount}</td>
-                        <td>${p.createdAt}</td>
-                    </tr>
-                </c:forEach>      
-            </tbody>
-        </table>
-        <div style="margin-top: 10px; text-align : right;">
-            <button class="button-primary" onclick="location.href='/burgerstack/owner/purchases/new'">발주 요청</button>
-        </div>
+                    </div>
 
-        <t:pagination pageInfo="${pageInfo}"></t:pagination>
+                </form>
+
+            </layout:Section>
         
-    </div>
+
+            <layout:TableSection title="발주 목록"
+                description="행을 클릭하면 발주 상세 화면으로 이동합니다.">
+
+                <table:Table
+                    isEmpty="${empty list}"
+                    emptyMessage="조회된 정보가 없습니다.">
+
+                    <jsp:attribute name="thead">
+                        <tr>
+                            <th>발주코드</th>
+                            <th>상태</th>
+                            <th>품목요약</th>
+                            <th class="text-right">총액</th>
+                            <th>요청일</th>
+                        </tr>
+                    </jsp:attribute>
+
+                    <jsp:attribute name="tbody">
+
+                        <c:forEach var="p" items="${list}">
+
+                            <table:TableRow
+                                clickable="true"
+                                href="${pageContext.request.contextPath}/owner/purchases/${p.purchaseOrderId}">
+
+                                <table:TextCell value="${p.purchaseCode}" />
+
+                                <table:FitCell>
+
+                                    <c:choose>
+
+                                        <c:when test="${p.status eq 'REQUESTED'}">
+                                            <h6><span class="badge bg-secondary">요청중</span></h6>
+                                        </c:when>
+
+                                        <c:when test="${p.status eq 'PARTIALLY_APPROVED'}">
+                                            <h6><span class="badge bg-success">부분승인</span></h6>
+                                        </c:when>
+
+                                        <c:when test="${p.status eq 'APPROVED'}">
+                                            <h6><span class="badge bg-success">승인</span></h6>
+                                        </c:when>
+
+                                        <c:when test="${p.status eq 'CANCELED'}">
+                                            <h6><span class="badge bg-danger">발주취소</span></h6>
+                                        </c:when>
+
+                                        <c:when test="${p.status eq 'REJECTED'}">
+                                            <h6><span class="badge bg-danger">반려</span></h6>
+                                        </c:when>
+
+                                        <c:when test="${p.status eq 'RECEIVED'}">
+                                            <h6><span class="badge bg-info">입고완료</span></h6>
+                                        </c:when>
+
+                                        <c:otherwise>
+                                            <h6><span class="badge bg-warning">배송중</span></h6>
+                                        </c:otherwise>
+
+                                    </c:choose>
+
+                                </table:FitCell>
+
+                                <table:TextCell value="${p.itemSummary}" />
+
+                                <table:MoneyCell
+                                    value="${p.totalAmount}"
+                                    suffix="원" />
+
+                                <table:TextCell value="${p.createdAt}" />
+
+                            </table:TableRow>
+
+                        </c:forEach>
+
+                    </jsp:attribute>
+
+                </table:Table>
+
+            </layout:TableSection>
+
+            <div class="mt-3 d-flex justify-content-center">
+
+                <t:pagination
+                    pageInfo="${pageInfo}" />
+
+            </div>
+
+        </jsp:body>
+
+    </layout:Page>
+
 </t:layout>
 	
-    <script>
-        // 페이지 로드시 최초 실행
-        $(document).ready(function () {
+<script>
+document.addEventListener("DOMContentLoaded", function() {
 
-            const today = new Date().toISOString().split('T')[0];
+    const searchForm = document.getElementById("searchForm");
+    const status = document.getElementById("status");
+    const startDate = document.getElementById("startDate");
+    const endDate = document.getElementById("endDate");
 
-            $('#endDate').attr('max', today);
+    // 오늘 날짜 yyyy-MM-dd
+    function formatDate(date) {
 
-            priceFormatting()
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1)
+                        .padStart(2, "0");
+        const day = String(date.getDate())
+                        .padStart(2, "0");
 
-        }); //
+        return year + "-" + month + "-" + day;
+    }
 
+    const todayText = formatDate(new Date());
 
-        // 금액 포멧팅
-        function priceFormatting() {
-            
-            // 클래스가 'comma-number'인 모든 태그 선택
-            const elements = document.querySelectorAll('.comma-number');
-            
-            elements.forEach(el => {
-                const num = Number(el.textContent);
-                // 숫자가 맞을 때만 변경
-                if (!isNaN(num)) {
-                el.textContent = num.toLocaleString('ko-KR');
-                }
-            });
+    startDate.setAttribute("max", todayText);
+    endDate.setAttribute("max", todayText);
+
+    // 날짜 범위 동기화
+    function syncDateLimit() {
+
+        const startValue = startDate.value;
+        const endValue = endDate.value;
+
+        if(startValue !== "") {
+
+            endDate.setAttribute(
+                "min",
+                startValue
+            );
+
+        } else {
+
+            endDate.removeAttribute("min");
         }
 
-        // 검색어 변경시 자동 검색
-        function autoSearch() {
-            document.getElementById("searchForm").submit();
+        if(endValue !== "") {
+
+            startDate.setAttribute(
+                "max",
+                endValue
+            );
+
+        } else {
+
+            startDate.setAttribute(
+                "max",
+                todayText
+            );
+        }
+    }
+
+    // 날짜 검증
+    function validateDateRange() {
+
+        const startValue = startDate.value;
+        const endValue = endDate.value;
+
+        if(
+            startValue !== ""
+            && startValue > todayText
+        ){
+
+            alert(
+                "시작일은 오늘 이후 날짜를 선택할 수 없습니다."
+            );
+
+            startDate.value = "";
+
+            startDate.focus();
+
+            syncDateLimit();
+
+            return false;
         }
 
-        // 날짜 유효성 검사
-        function validateDate() {
+        if(
+            endValue !== ""
+            && endValue > todayText
+        ){
 
-            const startDate =
-                document.getElementById('startDate');
+            alert(
+                "종료일은 오늘 이후 날짜를 선택할 수 없습니다."
+            );
 
-            const endDate =
-                document.getElementById('endDate');
+            endDate.value = "";
 
-            const today =
-                new Date().toISOString().split('T')[0];
+            endDate.focus();
 
-            endDate.max = today;
+            syncDateLimit();
 
-            if(endDate.value > today) {
-
-                alert('종료일은 오늘 이후로 선택할 수 없습니다.');
-
-                endDate.value = today;
-
-                return;
-            }
-
-            if(startDate.value &&
-            endDate.value &&
-            startDate.value > endDate.value) {
-
-                alert('시작일은 종료일보다 클 수 없습니다.');
-
-                startDate.value = endDate.value;
-
-                return;
-            }
-
-            autoSearch();
+            return false;
         }
 
-        let typing = false;
+        if(
+            startValue !== ""
+            && endValue !== ""
+            && startValue > endValue
+        ){
 
-        // 검색어 입력시 새로고침 방지
-        document.addEventListener("focusin", function(e) {
-            if (e.target.tagName === "INPUT") {
-                typing = true;
-            }
-        });
+            alert(
+                "시작일은 종료일보다 늦을 수 없습니다."
+            );
 
-        document.addEventListener("focusout", function(e) {
-            if (e.target.tagName === "INPUT") {
-                typing = false;
-            }
-        });
+            startDate.focus();
 
-        // 5초마다 새로고침
-        function refreshPurchaseList() {
+            syncDateLimit();
 
-            if(typing){
-                return;
-            }
-
-            $.ajax({
-                url : window.location.href,
-                success : function(html) {
-
-                    $("#purchaseListBody").html(
-                        $(html)
-                        .find("#purchaseListBody")
-                        .html()
-                    );
-
-                    priceFormatting();
-                }
-            });
+            return false;
         }
 
-        setInterval(refreshPurchaseList, 5000);
-    </script>
+        return true;
+    }
+
+    // 날짜 변경
+    startDate.addEventListener(
+        "change",
+        function(){
+
+            validateDateRange();
+
+            syncDateLimit();
+        }
+    );
+
+    endDate.addEventListener(
+        "change",
+        function(){
+
+            validateDateRange();
+
+            syncDateLimit();
+        }
+    );
+
+    // 조회시 검증
+    searchForm.addEventListener(
+        "submit",
+        function(e){
+
+            if(!validateDateRange()){
+
+                e.preventDefault();
+            }
+        }
+    );
+
+    syncDateLimit();
+
+    status.addEventListener(
+        "change",
+        function() {
+            searchForm.submit();
+        }
+    );
+
+    startDate.addEventListener(
+        "change",
+        function(){
+
+            if(validateDateRange()){
+
+                syncDateLimit();
+                searchForm.submit();
+            }
+        }
+    );
+
+    endDate.addEventListener(
+        "change",
+        function(){
+
+            if(validateDateRange()){
+
+                syncDateLimit();
+                searchForm.submit();
+            }
+        }
+    );
+});
+</script>

@@ -32,24 +32,30 @@
          WHERE INVENTORY_TRANSACTION_ID = #{inventoryTransactionId}
     </select>
 
-    <insert id="insertItems">
+    <insert id="insertItem">
+        <selectKey keyProperty="item.inventoryTransactionItemId" resultType="int" order="BEFORE">
+            SELECT SEQ_INV_TX_ITEM.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO INVENTORY_TRANSACTION_ITEMS (
-              INVENTORY_TRANSACTION_ITEM_ID
-            , BEFORE_QUANTITY
-            , AFTER_QUANTITY
-            , INVENTORY_TRANSACTION_ID
-            , STORE_INVENTORY_ID
-        ) VALUES
-        <foreach collection="list" item="item" separator=",">
-        (
-              SEQ_INV_TX_ITEM.NEXTVAL
-            , #{item.beforeQuantity}
-            , #{item.afterQuantity}
-            , #{inventoryTransactionId}
-            , #{item.storeInventoryId}
-        )
-        </foreach>
+               INVENTORY_TRANSACTION_ITEM_ID
+             , BEFORE_QUANTITY
+             , AFTER_QUANTITY
+             , INVENTORY_TRANSACTION_ID
+             , STORE_INVENTORY_ID
+          ) VALUES (
+               #{item.inventoryTransactionItemId}
+             , #{item.beforeQuantity}
+             , #{item.afterQuantity}
+             , #{inventoryTransactionId}
+             , #{item.storeInventoryId}
+          )
     </insert>
+
+    <select id="findItemById">
+        SELECT *
+          FROM INVENTORY_TRANSACTION_ITEMS
+         WHERE INVENTORY_TRANSACTION_ITEM_ID = #{inventoryTransactionItemId}
+    </select>
 
     <select id="findItemsByTransactionId">
         SELECT *
@@ -59,7 +65,7 @@
 
     <select id="findInventoryTransactionListItems">
         SELECT INVENTORY_TRANSACTION_ID
-             , 'T' || TO_CHAR(CREATED_AT, 'YYYY') || LPAD(INVENTORY_TRANSACTION_ID, 4, '0') AS INVENTORY_TRANSACTION_CODE
+             , 'T' || EXTRACT(YEAR FROM CREATED_AT) || LPAD(INVENTORY_TRANSACTION_ID, 4, '0') AS INVENTORY_TRANSACTION_CODE
              , CASE WHEN TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
                     WHEN TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
                     WHEN TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
@@ -123,7 +129,7 @@
 
     <select id="getInventoryTransactionDetailById">
         SELECT T.INVENTORY_TRANSACTION_ID AS INVENTORY_TRANSACTION_ID
-             , 'T' || TO_CHAR(T.CREATED_AT, 'YYYY') || LPAD(T.INVENTORY_TRANSACTION_ID, 4, '0') AS INVENTORY_TRANSACTION_CODE
+             , 'T' || EXTRACT(YEAR FROM T.CREATED_AT) || LPAD(T.INVENTORY_TRANSACTION_ID, 4, '0') AS INVENTORY_TRANSACTION_CODE
              , CASE WHEN T.TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
                     WHEN T.TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
                     WHEN T.TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
@@ -148,7 +154,7 @@
              , BEFORE_QUANTITY
              , AFTER_QUANTITY - BEFORE_QUANTITY AS CHANGED_QUANTITY
              , AFTER_QUANTITY
-             , M.MATERIAL_CODE
+             , M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(MATERIAL_ID, 4, '0') AS MATERIAL_CODE
              , M.MATERIAL_TYPE
              , MATERIAL_NAME
              , INVENTORY_TRANSACTION_ID
@@ -168,6 +174,6 @@
                     WHEN 'KW' THEN 5
                     ELSE 6
                   END,
-                  M.MATERIAL_CODE
+                  MATERIAL_CODE
     </select>
 </mapper>

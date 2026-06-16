@@ -2,82 +2,50 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="datetime" uri="/WEB-INF/tld/datetime.tld" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
 <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
-<c:url var="backToList" value="/${role}/inventory-transactions" />
+<c:url var="listReturnUrl" value="/${role}/inventory-transactions" />
 
 <t:layout>
-  <div class="outer container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0">재고 변동 상세</h2>
+  <layout:Page title="재고 변동 상세">
+    <jsp:attribute name="actions">
+      <common:ReturnLink href="${listReturnUrl}">목록으로</common:ReturnLink>
+    </jsp:attribute>
 
-      <a href="${backToList}" class="back-to-list-btn btn btn-secondary">목록으로</a>
-    </div>
-
-    <div class="card mb-4">
-      <div class="card-header">기본 정보</div>
-
-      <div class="card-body">
-        <div class="row mb-3">
-          <div class="col-sm-3 font-weight-bold">변동 코드</div>
-          <div class="col-sm-9">${detail.inventoryTransactionCode}</div>
-        </div>
-
-        <c:if test="${isAdmin}">
-          <div class="row mb-3">
-            <div class="col-sm-3 font-weight-bold">점포명</div>
-            <div class="col-sm-9">${detail.storeName}</div>
-          </div>
-        </c:if>
-
-        <div class="row mb-3">
-          <div class="col-sm-3 font-weight-bold">변동 유형</div>
-          <div class="col-sm-9"><display:InventoryTransactionTypeLabel value="${detail.transactionType}" /></div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-sm-3 font-weight-bold">처리자</div>
-          <div class="col-sm-9">${detail.createdByName}</div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-sm-3 font-weight-bold">처리 일시</div>
-          <div class="col-sm-9"><c:out value="${datetime:formatDateTime(detail.createdAt)}" /></div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-sm-3 font-weight-bold">사유</div>
-
-          <div class="col-sm-9">
-            <c:out value="${detail.reason}" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-3 font-weight-bold">비고</div>
-
-          <div class="col-sm-9">
+    <jsp:body>
+      <layout:Section title="기본 정보">
+        <common:FieldList>
+          <layout:FieldRow label="변동 코드">${detail.inventoryTransactionCode}</layout:FieldRow>
+          <c:if test="${isAdmin}">
+            <layout:FieldRow label="점포명">${detail.storeName}</layout:FieldRow>
+          </c:if>
+          <layout:FieldRow label="변동 유형">
+            <display:InventoryTransactionTypeLabel value="${detail.transactionType}" />
+          </layout:FieldRow>
+          <layout:FieldRow label="처리자">${detail.createdByName}</layout:FieldRow>
+          <layout:FieldRow label="처리 일시">
+            <c:out value="${datetime:formatDateTime(detail.createdAt)}" />
+          </layout:FieldRow>
+          <layout:FieldRow label="사유">${detail.reason}</layout:FieldRow>
+          <layout:FieldRow label="비고">
             <c:choose>
               <c:when test="${empty detail.transactionMemo}">
                 <span class="text-muted">-</span>
               </c:when>
-
               <c:otherwise>
                 <c:out value="${detail.transactionMemo}" />
               </c:otherwise>
             </c:choose>
-          </div>
-        </div>
-      </div>
-    </div>
+          </layout:FieldRow>
+        </common:FieldList>
+      </layout:Section>
 
-    <div class="card mb-4">
-      <div class="card-header">변동 품목</div>
-
-      <div class="card-body p-0">
-        <table:DataTable>
+      <layout:TableSection title="변동 품목">
+        <table:Table>
           <jsp:attribute name="thead">
             <tr>
               <th>자재 코드</th>
@@ -102,21 +70,12 @@
               </table:TableRow>
             </c:forEach>
           </jsp:attribute>
-        </table:DataTable>
-      </div>
-    </div>
+        </table:Table>
+      </layout:TableSection>
 
-    <div class="text-right">
-      <a href="${backToList}" class="back-to-list-btn btn btn-secondary">목록으로</a>
-    </div>
-  </div>
+      <common:Actions>
+        <common:ReturnLink href="${listReturnUrl}">목록으로</common:ReturnLink>
+      </common:Actions>
+    </jsp:body>
+  </layout:Page>
 </t:layout>
-<script>
-  $(".back-to-list-btn").on("click", (e) => {
-    const listUrl = sessionStorage.getItem("inventoryTransactionListUrl");
-    if (listUrl) {
-      e.preventDefault();
-      window.location.href = listUrl;
-    }
-  });
-</script>

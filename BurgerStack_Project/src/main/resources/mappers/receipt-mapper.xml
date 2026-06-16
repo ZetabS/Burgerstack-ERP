@@ -1,577 +1,599 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="ReceiptMapper">
 
-	<!-- 입고 예정 목록 총 갯수 -->
-	<select id="getPlanTotalCount" resultType="_int">
-	    SELECT COUNT(*)
-	    FROM PURCHASE_ORDERS
-	    WHERE STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
-	</select>
-        <!-- 
-        WHERE STATUS = 'REQUESTED'
-        AND STORE_ID = #{storeId} 
-        -->
+    <!-- 입고 예정 목록 총 갯수 -->
+    <select id="getPlanTotalCount"
+            parameterType="map"
+            resultType="_int">
+
+        SELECT COUNT(*)
+        FROM PURCHASE_ORDERS PO
+        WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
+
+        <if test="status != null and status != '' and status != 'ALL'">
+            AND PO.STATUS = #{status}
+        </if>
+
+        <if test="startDate != null and startDate != ''">
+            AND TRUNC(PO.CREATED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="endDate != null and endDate != ''">
+            AND TRUNC(PO.CREATED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="keyword != null and keyword != ''">
+            AND (
+                TO_CHAR(PO.PURCHASE_ORDER_ID) LIKE '%' || #{keyword} || '%'
+                OR PO.ORDER_MEMO LIKE '%' || #{keyword} || '%'
+                OR EXISTS (
+                    SELECT 1
+                    FROM PURCHASE_ORDER_ITEMS POI2
+                    WHERE POI2.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+                      AND POI2.MATERIAL_NAME_SNAPSHOT LIKE '%' || #{keyword} || '%'
+                )
+            )
+        </if>
+
+    </select>
 
 
     <!-- 입고 이력 목록 총 갯수 -->
-	<select id="getHistoryTotalCount"
-	        parameterType="map"
-	        resultType="_int">
-	
-	    SELECT COUNT(*)
-	    FROM (
-	        SELECT
-	            R.RECEIPT_ID
-	        FROM RECEIPTS R
-	        JOIN PURCHASE_ORDERS PO
-	          ON R.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
-	        JOIN STORES S
-	          ON PO.STORE_ID = S.STORE_ID
-	        JOIN RECEIPT_ITEMS RI
-	          ON R.RECEIPT_ID = RI.RECEIPT_ID
-	
-	        WHERE 1 = 1
-	
-	        <if test="startDate != null and startDate != ''">
-	            AND TRUNC(R.RECEIVED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
-	        </if>
-	
-	        <if test="endDate != null and endDate != ''">
-	            AND TRUNC(R.RECEIVED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
-	        </if>
-	
-	        <if test="keyword != null and keyword != ''">
-	            AND S.STORE_NAME LIKE '%' || #{keyword} || '%'
-	        </if>
-	
-	        GROUP BY R.RECEIPT_ID
-	
-	        HAVING
-	            (
-	                #{receiptType} IS NULL
-	                OR #{receiptType} = ''
-	                OR #{receiptType} = 'ALL'
-	                OR (
-	                    #{receiptType} = 'NORMAL'
-	                    AND SUM(
-	                        CASE
-	                            WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
-	                            THEN 1
-	                            ELSE 0
-	                        END
-	                    ) = 0
-	                )
-	                OR (
-	                    (#{receiptType} = 'DEFECT' OR #{receiptType} = 'DIFFERENCE')
-	                    AND SUM(
-	                        CASE
-	                            WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
-	                            THEN 1
-	                            ELSE 0
-	                        END
-	                    ) &gt; 0
-	                )
-	            )
-	    )
-	
-	</select>
+    <select id="getHistoryTotalCount"
+            parameterType="map"
+            resultType="_int">
+
+        SELECT COUNT(*)
+        FROM (
+            SELECT
+                R.RECEIPT_ID
+            FROM RECEIPTS R
+            JOIN PURCHASE_ORDERS PO
+              ON R.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+            JOIN STORES S
+              ON PO.STORE_ID = S.STORE_ID
+            JOIN RECEIPT_ITEMS RI
+              ON R.RECEIPT_ID = RI.RECEIPT_ID
+
+            WHERE 1 = 1
+
+            <if test="startDate != null and startDate != ''">
+                AND TRUNC(R.RECEIVED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+            </if>
+
+            <if test="endDate != null and endDate != ''">
+                AND TRUNC(R.RECEIVED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+            </if>
+
+            <if test="keyword != null and keyword != ''">
+                AND S.STORE_NAME LIKE '%' || #{keyword} || '%'
+            </if>
+
+            GROUP BY R.RECEIPT_ID
+
+            HAVING
+                (
+                    #{receiptType} IS NULL
+                    OR #{receiptType} = ''
+                    OR #{receiptType} = 'ALL'
+                    OR (
+                        #{receiptType} = 'NORMAL'
+                        AND SUM(
+                            CASE
+                                WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+                                THEN 1
+                                ELSE 0
+                            END
+                        ) = 0
+                    )
+                    OR (
+                        (#{receiptType} = 'DEFECT' OR #{receiptType} = 'DIFFERENCE')
+                        AND SUM(
+                            CASE
+                                WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+                                THEN 1
+                                ELSE 0
+                            END
+                        ) &gt; 0
+                    )
+                )
+        )
+
+    </select>
+
 
     <!-- 입고 예정 목록 리스트 조회 -->
     <select id="selectReceiptPlanList"
-	        parameterType="string"
-	        resultType="purchaseOrder">
-	
-	          SELECT
-				      PO.PURCHASE_ORDER_ID AS purchaseOrderId
-				    , PO.TOTAL_AMOUNT AS totalAmount
-				    , PO.STATUS AS status
-				    , PO.CREATED_AT AS createdAt
-				
-				    , MIN(POI.MATERIAL_NAME_SNAPSHOT)
-				      || CASE
-				            WHEN COUNT(*) > 1
-				            THEN ' 외 ' || (COUNT(*) - 1) || '건'
-				            ELSE ''
-				         END AS materialSummary
-	    FROM PURCHASE_ORDERS PO
-	    JOIN PURCHASE_ORDER_ITEMS POI
-	      ON PO.PURCHASE_ORDER_ID = POI.PURCHASE_ORDER_ID
-	    WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
-	
-	    <if test="_parameter != null and _parameter != '' and _parameter != 'ALL'">
-	        AND PO.STATUS = #{status}
-	    </if>
-	
-	    GROUP BY
-	          PO.PURCHASE_ORDER_ID
-	        , PO.TOTAL_AMOUNT
-	        , PO.ORDER_MEMO
-	        , PO.STATUS
-	        , PO.CREATED_AT
-	        , PO.UPDATED_AT
-	        , PO.STORE_ID
-	    ORDER BY PO.CREATED_AT DESC
-	
-	</select>
+            parameterType="map"
+            resultType="purchaseOrder">
 
-	<!-- 입고 이력 목록 조회 -->
-	<select id="selectReceiptList"
-	        parameterType="map"
-	        resultType="com.kh.burgerstack.receipt.Receipt">
-	
-	    SELECT
-	        R.RECEIPT_ID AS receiptId,
-	
-	        'R'
-	        || TO_CHAR(R.RECEIVED_AT, 'YYYY')
-	        || LPAD(R.RECEIPT_ID, 4, '0') AS receiptCode,
-	
-	        R.RECEIPT_MEMO AS receiptMemo,
-	        R.RECEIVED_AT AS receivedAt,
-	        R.PURCHASE_ORDER_ID AS purchaseOrderId,
-	
-	        S.STORE_NAME AS storeName,
-	
-	        MIN(POI.MATERIAL_NAME_SNAPSHOT)
-	        || CASE
-	              WHEN COUNT(*) &gt; 1
-	              THEN ' 외 ' || (COUNT(*) - 1) || '건'
-	              ELSE ''
-	           END AS materialSummary,
-	
-	        CASE
-	            WHEN SUM(
-	                    CASE
-	                        WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
-	                        THEN 1
-	                        ELSE 0
-	                    END
-	                 ) &gt; 0
-	            THEN 'DIFFERENCE'
-	            ELSE 'NORMAL'
-	        END AS receiptStatus
-	
-	    FROM RECEIPTS R
-	    JOIN PURCHASE_ORDERS PO
-	      ON R.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
-	    JOIN STORES S
-	      ON PO.STORE_ID = S.STORE_ID
-	    JOIN RECEIPT_ITEMS RI
-	      ON R.RECEIPT_ID = RI.RECEIPT_ID
-	    JOIN PURCHASE_ORDER_ITEMS POI
-	      ON RI.PURCHASE_ORDER_ITEM_ID = POI.PURCHASE_ORDER_ITEM_ID
-	
-	    WHERE 1 = 1
-	
-	    <if test="startDate != null and startDate != ''">
-	        AND TRUNC(R.RECEIVED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
-	    </if>
-	
-	    <if test="endDate != null and endDate != ''">
-	        AND TRUNC(R.RECEIVED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
-	    </if>
-	
-	    <if test="keyword != null and keyword != ''">
-	        AND S.STORE_NAME LIKE '%' || #{keyword} || '%'
-	    </if>
-	
-	    GROUP BY
-	        R.RECEIPT_ID,
-	        R.RECEIPT_MEMO,
-	        R.RECEIVED_AT,
-	        R.PURCHASE_ORDER_ID,
-	        S.STORE_NAME
-	
-	    HAVING
-	        (
-	            #{receiptType} IS NULL
-	            OR #{receiptType} = ''
-	            OR #{receiptType} = 'ALL'
-	            OR (
-	                #{receiptType} = 'NORMAL'
-	                AND SUM(
-	                    CASE
-	                        WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
-	                        THEN 1
-	                        ELSE 0
-	                    END
-	                ) = 0
-	            )
-	            OR (
-	                (#{receiptType} = 'DEFECT' OR #{receiptType} = 'DIFFERENCE')
-	                AND SUM(
-	                    CASE
-	                        WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
-	                        THEN 1
-	                        ELSE 0
-	                    END
-	                ) &gt; 0
-	            )
-	        )
-	
-	    ORDER BY R.RECEIPT_ID DESC
-	
-	</select>
-    
+        SELECT
+              PO.PURCHASE_ORDER_ID AS purchaseOrderId
+            , PO.TOTAL_AMOUNT AS totalAmount
+            , PO.STATUS AS status
+            , PO.CREATED_AT AS createdAt
+
+            , MIN(POI.MATERIAL_NAME_SNAPSHOT)
+              || CASE
+                    WHEN COUNT(*) &gt; 1
+                    THEN ' 외 ' || (COUNT(*) - 1) || '건'
+                    ELSE ''
+                 END AS materialSummary
+
+        FROM PURCHASE_ORDERS PO
+        JOIN PURCHASE_ORDER_ITEMS POI
+          ON PO.PURCHASE_ORDER_ID = POI.PURCHASE_ORDER_ID
+
+        WHERE PO.STATUS IN ('APPROVED', 'PARTIALLY_APPROVED')
+
+        <if test="status != null and status != '' and status != 'ALL'">
+            AND PO.STATUS = #{status}
+        </if>
+
+        <if test="startDate != null and startDate != ''">
+            AND TRUNC(PO.CREATED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="endDate != null and endDate != ''">
+            AND TRUNC(PO.CREATED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="keyword != null and keyword != ''">
+            AND (
+                TO_CHAR(PO.PURCHASE_ORDER_ID) LIKE '%' || #{keyword} || '%'
+                OR PO.ORDER_MEMO LIKE '%' || #{keyword} || '%'
+                OR EXISTS (
+                    SELECT 1
+                    FROM PURCHASE_ORDER_ITEMS POI2
+                    WHERE POI2.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+                      AND POI2.MATERIAL_NAME_SNAPSHOT LIKE '%' || #{keyword} || '%'
+                )
+            )
+        </if>
+
+        GROUP BY
+              PO.PURCHASE_ORDER_ID
+            , PO.TOTAL_AMOUNT
+            , PO.ORDER_MEMO
+            , PO.STATUS
+            , PO.CREATED_AT
+            , PO.UPDATED_AT
+            , PO.STORE_ID
+
+        ORDER BY PO.CREATED_AT DESC
+
+    </select>
+
+
+    <!-- 입고 이력 목록 조회 -->
+    <select id="selectReceiptList"
+            parameterType="map"
+            resultType="com.kh.burgerstack.receipt.Receipt">
+
+        SELECT
+            R.RECEIPT_ID AS receiptId,
+
+            'R'
+            || EXTRACT(YEAR FROM R.RECEIVED_AT)
+            || LPAD(R.RECEIPT_ID, 4, '0') AS receiptCode,
+
+            R.RECEIPT_MEMO AS receiptMemo,
+            R.RECEIVED_AT AS receivedAt,
+            R.PURCHASE_ORDER_ID AS purchaseOrderId,
+
+            S.STORE_NAME AS storeName,
+
+            MIN(POI.MATERIAL_NAME_SNAPSHOT)
+            || CASE
+                  WHEN COUNT(*) &gt; 1
+                  THEN ' 외 ' || (COUNT(*) - 1) || '건'
+                  ELSE ''
+               END AS materialSummary,
+
+            CASE
+                WHEN SUM(
+                        CASE
+                            WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+                            THEN 1
+                            ELSE 0
+                        END
+                     ) &gt; 0
+                THEN 'DIFFERENCE'
+                ELSE 'NORMAL'
+            END AS receiptStatus
+
+        FROM RECEIPTS R
+        JOIN PURCHASE_ORDERS PO
+          ON R.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+        JOIN STORES S
+          ON PO.STORE_ID = S.STORE_ID
+        JOIN RECEIPT_ITEMS RI
+          ON R.RECEIPT_ID = RI.RECEIPT_ID
+        JOIN PURCHASE_ORDER_ITEMS POI
+          ON RI.PURCHASE_ORDER_ITEM_ID = POI.PURCHASE_ORDER_ITEM_ID
+
+        WHERE 1 = 1
+
+        <if test="startDate != null and startDate != ''">
+            AND TRUNC(R.RECEIVED_AT) &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="endDate != null and endDate != ''">
+            AND TRUNC(R.RECEIVED_AT) &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="keyword != null and keyword != ''">
+            AND S.STORE_NAME LIKE '%' || #{keyword} || '%'
+        </if>
+
+        GROUP BY
+            R.RECEIPT_ID,
+            R.RECEIPT_MEMO,
+            R.RECEIVED_AT,
+            R.PURCHASE_ORDER_ID,
+            S.STORE_NAME
+
+        HAVING
+            (
+                #{receiptType} IS NULL
+                OR #{receiptType} = ''
+                OR #{receiptType} = 'ALL'
+                OR (
+                    #{receiptType} = 'NORMAL'
+                    AND SUM(
+                        CASE
+                            WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+                            THEN 1
+                            ELSE 0
+                        END
+                    ) = 0
+                )
+                OR (
+                    (#{receiptType} = 'DEFECT' OR #{receiptType} = 'DIFFERENCE')
+                    AND SUM(
+                        CASE
+                            WHEN NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+                            THEN 1
+                            ELSE 0
+                        END
+                    ) &gt; 0
+                )
+            )
+
+        ORDER BY R.RECEIPT_ID DESC
+
+    </select>
+
+
     <!-- 발주번호로 점포번호 조회 -->
     <select id="selectStoreIdByPurchaseOrderId"
-	        parameterType="long"
-	        resultType="long">
-	    SELECT STORE_ID
-	    FROM PURCHASE_ORDERS
-	    WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
-	</select>
-	
-	
-	<!--
-	    RECEIPTS 저장
-	    발주 건에 대한 입고 처리 정보 생성
-	-->
-	<insert id="insertReceipt"
-	        parameterType="com.kh.burgerstack.receipt.Receipt"
-	        useGeneratedKeys="false">
-	        
-	    <!-- 입고번호 시퀀스 생성 -->
-	    <selectKey keyProperty="receiptId"
-	               resultType="long"
-	               order="BEFORE">
-	        SELECT SEQ_RECEIPT.NEXTVAL
-	        FROM DUAL
-	    </selectKey>
-	
-	    INSERT INTO RECEIPTS (
-	        RECEIPT_ID,
-	        RECEIPT_MEMO,
-	        RECEIVED_AT,
-	        PURCHASE_ORDER_ID
-	    )
-	    VALUES (
-	        #{receiptId},
-	        #{receiptMemo},
-	        SYSDATE,
-	        #{purchaseOrderId}
-	    )
-	</insert>
-	
-	
-	<!--
-	    입고 상품별 상세 저장
-	
-	    RECEIPT_ITEMS
-	-->
-	<insert id="insertReceiptItem"
-	        parameterType="com.kh.burgerstack.receipt.ReceiptItem">
-	    INSERT INTO RECEIPT_ITEMS (
-	        RECEIPT_ITEM_ID,
-	        RECEIVED_QUANTITY,
-	        DEFECT_QUANTITY,
-	        RECEIPT_ITEM_MEMO,
-	        RECEIPT_ID,
-	        PURCHASE_ORDER_ITEM_ID
-	    )
-	    VALUES (
-	        SEQ_RECEIPT_ITEM.NEXTVAL,
-	        #{receivedQuantity},
-	        #{defectQuantity},
-	        #{receiptItemMemo},
-	        #{receiptId},
-	        #{purchaseOrderItemId}
-	    )
-	</insert>
-	
-	
-	<!--
-	    INVENTORY_TRANSACTIONS
-	
-	    재고 변동 이력 생성
-	    거래 유형 : 입고
-	-->
-	<insert id="insertInventoryTransaction"
-	        parameterType="com.kh.burgerstack.receipt.ReceiptTransactionParam">
-	    <selectKey keyProperty="inventoryTransactionId"
-		           resultType="long"
-		           order="BEFORE">
-		
-		    SELECT SEQ_INV_TX.NEXTVAL
-		    FROM DUAL
-		
-		</selectKey>
-	
-	    INSERT INTO INVENTORY_TRANSACTIONS (
-	        INVENTORY_TRANSACTION_ID,
-	        TRANSACTION_TYPE,
-	        REASON,
-	        TRANSACTION_MEMO,
-	        CREATED_AT,
-	        CREATED_BY,
-	        STORE_ID,
-	        RECEIPT_ID,
-	        STORE_CLOSING_ID
-	    )
-	    VALUES (
-	        #{inventoryTransactionId},
-	        'RECEIPT',
-	        '발주 입고 처리',
-	        NULL,
-	        SYSDATE,
-	        #{createdBy},
-	        #{storeId},
-	        #{receiptId},
-	        NULL
-	    )
-	</insert>
-	
-	
-	<!--
-	    현재 점포 재고 조회
-	
-	    입고 전 수량(beforeQuantity)
-	    계산용
-	-->
-	<select id="selectCurrentQuantity"
-	        parameterType="com.kh.burgerstack.receipt.ReceiptInventoryParam"
-	        resultType="long">
-	    SELECT SI.CURRENT_QUANTITY
-	    FROM STORE_INVENTORIES SI
-	    JOIN PURCHASE_ORDER_ITEMS POI
-	      ON SI.MATERIAL_ID = POI.MATERIAL_ID
-	    WHERE SI.STORE_ID = #{storeId}
-	      AND POI.PURCHASE_ORDER_ITEM_ID = #{purchaseOrderItemId}
-	</select>
-	
-	
-	<!--
-	    STORE_INVENTORIES
-	
-	    입고 수량만큼 재고 증가
-	-->
-	<update id="increaseStoreInventory"
-	        parameterType="com.kh.burgerstack.receipt.ReceiptInventoryParam">
-	    UPDATE STORE_INVENTORIES SI
-	    SET SI.CURRENT_QUANTITY = SI.CURRENT_QUANTITY + #{receivedQuantity},
-	        SI.UPDATED_AT = SYSDATE
-	    WHERE SI.STORE_ID = #{storeId}
-	      AND SI.MATERIAL_ID = (
-	          SELECT MATERIAL_ID
-	          FROM PURCHASE_ORDER_ITEMS
-	          WHERE PURCHASE_ORDER_ITEM_ID = #{purchaseOrderItemId}
-	      )
-	</update>
-	
-	
-	<!--
-	    재고 변동 이력 저장을 위해
-	    STORE_INVENTORY_ID 조회
-	-->
-	<select id="selectStoreInventoryId"
-	        parameterType="com.kh.burgerstack.receipt.ReceiptInventoryParam"
-	        resultType="long">
-	    SELECT SI.STORE_INVENTORY_ID
-	    FROM STORE_INVENTORIES SI
-	    JOIN PURCHASE_ORDER_ITEMS POI
-	      ON SI.MATERIAL_ID = POI.MATERIAL_ID
-	    WHERE SI.STORE_ID = #{storeId}
-	      AND POI.PURCHASE_ORDER_ITEM_ID = #{purchaseOrderItemId}
-	</select>
-	
-	
-	<!--
-	    INVENTORY_TRANSACTION_ITEMS
-	
-	    재고 변동 전 수량
-	    재고 변동 후 수량
-	    저장
-	-->
-	<insert id="insertInventoryTransactionItem"
-	        parameterType="com.kh.burgerstack.receipt.ReceiptTransactionItemParam">
-	    INSERT INTO INVENTORY_TRANSACTION_ITEMS (
-	        INVENTORY_TRANSACTION_ITEM_ID,
-	        BEFORE_QUANTITY,
-	        AFTER_QUANTITY,
-	        INVENTORY_TRANSACTION_ID,
-	        STORE_INVENTORY_ID
-	    )
-	    VALUES (
-	        SEQ_INV_TX_ITEM.NEXTVAL,
-	        #{beforeQuantity},
-	        #{afterQuantity},
-	        #{inventoryTransactionId},
-	        #{storeInventoryId}
-	    )
-	</insert>
-	
-	
-	<!--
-	    입고 완료 처리
-	
-	    PURCHASE_ORDERS
-	    STATUS : RECEIVED
-	-->
-	<update id="updatePurchaseOrderStatus"
-	        parameterType="long">
-	    UPDATE PURCHASE_ORDERS
-	    SET STATUS = 'RECEIVED',
-	        UPDATED_AT = SYSDATE
-	    WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
-	</update>
+            parameterType="long"
+            resultType="long">
 
-	<!-- 입고 이력 상세 헤더 조회 -->
-	<select id="selectReceiptDetail"
-	        parameterType="long"
-	        resultType="com.kh.burgerstack.receipt.Receipt">
-	
-	    SELECT
-	        R.RECEIPT_ID AS receiptId,
-	
-	        'R'
-	        || TO_CHAR(R.RECEIVED_AT, 'YYYY')
-	        || LPAD(R.RECEIPT_ID, 4, '0') AS receiptCode,
-	
-	        'P'
-	        || TO_CHAR(PO.CREATED_AT, 'YYYY')
-	        || LPAD(PO.PURCHASE_ORDER_ID, 4, '0') AS purchaseCode,
-	
-	        R.RECEIPT_MEMO AS receiptMemo,
-	        R.RECEIVED_AT AS receivedAt,
-	        R.PURCHASE_ORDER_ID AS purchaseOrderId,
-	
-	        S.STORE_NAME AS storeName,
-	
-	        CASE
-	            WHEN EXISTS (
-	                SELECT 1
-	                FROM RECEIPT_ITEMS RI
-	                WHERE RI.RECEIPT_ID = R.RECEIPT_ID
-	                  AND NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
-	            )
-	            THEN 'DIFFERENCE'
-	            ELSE 'NORMAL'
-	        END AS receiptStatus
-	
-	    FROM RECEIPTS R
-	    JOIN PURCHASE_ORDERS PO
-	      ON R.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
-	    JOIN STORES S
-	      ON PO.STORE_ID = S.STORE_ID
-	
-	    WHERE R.RECEIPT_ID = #{receiptId}
-	
-	</select>
-	
-	<!-- 입고 이력 상세 상품 목록 조회 -->
-	<select id="selectReceiptItemDetailList"
-	        parameterType="long"
-	        resultType="com.kh.burgerstack.receipt.ReceiptItemDetail">
-	
-	    SELECT
-	        M.MATERIAL_CODE AS materialCode,
-	        POI.MATERIAL_NAME_SNAPSHOT AS materialName,
-	        M.MATERIAL_TYPE AS materialType,
-	        POI.SUPPLY_PRICE_SNAPSHOT AS supplyPrice,
-	
-	        POI.REQUEST_QUANTITY AS requestQuantity,
-	
-	        NVL(POI.APPROVED_QUANTITY, POI.REQUEST_QUANTITY) AS approvedQuantity,
-	
-	        NVL(RI.RECEIVED_QUANTITY, 0) AS receivedQuantity,
-	        NVL(RI.DEFECT_QUANTITY, 0) AS defectQuantity,
-	        NVL(RI.RECEIPT_ITEM_MEMO, '-') AS receiptItemMemo,
-	
-	        POI.SUPPLY_PRICE_SNAPSHOT * NVL(RI.RECEIVED_QUANTITY, 0) AS amount
-	
-	    FROM RECEIPT_ITEMS RI
-	    JOIN PURCHASE_ORDER_ITEMS POI
-	      ON RI.PURCHASE_ORDER_ITEM_ID = POI.PURCHASE_ORDER_ITEM_ID
-	    JOIN MATERIALS M
-	      ON POI.MATERIAL_ID = M.MATERIAL_ID
-	
-	    WHERE RI.RECEIPT_ID = #{receiptId}
-	
-	    ORDER BY RI.RECEIPT_ITEM_ID
-	
-	</select>
-	
-	
-	
-	<!-- 입고 처리 화면 상품 목록 조회 -->
-	<select id="selectReceiptCheckItemList"
-	        parameterType="long"
-	        resultType="com.kh.burgerstack.receipt.ReceiptCheckItemDto">
-	
-	    SELECT
-	        POI.PURCHASE_ORDER_ITEM_ID AS purchaseOrderItemId,
-	        M.MATERIAL_CODE AS materialCode,
-	        M.MATERIAL_TYPE AS materialType,
-	        POI.MATERIAL_NAME_SNAPSHOT AS materialName,
-	
-	        POI.REQUEST_QUANTITY AS requestQuantity,
-	
-	        CASE
-	            WHEN PO.STATUS = 'APPROVED'
-	            THEN POI.REQUEST_QUANTITY
-	            ELSE POI.APPROVED_QUANTITY
-	        END AS approvedQuantity,
-	
-	        CASE
-	            WHEN PO.STATUS = 'PARTIALLY_APPROVED'
-	            THEN POI.REQUEST_QUANTITY - POI.APPROVED_QUANTITY
-	            ELSE 0
-	        END AS rejectedQuantity,
-	
-	        CASE
-	            WHEN PO.STATUS = 'PARTIALLY_APPROVED'
-	            THEN NVL(POI.REJECT_REASON, '-')
-	            ELSE '-'
-	        END AS rejectReason,
-	
-	        POI.SUPPLY_PRICE_SNAPSHOT AS supplyPrice,
-	
-	        CASE
-	            WHEN PO.STATUS = 'APPROVED'
-	            THEN POI.REQUEST_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT
-	            ELSE POI.APPROVED_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT
-	        END AS amount
-	
-	    FROM PURCHASE_ORDER_ITEMS POI
-	    JOIN PURCHASE_ORDERS PO
-	      ON POI.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
-	    JOIN MATERIALS M
-	      ON POI.MATERIAL_ID = M.MATERIAL_ID
-	    WHERE POI.PURCHASE_ORDER_ID = #{purchaseId}
-	      AND (
-	            PO.STATUS = 'APPROVED'
-	            OR
-	            (PO.STATUS = 'PARTIALLY_APPROVED' AND POI.APPROVED_QUANTITY > 0)
-	          )
-	    ORDER BY POI.PURCHASE_ORDER_ITEM_ID
-	
-	</select>
+        SELECT STORE_ID
+        FROM PURCHASE_ORDERS
+        WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
 
-	<select id="selectPurchaseStatus"
-	        parameterType="long"
-	        resultType="string">
-	
-	    SELECT STATUS
-	    FROM PURCHASE_ORDERS
-	    WHERE PURCHASE_ORDER_ID = #{purchaseId}
-	
-	</select>
+    </select>
 
 
+    <!-- RECEIPTS 저장 -->
+    <insert id="insertReceipt"
+            parameterType="com.kh.burgerstack.receipt.Receipt"
+            useGeneratedKeys="false">
+
+        <selectKey keyProperty="receiptId"
+                   resultType="long"
+                   order="BEFORE">
+            SELECT SEQ_RECEIPT.NEXTVAL
+            FROM DUAL
+        </selectKey>
+
+        INSERT INTO RECEIPTS (
+            RECEIPT_ID,
+            RECEIPT_MEMO,
+            RECEIVED_AT,
+            PURCHASE_ORDER_ID
+        )
+        VALUES (
+            #{receiptId},
+            #{receiptMemo},
+            SYSDATE,
+            #{purchaseOrderId}
+        )
+
+    </insert>
 
 
+    <!-- RECEIPT_ITEMS 저장 -->
+    <insert id="insertReceiptItem"
+            parameterType="com.kh.burgerstack.receipt.ReceiptItem">
+
+        INSERT INTO RECEIPT_ITEMS (
+            RECEIPT_ITEM_ID,
+            RECEIVED_QUANTITY,
+            DEFECT_QUANTITY,
+            RECEIPT_ITEM_MEMO,
+            RECEIPT_ID,
+            PURCHASE_ORDER_ITEM_ID
+        )
+        VALUES (
+            SEQ_RECEIPT_ITEM.NEXTVAL,
+            #{receivedQuantity},
+            #{defectQuantity},
+            #{receiptItemMemo},
+            #{receiptId},
+            #{purchaseOrderItemId}
+        )
+
+    </insert>
 
 
+    <!-- INVENTORY_TRANSACTIONS 저장 -->
+    <insert id="insertInventoryTransaction"
+            parameterType="com.kh.burgerstack.receipt.ReceiptTransactionParam">
+
+        <selectKey keyProperty="inventoryTransactionId"
+                   resultType="long"
+                   order="BEFORE">
+
+            SELECT SEQ_INV_TX.NEXTVAL
+            FROM DUAL
+
+        </selectKey>
+
+        INSERT INTO INVENTORY_TRANSACTIONS (
+            INVENTORY_TRANSACTION_ID,
+            TRANSACTION_TYPE,
+            REASON,
+            TRANSACTION_MEMO,
+            CREATED_AT,
+            CREATED_BY,
+            STORE_ID,
+            RECEIPT_ID,
+            STORE_CLOSING_ID
+        )
+        VALUES (
+            #{inventoryTransactionId},
+            'RECEIPT',
+            '발주 입고 처리',
+            NULL,
+            SYSDATE,
+            #{createdBy},
+            #{storeId},
+            #{receiptId},
+            NULL
+        )
+
+    </insert>
 
 
+    <!-- 현재 점포 재고 조회 -->
+    <select id="selectCurrentQuantity"
+            parameterType="com.kh.burgerstack.receipt.ReceiptInventoryParam"
+            resultType="long">
+
+        SELECT SI.CURRENT_QUANTITY
+        FROM STORE_INVENTORIES SI
+        JOIN PURCHASE_ORDER_ITEMS POI
+          ON SI.MATERIAL_ID = POI.MATERIAL_ID
+        WHERE SI.STORE_ID = #{storeId}
+          AND POI.PURCHASE_ORDER_ITEM_ID = #{purchaseOrderItemId}
+
+    </select>
 
 
+    <!-- 입고 수량만큼 재고 증가 -->
+    <update id="increaseStoreInventory"
+            parameterType="com.kh.burgerstack.receipt.ReceiptInventoryParam">
+
+        UPDATE STORE_INVENTORIES SI
+        SET SI.CURRENT_QUANTITY = SI.CURRENT_QUANTITY + #{receivedQuantity},
+            SI.UPDATED_AT = SYSDATE
+        WHERE SI.STORE_ID = #{storeId}
+          AND SI.MATERIAL_ID = (
+              SELECT MATERIAL_ID
+              FROM PURCHASE_ORDER_ITEMS
+              WHERE PURCHASE_ORDER_ITEM_ID = #{purchaseOrderItemId}
+          )
+
+    </update>
 
 
+    <!-- 재고 변동 이력 저장을 위해 STORE_INVENTORY_ID 조회 -->
+    <select id="selectStoreInventoryId"
+            parameterType="com.kh.burgerstack.receipt.ReceiptInventoryParam"
+            resultType="long">
+
+        SELECT SI.STORE_INVENTORY_ID
+        FROM STORE_INVENTORIES SI
+        JOIN PURCHASE_ORDER_ITEMS POI
+          ON SI.MATERIAL_ID = POI.MATERIAL_ID
+        WHERE SI.STORE_ID = #{storeId}
+          AND POI.PURCHASE_ORDER_ITEM_ID = #{purchaseOrderItemId}
+
+    </select>
 
 
-	
+    <!-- INVENTORY_TRANSACTION_ITEMS 저장 -->
+    <insert id="insertInventoryTransactionItem"
+            parameterType="com.kh.burgerstack.receipt.ReceiptTransactionItemParam">
+
+        INSERT INTO INVENTORY_TRANSACTION_ITEMS (
+            INVENTORY_TRANSACTION_ITEM_ID,
+            BEFORE_QUANTITY,
+            AFTER_QUANTITY,
+            INVENTORY_TRANSACTION_ID,
+            STORE_INVENTORY_ID
+        )
+        VALUES (
+            SEQ_INV_TX_ITEM.NEXTVAL,
+            #{beforeQuantity},
+            #{afterQuantity},
+            #{inventoryTransactionId},
+            #{storeInventoryId}
+        )
+
+    </insert>
+
+
+    <!-- 입고 완료 처리 -->
+    <update id="updatePurchaseOrderStatus"
+            parameterType="long">
+
+        UPDATE PURCHASE_ORDERS
+        SET STATUS = 'RECEIVED',
+            UPDATED_AT = SYSDATE
+        WHERE PURCHASE_ORDER_ID = #{purchaseOrderId}
+
+    </update>
+
+
+    <!-- 입고 이력 상세 헤더 조회 -->
+    <select id="selectReceiptDetail"
+            parameterType="long"
+            resultType="com.kh.burgerstack.receipt.Receipt">
+
+        SELECT
+            R.RECEIPT_ID AS receiptId,
+
+            'R'
+            || EXTRACT(YEAR FROM R.RECEIVED_AT)
+            || LPAD(R.RECEIPT_ID, 4, '0') AS receiptCode,
+
+            'P'
+            || EXTRACT(YEAR FROM PO.CREATED_AT)
+            || LPAD(PO.PURCHASE_ORDER_ID, 4, '0') AS purchaseCode,
+
+            R.RECEIPT_MEMO AS receiptMemo,
+            R.RECEIVED_AT AS receivedAt,
+            R.PURCHASE_ORDER_ID AS purchaseOrderId,
+
+            S.STORE_NAME AS storeName,
+
+            CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM RECEIPT_ITEMS RI
+                    WHERE RI.RECEIPT_ID = R.RECEIPT_ID
+                      AND NVL(RI.DEFECT_QUANTITY, 0) &lt;&gt; 0
+                )
+                THEN 'DIFFERENCE'
+                ELSE 'NORMAL'
+            END AS receiptStatus
+
+        FROM RECEIPTS R
+        JOIN PURCHASE_ORDERS PO
+          ON R.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+        JOIN STORES S
+          ON PO.STORE_ID = S.STORE_ID
+
+        WHERE R.RECEIPT_ID = #{receiptId}
+
+    </select>
+
+
+    <!-- 입고 이력 상세 상품 목록 조회 -->
+    <select id="selectReceiptItemDetailList"
+            parameterType="long"
+            resultType="com.kh.burgerstack.receipt.ReceiptItemDetail">
+
+        SELECT
+            M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS materialCode,
+            POI.MATERIAL_NAME_SNAPSHOT AS materialName,
+            M.MATERIAL_TYPE AS materialType,
+            POI.SUPPLY_PRICE_SNAPSHOT AS supplyPrice,
+
+            POI.REQUEST_QUANTITY AS requestQuantity,
+
+            NVL(POI.APPROVED_QUANTITY, POI.REQUEST_QUANTITY) AS approvedQuantity,
+
+            NVL(RI.RECEIVED_QUANTITY, 0) AS receivedQuantity,
+            NVL(RI.DEFECT_QUANTITY, 0) AS defectQuantity,
+            NVL(RI.RECEIPT_ITEM_MEMO, '-') AS receiptItemMemo,
+
+            POI.SUPPLY_PRICE_SNAPSHOT * NVL(RI.RECEIVED_QUANTITY, 0) AS amount
+
+        FROM RECEIPT_ITEMS RI
+        JOIN PURCHASE_ORDER_ITEMS POI
+          ON RI.PURCHASE_ORDER_ITEM_ID = POI.PURCHASE_ORDER_ITEM_ID
+        JOIN MATERIALS M
+          ON POI.MATERIAL_ID = M.MATERIAL_ID
+
+        WHERE RI.RECEIPT_ID = #{receiptId}
+
+        ORDER BY RI.RECEIPT_ITEM_ID
+
+    </select>
+
+
+    <!-- 입고 처리 화면 상품 목록 조회 -->
+    <select id="selectReceiptCheckItemList"
+            parameterType="long"
+            resultType="com.kh.burgerstack.receipt.ReceiptCheckItemDto">
+
+        SELECT
+            POI.PURCHASE_ORDER_ITEM_ID AS purchaseOrderItemId,
+            M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS materialCode,
+            M.MATERIAL_TYPE AS materialType,
+            POI.MATERIAL_NAME_SNAPSHOT AS materialName,
+
+            POI.REQUEST_QUANTITY AS requestQuantity,
+
+            CASE
+                WHEN PO.STATUS = 'APPROVED'
+                THEN POI.REQUEST_QUANTITY
+                ELSE POI.APPROVED_QUANTITY
+            END AS approvedQuantity,
+
+            CASE
+                WHEN PO.STATUS = 'PARTIALLY_APPROVED'
+                THEN POI.REQUEST_QUANTITY - POI.APPROVED_QUANTITY
+                ELSE 0
+            END AS rejectedQuantity,
+
+            CASE
+                WHEN PO.STATUS = 'PARTIALLY_APPROVED'
+                THEN NVL(POI.REJECT_REASON, '-')
+                ELSE '-'
+            END AS rejectReason,
+
+            POI.SUPPLY_PRICE_SNAPSHOT AS supplyPrice,
+
+            CASE
+                WHEN PO.STATUS = 'APPROVED'
+                THEN POI.REQUEST_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT
+                ELSE POI.APPROVED_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT
+            END AS amount
+
+        FROM PURCHASE_ORDER_ITEMS POI
+        JOIN PURCHASE_ORDERS PO
+          ON POI.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+        JOIN MATERIALS M
+          ON POI.MATERIAL_ID = M.MATERIAL_ID
+        WHERE POI.PURCHASE_ORDER_ID = #{purchaseId}
+          AND (
+                PO.STATUS = 'APPROVED'
+                OR
+                (PO.STATUS = 'PARTIALLY_APPROVED' AND POI.APPROVED_QUANTITY &gt; 0)
+              )
+
+        ORDER BY POI.PURCHASE_ORDER_ITEM_ID
+
+    </select>
+
+
+    <!-- 발주 상태 조회 -->
+    <select id="selectPurchaseStatus"
+            parameterType="long"
+            resultType="string">
+
+        SELECT STATUS
+        FROM PURCHASE_ORDERS
+        WHERE PURCHASE_ORDER_ID = #{purchaseId}
+
+    </select>
+
 </mapper>
-
-

@@ -135,7 +135,7 @@
 	        SCI.STORE_CLOSING_ID AS storeClosingId,
 	        SCI.STORE_INVENTORY_ID AS storeInventoryId,
 	
-	        M.MATERIAL_CODE AS materialCode,
+	        M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS materialCode,
 	        M.MATERIAL_NAME AS materialName,
 	        M.MATERIAL_TYPE AS materialType
 	
@@ -160,7 +160,7 @@
 	        SI.CURRENT_QUANTITY AS currentQuantity,
 	        SI.MATERIAL_ID AS materialId,
 	
-	        M.MATERIAL_CODE AS materialCode,
+	        M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS materialCode,
 	        M.MATERIAL_NAME AS materialName,
 	        M.MATERIAL_TYPE AS materialType
 	

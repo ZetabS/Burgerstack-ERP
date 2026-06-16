@@ -1,6 +1,5 @@
 package com.kh.burgerstack.inquiry;
 
-import java.io.File;
 import java.util.List;
 
 import org.apache.ibatis.session.RowBounds;
@@ -15,51 +14,10 @@ public class InquiryServiceBO {
 
 	private final InquiryDaoBO inquiryDaoBO;
 
-	public int InquiryEnroll(Inquiry inquiry, MultipartFile uploadFile) {
+	public int InquiryEnroll(Inquiry inquiry) {
 
-	    int result = inquiryDaoBO.InquiryEnroll(inquiry);
+	    return inquiryDaoBO.InquiryEnroll(inquiry);
 
-	    if(result > 0 && !uploadFile.isEmpty()) {
-
-	        String originName = uploadFile.getOriginalFilename();
-
-	        String changeName =
-	                System.currentTimeMillis()
-	                + "_"
-	                + originName;
-
-	        String savePath =
-	                "C:/upload/inquiry/";
-
-	        try {
-
-	            File dir = new File(savePath);
-
-	            if(!dir.exists()) {
-	                dir.mkdirs();
-	            }
-
-	            uploadFile.transferTo(
-	                    new File(savePath + changeName));
-
-	            InquiryFile file = new InquiryFile();
-
-	            file.setOriginalName(originName);
-	            file.setStoredName(changeName);
-	            file.setStoragePath(savePath);
-	            file.setAttachTarget("Q");
-
-	            // 문의글 PK 저장
-	            file.setInquiryId(inquiry.getInquiryId());
-
-	            inquiryDaoBO.insertInquiryFile(file);
-
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    }
-
-	    return result;
 	}
 
 	public List<Inquiry> InquiryList(Long storeId, String condition, String keyword, int page, int limit) {

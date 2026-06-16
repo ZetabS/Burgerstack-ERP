@@ -1,50 +1,54 @@
 package com.kh.burgerstack.closing;
 
+import com.kh.burgerstack.inventory.service.InventoryService;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kh.burgerstack.inventory.dto.InventoryChangeItem;
+import com.kh.burgerstack.inventory.dto.InventoryStoreClosingChangeCommand;
+import com.kh.burgerstack.user.LoginUser;
+
 @Service
 public class ClosingService {
-
+    private final InventoryService inventoryService;
     private final ClosingDao closingDao;
     private final SqlSession sqlSession;
 
-    public ClosingService(ClosingDao closingDao, SqlSession sqlSession) {
+    public ClosingService(ClosingDao closingDao, SqlSession sqlSession, InventoryService inventoryService) {
         this.closingDao = closingDao;
         this.sqlSession = sqlSession;
+        this.inventoryService = inventoryService;
     }
 
     public List<StoreClosing> selectOwnerClosingList(Long storeId,
-										            String startDate,
-										            String endDate) {
-		return closingDao.selectOwnerClosingList(
-				sqlSession,
-				storeId,
-				startDate,
-				endDate
-		);
-	}
-    
+            String startDate,
+            String endDate) {
+        return closingDao.selectOwnerClosingList(
+                sqlSession,
+                storeId,
+                startDate,
+                endDate);
+    }
+
     public List<StoreClosing> selectAdminClosingList(Long storeId,
-										            String startDate,
-										            String endDate,
-										            String keyword) {
-		return closingDao.selectAdminClosingList(
-													sqlSession,
-													storeId,
-													startDate,
-													endDate,
-													keyword
-);
-}
+            String startDate,
+            String endDate,
+            String keyword) {
+        return closingDao.selectAdminClosingList(
+                sqlSession,
+                storeId,
+                startDate,
+                endDate,
+                keyword);
+    }
 
     public List<StoreClosing> selectAdminClosingList() {
         return closingDao.selectAdminClosingList(sqlSession);
     }
-    
+
     public StoreClosing selectClosing(Long closingId) {
         return closingDao.selectClosing(sqlSession, closingId);
     }
@@ -52,21 +56,19 @@ public class ClosingService {
     public List<StoreClosingItem> selectClosingItemList(Long closingId) {
         return closingDao.selectClosingItemList(sqlSession, closingId);
     }
-    
+
     public List<ClosingInventory> selectClosingInventoryList(Long storeId) {
         return closingDao.selectClosingInventoryList(sqlSession, storeId);
     }
-    
-    @Transactional
-    public int insertClosing(StoreClosing closing, List<StoreClosingItem> itemList) {
 
+    @Transactional
+    public int insertClosing(StoreClosing closing, List<StoreClosingItem> itemList, LoginUser loginUser) {
         int result = closingDao.insertClosing(sqlSession, closing);
 
         for (StoreClosingItem item : itemList) {
 
             item.setStoreClosingId(
-                    closing.getStoreClosingId()
-            );
+                    closing.getStoreClosingId());
 
             Long systemQty = item.getSystemQuantity();
             Long useQty = item.getPhysicalQuantity();
@@ -87,31 +89,33 @@ public class ClosingService {
             if (useQty + disposalQty > systemQty) {
                 throw new IllegalArgumentException(
                         item.getMaterialNameSnapshot()
-                        + "의 실사용수량과 폐기 수량의 합은 전산재고보다 클 수 없습니다."
-                );
+                                + "의 실사용수량과 폐기 수량의 합은 전산재고보다 클 수 없습니다.");
             }
 
             result += closingDao.insertClosingItem(
                     sqlSession,
-                    item
-            );
-
-            Long finalQuantity =
-                    systemQty - useQty - disposalQty;
-
-            closingDao.updateInventoryQuantity(
-                    sqlSession,
-                    item.getStoreInventoryId(),
-                    finalQuantity
-            );
+                    item);
         }
 
+        List<InventoryChangeItem> inventoryChangeItems = itemList.stream()
+                .map((StoreClosingItem item) -> {
+                    int deltaQuantity = -item.getPhysicalQuantity().intValue() - item.getDisposalQuantity().intValue();
+                    return new InventoryChangeItem(item.getStoreInventoryId().intValue(), deltaQuantity);
+                }).filter((InventoryChangeItem item) -> item.getDeltaQuantity() != 0).toList();
+
+        InventoryStoreClosingChangeCommand inventoryStoreClosingChangeCommand = new InventoryStoreClosingChangeCommand(
+                loginUser,
+                inventoryChangeItems,
+                closing.getClosingMemo(),
+                closing.getStoreClosingId().intValue(),
+                loginUser.getStoreId().intValue());
+
+        inventoryService.change(inventoryStoreClosingChangeCommand);
         return result;
     }
-    
+
     public List<StoreClosing> selectAdminClosingListByStoreId(Long storeId) {
         return closingDao.selectAdminClosingListByStoreId(sqlSession, storeId);
     }
-    
-    
+
 }

@@ -5,14 +5,20 @@
 
 <c:set var="variant" value="secondary" />
 <c:choose>
-  <c:when test="${value eq 'DIFFERENCE'}">
+  <c:when test="${value eq 'REQUESTED'}">
     <c:set var="variant" value="warning" />
   </c:when>
-  <c:when test="${value eq 'NORMAL'}">
+  <c:when test="${value eq 'APPROVED'}">
+    <c:set var="variant" value="primary" />
+  </c:when>
+  <c:when test="${value eq 'REJECTED'}">
+    <c:set var="variant" value="danger" />
+  </c:when>
+  <c:when test="${value eq 'RECEIVED'}">
     <c:set var="variant" value="primary" />
   </c:when>
 </c:choose>
 
-<span class="badge badge-${variant}">
+<span class="ds-display-badge badge badge-${variant}">
   <display:ReceiptStatusLabel value="${value}" />
 </span>

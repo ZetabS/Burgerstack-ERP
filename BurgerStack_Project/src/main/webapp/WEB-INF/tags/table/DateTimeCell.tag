@@ -3,6 +3,6 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="datetime" uri="/WEB-INF/tld/datetime.tld" %>
 
-<td class="data-table__col-fit text-right">
+<td class="ds-numeric ds-table__col-fit text-right">
   <c:out value="${datetime:formatDateTime(value)}" />
 </td>

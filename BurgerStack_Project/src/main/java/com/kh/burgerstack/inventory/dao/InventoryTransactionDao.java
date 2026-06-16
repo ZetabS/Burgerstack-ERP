@@ -38,14 +38,14 @@ public class InventoryTransactionDao {
         return inventoryTransactionMapper.findItemsByTransactionId(inventoryTransactionId);
     }
 
-    public List<InventoryTransactionItem> insertItems(
+    public InventoryTransactionItem insertItem(
             int inventoryTransactionId,
-            List<InventoryTransactionItem> list) {
-        int result = inventoryTransactionMapper.insertItems(inventoryTransactionId, list);
+            InventoryTransactionItem item) {
+        int result = inventoryTransactionMapper.insertItem(inventoryTransactionId, item);
         if (result <= 0) {
             throw new BusinessException("재고 변동 이력을 추가할 수 없습니다.");
         }
-        return inventoryTransactionMapper.findItemsByTransactionId(inventoryTransactionId);
+        return inventoryTransactionMapper.findItemById(item.getInventoryTransactionItemId());
     }
 
     public List<InventoryTransactionListItem> findInventoryTransactionListItems(

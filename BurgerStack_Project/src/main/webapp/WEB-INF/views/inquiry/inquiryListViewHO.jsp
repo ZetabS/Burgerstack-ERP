@@ -1,197 +1,137 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
+<%--
+  목록 페이지 패턴 예제입니다.
 
-<title>문의사항 목록 조회</title>
+  이 파일은 실제 업무 화면을 만들 때 복사해서 출발점으로 삼을 수 있도록 상세 주석을 남겨둡니다.
 
-<style>
-.form-container {
-	width: 100%;
-	max-width: 2000px;
-	background: #fff;
-	padding: 30px;
-	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+  기본 구조:
+  1. <t:layout>은 기존 애플리케이션 전체 레이아웃입니다. 이 prefix는 기존 루트 태그 디렉터리를 그대로 사용합니다.
+  2. <layout:ListPage>는 디자인 시스템의 목록 페이지 전용 래퍼입니다.
+     - PageHeader를 강제합니다.
+     - toolbar, table, pagination 슬롯을 명시적으로 분리합니다.
+     - 목록 화면에서 카드/헤더/본문 구조를 매번 직접 만들지 않도록 합니다.
+  3. <layout:Toolbar>는 좌측 필터 영역과 우측 검색 영역을 분리합니다.
+  4. <table:Table>은 thead/tbody만 받아 데이터 테이블 정책을 일괄 적용합니다.
 
-table {
-	width: 100%;
-	border-collapse: collapse;
-	table-layout: fixed;
-}
+  필요한 taglib 지시어:
+  - layout 컴포넌트: <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+  - common 컴포넌트: <%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+  - table 컴포넌트: <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+  - display 컴포넌트: <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 
-th {
-	background-color: #22c55e;
-	color: white;
-	height: 40px;
-	text-align: center !important;
-	vertical-align: middle !important;
-}
+  모델 예시:
+  - view.condition : 검색 조건 DTO. 컨트롤러가 request parameter를 받아 그대로 넣어야 툴바 값이 현재 검색 조건과 동기화됩니다.
+  - view.materialTypes : select option 후보 목록
+  - view.list : 현재 페이지의 행 DTO 목록
+  - view.pageInfo : <t:pagination>에 전달할 PageInfo
+--%>
 
-td {
-	text-align: center !important;
-	vertical-align: middle !important;
-	height: 40px;
-	border-bottom: 1px solid #ddd;
-}
+<c:url var="baseUrl" value="/admin/inquiries" />
+<c:url var="bUrl" value="/admin/dashboard" />
 
-.search-area {
-	display: flex;
-	justify-content: flex-end;
-	margin-bottom: 15px;
-	gap: 10px;
-}
+<t:layout>
+  <layout:ListPage title="문의사항 목록 페이지" description="">
+    <jsp:attribute name="actions">
+      <%-- actions 슬롯은 페이지 헤더 오른쪽에 배치됩니다. 초기화, 등록, 다운로드 같은 페이지 단위 액션을 둡니다. --%>
+      <a href="${bUrl}" class="btn btn-secondary">이전으로</a>
+    </jsp:attribute>
 
-.btn {
-	background-color: #333;
-	color: white;
-	border: none;
-	padding: 5px 15px;
-	cursor: pointer;
-	border-radius: 4px;
-}
+    <jsp:attribute name="toolbar">
+      <%--
+        toolbar 슬롯에는 보통 GET 검색 폼을 둡니다.
 
-.btn:hover {
-	background-color: #555;
-}
+        폼은 layout:Toolbar 바깥에 둡니다.
+        이렇게 하면 select, checkbox, search input이 모두 같은 querystring으로 제출됩니다.
+      --%>
+      <form action="${baseUrl}" method="get">
+        <%-- 검색 조건이 바뀌면 1페이지부터 다시 조회하는 것이 목록 UX의 기본입니다. --%>
+        <input type="hidden" name="page" value="1" />
+        <input type="hidden" name="size" value="${view.pageInfo.size}" />
 
-.title-link {
-	text-decoration: none;
-	color: black;
-	font-weight: bold;
-}
+        <layout:Toolbar>
+          <jsp:attribute name="left">
+		    <select name="condition" class="form-control mr-2">
+		
+		        <option value="title"
+		            ${condition == 'title' ? 'selected' : ''}>
+		            제목
+		        </option>
+		
+		        <option value="content"
+		            ${condition == 'content' ? 'selected' : ''}>
+		            내용
+		        </option>
+		
+		        <option value="inquiryId"
+		            ${condition == 'inquiryId' ? 'selected' : ''}>
+		            글번호
+		        </option>
+		
+		    </select>
+            
+          </jsp:attribute>
 
-.title-link:hover {
-	color: #22c55e;
-	text-decoration: underline;
-}
+          <jsp:attribute name="right">          
+            <%--
+              right 슬롯은 검색바나 주요 보조 액션을 둡니다.
+              SearchBar는 input-group과 submit 버튼 조합만 표준화합니다.
+            --%>
+            <common:SearchBar name="keyword" value="${keyword}" placeholder="검색" />
+          </jsp:attribute>
+        </layout:Toolbar>
+      </form>
+    </jsp:attribute>
 
-tbody tr:hover {
-	background-color: #f5f5f5;
-	cursor: pointer;
-}
-.status-badge {
-	display: inline-block;
-	padding: 6px 14px;
-	border-radius: 20px;
-	font-size: 13px;
-	font-weight: bold;
-	color: white;
-}
+    <jsp:attribute name="table">
+      <%--
+        table:Table은 thead와 tbody를 명시적으로 받습니다.
+        isEmpty를 넘기면 tbody 대신 emptyMessage가 표시됩니다.
+      --%>
+      <table:Table isEmpty="${empty inquiryList}" emptyMessage="조회된 문의사항이 없습니다.">
+        <jsp:attribute name="thead">
+          <tr>
+            <th class="text-center">No</th>
+            <th class="text-right">제목</th>
+            <th class="text-right">점포명</th>
+            <th class="text-right">등록일</th>
+            <th class="text-center">답변상태</th>
+          </tr>
+        </jsp:attribute>
 
-.status-active {
-	background-color: #28a745;
-}
+        <jsp:attribute name="tbody">
+          <c:forEach var="inq" items="${inquiryList}">
+            <c:url var="detailUrl" value="/admin/inquiries/${inq.inquiryId}" />
+            <c:url var="formUrl" value="/admin/inquiries/${inq.inquiryId}" />
+            <c:set var="inquiryStatus" value="${empty inq.answerContent ? 'REQUESTED' : 'ANSWERED'}"></c:set>
 
-.status-inactive {
-	background-color: #dc3545;
-}
-</style>
+            <%--
+              TableRow에 clickable과 href를 주면 행 클릭 이동을 위한 data 속성이 붙습니다.
+              버튼 셀과 함께 쓰는 경우에는 행 클릭 정책이 업무 화면과 충돌하지 않는지 확인하세요.
+            --%>
+            <table:TableRow clickable="true" href="${detailUrl}">
+              <table:TextFitCell value="${inq.inquiryId}" />
+              <table:TextCell value="${inq.title}" />
+              <table:TextCell value="${inq.storeName}" />
+              <table:DateTimeCell value="${inq.createdAt}" />
+              <table:FitCell align="left">
+              	<display:InquiryStatusBadge value="${inquiryStatus}"/>
+              </table:FitCell>
+            </table:TableRow>
+          </c:forEach>
+        </jsp:attribute>
+      </table:Table>
+    </jsp:attribute>
 
-
-	<t:layout>
-
-
-		<h1>문의사항 목록 조회</h1>
-
-		<div class="content">
-
-			<form action="/burgerstack/admin/inquiries" method="get">
-				<div class="search-area">
-					<select name="condition" style="padding: 5px;">
-						<option value="title" ${condition == 'title' ? 'selected' : ''}>제목</option>
-						<option value="content"
-							${condition == 'content' ? 'selected' : ''}>내용</option>
-						<option value="inquiryId"
-							${condition == 'inquiryId' ? 'selected' : ''}>글번호</option>
-					</select> <input type="text" name="keyword" value="${keyword}"
-						placeholder="검색어 입력" style="padding: 5px;">
-					<button type="submit" class="btn">검색</button>
-				</div>
-			</form>
-			<table class="form-container">
-				<colgroup>
-					<col style="width: 10%">
-					<col style="width: 40%">
-					<col style="width: 15%">
-					<col style="width: 20%">
-					<col style="width: 15%">
-				</colgroup>
-				<thead>
-					<tr>
-						<th>No</th>
-						<th>제목</th>
-						<th>점포명</th>
-						<th>답변상태</th>
-						<th>등록일</th>
-					</tr>
-				</thead>
-
-				<tbody>
-
-					<c:choose>
-
-						<c:when test="${empty inquiryList}">
-							<tr>
-								<td colspan="7">조회된 문의사항이 없습니다.</td>
-							</tr>
-						</c:when>
-
-						<c:otherwise>
-
-							<c:forEach var="inq" items="${inquiryList}">
-
-								<tr
-									onclick="location.href='${pageContext.request.contextPath}/admin/inquiries/${inq.inquiryId}'"
-									style="cursor: pointer;">
-
-									<td>${inq.inquiryId}</td>
-
-									<td style="text-align: left !important; padding-left: 20px;">
-										${inq.title}</td>
-
-									<td>${inq.storeName}</td>
-
-									<td><c:choose>
-											<c:when test="${not empty inq.answerContent}">
-												<span class="status-badge status-active"> 답변완료 </span>
-											</c:when>
-											<c:otherwise>
-												<span class="status-badge status-inactive"> 미답변 </span>
-											</c:otherwise>
-										</c:choose></td>
-
-									<td>${inq.createdAt}</td>
-								</tr>
-
-							</c:forEach>
-
-						</c:otherwise>
-
-					</c:choose>
-
-				</tbody>
-
-			</table>
-
-		</div>
-
-		<div class="pagination"
-			style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;">
-			<c:forEach var="p" begin="${startPage}" end="${endPage}">
-				<c:choose>
-					<c:when test="${p == currentPage}">
-						<strong style="color: green; font-size: 1.2em;">${p}</strong>
-					</c:when>
-					<c:otherwise>
-						<a href="?page=${p}&condition=${condition}&keyword=${keyword}">${p}</a>
-					</c:otherwise>
-				</c:choose>
-			</c:forEach>
-		</div>
-
-
-	</t:layout>
+    <jsp:attribute name="pagination">
+      <%-- 기존 pagination 태그는 루트 t prefix를 유지합니다. PageInfo만 넘기면 됩니다. --%>
+      <t:pagination pageInfo="${view.pageInfo}" />
+    </jsp:attribute>
+  </layout:ListPage>
+</t:layout>

@@ -1,172 +1,69 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="datetime" uri="/WEB-INF/tld/datetime.tld" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%--
+  상세 페이지 패턴 예제입니다.
 
-<title>Insert title here</title>
+  기본 구조:
+  1. <layout:Page>는 상세/폼처럼 자유롭게 본문을 조립하는 페이지 래퍼입니다.
+  2. <layout:Page>에서 actions 슬롯을 쓰면 반드시 <jsp:body>를 명시합니다.
+     JSP 컴파일러가 jsp:attribute 뒤의 본문을 안정적으로 해석하도록 하기 위한 정책입니다.
+  3. 상세의 라벨/값 영역은 layout:Section + common:FieldList + layout:FieldRow 조합을 사용합니다.
+  4. 상세 하단에 관련 목록이 있으면 layout:TableSection + table:Table 조합을 사용합니다.
 
-<style>
-.form-container {
-	width: 100%;
-	max-width: 2000px;
-	background: #fff;
-	padding: 30px;
-	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+  필요한 taglib 지시어:
+  - layout 컴포넌트: <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+  - common 컴포넌트: <%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+  - table 컴포넌트: <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+  - display 컴포넌트: <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 
-#title {
-	padding-top: 30px;
-	font-weight: 1000;
-	text-align: center;
-	margin-bottom: 30px;
-}
+  모델 예시:
+  - detail : 상세 DTO
+  - detail.history : 상세 화면 안에 같이 보여줄 이력 목록 DTO
+--%>
 
-.inquiry-title-box {
-	border: 1px solid #ccc;
-	border-radius: 3px;
-	padding: 12px;
-	font-size: 15px;
-	margin-bottom: 10px;
-}
+<c:url var="listUrl" value="/admin/inquiries" />
+<c:url var="formUrl" value="/admin/inquiries/${inquiryId}/edit" />
 
-.inquiry-info {
-	text-align: right;
-	font-size: 13px;
-	margin-bottom: 10px;
-	font-weight: bold;
-}
+<t:layout>
+  <layout:Page title="문의사항 상세 페이지" description="">
+    <jsp:attribute name="actions">
+      <%-- 헤더 오른쪽에는 목록 복귀, 수정 이동 같은 페이지 단위 액션을 둡니다. --%>
+      <common:ReturnLink href="${listUrl}">목록으로</common:ReturnLink>
+      <a href="${formUrl}" class="btn btn-primary ml-2">답변 및 수정</a>
+    </jsp:attribute>
 
-.inquiry-content {
-	border: 1px solid #bdbdbd;
-	min-height: auto;
-	padding: 20px;
-	margin-bottom: 30px;
-	white-space: pre-line;
-	line-height: 1.6;
-}
+    <jsp:body>
+      <layout:Section title="제목" description="${inquiry.title}">
+        <common:FieldList>
+          <%-- 단순 텍스트 값은 FieldRow body에 바로 출력합니다. --%>
+          <layout:FieldRow label="문의 등록일">
+            <c:out value="${fn:replace(inquiry.createdAt, 'T', ' ')}" />
+          </layout:FieldRow>
+          <layout:FieldRow label="문의 내용">${inquiry.content}</layout:FieldRow>
+          <layout:FieldRow label="답변 등록일">
+            <c:out value="${fn:replace(inquiry.answeredAt, 'T', ' ')}" />
+          </layout:FieldRow>
+          <layout:FieldRow label="답변">
+            <c:choose>
+              <c:when test="${empty inquiry.answerContent}">
+                <span class="answer-content">아직 등록된 답변이 없습니다.</span>
+              </c:when>
+              <c:otherwise>
+                <c:out value="${inquiry.answerContent}" />
+              </c:otherwise>
+            </c:choose>
+          </layout:FieldRow>
 
-.answer-info {
-	text-align: right;
-	font-size: 13px;
-	margin-bottom: 10px;
-	font-weight: bold;
-}
-
-.answer-content {
-	border: 1px solid #bdbdbd;
-	padding: 20px;
-	margin-bottom: 30px;
-	line-height: 1.6;
-	min-height: auto !important;
-	height: auto !important;
-}
-
-.answer-content {
-	white-space: normal;
-}
-
-.btn-area {
-	text-align: center;
-	margin-top: 20px;
-}
-
-.btn {
-	width: 120px;
-	height: 45px;
-	border: none;
-	border-radius: 8px;
-	font-size: 15px;
-	font-weight: bold;
-	cursor: pointer;
-}
-
-.reply-btn {
-	background: #222831;
-	color: white;
-}
-
-.list-btn {
-	background: #6c757d;
-	color: white;
-	margin-left: 10px;
-}
-
-.btn-area {
-	text-align: center;
-	margin-top: 30px;
-}
-
-.btn-area button {
-	width: 150px;
-	height: 45px;
-	border: none;
-	border-radius: 8px;
-	cursor: pointer;
-	font-size: 16px;
-}
-
-#saveBtn {
-	margin-right: 10px;
-	background: #007bff;
-	color: white;
-}
-
-#homeBtn {
-	margin-left: 0;
-	background: #6c757d;
-	color: white;
-}
-
-.layout__main .main-content {
-	padding-top: 0 !important;
-	margin-top: 0 !important;
-}
-
-.layout__main .form-container {
-	margin-top: 0 !important;
-}
-</style>
-
-	<t:layout>
-		<div class="form-container">
-
-			<h1 id="title">문의사항 상세 보기</h1>
-
-			<div class="inquiry-title-box">${inquiry.title}</div>
-
-			<div class="inquiry-info" name="createAt">문의 등록일 :
-				${fn:replace(inquiry.createdAt, 'T', ' ')}</div>
-
-			<div class="inquiry-content">${inquiry.content}</div>
-
-
-			<div class="answer-info" name="answeredAt">답변 등록일 :
-				${fn:replace(inquiry.answeredAt, 'T', ' ')}</div>
-
-			<div class="answer-content">
-				<c:choose>
-					<c:when test="${empty inquiry.answerContent}">아직 등록된 답변이 없습니다.</c:when>
-					<c:otherwise>${inquiry.answerContent}</c:otherwise>
-				</c:choose>
-			</div>
-
-			<div class="btn-area">
-
-				<button type="button" id="saveBtn"
-					onclick="location.href='/burgerstack/admin/inquiries/${inquiryId}/edit'">
-					답변 등록 및 수정</button>
-
-				<button type="button" id="homeBtn"
-					onclick="location.href='burgerstack/admin/inquiries'">목록으로</button>
-
-			</div>
-			<hr>
-
-			<div class="file-area">
-				<label>첨부파일</label> <input type="file" name="uploadFile">
-			</div>
-		</div>
-	</t:layout>
-
+        </common:FieldList>
+      </layout:Section>
+      
+    </jsp:body>
+  </layout:Page>
+</t:layout>

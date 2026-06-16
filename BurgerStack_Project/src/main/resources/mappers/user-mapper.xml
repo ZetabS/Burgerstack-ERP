@@ -48,9 +48,9 @@
 		WHERE USER_NO = #{userNo}
 	</update>
 
-	<select id="OwnerList" parameterType="map" resultType="User">
+	<select id="OwnerList" parameterType="map" resultType="com.kh.burgerstack.user.User">
 
-		SELECT 'U' || TO_CHAR(SYSDATE,'YYYY')
+		SELECT 'U' || EXTRACT(YEAR FROM CREATED_AT)
 
 		|| LPAD(USER_NO,4,'0') AS DISPLAY_NO
 		, USER_ID

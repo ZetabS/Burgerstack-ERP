@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kh.burgerstack.user.LoginUser;
+
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class ClosingController {
-
     private final ClosingService closingService;
 
     public ClosingController(ClosingService closingService) {
@@ -24,13 +27,11 @@ public class ClosingController {
 
     @GetMapping("/owner/closings")
     public String ownerClosingList(@RequestParam(required = false, defaultValue = "") String startDate,
-                                   @RequestParam(required = false, defaultValue = "") String endDate,
-                                   Model model) {
-
+            @RequestParam(required = false, defaultValue = "") String endDate,
+            Model model) {
         Long storeId = 1L;
 
-        List<StoreClosing> list =
-                closingService.selectOwnerClosingList(storeId, startDate, endDate);
+        List<StoreClosing> list = closingService.selectOwnerClosingList(storeId, startDate, endDate);
 
         model.addAttribute("list", list);
         model.addAttribute("startDate", startDate);
@@ -41,18 +42,15 @@ public class ClosingController {
 
     @GetMapping("/admin/closings")
     public String adminClosingList(@RequestParam(required = false) Long storeId,
-                                   @RequestParam(required = false, defaultValue = "") String startDate,
-                                   @RequestParam(required = false, defaultValue = "") String endDate,
-                                   @RequestParam(required = false, defaultValue = "") String keyword,
-                                   Model model) {
-
-        List<StoreClosing> list =
-                closingService.selectAdminClosingList(
-                        storeId,
-                        startDate,
-                        endDate,
-                        keyword
-                );
+            @RequestParam(required = false, defaultValue = "") String startDate,
+            @RequestParam(required = false, defaultValue = "") String endDate,
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            Model model) {
+        List<StoreClosing> list = closingService.selectAdminClosingList(
+                storeId,
+                startDate,
+                endDate,
+                keyword);
 
         model.addAttribute("list", list);
         model.addAttribute("storeId", storeId);
@@ -62,12 +60,11 @@ public class ClosingController {
 
         return "admin/closing/closingListView";
     }
-    
+
     @GetMapping("/owner/closings/{closingId}")
     public String ownerClosingDetail(
             @PathVariable Long closingId,
             Model model) {
-
         model.addAttribute("closing", closingService.selectClosing(closingId));
         model.addAttribute("itemList", closingService.selectClosingItemList(closingId));
 
@@ -78,26 +75,23 @@ public class ClosingController {
     public String adminClosingDetail(
             @PathVariable Long closingId,
             Model model) {
-
         model.addAttribute("closing", closingService.selectClosing(closingId));
         model.addAttribute("itemList", closingService.selectClosingItemList(closingId));
 
         return "admin/closing/closingDetailView";
     }
-    
+
     @GetMapping("/owner/closings/new")
     public String closingEnrollForm(Model model) {
-
         Long storeId = 1L; // 나중에 로그인 세션에서 꺼내기
 
         model.addAttribute(
                 "inventoryList",
-                closingService.selectClosingInventoryList(storeId)
-        );
+                closingService.selectClosingInventoryList(storeId));
 
         return "owner/closing/closingEnrollForm";
     }
-    
+
     @PostMapping("/owner/closings")
     public String insertClosing(
             @RequestParam String businessDate,
@@ -108,9 +102,11 @@ public class ClosingController {
             @RequestParam List<Long> physicalQuantity,
             @RequestParam List<Long> disposalQuantity,
             @RequestParam(required = false) List<String> closingItemMemo,
-            RedirectAttributes ra) {
+            RedirectAttributes ra,
+            HttpSession session) {
 
-        Long storeId = 1L; // 나중에 로그인 세션에서 꺼내기
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        Long storeId = loginUser.getStoreId();
 
         StoreClosing closing = new StoreClosing();
         closing.setBusinessDate(LocalDate.parse(businessDate));
@@ -152,16 +148,14 @@ public class ClosingController {
             if (useQty + disposalQty > systemQty) {
                 ra.addFlashAttribute(
                         "msg",
-                        materialName + "의 실사용수량과 폐기 수량의 합은 전산재고보다 클 수 없습니다."
-                );
+                        materialName + "의 실사용수량과 폐기 수량의 합은 전산재고보다 클 수 없습니다.");
                 return "redirect:/owner/closings/new";
             }
 
             if (disposalQty > 0 && (memo == null || memo.equals(""))) {
                 ra.addFlashAttribute(
                         "msg",
-                        materialName + "의 폐기 사유를 입력해주세요."
-                );
+                        materialName + "의 폐기 사유를 입력해주세요.");
                 return "redirect:/owner/closings/new";
             }
 
@@ -182,7 +176,7 @@ public class ClosingController {
         }
 
         try {
-            closingService.insertClosing(closing, itemList);
+            closingService.insertClosing(closing, itemList, loginUser);
             ra.addFlashAttribute("msg", "마감이 등록되었습니다.");
         } catch (DuplicateKeyException e) {
             ra.addFlashAttribute("msg", "이미 마감된 영업일입니다.");
@@ -191,16 +185,4 @@ public class ClosingController {
 
         return "redirect:/owner/closings";
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

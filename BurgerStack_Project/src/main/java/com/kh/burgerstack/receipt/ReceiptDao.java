@@ -61,21 +61,43 @@ public class ReceiptDao {
 		);
 }
     
-    public int getPlanTotalCount(SqlSessionTemplate sqlSession, String status) {
-        return sqlSession.selectOne(
-                "ReceiptMapper.getPlanTotalCount",
-                status
-        );
-    }
+    public int getPlanTotalCount(SqlSessionTemplate sqlSession,
+					            String status,
+					            String startDate,
+					            String endDate,
+					            String keyword) {
+					
+					Map<String, Object> map = new HashMap<>();
+					
+					map.put("status", status);
+					map.put("startDate", startDate);
+					map.put("endDate", endDate);
+					map.put("keyword", keyword);
+					
+					return sqlSession.selectOne(
+					"ReceiptMapper.getPlanTotalCount",
+					map
+					);
+					}
 
     public List<PurchaseOrder> selectReceiptPlanList(
             SqlSessionTemplate sqlSession,
             PagingRequest pagingRequest,
-            String status) {
+            String status,
+            String startDate,
+            String endDate,
+            String keyword) {
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("status", status);
+        map.put("startDate", startDate);
+        map.put("endDate", endDate);
+        map.put("keyword", keyword);
 
         return sqlSession.selectList(
                 "ReceiptMapper.selectReceiptPlanList",
-                status,
+                map,
                 new RowBounds(
                         pagingRequest.getOffset(),
                         pagingRequest.getLimit()

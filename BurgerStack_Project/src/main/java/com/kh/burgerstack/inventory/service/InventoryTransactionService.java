@@ -56,9 +56,11 @@ public class InventoryTransactionService {
                         param.getInventoryId()))
                 .toList();
 
-        inventoryTransactionDao.insertItems(
-                inventoryTransaction.getInventoryTransactionId(),
-                items);
+        for (InventoryTransactionItem item : items) {
+            inventoryTransactionDao.insertItem(
+                    inventoryTransaction.getInventoryTransactionId(),
+                    item);
+        }
 
         return inventoryTransaction;
 

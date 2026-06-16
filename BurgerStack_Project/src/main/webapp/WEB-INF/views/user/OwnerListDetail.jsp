@@ -1,160 +1,70 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="datetime" uri="/WEB-INF/tld/datetime.tld" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<title>Insert title here</title>
-<style type="text/css">
-.form-container {
-	width: auto%;
-	max-width: 2000px;
-	background: #fff;
-	padding: 30px;
-	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-#title {
-	padding-top: 30px;
-	font-weight: 1000;
-}
-table {
-	width: 100%;
-	border-collapse: collapse;
-}
+<%--
+  상세 페이지 패턴 예제입니다.
 
-th {
-	width: 150px;
-	background: #f8f9fa;
-	text-align: center;
-	padding: 15px;
-	border-bottom: 1px solid #ddd;
-}
+  기본 구조:
+  1. <layout:Page>는 상세/폼처럼 자유롭게 본문을 조립하는 페이지 래퍼입니다.
+  2. <layout:Page>에서 actions 슬롯을 쓰면 반드시 <jsp:body>를 명시합니다.
+     JSP 컴파일러가 jsp:attribute 뒤의 본문을 안정적으로 해석하도록 하기 위한 정책입니다.
+  3. 상세의 라벨/값 영역은 layout:Section + common:FieldList + layout:FieldRow 조합을 사용합니다.
+  4. 상세 하단에 관련 목록이 있으면 layout:TableSection + table:Table 조합을 사용합니다.
 
-td {
-	padding: 15px;
-	border-bottom: 1px solid #ddd;
-}
+  필요한 taglib 지시어:
+  - layout 컴포넌트: <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+  - common 컴포넌트: <%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
+  - table 컴포넌트: <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
+  - display 컴포넌트: <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 
-input {
-	width: 95%;
-	padding: 10px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	font-size: 14px;
-}
-.actionBtn {
-	width: 150px;
-	height: 45px;
-	border: none;
-	border-radius: 8px;
-	cursor: pointer;
-	font-size: 16px;
-	margin: 0 5px;
-}
-.btn-area{
-    text-align:center;
-    margin-top:30px;
-}
+  모델 예시:
+  - detail : 상세 DTO
+  - detail.history : 상세 화면 안에 같이 보여줄 이력 목록 DTO
+--%>
 
-.btn-area button{
-    width:150px;
-    height:45px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:16px;
-}
+<c:url var="listUrl" value="/admin/users" />
+<c:url var="formUrl" value="/admin/users/${user.userId}/edit" />
 
-#saveBtn{
-    margin-right:10px;
-	background: #007bff;
-	color: white;    
-}
+<t:layout>
+  <layout:Page title="점주 상세 페이지" description="">
+    <jsp:attribute name="actions">
+      <%-- 헤더 오른쪽에는 목록 복귀, 수정 이동 같은 페이지 단위 액션을 둡니다. --%>
+      <common:ReturnLink href="${listUrl}">목록으로</common:ReturnLink>
+      <a href="${formUrl}" class="btn btn-primary ml-2">수정</a>
+    </jsp:attribute>
 
-#homeBtn{
-    margin-left:0;
-	background: #6c757d;
-	color: white;    
-}
-.status-badge{
-    display:inline-block;
-    padding:6px 14px;
-    border-radius:20px;
-    font-size:13px;
-    font-weight:bold;
-    color:white;
-}
+    <jsp:body>
+      <layout:Section title="기본 정보" description="FieldRow는 라벨과 값을 3:9 그리드로 맞추는 상세/폼 공통 행입니다.">
+        <common:FieldList>
+          <%-- 단순 텍스트 값은 FieldRow body에 바로 출력합니다. --%>
+          <layout:FieldRow label="아이디">${user.userId}</layout:FieldRow>
+          <layout:FieldRow label="이름">${user.userName}</layout:FieldRow>
+          <layout:FieldRow label="연락처">${user.phone}</layout:FieldRow>
+          <layout:FieldRow label="이메일">${user.email}</layout:FieldRow>
+		  <layout:FieldRow label="등록일">
+            <c:out value="${fn:replace(user.createdAt, 'T', ' ')}" />
+          </layout:FieldRow>
+          
+          <layout:FieldRow label="상태">
+            <c:choose>
+              <c:when test="${user.status eq 'ACTIVE'}">
+                <span class="text-muted">영업중</span>
+              </c:when>
+              <c:otherwise>
+              	<span class="text-muted">폐점</span>
+              </c:otherwise>
+            </c:choose>
+          </layout:FieldRow>
+        </common:FieldList>
+      </layout:Section>
 
-.status-active{
-    background-color:#28a745;
-}
-
-.status-inactive{
-    background-color:#dc3545;
-}
-</style>
-
-
-	<t:layout>
-		<h1 id="title" align="center">점주 계정 상세조회</h1>
-
-		<form id="OwnerListDetail"
-			action="/burgerstack/admin/users/${user.userId}" method="get" class="form-container">
-			<table>
-				<tr>
-					<th>아이디</th>
-					<td>${user.userId}</td>
-				</tr>
-				<tr>
-					<th>이름</th>
-					<td>${user.userName}</td>
-				</tr>
-				<tr>
-					<th>연락처</th>
-					<td>${user.phone}</td>
-				</tr>
-				<tr>
-					<th>이메일</th>
-					<td>${user.email}</td>
-				</tr>
-				<tr>
-					<th>등록일</th>
-					<td>${fn:replace(user.createdAt, 'T', ' ')}</td>
-				</tr>
-				<tr>
-				    <th>상태</th>
-				    <td>
-				        <c:choose>
-				            <c:when test="${user.status eq 'ACTIVE'}">
-				                <span class="status-badge status-active">
-				                    영업중
-				                </span>
-				            </c:when>
-				            <c:otherwise>
-				                <span class="status-badge status-inactive">
-				                    폐점
-				                </span>
-				            </c:otherwise>
-				        </c:choose>
-				    </td>
-				</tr>
-				
-			</table>
-				<div class="btn-area">
-				
-				    <button type="button"
-				            id="saveBtn"
-				            onclick="location.href='/burgerstack/admin/users/${user.userId}/edit'">
-				        수정
-				    </button>
-				
-				    <button type="button"
-				            id="homeBtn"
-				            onclick="location.href='/burgerstack/admin/users'">
-				        목록으로
-				    </button>
-				
-				</div>
-		</form>
-	</t:layout>
+    </jsp:body>
+  </layout:Page>
+</t:layout>

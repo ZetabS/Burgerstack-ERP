@@ -30,7 +30,7 @@
     <%-- CSS --%>
     <link rel="stylesheet" href="${cssUrl}/common.css" />
     <link rel="stylesheet" href="${cssUrl}/layout.css" />
-    <link rel="stylesheet" href="${cssUrl}/table.css" />
+    <link rel="stylesheet" href="${cssUrl}/design-system.css" />
   </head>
   <body>
     <div class="layout__container">
