@@ -5,10 +5,11 @@
 	<style type="text/css">
 	#header{
     	text-align:center;
+    	padding-top: 30px;
 	}
 
 	#header img{
-		width:120px;
+		width:250px;
 	}
 	#login-form table{
     	margin:auto;
@@ -99,11 +100,11 @@
 			<div  class="outer">
 				<div id="header">
 					<a>
-						<img src="/burgerstack/resources/images/BS_logo1.png">
+						<img src="/burgerstack/resources/images/burgerstack_logo_l.png">
 					</a>
 				</div>
 	
-				<br><br>
+
 	
 				<div align="center" id="sign">
 					<h2>아이디 / 비밀번호 찾기</h2>
