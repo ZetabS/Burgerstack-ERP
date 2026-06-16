@@ -32,6 +32,13 @@
 
             <div class="d-flex justify-content-end align-items-center">
 
+                <div class="input-group">
+                    안전재고 미달 자재 선택
+                    <input type="checkbox"
+                        class="ml-2"
+                        onclick="toggleCheckSaftyQty()"
+                        style="width:20px; height:20px; margin-right: 10px;"/>
+                </div>
                 <select id="typeFilter"
                         class="form-control mr-2"
                         style="width:160px;">
@@ -482,7 +489,7 @@ function submitOrder() {
 }
 
 // 체크박스 안전재고 미달 선택/해제
-let checked = true;
+let checked = false;
 
 function toggleCheckSaftyQty() {
 
