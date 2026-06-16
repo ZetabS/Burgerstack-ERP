@@ -1,9 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
-<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
-<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout"%>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common"%>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display"%>
 
 <%--
   폼 페이지 패턴 예제입니다.
@@ -28,33 +29,42 @@
 
 <c:url var="listUrl" value="/admin/inquiries" />
 <c:url var="submitUrl" value="/admin/inquiries/${inquiryId}" />
+<c:set var="pageTitle"
+	value="${empty inquiry.answeredAt ? '문의사항 답변' : '문의사항 수정'}" />
 
 <t:layout>
-  <layout:Page title="문의사항 답변" description="">
 
-    <jsp:body>
+	<layout:Page title="${pageTitle}" description="">
+
+	<jsp:body>
       <%--
         form 태그는 컴포넌트가 숨기지 않습니다.
         action, method, hidden input, CSRF 같은 업무별 요구사항을 화면에서 명확히 드러내기 위함입니다.
       --%>
       <form action="${submitUrl}" method="post">
-        <input type="hidden" name="inventoryId" value="${inquiry.inquiryId}" />
+        <input type="hidden" name="inventoryId"
+				value="${inquiry.inquiryId}" />
 
-        <layout:Section title="문의사항 답변을 작성해주세요." description="">
+        <layout:Section title="아래에 작성해주세요." description="">
 
 		  <%-- number input은 min, required 같은 HTML 제약을 화면에서 직접 선언합니다. --%>
           <layout:FieldRow label="제목" inputId="safetyQuantity">
-            <input type="text" class="title" id="title" name="title" value="${inquiry.title}" required readonly />
+            <input type="text" class="title" id="title" name="title"
+						value="${inquiry.title}" required readonly />
           </layout:FieldRow>
 
           <%-- textarea는 업무에 맞게 rows를 직접 선택합니다. --%>
           <layout:FieldRow label="내용" inputId="memo">
-            <textarea class="form-control" id="content" name="content" rows="4" readonly><c:out value="${inquiry.content}"/></textarea>
+            <textarea class="form-control" id="content" name="content"
+						rows="4" readonly><c:out value="${inquiry.content}" /></textarea>
           </layout:FieldRow>
           
           <%-- textarea는 업무에 맞게 rows를 직접 선택합니다. --%>
-          <layout:FieldRow label="답변" inputId="memo" help="최대 1000자까지 입력 가능합니다.">
-            <textarea class="form-control" id="answerContent" name="answerContent" rows="4" maxlength="1000"><c:out value="${inquiry.answerContent}" /></textarea>
+          <layout:FieldRow label="답변" inputId="memo"
+					help="최대 1000자까지 입력 가능합니다.">
+            <textarea class="form-control" id="answerContent"
+						name="answerContent" rows="4" maxlength="1000"><c:out
+							value="${inquiry.answerContent}" /></textarea>
           </layout:FieldRow>          
           
         </layout:Section>
@@ -66,5 +76,5 @@
         </common:Actions>
       </form>
     </jsp:body>
-  </layout:Page>
+	</layout:Page>
 </t:layout>

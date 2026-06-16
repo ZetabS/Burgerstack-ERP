@@ -95,15 +95,7 @@ public class InquiryControllerHO {
 
 	// 문의사항 답변 수정 기능
 	@PostMapping("inquiries/{inquiryId}")
-	public ModelAndView InquiryEdit(
-	        // URL에 포함된 문의사항 번호
-	        @PathVariable Long inquiryId,
-
-	        // 수정 폼에서 넘어온 답변 데이터
-	        Inquiry i,
-
-	        ModelAndView mv,
-	        HttpSession session) {
+	public ModelAndView InquiryEdit(@PathVariable Long inquiryId, Inquiry i, ModelAndView mv, HttpSession session) {
 
 	    // 1. 내용 글자 수 검증
 	    if (i.getAnswerContent() != null && i.getAnswerContent().length() > 1000) {
@@ -112,47 +104,33 @@ public class InquiryControllerHO {
 	        return mv;
 	    }
 
-	    if (i.getAnswerContent() != null) {
-	        String safeContent = org.springframework.web.util.HtmlUtils.htmlEscape(i.getAnswerContent());
-	        i.setAnswerContent(safeContent);
-	    }
+	    // 2. 기존 데이터 조회 (중요: 답변이 이미 있었는지 확인하기 위함)
+	    Inquiry existingInquiry = inquiryServiceHO.InquiryListDetail(inquiryId);
+	    
+	    // 3. 답변 여부 판단 (기존 답변 내용이 null이거나 비어있으면 "작성", 아니면 "수정")
+	    boolean isNewAnswer = (existingInquiry.getAnswerContent() == null || existingInquiry.getAnswerContent().trim().isEmpty());
 
-        // URL의 inquiryId를 Inquiry 객체에 직접 세팅
+	    // 4. 보안 처리 및 데이터 세팅
+	    if (i.getAnswerContent() != null) {
+	        i.setAnswerContent(org.springframework.web.util.HtmlUtils.htmlEscape(i.getAnswerContent()));
+	    }
 	    i.setInquiryId(inquiryId);
 
-        // 답변 수정 처리
+	    // 5. 답변 수정/작성 서비스 호출
 	    int result = inquiryServiceHO.InquiryEdit(i);
 
 	    if(result > 0) {
-
-            // 성공 메시지
-	        session.setAttribute(
-	            "alertMsg",
-	            "답변이 성공적으로 수정되었습니다."
-	        );
-
-            // 수정 성공 후 본사 문의사항 목록으로 이동
-	        mv.setViewName(
-	            "redirect:/admin/inquiries"
-	        );
-
+	        // 성공 시 판단 로직 적용
+	        String msg = isNewAnswer ? "답변이 성공적으로 작성되었습니다." : "답변이 성공적으로 수정되었습니다.";
+	        session.setAttribute("alertMsg", msg);
+	        mv.setViewName("redirect:/admin/inquiries");
 	    } else {
-
-            // 실패 메시지
-	        mv.addObject(
-	            "errorMsg",
-	            "답변 수정에 실패했습니다."
-	        );
-
-            // 실패해도 목록으로 이동
-	        mv.setViewName(
-	            "redirect:/admin/inquiries"
-	        );
+	        mv.addObject("errorMsg", "답변 처리에 실패했습니다.");
+	        mv.setViewName("redirect:/admin/inquiries");
 	    }
 
 	    return mv;
 	}
-
 	// 본사 문의사항 답변 삭제 기능
 	@PostMapping("inquiries/{inquiryId}/delete")
 	public String inquiryDelete(@PathVariable long inquiryId, Model model, HttpSession session) {

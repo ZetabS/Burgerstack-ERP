@@ -1,11 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="datetime" uri="/WEB-INF/tld/datetime.tld" %>
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
-<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
-<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
-<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="datetime" uri="/WEB-INF/tld/datetime.tld"%>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout"%>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common"%>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table"%>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <%--
@@ -44,7 +45,7 @@
 <c:set var="currentInquiryId" value="${inquiry.inquiryId}" />
 
 <c:if test="${empty currentInquiryId}">
-  <c:set var="currentInquiryId" value="${inquiryId}" />
+	<c:set var="currentInquiryId" value="${inquiryId}" />
 </c:if>
 
 <%--
@@ -53,17 +54,19 @@
   /burgerstack/admin/inquiries/9/edit
 --%>
 <c:url var="formUrl" value="/admin/inquiries/${currentInquiryId}/edit" />
-
 <t:layout>
-  <layout:Page title="문의사항 상세 페이지" description="">
+	<layout:Page title="문의사항 상세 페이지" description="">
 
-    <jsp:attribute name="actions">
+		<jsp:attribute name="actions">
       <%-- 헤더 오른쪽에는 목록 복귀, 수정 이동 같은 페이지 단위 액션을 둡니다. --%>
       <common:ReturnLink href="${listUrl}">목록으로</common:ReturnLink>
-      <a href="${formUrl}" class="btn btn-primary ml-2">수정</a>
+      <a href="${formUrl}" class="btn btn-primary ml-2"><c:choose>
+					<c:when test="${empty inquiry.answeredAt}">답변</c:when>
+					<c:otherwise>수정</c:otherwise>
+				</c:choose></a>
     </jsp:attribute>
 
-    <jsp:body>
+		<jsp:body>
       <layout:Section title="문의사항" description="${inquiry.title}">
         <common:FieldList>
 
@@ -88,7 +91,8 @@
                 <span class="answer-content">아직 등록된 답변이 없습니다.</span>
               </c:when>
               <c:otherwise>
-                <c:out value="${fn:replace(inquiry.answeredAt, 'T', ' ')}" />
+                <c:out
+									value="${fn:replace(inquiry.answeredAt, 'T', ' ')}" />
               </c:otherwise>
             </c:choose>
           </layout:FieldRow>
@@ -109,5 +113,5 @@
       </layout:Section>
       
     </jsp:body>
-  </layout:Page>
+	</layout:Page>
 </t:layout>
