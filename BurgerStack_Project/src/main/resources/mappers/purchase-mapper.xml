@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <!-- 발주한 점포 조회 -->
 <select id="selectPurchaseOrder" resultType="com.kh.burgerstack.purchase.dto.PurchaseOrderDto">
-    SELECT 
+    SELECT
         PO.PURCHASE_ORDER_ID AS purchaseOrderId,
         PO.STORE_ID AS storeId,
         S.STORE_NAME AS storeName
@@ -65,7 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
         SELECT
             ROW_NUMBER() OVER(
-                ORDER BY PO.PURCHASE_ORDER_ID DESC
+                ORDER BY PO.CREATED_AT DESC, PO.PURCHASE_ORDER_ID DESC
             ) RN,
 
             PO.PURCHASE_ORDER_ID AS purchaseOrderId,
