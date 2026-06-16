@@ -98,6 +98,12 @@
                             <if test="condition.transactionType != null and condition.transactionType != ''">
                                    AND TRANSACTION_TYPE = #{condition.transactionType}
                             </if>
+                            <if test="condition.startDate != null">
+                                   AND T.CREATED_AT &gt; #{condition.startDate}
+                            </if>
+                            <if test="condition.endDate != null">
+                                   AND T.CREATED_AT &lt; #{condition.endDate}
+                            </if>
                         </where>
                                  ORDER BY T.CREATED_AT DESC, T.INVENTORY_TRANSACTION_ID
                                 ) temp
@@ -120,6 +126,12 @@
             </if>
             <if test="condition.transactionType != null and condition.transactionType != ''">
                    AND TRANSACTION_TYPE = #{condition.transactionType}
+            </if>
+            <if test="condition.startDate != null">
+                   AND T.CREATED_AT &gt;= #{condition.startDate}
+            </if>
+            <if test="condition.endDate != null">
+                   AND T.CREATED_AT &lt;= #{condition.endDate}
             </if>
         </where>
     </select>

@@ -39,6 +39,9 @@
               </c:forEach>
             </select>
           </jsp:attribute>
+          <jsp:attribute name="right">
+            <common:DateRangeFilter startValue="${view.condition.startDate}" endValue="${view.condition.endDate}" autoSubmit="true" />
+          </jsp:attribute>
         </layout:Toolbar>
       </form>
     </jsp:attribute>
