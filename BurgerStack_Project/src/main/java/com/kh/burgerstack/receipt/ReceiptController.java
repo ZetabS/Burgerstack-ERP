@@ -11,8 +11,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.user.LoginUser;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ReceiptController {
@@ -163,9 +165,11 @@ public class ReceiptController {
     // 변경 /owner/receipts/{purchaseId}/receipt
     @PostMapping("/owner/receipts/{purchaseId}/receipt")
     public String processReceipt(@PathVariable Long purchaseId,
+                                 HttpSession session,
                                  ReceiptForm form) {
 
-        Long createdBy = 1L; // 로그인 붙기 전 임시 사용자 ID
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        Long createdBy = loginUser.getUserNo();
 
         receiptService.processReceipt(purchaseId, form, createdBy);
 
