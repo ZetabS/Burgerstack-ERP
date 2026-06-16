@@ -11,7 +11,7 @@
 </resultMap>
 
     <!-- 자재 등록 -->
-    <insert id="insert" parameterType="Material">
+    <insert id="materialInsert" parameterType="Material">
         <selectKey keyProperty="materialId" resultType="long" order="BEFORE">
             SELECT SEQ_MATERIAL.NEXTVAL FROM DUAL
         </selectKey>

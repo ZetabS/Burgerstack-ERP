@@ -49,8 +49,8 @@
 }
 #file-list-container {
     border : 1px solid #cccccc;
-    min-height : 65px;
-    overflow-y : auto;
+    height : 70px;
+    overflow-y : scroll;
     padding : 5px;
     box-sizing : border-box;
     max-width: 800px;
@@ -91,7 +91,7 @@
                             <td>
                                 <%-- data 속성으로 기존 내용 전달 (JS 백틱 안 EL은 특수문자 충돌 위험) --%>
                                 <div id="editor-container"></div>
-                                <textarea id="saved-content" style="display:none;"><c:out value="${notice.content}" escapeXml="false"/></textarea>
+                                <textarea id="saved-content" style="display:none;" maxlength="800"><c:out value="${notice.content}" escapeXml="false"/></textarea>
                                 <input type="hidden" name="content" id="server-content">
                             </td>
                         </tr>
@@ -184,6 +184,12 @@
             // ── 2. Quill 이미지 업로드 핸들러 ────────────────────────────
             // ✅ 이미지 업로드 후 파일 리스트에 표시 + X 버튼으로 에디터에서도 동시 제거
             quill.getModule('toolbar').addHandler('image', () => {
+                // 업로드 갯수 제한 먼저 체크
+                if (getTotalFileCount() >= 5) {
+                    alert('첨부파일 및 이미지는 총 5개까지만 업로드 가능합니다.');
+                    return;
+                }
+
                 const input = document.createElement('input');
                 input.setAttribute('type', 'file');
                 input.setAttribute('accept', 'image/*');
@@ -211,6 +217,7 @@
 
                             // ✅ 2. 파일 리스트에 표시 + X 버튼 클릭 시 에디터에서도 해당 이미지 제거
                             addQuillImageToList(file.name, result.url);
+                            updateFileGuideVisibility();
                         } else {
                             alert('이미지 업로드에 실패했습니다.');
                         }
@@ -265,8 +272,26 @@
 
 
             // ── 3. submit: 에디터 내용 → hidden input ───────────────────
-            document.getElementById('noticeForm').addEventListener('submit', function() {
-                document.getElementById('server-content').value = quill.root.innerHTML;
+            document.getElementById('noticeForm').addEventListener('submit', function(e) {
+                const htmlContent = quill.root.innerHTML;
+                
+                // 바이트 계산 (태그 포함)
+                let byteCount = 0;
+                for (let i = 0; i < htmlContent.length; i++) {
+                    // 한글(2바이트 이상)인지 확인
+                    byteCount += (htmlContent.charCodeAt(i) > 127) ? 3 : 1;
+                }
+
+                // DB 제한보다 약간 여유 있게 체크
+                const DB_LIMIT = 2800; // 태그 오차를 고려해 2800 정도로 설정
+
+                if (byteCount > DB_LIMIT) {
+                    alert("내용이 너무 깁니다. (이미지나 서식을 줄여주세요)\n현재 바이트: " + byteCount + " / 3000");
+                    e.preventDefault(); 
+                    return;
+                }
+
+                document.getElementById('server-content').value = htmlContent;
             });
 
             // ── 4. 일반 파일 첨부 로직 ──────────────────────────────────
@@ -274,32 +299,59 @@
             let fileIdCounter = 0;
 
             function handleFileSelect(event) {
+                
                 const newFiles = Array.from(event.target.files);
-                const BLOCKED_EXT = ['exe','bat','cmd','sh','ps1','vbs','jsp','php','asp','aspx','jar','war','class','msi','dll'];
+                // 파일 크기, 갯수 제한
                 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
                 const MAX_COUNT = 5;
 
-                for (const file of newFiles) {
-                    const ext = file.name.split('.').pop().toLowerCase();
-
-                    if (BLOCKED_EXT.includes(ext)) {
-                        alert(`업로드할 수 없는 파일 형식입니다. (${ext})`);
-                        event.target.value = '';
-                        return;
-                    }
-                    if (file.size > MAX_SIZE) {
-                        alert(`파일 크기가 너무 큽니다. 최대 10MB까지 가능합니다.\n(${file.name})`);
-                        event.target.value = '';
-                        return;
-                    }
-                }
-
-                if (uploadedFiles.length + newFiles.length > MAX_COUNT) {
-                    alert('첨부파일은 최대 ' + MAX_COUNT + '개 까지 업로드 가능합니다.');
+                // 통합 개수 검증
+                if (getTotalFileCount() + newFiles.length > MAX_COUNT) {
+                    alert('첨부파일은 에디터 이미지 포함 최대 ' + MAX_COUNT + '개까지 업로드 가능합니다.');
                     event.target.value = '';
                     return;
                 }
+                // 화이트/블랙리스트
+                const ALLOWED_EXT = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'hwp', 'doc', 'docx', 'txt'];
+                const BLOCKED_EXT = ['exe', 'bat', 'cmd', 'sh', 'ps1', 'vbs', 'jsp', 'php', 'asp', 'aspx', 'jar', 'war', 'class', 'msi', 'dll'];
 
+                // 개별 파일 검증
+                for (const file of newFiles) {
+                    const ext = file.name.split('.').pop().toLowerCase();
+
+                    // 화이트리스트 검증
+                    if (!ALLOWED_EXT.includes(ext)) {
+                        alert(`허용되지 않은 파일 형식입니다: ${ext}`);
+                        event.target.value = '';
+                        return;
+                    }
+
+                    // 블랙리스트 검증
+                    if (BLOCKED_EXT.includes(ext)) {
+                        alert(`보안상 업로드할 수 없는 파일입니다: ${ext}`);
+                        event.target.value = '';
+                        return;
+                    }
+
+                    // MIME 타입 검증
+                    const isImage = file.type.startsWith('image/');
+                    const isDoc = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'].includes(file.type);
+                    
+                    if (!isImage && !isDoc) {
+                        alert("이미지 또는 문서 파일만 업로드 가능합니다.");
+                        event.target.value = '';
+                        return;
+                    }
+
+                    // 용량 검증
+                    if (file.size > MAX_SIZE) {
+                        alert(`파일 크기가 너무 큽니다 (최대 10MB): ${file.name}`);
+                        event.target.value = '';
+                        return;
+                    }
+                }
+
+                // 검증 통과 후 추가
                 newFiles.forEach(file => {
                     file.fileId = 'file_' + fileIdCounter++;
                     uploadedFiles.push(file);
@@ -307,11 +359,17 @@
                     addFileItemToList(icon + ' ' + file.name, file.fileId);
                 });
 
-                // 파일 추가시 안내 문구 숨기기
                 document.getElementById("file-upload-guide").style.display = 'none';
                 syncInputFiles();
             }
 
+            // 에디터+파일첨부 통합 갯수 제한
+            function getTotalFileCount() {
+                const editorImages = quill.root.querySelectorAll('img').length;
+                const normalFiles = uploadedFiles.length;
+                const dbFiles = document.querySelectorAll('.db-file-item').length; // 기존 DB 파일
+                return editorImages + normalFiles + dbFiles;
+            }
 
             /**
             * 파일 리스트 div에 항목 추가
@@ -349,6 +407,7 @@
                 }
 
                 container.appendChild(item);
+                updateFileGuideVisibility();
             }
 
             function syncInputFiles() {
@@ -377,10 +436,23 @@
                 hidden.value = fileId;
                 container.appendChild(hidden);
 
-                if(uploadedFiles.length === 0
-                && document.querySelectorAll('.js-file-item').length === 0
-                && document.querySelectorAll('.db-file-item').length === 0) {
-                    document.getElementById('file-upload-guide').style.display = 'block';
+                updateFileGuideVisibility();
+            }
+
+            /**
+             * 파일 목록(신규+기존)이 비어있는지 확인하고 안내 문구 토글
+             */
+            function updateFileGuideVisibility() {
+                const guide = document.getElementById('file-upload-guide');
+                const hasNewFiles = uploadedFiles.length > 0;
+                const hasJsFiles = document.querySelectorAll('.js-file-item').length > 0;
+                const hasDbFiles = document.querySelectorAll('.db-file-item').length > 0;
+
+                // 하나라도 파일이 있으면 가이드 숨김
+                if (hasNewFiles || hasJsFiles || hasDbFiles) {
+                    guide.style.display = 'none';
+                } else {
+                    guide.style.display = 'block';
                 }
             }
             

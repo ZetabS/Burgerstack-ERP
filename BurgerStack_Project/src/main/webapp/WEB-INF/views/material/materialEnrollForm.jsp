@@ -125,7 +125,8 @@
                             <th>상세정보</th>
                             <td>
                                 <div class="material-info-p">
-                                    <textarea name="details" id="material-detail" maxlength="800" oninput="checkLength(this)"></textarea>
+                                    <textarea name="details" id="material-detail" maxlength="800"
+                                              oninput="checkLength(this)">${material.details}</textarea>
                                 </div>
                             </td>
                         </tr>
@@ -147,6 +148,13 @@
             </form>
         </div>
         <script>
+
+            // 텍스트 길이 체크
+            function checkLength(el) {
+                const maxLength = el.getAttribute('maxlength');
+                const currentLength = el.value.length;
+            }
+            
             // 파일 확장자 화이트리스트 검증
             document.getElementById('fileInput').addEventListener('change', function(e) {
                 const file = e.target.files[0];
