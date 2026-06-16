@@ -1,6 +1,6 @@
 package com.kh.burgerstack.inventory.dao;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class InventoryDao {
     private final InventoryMapper inventoryMapper;
 
-    public ArrayList<InventoryListItem> findInventoryListItems(
+    public List<InventoryListItem> findInventoryListItems(
             InventorySearchCondition condition,
             PagingRequest pagingRequest) {
         return inventoryMapper.findInventoryListItems(condition, pagingRequest);

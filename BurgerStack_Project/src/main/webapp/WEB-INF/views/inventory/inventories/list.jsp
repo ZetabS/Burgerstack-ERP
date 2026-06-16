@@ -63,6 +63,7 @@
             <th>자재 유형</th>
             <th class="text-right">현재 수량</th>
             <th class="text-right">안전재고 수량</th>
+            <th class="text-right">부족 수량</th>
             <c:if test="${isOwner}"><th>안전재고 조정</th></c:if>
             <th class="text-center">조정</th>
           </tr>
@@ -80,6 +81,7 @@
               </table:FitCell>
               <table:NumberCell value="${item.currentQuantity}" />
               <table:NumberCell value="${item.safetyQuantity}" />
+              <table:DeltaCell value="${item.shortageQuantity}" />
               <c:if test="${isOwner}"><table:ActionLinkCell href="${editUrl}">안전재고 조정</table:ActionLinkCell></c:if>
               <table:ActionLinkCell href="${adjustUrl}">조정</table:ActionLinkCell>
             </table:TableRow>
