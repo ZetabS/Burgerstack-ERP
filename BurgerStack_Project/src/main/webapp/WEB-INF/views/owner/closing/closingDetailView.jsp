@@ -4,6 +4,8 @@
 <%@ taglib prefix="c"
     uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="datetime" uri="/WEB-INF/tld/datetime.tld" %>
 
 <!DOCTYPE html>
 <html>
@@ -166,7 +168,7 @@
             <td>
                 <c:choose>
                     <c:when test="${not empty closing.closedAt}">
-                        ${closing.closedAt.toString().replace('T',' ').substring(0,19)}
+                        ${datetime:formatDateTime(closing.closedAt)}
                     </c:when>
                     <c:otherwise>
                         -

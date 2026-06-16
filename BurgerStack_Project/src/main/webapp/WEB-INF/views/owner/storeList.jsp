@@ -4,6 +4,8 @@
 
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="datetime" uri="/WEB-INF/tld/datetime.tld" %>
 
 <!DOCTYPE html>
 <html>
@@ -235,7 +237,7 @@
                     <div class="info-box">
                         <c:choose>
                             <c:when test="${not empty store.createdAt}">
-                                ${store.createdAt.toString().replace('T',' ').substring(0,19)}
+                                ${datetime:formatDateTime(store.createdAt)}
                             </c:when>
                             <c:otherwise>
                                 -
