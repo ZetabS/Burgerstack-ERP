@@ -35,27 +35,26 @@ public class OwnerController {
 	@PostMapping("mypage")
 	public ModelAndView update(User u, ModelAndView mv, HttpSession session) {
 
-		u.setUserNo(((LoginUser) session.getAttribute("loginUser")).getUserNo());
+	    if (u.getUserName() != null) u.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(u.getUserName()));
+	    if (u.getEmail() != null) u.setEmail(org.springframework.web.util.HtmlUtils.htmlEscape(u.getEmail()));
+	    if (u.getPhone() != null) u.setPhone(org.springframework.web.util.HtmlUtils.htmlEscape(u.getPhone()));
 
-		int result = ownerService.update(u);
+	    u.setUserNo(((LoginUser) session.getAttribute("loginUser")).getUserNo());
 
-		if (result > 0) {
+	    int result = ownerService.update(u);
 
-			System.out.println("1");
+	    if (result > 0) {
+	        System.out.println("1");
+	        session.setAttribute("User", u);
+	        session.setAttribute("alertMsg", "성공적으로 정보가 수정되었습니다.");
+	        mv.setViewName("redirect:/owner/dashboard");
+	    } else {
+	        System.out.println("2");
+	        mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
+	        mv.setViewName("common/errorPage");
+	    }
 
-			session.setAttribute("User", u);
-
-			session.setAttribute("alertMsg", "성공적으로 정보가 수정되었습니다.");
-
-			mv.setViewName("redirect:/owner/dashboard");
-
-		} else {
-			System.out.println("2");
-			mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
-			mv.setViewName("common/errorPage");
-		}
-
-		return mv;
+	    return mv;
 	}
 
 	@PostMapping("ownerPassword")

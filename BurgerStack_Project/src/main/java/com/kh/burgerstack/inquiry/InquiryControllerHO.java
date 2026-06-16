@@ -30,6 +30,10 @@ public class InquiryControllerHO {
             @RequestParam(value = "keyword", required = false) String keyword,
             HttpSession session, Model model) {
 		
+		if (keyword != null) {
+	        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+	    }
+		
         int limit = 10;
 
         int totalCount = inquiryServiceHO.getTotalCount(condition, keyword);
@@ -82,9 +86,18 @@ public class InquiryControllerHO {
 	        Inquiry i,
 	        ModelAndView mv,
 	        HttpSession session) {
-		
-	    System.out.println("inquiryId = " + inquiryId);
-	    System.out.println("answerContent = " + i.getAnswerContent());
+
+	    // 1. 내용 글자 수 검증
+	    if (i.getAnswerContent() != null && i.getAnswerContent().length() > 1000) {
+	        session.setAttribute("alertMsg", "내용은 최대 1000자까지 입력 가능합니다.");
+	        mv.setViewName("redirect:/owner/inquiries");
+	        return mv;
+	    }
+
+	    if (i.getAnswerContent() != null) {
+	        String safeContent = org.springframework.web.util.HtmlUtils.htmlEscape(i.getAnswerContent());
+	        i.setAnswerContent(safeContent);
+	    }
 
 	    i.setInquiryId(inquiryId);
 

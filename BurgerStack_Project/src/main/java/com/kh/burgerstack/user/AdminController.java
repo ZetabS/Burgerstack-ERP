@@ -35,17 +35,15 @@ public class AdminController {
 	}
 	@PostMapping("users")
 	public String NewOwner(User u, Model model, HttpSession session) {
-			
-	    System.out.println("===== 등록 요청 =====");
-	    System.out.println(u);
-		
-			String encPwd = bCryptPasswordEncoder.encode(u.getPassword());
-			
-			u.setPassword(
-					bCryptPasswordEncoder.encode(u.getPassword())
-			);
 
-			int result = adminService.NewOwner(u);
+	    if (u.getUserName() != null) u.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(u.getUserName()));
+	    if (u.getEmail() != null) u.setEmail(org.springframework.web.util.HtmlUtils.htmlEscape(u.getEmail()));
+	    if (u.getPhone() != null) u.setPhone(org.springframework.web.util.HtmlUtils.htmlEscape(u.getPhone()));
+
+	    String encPwd = bCryptPasswordEncoder.encode(u.getPassword());
+	    u.setPassword(encPwd);
+
+	    int result = adminService.NewOwner(u);
 			
 			if(result > 0) {
 			    session.setAttribute("alertMsg", "계정이 등록되었습니다.");
@@ -60,6 +58,10 @@ public class AdminController {
 	
 	@PostMapping("mypage")
 	public ModelAndView update(User u, ModelAndView mv, HttpSession session) {
+		
+		if (u.getUserName() != null) u.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(u.getUserName()));
+	    if (u.getEmail() != null) u.setEmail(org.springframework.web.util.HtmlUtils.htmlEscape(u.getEmail()));
+	    if (u.getPhone() != null) u.setPhone(org.springframework.web.util.HtmlUtils.htmlEscape(u.getPhone()));
 		
 		u.setUserNo(((LoginUser)session.getAttribute("loginUser")).getUserNo());
 		
@@ -134,14 +136,16 @@ public class AdminController {
 	                        String keyword,
 	                        Model model) {
 
+	    if (keyword != null) {
+	        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+	    }
+
 	    System.out.println("status = " + status);
 	    System.out.println("keyword = " + keyword);
 
-	    List<User> ownerList =
-	            adminService.OwnerList(status, keyword);
-
-	    System.out.println("조회건수 = " + ownerList.size());
-
+	    List<User> ownerList = adminService.OwnerList(status, keyword);
+	    
+	    model.addAttribute("keyword", keyword);
 	    model.addAttribute("ownerList", ownerList);
 
 	    return "user/OwnerList";
@@ -174,14 +178,15 @@ public class AdminController {
 		
 		user.setUserId(userId);
 		
-		if(user.getPassword() != null &&
-				!user.getPassword().trim().isEmpty()){
-				
-			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-			
-		}else{
-			user.setPassword(null);
-		}
+		if (user.getUserName() != null) user.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(user.getUserName()));
+	    if (user.getEmail() != null) user.setEmail(org.springframework.web.util.HtmlUtils.htmlEscape(user.getEmail()));
+	    if (user.getPhone() != null) user.setPhone(org.springframework.web.util.HtmlUtils.htmlEscape(user.getPhone()));
+	    
+	    if(user.getPassword() != null && !user.getPassword().trim().isEmpty()){
+	        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+	    }else{
+	        user.setPassword(null);
+	    }
 		
 		int result = adminService.OwnerUpdate(user);
 		

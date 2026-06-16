@@ -44,12 +44,12 @@
 
 		  <%-- number input은 min, required 같은 HTML 제약을 화면에서 직접 선언합니다. --%>
           <layout:FieldRow label="제목" inputId="safetyQuantity" help="제목을 입력하시오.">
-            <input type="text" class="title" id="title" name="title" value="${inquiry.title}" required />
+            <input type="text" class="title" id="title" name="title" maxlength="100" value="${inquiry.title}" required />
           </layout:FieldRow>
 
           <%-- textarea는 업무에 맞게 rows를 직접 선택합니다. --%>
-          <layout:FieldRow label="내용" inputId="memo" help="문의사항을 입력하시오.">
-            <textarea class="form-control" id="content" name="content" rows="4"><c:out value="${inquiry.content}" /></textarea>
+          <layout:FieldRow label="내용" inputId="memo" help="최대 1000자까지 입력 가능합니다.">
+            <textarea class="form-control" id="content" name="content" rows="4" maxlength="1000"><c:out value="${inquiry.content}" /></textarea>
           </layout:FieldRow>
         </layout:Section>
 

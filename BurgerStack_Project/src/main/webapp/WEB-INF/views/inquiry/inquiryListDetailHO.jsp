@@ -40,13 +40,18 @@
     </jsp:attribute>
 
     <jsp:body>
-      <layout:Section title="제목" description="${inquiry.title}">
+      <layout:Section title="문의사항" description="${inquiry.title}">
         <common:FieldList>
           <%-- 단순 텍스트 값은 FieldRow body에 바로 출력합니다. --%>
           <layout:FieldRow label="문의 등록일">
             <c:out value="${fn:replace(inquiry.createdAt, 'T', ' ')}" />
           </layout:FieldRow>
           <layout:FieldRow label="문의 내용">${inquiry.content}</layout:FieldRow>
+        </common:FieldList>
+      </layout:Section>
+      
+            <layout:Section title="문의사항 답변" description="">
+        <common:FieldList>
           <layout:FieldRow label="답변 등록일">
             <c:out value="${fn:replace(inquiry.answeredAt, 'T', ' ')}" />
           </layout:FieldRow>

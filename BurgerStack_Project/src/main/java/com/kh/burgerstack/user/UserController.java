@@ -17,14 +17,21 @@ public class UserController {
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
-
-	//private final UserService userService;
+	@Autowired
+	private UserService userService;
 	
-	@GetMapping("enrollForm")
-	public String storeOwnerEnrollForm() {
-		
-		return "user/userEnrollForm";
-	}	
+	@PostMapping("enroll")
+	public String storeOwnerEnroll(User u, Model model, HttpSession session) {
+	    
+	    if (u.getUserName() != null) u.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(u.getUserName()));
+	    if (u.getEmail() != null) u.setEmail(org.springframework.web.util.HtmlUtils.htmlEscape(u.getEmail()));
+	    if (u.getPhone() != null) u.setPhone(org.springframework.web.util.HtmlUtils.htmlEscape(u.getPhone()));
+	    
+	    String encPwd = bCryptPasswordEncoder.encode(u.getPassword());
+	    u.setPassword(encPwd);
+	    
+	    return "redirect:/auth/login";
+	}
 	
 	
 }
