@@ -4,94 +4,187 @@
 --   - 시딩 후 검증 쿼리 실행
 -- 확인 항목:
 --   - 사용자/점포/자재 분포
---   - 안전재고 미만 재고
+--   - 점포별 부족 재고
 --   - 발주 상태 분포
---   - 발주 총액 정합성
---   - 자재 스냅샷명 정합성
---   - RECEIVED 발주의 입고/재고 변동 연결 여부
+--   - 문의 답변 상태 분포
+--   - 마감/재고변동 연결 여부
 -- =========================================================
 
 -- 사용자 역할별 조회
-SELECT role, status, COUNT(*) AS cnt
-  FROM users
- GROUP BY role, status
- ORDER BY role, status;
+SELECT ROLE, STATUS, COUNT(*) AS CNT
+  FROM USERS
+ GROUP BY ROLE, STATUS
+ ORDER BY ROLE, STATUS;
 
 -- 점포 상태별 조회
-SELECT status, COUNT(*) AS cnt
-  FROM stores
- GROUP BY status
- ORDER BY status;
+SELECT STATUS, COUNT(*) AS CNT
+  FROM STORES
+ GROUP BY STATUS
+ ORDER BY STATUS;
 
 -- 자재 유형별 조회
-SELECT material_type, COUNT(*) AS cnt
-  FROM materials
- GROUP BY material_type
- ORDER BY material_type;
+SELECT MATERIAL_TYPE, COUNT(*) AS CNT
+  FROM MATERIALS
+ GROUP BY MATERIAL_TYPE
+ ORDER BY MATERIAL_TYPE;
 
--- 안전재고 미만 재고
-SELECT s.store_name,
-       m.material_name,
-       si.current_quantity,
-       si.safety_quantity
-  FROM store_inventories si
-  JOIN stores s
-    ON s.store_id = si.store_id
-  JOIN materials m
-    ON m.material_id = si.material_id
- WHERE si.current_quantity < si.safety_quantity
- ORDER BY s.store_id, m.material_id;
+-- 점포별 부족 재고 개수
+SELECT S.STORE_NAME,
+       COUNT(*) AS SHORTAGE_COUNT
+  FROM STORE_INVENTORIES SI
+  JOIN STORES S
+    ON S.STORE_ID = SI.STORE_ID
+ WHERE SI.CURRENT_QUANTITY < SI.SAFETY_QUANTITY
+ GROUP BY S.STORE_NAME, S.STORE_ID
+ ORDER BY S.STORE_ID;
 
--- 발주 상태별 집계
-SELECT status, COUNT(*) AS cnt
-  FROM purchase_orders
- GROUP BY status
- ORDER BY status;
+-- 부족 재고 상세
+SELECT S.STORE_NAME,
+       M.MATERIAL_NAME,
+       SI.CURRENT_QUANTITY,
+       SI.SAFETY_QUANTITY
+  FROM STORE_INVENTORIES SI
+  JOIN STORES S
+    ON S.STORE_ID = SI.STORE_ID
+  JOIN MATERIALS M
+    ON M.MATERIAL_ID = SI.MATERIAL_ID
+ WHERE SI.CURRENT_QUANTITY < SI.SAFETY_QUANTITY
+ ORDER BY S.STORE_ID, SI.STORE_INVENTORY_ID;
+
+-- 발주 상태 분포
+SELECT STATUS, COUNT(*) AS CNT
+  FROM PURCHASE_ORDERS
+ GROUP BY STATUS
+ ORDER BY STATUS;
+
+-- 점포별 발주 상태 분포
+SELECT S.STORE_NAME,
+       PO.STATUS,
+       COUNT(*) AS CNT
+  FROM PURCHASE_ORDERS PO
+  JOIN STORES S
+    ON S.STORE_ID = PO.STORE_ID
+ GROUP BY S.STORE_NAME, PO.STATUS
+ ORDER BY S.STORE_NAME, PO.STATUS;
 
 -- 발주 총액 정합성 검증(결과가 없어야 정상)
-SELECT po.purchase_order_id,
-       po.total_amount,
-       SUM(poi.request_quantity * poi.supply_price_snapshot) AS calculated_amount,
-       po.total_amount - SUM(poi.request_quantity * poi.supply_price_snapshot) AS diff
-  FROM purchase_orders po
-  JOIN purchase_order_items poi
-    ON poi.purchase_order_id = po.purchase_order_id
- GROUP BY po.purchase_order_id, po.total_amount
-HAVING po.total_amount <> SUM(poi.request_quantity * poi.supply_price_snapshot);
+SELECT PO.PURCHASE_ORDER_ID,
+       PO.TOTAL_AMOUNT,
+       SUM(POI.REQUEST_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT) AS CALCULATED_AMOUNT,
+       PO.TOTAL_AMOUNT - SUM(POI.REQUEST_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT) AS DIFF
+  FROM PURCHASE_ORDERS PO
+  JOIN PURCHASE_ORDER_ITEMS POI
+    ON POI.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+ GROUP BY PO.PURCHASE_ORDER_ID, PO.TOTAL_AMOUNT
+HAVING PO.TOTAL_AMOUNT <> SUM(POI.REQUEST_QUANTITY * POI.SUPPLY_PRICE_SNAPSHOT);
 
--- 발주 자재명 스냅샷 정합성 검증(결과가 없어야 정상)
-SELECT poi.purchase_order_item_id,
-       poi.material_id,
-       m.material_name AS current_material_name,
-       poi.material_name_snapshot
-  FROM purchase_order_items poi
-  JOIN materials m
-    ON m.material_id = poi.material_id
- WHERE m.material_name <> poi.material_name_snapshot;
-
--- 발주와 입고 정합성 검증(결과가 없어야 정상)
-SELECT po.purchase_order_id,
-       po.status
-  FROM purchase_orders po
- WHERE po.status = 'RECEIVED'
+-- RECEIVED 발주의 입고 연결 검증(결과가 없어야 정상)
+SELECT PO.PURCHASE_ORDER_ID
+  FROM PURCHASE_ORDERS PO
+ WHERE PO.STATUS = 'RECEIVED'
    AND NOT EXISTS (
        SELECT 1
-         FROM receipts r
-        WHERE r.purchase_order_id = po.purchase_order_id
+         FROM RECEIPTS R
+        WHERE R.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
    );
 
--- 발주와 입고 간 상세 품목 연결 정합성 검증
-SELECT po.purchase_order_id,
-       COUNT(ri.receipt_item_id) AS receipt_item_count,
-       COUNT(itx_item.inventory_transaction_item_id) AS inventory_tx_item_count
-  FROM purchase_orders po
-  LEFT JOIN receipts r
-    ON r.purchase_order_id = po.purchase_order_id
-  LEFT JOIN receipt_items ri
-    ON ri.receipt_id = r.receipt_id
-  LEFT JOIN inventory_transactions itx
-    ON itx.receipt_id = r.receipt_id
-  LEFT JOIN inventory_transaction_items itx_item
-    ON itx_item.inventory_transaction_id = itx.inventory_transaction_id
- WHERE po.status = 'RECEIVED'
- GROUP BY po.purchase_order_id;
+-- 입고와 재고변동 연결 검증(결과가 없어야 정상)
+SELECT R.RECEIPT_ID
+  FROM RECEIPTS R
+ WHERE NOT EXISTS (
+       SELECT 1
+         FROM INVENTORY_TRANSACTIONS IT
+        WHERE IT.RECEIPT_ID = R.RECEIPT_ID
+          AND IT.TRANSACTION_TYPE = 'RECEIPT'
+   );
+
+-- 문의 답변 상태 분포
+SELECT CASE
+           WHEN DELETED_AT IS NOT NULL THEN 'DELETED'
+           WHEN ANSWERED_AT IS NULL THEN 'UNANSWERED'
+           ELSE 'ANSWERED'
+       END AS INQUIRY_STATE,
+       COUNT(*) AS CNT
+  FROM INQUIRIES
+ GROUP BY CASE
+              WHEN DELETED_AT IS NOT NULL THEN 'DELETED'
+              WHEN ANSWERED_AT IS NULL THEN 'UNANSWERED'
+              ELSE 'ANSWERED'
+          END
+ ORDER BY INQUIRY_STATE;
+
+-- 점포별 문의 상태 분포
+SELECT S.STORE_NAME,
+       CASE
+           WHEN I.DELETED_AT IS NOT NULL THEN 'DELETED'
+           WHEN I.ANSWERED_AT IS NULL THEN 'UNANSWERED'
+           ELSE 'ANSWERED'
+       END AS INQUIRY_STATE,
+       COUNT(*) AS CNT
+  FROM INQUIRIES I
+  JOIN STORES S
+    ON S.STORE_ID = I.STORE_ID
+ GROUP BY S.STORE_NAME,
+          CASE
+              WHEN I.DELETED_AT IS NOT NULL THEN 'DELETED'
+              WHEN I.ANSWERED_AT IS NULL THEN 'UNANSWERED'
+              ELSE 'ANSWERED'
+          END
+ ORDER BY S.STORE_NAME, INQUIRY_STATE;
+
+-- 점포별 마감 건수
+SELECT S.STORE_NAME,
+       COUNT(*) AS CLOSING_COUNT,
+       MIN(SC.BUSINESS_DATE) AS FIRST_BUSINESS_DATE,
+       MAX(SC.BUSINESS_DATE) AS LAST_BUSINESS_DATE
+  FROM STORE_CLOSINGS SC
+  JOIN STORES S
+    ON S.STORE_ID = SC.STORE_ID
+ GROUP BY S.STORE_NAME, S.STORE_ID
+ ORDER BY S.STORE_ID;
+
+-- 마감과 재고변동 연결 누락 검증(결과가 없어야 정상)
+SELECT SC.STORE_CLOSING_ID,
+       SC.STORE_ID,
+       SC.BUSINESS_DATE
+  FROM STORE_CLOSINGS SC
+ WHERE NOT EXISTS (
+       SELECT 1
+         FROM INVENTORY_TRANSACTIONS IT
+        WHERE IT.STORE_CLOSING_ID = SC.STORE_CLOSING_ID
+          AND IT.TRANSACTION_TYPE = 'STORE_CLOSING'
+   );
+
+-- 재고변동 유형별 집계
+SELECT TRANSACTION_TYPE, COUNT(*) AS CNT
+  FROM INVENTORY_TRANSACTIONS
+ GROUP BY TRANSACTION_TYPE
+ ORDER BY TRANSACTION_TYPE;
+
+-- 오늘 강남점 마감 존재 여부
+SELECT SC.STORE_CLOSING_ID,
+       SC.BUSINESS_DATE,
+       SC.CLOSED_AT
+  FROM STORE_CLOSINGS SC
+ WHERE SC.STORE_ID = 1
+   AND TRUNC(SC.BUSINESS_DATE) = TRUNC(DATE '2026-06-17');
+
+-- 최근 문의 5건 확인용
+SELECT *
+  FROM (
+      SELECT I.INQUIRY_ID,
+             S.STORE_NAME,
+             I.TITLE,
+             I.CREATED_AT,
+             CASE
+                 WHEN I.DELETED_AT IS NOT NULL THEN 'DELETED'
+                 WHEN I.ANSWERED_AT IS NULL THEN 'UNANSWERED'
+                 ELSE 'ANSWERED'
+             END AS INQUIRY_STATE
+        FROM INQUIRIES I
+        JOIN STORES S
+          ON S.STORE_ID = I.STORE_ID
+       WHERE I.DELETED_AT IS NULL
+       ORDER BY I.CREATED_AT DESC, I.INQUIRY_ID DESC
+  )
+ WHERE ROWNUM <= 5;
