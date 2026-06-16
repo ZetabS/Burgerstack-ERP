@@ -17,11 +17,9 @@
   <div class="dashboard__container">
     <div class="card dashboard__panel dashboard__panel--small">
       <div class="card-body">
-        <div class="card-title d-flex flex-row justify-content-between">
-          전체 점포 수
-          <a class="card-link" href="${storeListUrl}">바로가기 &gt;</a>
-        </div>
+        <div class="card-title dashboard__card-title">전체 점포 수</div>
         <div class="card-text dashboard__count">${view.storeCount}<span>건</span></div>
+        <a class="card-link" href="${storeListUrl}">점포 목록 바로가기 &gt;</a>
       </div>
     </div>
     <div class="card dashboard__panel dashboard__panel--small">
