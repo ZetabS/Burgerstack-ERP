@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.burgerstack.common.pagination.PagingRequest;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,9 +32,9 @@ public class AdminService {
 	}
 
 	public List<User> OwnerList(String status,
-            String keyword) {
+            String keyword, PagingRequest pi) {
 
-		return adminDao.OwnerList(status, keyword);
+	    return adminDao.OwnerList(status, keyword, pi);
 	}
 
 	public User OwnerListDetail(String userId) {
@@ -45,6 +47,10 @@ public class AdminService {
 
 	public int OwnerUpdate(User user) {
 		return adminDao.OwnerUpdate(user);
+	}
+
+	public int getOwnerCount(String status, String keyword) {
+		return adminDao.getOwnerCount(status, keyword);
 	}
 
 }

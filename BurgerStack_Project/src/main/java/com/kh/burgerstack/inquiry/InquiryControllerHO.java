@@ -23,37 +23,35 @@ public class InquiryControllerHO {
 	private InquiryServiceHO inquiryServiceHO;
 	
 	// 본사 문의사항 목록조회 페이지
-	@GetMapping("inquiries")
-    public String InquiryList(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "condition", required = false) String condition,
-            @RequestParam(value = "keyword", required = false) String keyword,
-            HttpSession session, Model model) {
-		
-		if (keyword != null) {
-	        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+		@GetMapping("inquiries")
+	    public String InquiryList(
+	    		com.kh.burgerstack.common.pagination.PagingRequest pi,
+	            @RequestParam(value = "page", defaultValue = "1") int page,
+	            @RequestParam(value = "condition", required = false) String condition,
+	            @RequestParam(value = "keyword", required = false) String keyword,
+	            HttpSession session, Model model) {
+			
+			if (keyword != null) {
+		        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+		    }
+			
+	        int limit = 10;
+
+	        int totalCount = inquiryServiceHO.getTotalCount(condition, keyword);
+	        
+	        com.kh.burgerstack.common.pagination.PageInfo pageInfo = pi.toPageInfo(totalCount);
+
+	        // 3. 목록 데이터 조회
+	        List<Inquiry> inquiryList = inquiryServiceHO.InquiryList(condition, keyword, page, limit);
+
+	        model.addAttribute("inquiryList", inquiryList);
+	        model.addAttribute("pageInfo", pageInfo); 
+	        model.addAttribute("condition", condition);
+	        model.addAttribute("keyword", keyword);
+
+	        return "inquiry/inquiryListViewHO";
 	    }
 		
-        int limit = 10;
-
-        int totalCount = inquiryServiceHO.getTotalCount(condition, keyword);
-        int maxPage = (int) Math.ceil((double) totalCount / limit);
-        int startPage = (((page - 1) / 10) * 10) + 1;
-        int endPage = startPage + 9;
-        if(endPage > maxPage) endPage = maxPage;
-
-        List<Inquiry> inquiryList = inquiryServiceHO.InquiryList(condition, keyword, page, limit);
-
-        model.addAttribute("inquiryList", inquiryList);
-        model.addAttribute("maxPage", maxPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("condition", condition);
-        model.addAttribute("keyword", keyword);
-
-        return "inquiry/inquiryListViewHO";
-    }
 	// 본사 문의사항 상세 조회 페이지
 	@GetMapping("inquiries/{inquiryId}")
 	public String InquiryListDetail(@PathVariable long inquiryId, Model model) {

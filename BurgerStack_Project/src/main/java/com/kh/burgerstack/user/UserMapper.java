@@ -22,5 +22,7 @@ public interface UserMapper {
 
 	public int OwnerUpdate(User user);
 
-	public List<User> OwnerList(Map<String, String> param);
+	public List<User> OwnerList(Map<String, Object> param);
+
+	public int getOwnerCount(Map<String, String> param);
 }

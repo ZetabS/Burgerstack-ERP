@@ -25,37 +25,37 @@ public class InquiryControllerBO {
 	private InquiryServiceBO inquiryServiceBO;
 	
 	@GetMapping("inquiries")
-    public String InquiryList(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "condition", required = false) String condition,
-            @RequestParam(value = "keyword", required = false) String keyword,
-            HttpSession session, Model model) {
+	public String InquiryList(
+			com.kh.burgerstack.common.pagination.PagingRequest pi,
+			@RequestParam(value = "page", defaultValue = "1") int page,
+			@RequestParam(value = "condition", required = false) String condition,
+			@RequestParam(value = "keyword", required = false) String keyword,
+			HttpSession session, Model model) {
 
 		if (keyword != null) {
-	        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
-	    }		
+			keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+		}		
 		
-        Long storeId = ((LoginUser) session.getAttribute("loginUser")).getStoreId();
-        int limit = 10;
+		Long storeId = ((LoginUser) session.getAttribute("loginUser")).getStoreId();
+		int limit = 10; 
 
-        int totalCount = inquiryServiceBO.getTotalCount(storeId, condition, keyword);
-        int maxPage = (int) Math.ceil((double) totalCount / limit);
-        int startPage = (((page - 1) / 10) * 10) + 1;
-        int endPage = startPage + 9;
-        if(endPage > maxPage) endPage = maxPage;
+		int totalCount = inquiryServiceBO.getTotalCount(storeId, condition, keyword);
 
-        List<Inquiry> inquiryList = inquiryServiceBO.InquiryList(storeId, condition, keyword, page, limit);
+		com.kh.burgerstack.common.pagination.PageInfo pageInfo = pi.toPageInfo(totalCount);
 
-        model.addAttribute("inquiryList", inquiryList);
-        model.addAttribute("maxPage", maxPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("condition", condition);
-        model.addAttribute("keyword", keyword);
+		List<Inquiry> inquiryList = inquiryServiceBO.InquiryList(storeId, condition, keyword, page, limit);
 
-        return "inquiry/inquiryListViewBO";
-    }
+		java.util.Map<String, Object> view = new java.util.HashMap<>();
+		view.put("pageInfo", pageInfo);
+
+		model.addAttribute("inquiryList", inquiryList);
+		model.addAttribute("condition", condition);
+		model.addAttribute("keyword", keyword);
+		model.addAttribute("view", view); 
+
+		return "inquiry/inquiryListViewBO";
+	}
+	
 	
 
 	// 문의사항 등록 페이지

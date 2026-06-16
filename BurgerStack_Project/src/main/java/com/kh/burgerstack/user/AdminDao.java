@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.kh.burgerstack.common.pagination.PagingRequest;
+
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -25,15 +27,22 @@ public class AdminDao {
 		return userMapper.NewOwner(u);
 	}
 
-	public List<User> OwnerList(String status,
-            String keyword) {
+	public List<User> OwnerList(String status, String keyword, PagingRequest pi) {
 
-		Map<String, String> param = new HashMap<>();
-	
-		param.put("status", status);
-		param.put("keyword", keyword);
-	
-		return userMapper.OwnerList(param);
+	    Map<String, Object> param = new HashMap<>();
+
+	    param.put("status", status);
+	    param.put("keyword", keyword);
+
+	    int currentPage = pi.getPage(); 
+	    int size = 10; 
+	    int startRow = (currentPage - 1) * size + 1;
+	    int endRow = currentPage * size;
+
+	    param.put("startRow", startRow);
+	    param.put("endRow", endRow);
+
+	    return userMapper.OwnerList(param);
 	}
 
 	public User OwnerListDetail(String userId) {
@@ -46,6 +55,15 @@ public class AdminDao {
 
 	public int OwnerUpdate(User user) {
 		return userMapper.OwnerUpdate(user);
+	}
+
+	public int getOwnerCount(String status, String keyword) {
+		
+	Map<String, String> param = new HashMap<>();
+	param.put("status", status);
+	param.put("keyword", keyword);
+		
+	return userMapper.getOwnerCount(param);
 	}
 
 

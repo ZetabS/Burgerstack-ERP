@@ -49,34 +49,46 @@
 	</update>
 
 	<select id="OwnerList" parameterType="map" resultType="com.kh.burgerstack.user.User">
-
-		SELECT 'U' || EXTRACT(YEAR FROM CREATED_AT)
-
-		|| LPAD(USER_NO,4,'0') AS DISPLAY_NO
-		, USER_ID
-		, USER_NAME
-		, PHONE
-		, EMAIL
-		, CREATED_AT
-		, STATUS
-		FROM USERS
-		WHERE ROLE = 'OWNER'
-
-		<if test="status != null and status != ''">
-			AND STATUS = #{status}
-		</if>
-
-		<if test="keyword != null and keyword != ''">
-			AND (
-			USER_ID LIKE '%' || #{keyword} || '%'
-			OR USER_NAME LIKE '%' || #{keyword} || '%'
-			)
-		</if>
-
-		ORDER BY CREATED_AT DESC
-
+	    SELECT * FROM (
+	        SELECT ROWNUM RNUM, A.* FROM (
+	            SELECT 'U' || EXTRACT(YEAR FROM CREATED_AT)
+	                   || LPAD(USER_NO,4,'0') AS DISPLAY_NO
+	                 , USER_ID
+	                 , USER_NAME
+	                 , PHONE
+	                 , EMAIL
+	                 , CREATED_AT
+	                 , STATUS
+	            FROM USERS
+	            WHERE ROLE = 'OWNER'
+	
+	            <if test="status != null and status != ''">
+	                AND STATUS = #{status}
+	            </if>
+	
+	            <if test="keyword != null and keyword != ''">
+	                AND (
+	                    USER_ID LIKE '%' || #{keyword} || '%'
+	                    OR USER_NAME LIKE '%' || #{keyword} || '%'
+	                )
+	            </if>
+	
+	            ORDER BY CREATED_AT DESC
+	        ) A
+	    )
+	    WHERE 
+	    <choose>
+	        <when test="startRow != null and endRow != null">
+	            RNUM BETWEEN #{startRow} AND #{endRow}
+	        </when>
+	        <otherwise>
+	            RNUM BETWEEN 1 AND 10
+	        </otherwise>
+	    </choose>
 	</select>
-
+	
+	
+	
 	<select id="OwnerListDetail" parameterType="User">
 		SELECT USER_ID
 		, USER_NAME
@@ -107,5 +119,20 @@
 		SET STATUS = #{status}
 		WHERE USER_ID = #{userId}
 	</update>
+
+	<select id="getOwnerCount" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM USERS
+	    WHERE ROLE = 'OWNER'
+	    <if test="status != null and status != ''">
+	        AND STATUS = #{status}
+	    </if>
+	    <if test="keyword != null and keyword != ''">
+	        AND (
+	            USER_ID LIKE '%' || #{keyword} || '%'
+	            OR USER_NAME LIKE '%' || #{keyword} || '%'
+	        )
+	    </if>
+	</select>
 
 </mapper>

@@ -7,81 +7,37 @@
 <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<%--
-  목록 페이지 패턴 예제입니다.
-
-  이 파일은 실제 업무 화면을 만들 때 복사해서 출발점으로 삼을 수 있도록 상세 주석을 남겨둡니다.
-
-  기본 구조:
-  1. <t:layout>은 기존 애플리케이션 전체 레이아웃입니다. 이 prefix는 기존 루트 태그 디렉터리를 그대로 사용합니다.
-  2. <layout:ListPage>는 디자인 시스템의 목록 페이지 전용 래퍼입니다.
-     - PageHeader를 강제합니다.
-     - toolbar, table, pagination 슬롯을 명시적으로 분리합니다.
-     - 목록 화면에서 카드/헤더/본문 구조를 매번 직접 만들지 않도록 합니다.
-  3. <layout:Toolbar>는 좌측 필터 영역과 우측 검색 영역을 분리합니다.
-  4. <table:Table>은 thead/tbody만 받아 데이터 테이블 정책을 일괄 적용합니다.
-
-  필요한 taglib 지시어:
-  - layout 컴포넌트: <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
-  - common 컴포넌트: <%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
-  - table 컴포넌트: <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
-  - display 컴포넌트: <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
-
-  모델 예시:
-  - view.condition : 검색 조건 DTO. 컨트롤러가 request parameter를 받아 그대로 넣어야 툴바 값이 현재 검색 조건과 동기화됩니다.
-  - view.materialTypes : select option 후보 목록
-  - view.list : 현재 페이지의 행 DTO 목록
-  - view.pageInfo : <t:pagination>에 전달할 PageInfo
---%>
-
 <c:url var="baseUrl" value="/admin/users" />
 
 <t:layout>
   <layout:ListPage title="점주 목록 페이지" description="">
     <jsp:attribute name="actions">
-      <%-- actions 슬롯은 페이지 헤더 오른쪽에 배치됩니다. 초기화, 등록, 다운로드 같은 페이지 단위 액션을 둡니다. --%>
       <a href="${baseUrl}" class="btn btn-secondary">초기화</a>
     </jsp:attribute>
 
     <jsp:attribute name="toolbar">
-      <%--
-        toolbar 슬롯에는 보통 GET 검색 폼을 둡니다.
-
-        폼은 layout:Toolbar 바깥에 둡니다.
-        이렇게 하면 select, checkbox, search input이 모두 같은 querystring으로 제출됩니다.
-      --%>
       <form action="${baseUrl}" method="get">
-        <%-- 검색 조건이 바뀌면 1페이지부터 다시 조회하는 것이 목록 UX의 기본입니다. --%>
         <input type="hidden" name="page" value="1" />
-        <input type="hidden" name="size" value="${view.pageInfo.size}" />
+        <%-- size 파라미터도 컨트롤러와 맞추기 위해 10으로 고정하거나 pageInfo에서 꺼냅니다 --%>
+        <input type="hidden" name="size" value="${empty pageInfo.size ? 10 : pageInfo.size}" />
 
         <layout:Toolbar>
           <jsp:attribute name="left">
-		    <select name="condition" class="form-control mr-2">
-		
-			    <option value="" ${empty param.status ? 'selected' : ''}>
-			        전체상태
-			    </option>
-			
-			    <option value="ACTIVE"
-			        ${param.status eq 'ACTIVE' ? 'selected' : ''}>
-			        영업중
-			    </option>
-			
-			    <option value="INACTIVE"
-			        ${param.status eq 'INACTIVE' ? 'selected' : ''}>
-			        폐점
-			    </option>
-		
-		    </select>
-            
+            <%-- 💡 수정 1: condition -> status 로 이름 변경 --%>
+            <select name="status" class="form-control mr-2">
+                <option value="" ${empty param.status ? 'selected' : ''}>
+                    전체상태
+                </option>
+                <option value="ACTIVE" ${param.status eq 'ACTIVE' ? 'selected' : ''}>
+                    영업중
+                </option>
+                <option value="INACTIVE" ${param.status eq 'INACTIVE' ? 'selected' : ''}>
+                    폐점
+                </option>
+            </select>
           </jsp:attribute>
 
           <jsp:attribute name="right">          
-            <%--
-              right 슬롯은 검색바나 주요 보조 액션을 둡니다.
-              SearchBar는 input-group과 submit 버튼 조합만 표준화합니다.
-            --%>
             <common:SearchBar name="keyword" value="${keyword}" placeholder="검색" />
           </jsp:attribute>
         </layout:Toolbar>
@@ -89,16 +45,12 @@
     </jsp:attribute>
 
     <jsp:attribute name="table">
-      <%--
-        table:Table은 thead와 tbody를 명시적으로 받습니다.
-        isEmpty를 넘기면 tbody 대신 emptyMessage가 표시됩니다.
-      --%>
-      <table:Table isEmpty="${empty ownerList}" emptyMessage="조회된 문의사항이 없습니다.">
+      <table:Table isEmpty="${empty ownerList}" emptyMessage="조회된 점주 계정이 없습니다.">
         <jsp:attribute name="thead">
           <tr>
             <th class="text-center">No</th>
             <th class="text-right">점주 아이디</th>
-            <th class="text-right">점포명</th>
+            <th class="text-right">점포명(이름)</th>
             <th class="text-right">등록일</th>
             <th class="text-center">상태</th>
           </tr>
@@ -107,20 +59,17 @@
         <jsp:attribute name="tbody">
           <c:forEach var="u" items="${ownerList}">
             <c:url var="detailUrl" value="/admin/users/${u.userId}" />
-            <c:url var="formUrl" value="/admin/users/${u.userId}" />
-            <c:set var="u.status" value="${empty u.status ? 'INACTIVE' : 'ACTIVE'}"></c:set>
-
-            <%--
-              TableRow에 clickable과 href를 주면 행 클릭 이동을 위한 data 속성이 붙습니다.
-              버튼 셀과 함께 쓰는 경우에는 행 클릭 정책이 업무 화면과 충돌하지 않는지 확인하세요.
-            --%>
+            
+            <%-- 💡 수정 2: 에러를 유발하는 잘못된 <c:set var="u.status"...> 삭제 --%>
+            
             <table:TableRow clickable="true" href="${detailUrl}">
               <table:TextFitCell value="${u.displayNo}" />
               <table:TextCell value="${u.userId}" />
-              <table:TextCell value="${u.userName}" />
+              <table:TextCell value="${u.userName}" /> <%-- 주의: 현재 점포명 대신 점주 이름이 출력되고 있습니다 --%>
               <table:DateTimeCell value="${u.createdAt}" />
               <table:FitCell align="left">
-              	<display:InquiryStatusBadge value="${u.status}"/>
+                <%-- DB에서 꺼내온 u.status ('ACTIVE'/'INACTIVE')가 그대로 들어갑니다. --%>
+                <display:InquiryStatusBadge value="${u.status}"/>
               </table:FitCell>
             </table:TableRow>
           </c:forEach>
@@ -129,8 +78,8 @@
     </jsp:attribute>
 
     <jsp:attribute name="pagination">
-      <%-- 기존 pagination 태그는 루트 t prefix를 유지합니다. PageInfo만 넘기면 됩니다. --%>
-      <t:pagination pageInfo="${view.pageInfo}" />
+      <%-- 💡 수정 3: 컨트롤러 모델 이름에 맞게 view.pageInfo -> pageInfo 로 변경 --%>
+      <t:pagination pageInfo="${pageInfo}" />
     </jsp:attribute>
   </layout:ListPage>
 </t:layout>
