@@ -98,7 +98,7 @@
         <jsp:attribute name="thead">
           <tr>
             <th class="text-center">No</th>
-            <th class="text-right">제목</th>
+            <th class="text-right">점주 아이디</th>
             <th class="text-right">점포명</th>
             <th class="text-right">등록일</th>
             <th class="text-center">답변상태</th>
