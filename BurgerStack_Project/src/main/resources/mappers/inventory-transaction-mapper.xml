@@ -66,10 +66,7 @@
     <select id="findInventoryTransactionListItems">
         SELECT INVENTORY_TRANSACTION_ID
              , 'T' || EXTRACT(YEAR FROM CREATED_AT) || LPAD(INVENTORY_TRANSACTION_ID, 4, '0') AS INVENTORY_TRANSACTION_CODE
-             , CASE WHEN TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
-                    WHEN TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
-                    WHEN TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
-                END AS TRANSACTION_TYPE
+             , TRANSACTION_TYPE
              , REASON
              , CREATED_AT
              , CREATED_BY
