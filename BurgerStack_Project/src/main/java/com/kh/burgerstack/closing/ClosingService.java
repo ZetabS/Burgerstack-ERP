@@ -1,7 +1,8 @@
 package com.kh.burgerstack.closing;
 
-import com.kh.burgerstack.inventory.service.InventoryService;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.inventory.dto.InventoryChangeItem;
 import com.kh.burgerstack.inventory.dto.InventoryStoreClosingChangeCommand;
+import com.kh.burgerstack.inventory.service.InventoryService;
 import com.kh.burgerstack.user.LoginUser;
 
 @Service
@@ -26,12 +28,15 @@ public class ClosingService {
     public List<StoreClosing> selectOwnerClosingList(Long storeId,
             String startDate,
             String endDate) {
-        return closingDao.selectOwnerClosingList(
-                sqlSession,
-                storeId,
-                startDate,
-                endDate);
-    }
+
+	Map<String, Object> map = new HashMap<>();
+	
+	map.put("storeId", storeId);
+	map.put("startDate", startDate);
+	map.put("endDate", endDate);
+	
+	return closingDao.selectOwnerClosingList(sqlSession, map);
+}
 
     public List<StoreClosing> selectAdminClosingList(Long storeId,
             String startDate,

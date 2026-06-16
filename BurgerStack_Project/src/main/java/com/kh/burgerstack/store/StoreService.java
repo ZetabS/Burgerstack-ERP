@@ -1,5 +1,6 @@
 package com.kh.burgerstack.store;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
-
-import com.kh.burgerstack.store.StoreListRow;
 
 @Service
 public class StoreService {
@@ -101,4 +99,13 @@ public class StoreService {
         return storeDao.countStorePhoneForUpdate(sqlSession, store);
     }
     
+    public int countStoreNameForUpdate(Long storeId, String storeName) {
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("storeId", storeId);
+        map.put("storeName", storeName);
+
+        return storeDao.countStoreNameForUpdate(sqlSession, map);
+    }
 }

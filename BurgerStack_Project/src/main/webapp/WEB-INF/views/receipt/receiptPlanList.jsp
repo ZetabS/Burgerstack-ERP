@@ -69,7 +69,7 @@
                      class="form-control"
                      name="keyword"
                      value="${param.keyword}"
-                     placeholder="발주번호, 품목명 검색" />
+                     placeholder="품목명 검색" />
 
               <div class="input-group-append">
                 <button type="submit" class="btn btn-dark">
@@ -101,7 +101,15 @@
           <jsp:attribute name="tbody">
             <c:forEach var="p" items="${list}">
 
-              <c:url var="receiptCheckUrl" value="/owner/purchases/${p.purchaseOrderId}/receipt" />
+              <%--
+                입고 검수 화면 이동 URL입니다.
+                기존 /owner/purchases/{purchaseId}/receipt 에서
+                /owner/receipts/{purchaseId}/receipt 로 변경했습니다.
+
+                최종 URL 예시:
+                /burgerstack/owner/receipts/9/receipt
+              --%>
+              <c:url var="receiptCheckUrl" value="/owner/receipts/${p.purchaseOrderId}/receipt" />
 
               <table:TableRow>
 

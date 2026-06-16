@@ -8,7 +8,7 @@
 <%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
 
 <c:url var="listUrl" value="/owner/receipts/planned" />
-<c:url var="submitUrl" value="/owner/purchases/${purchaseId}/receipt" />
+<c:url var="submitUrl" value="/owner/receipts/${purchaseId}/receipt" />
 
 <style>
   .receipt-table input[type="number"] {
@@ -120,9 +120,7 @@
 
     <jsp:body>
 
-      <form id="receiptForm"
-            action="${submitUrl}"
-            method="post">
+      <form id="receiptForm" action="${submitUrl}" method="post">
 
         <layout:Section title="입고 기본 정보">
 

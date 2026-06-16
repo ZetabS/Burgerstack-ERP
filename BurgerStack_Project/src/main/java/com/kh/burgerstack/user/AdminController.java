@@ -27,15 +27,19 @@ public class AdminController {
 	@Autowired
 	private AdminService adminService;
 
+	// 관리자 마이페이지
 	@GetMapping("mypage")
 	public String MyPageHO() {
 		return "user/MyPageHO";
 	}
 	
+	// 점주 계정 등록 페이지
 	@GetMapping("users/new")
 	public String New() {
 		return "user/New";
 	}
+
+	// 점주 계정 등록 기능
 	@PostMapping("users")
 	public String NewOwner(User u, Model model, HttpSession session) {
 
@@ -59,6 +63,7 @@ public class AdminController {
 			}
 	}
 	
+	// 관리자 마이페이지 정보 수정
 	@PostMapping("mypage")
 	public ModelAndView update(User u, ModelAndView mv, HttpSession session) {
 		
@@ -72,7 +77,7 @@ public class AdminController {
 
 		if (result > 0) {
 			
-			System.out.println("1");
+			System.out.println("관리자 정보 수정 성공");
 			
 			session.setAttribute("User", u);
 
@@ -81,7 +86,7 @@ public class AdminController {
 			mv.setViewName("redirect:/admin/dashboard");
 
 		} else {
-			System.out.println("2");
+			System.out.println("관리자 정보 수정 실패");
 			mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
 			mv.setViewName("common/mypage");
 		}
@@ -89,18 +94,35 @@ public class AdminController {
 		return mv;
 	}
 
+	// 관리자 비밀번호 변경
 	@PostMapping("updatePassword")
-	public String updatePassword(String currentPwd, String newPwd, String checkedPwd, HttpSession session) {
+	public String updatePassword(String currentPwd,
+	                             String newPwd,
+	                             String checkedPwd,
+	                             HttpSession session) {
 
 		User loginUser = (User)(session.getAttribute("loginUser"));
 
-		if (bCryptPasswordEncoder.matches(currentPwd, loginUser.getPassword())) {
+		/*
+		 * 기존 코드에서는 이 조건이 반대로 되어 있었음.
+		 *
+		 * 기존:
+		 * if (bCryptPasswordEncoder.matches(currentPwd, loginUser.getPassword()))
+		 *
+		 * 의미:
+		 * 현재 비밀번호가 맞으면 "현재 비밀번호와 일치하지 않습니다." 라고 나옴
+		 *
+		 * 수정:
+		 * 현재 비밀번호가 맞지 않을 때만 오류 처리해야 함
+		 */
+		if (!bCryptPasswordEncoder.matches(currentPwd, loginUser.getPassword())) {
 
 			session.setAttribute("alertMsg", "현재 비밀번호와 일치하지 않습니다.");
 
 			return "redirect:/admin/mypage";
 		}
 
+		// 새 비밀번호와 확인 비밀번호가 다른 경우
 		if (!newPwd.equals(checkedPwd)) {
 
 			session.setAttribute("alertMsg", "새 비밀번호와 일치하지 않습니다. 비밀번호 확인을 다시 해주십시오.");
@@ -109,6 +131,7 @@ public class AdminController {
 
 		}
 
+		// 새 비밀번호 암호화
 		String encPwd = bCryptPasswordEncoder.encode(newPwd);
 
 		User u = new User();
@@ -119,6 +142,7 @@ public class AdminController {
 
 		if (result > 0) {
 
+			// 세션에 있는 사용자 비밀번호도 새 암호화 비밀번호로 갱신
 			loginUser.setPassword(encPwd);
 
 			session.setAttribute("loginUser", loginUser);
@@ -134,6 +158,7 @@ public class AdminController {
 		return "redirect:/admin/mypage";
 	}
 
+	// 점주 목록 조회
 	@GetMapping("users")
 	public String OwnerList(
 			// 🚨 1. 페이징을 자동으로 처리해줄 PagingRequest 객체를 맨 앞에 추가합니다.
@@ -169,31 +194,60 @@ public class AdminController {
 
 		return "user/OwnerList";
 	}
+	
 	@GetMapping("users/{userId}")
 	public String OwnerListDetail(@PathVariable String userId, Model model) {
+
 		System.out.println("받은 userId = " + userId);
 		
 		User user = adminService.OwnerListDetail(userId);
 		
 		System.out.println("조회 결과 = " + user);
+
+		/*
+		 * 상세 페이지에서 사용할 사용자 정보
+		 */
 		model.addAttribute("user", user);
+
+		/*
+		 * 상세 JSP에서 URL 만들 때 사용할 수 있도록 userId도 같이 넘겨줌
+		 */
+		model.addAttribute("userId", userId);
 		
 		return "user/OwnerListDetail";
 	}
+
+	// 점주 수정 페이지
 	@GetMapping("users/{userId}/edit")
-	public String OwnerListEdit(
-	        @PathVariable String userId,
-	        Model model) {
+	public String OwnerListEdit(@PathVariable String userId,
+	                            Model model) {
 
 	    User user = adminService.OwnerListDetail(userId);
 
+	    /*
+	     * 수정 화면에 기존 사용자 정보를 출력하기 위해 사용
+	     */
 	    model.addAttribute("user", user);
+
+	    /*
+	     * 수정 form action URL 만들 때 사용할 수 있도록 userId도 같이 넘겨줌
+	     */
+	    model.addAttribute("userId", userId);
 
 	    return "user/OwnerListEdit";
 	}
+
+	// 점주 수정 기능
 	@PostMapping("users/{userId}")
-	public String OwnerUpdate(@PathVariable String userId, User user, HttpSession session) {
+	public String OwnerUpdate(@PathVariable String userId,
+	                          User user,
+	                          HttpSession session) {
 		
+		/*
+		 * URL에서 받은 userId를 User 객체에 세팅
+		 *
+		 * /admin/users/owner01
+		 */
 		user.setUserId(userId);
 		
 		if (user.getUserName() != null) user.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(user.getUserName()));
@@ -212,6 +266,7 @@ public class AdminController {
 	        session.setAttribute("alertMsg", "점주 정보가 수정되었습니다.");
 	        return "redirect:/admin/users/" + userId;
 		}
-		return"common/errorPage";
+
+		return "common/errorPage";
 	}
 }

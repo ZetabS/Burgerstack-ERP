@@ -6,7 +6,6 @@
 <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 
 <c:url var="listUrl" value="/owner/inquiries" />
-<c:url var="submitUrl" value="/owner/inquiries/${inquiryId}" />
 
 <t:layout>
   <layout:Page title="문의사항 작성" description="">

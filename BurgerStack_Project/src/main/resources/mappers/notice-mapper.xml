@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.kh.burgerstack.notice.NoticeMapper">
 
     <!-- 게시글 수 조회 -->
@@ -39,14 +40,39 @@
         <selectKey keyProperty="noticeId" resultType="long" order="BEFORE">
             SELECT SEQ_NOTICE.NEXTVAL FROM DUAL
         </selectKey>
-        INSERT INTO NOTICES(NOTICE_ID, TITLE, CONTENT)
-                     VALUES(#{noticeId}, #{title}, #{content})
+
+        INSERT INTO NOTICES
+        (
+            NOTICE_ID,
+            TITLE,
+            CONTENT
+        )
+        VALUES
+        (
+            #{noticeId},
+            #{title},
+            #{content}
+        )
     </insert>
 
     <!-- 첨부파일 등록 (일반 파일 + Quill 이미지 공용) -->
     <insert id="insertNoticeFile" parameterType="NoticeFile">
-        INSERT INTO NOTICE_FILES(NOTICE_FILE_ID, ORIGINAL_NAME, STORED_NAME, STORAGE_PATH, NOTICE_ID)
-                          VALUES(SEQ_NOTICE_FILE.NEXTVAL, #{originalName}, #{storedName}, #{storagePath}, #{noticeId})
+        INSERT INTO NOTICE_FILES
+        (
+            NOTICE_FILE_ID,
+            ORIGINAL_NAME,
+            STORED_NAME,
+            STORAGE_PATH,
+            NOTICE_ID
+        )
+        VALUES
+        (
+            SEQ_NOTICE_FILE.NEXTVAL,
+            #{originalName},
+            #{storedName},
+            #{storagePath},
+            #{noticeId}
+        )
     </insert>
 
     <!-- 게시글 상세 조회 -->
@@ -72,47 +98,48 @@
            AND NOTICE_ID = #{noticeId}
     </select>
 
-	<!-- 다운로드용 조회 -->
-	<select id="selectNoticeFile" resultType="NoticeFile">
-	    SELECT NOTICE_FILE_ID AS noticeFileId
-	         , ORIGINAL_NAME  AS originalName
-	         , STORED_NAME    AS storedName
-	         , STORAGE_PATH   AS storagePath
-	         , NOTICE_ID      AS noticeId
-	      FROM NOTICE_FILES
-	     WHERE DELETED_AT IS NULL
-	       AND NOTICE_FILE_ID = #{noticeFileId}
-	</select>
-	
-	<!-- 게시글 수정 -->
-	<update id="updateNotice" parameterType="Notice">
-	    UPDATE NOTICES
-	       SET TITLE   = #{title}
-	         , CONTENT = #{content}
-	     WHERE NOTICE_ID = #{noticeId}
-	</update>
-	
-	<!-- 파일 단건 soft delete (수정 시 X버튼으로 삭제) -->
-	<update id="deleteNoticeFile">
-	    UPDATE NOTICE_FILES
-	       SET DELETED_AT = SYSDATE
-	     WHERE NOTICE_FILE_ID = #{noticeFileId}
-	</update>
-	
-	<!-- 게시글 삭제 -->
-	<update id="deleteNotice">
-		UPDATE NOTICES
-		   SET DELETED_AT = SYSDATE
-		 WHERE DELETED_AT IS NULL
-		   AND NOTICE_ID = #{noticeId}
-	</update>
-	
-	<!-- 글 삭제 시 연관 파일 전체 soft delete -->
-	<update id="deleteNoticeFilesByNoticeId">
-	    UPDATE NOTICE_FILES
-	       SET DELETED_AT = SYSDATE
-	     WHERE DELETED_AT IS NULL
-	       AND NOTICE_ID = #{noticeId}
-	</update>
-	
+    <!-- 다운로드용 조회 -->
+    <select id="selectNoticeFile" resultType="NoticeFile">
+        SELECT NOTICE_FILE_ID AS noticeFileId
+             , ORIGINAL_NAME  AS originalName
+             , STORED_NAME    AS storedName
+             , STORAGE_PATH   AS storagePath
+             , NOTICE_ID      AS noticeId
+          FROM NOTICE_FILES
+         WHERE DELETED_AT IS NULL
+           AND NOTICE_FILE_ID = #{noticeFileId}
+    </select>
+
+    <!-- 게시글 수정 -->
+    <update id="updateNotice" parameterType="Notice">
+        UPDATE NOTICES
+           SET TITLE   = #{title}
+             , CONTENT = #{content}
+         WHERE NOTICE_ID = #{noticeId}
+    </update>
+
+    <!-- 파일 단건 soft delete (수정 시 X버튼으로 삭제) -->
+    <update id="deleteNoticeFile">
+        UPDATE NOTICE_FILES
+           SET DELETED_AT = SYSDATE
+         WHERE DELETED_AT IS NULL
+           AND NOTICE_FILE_ID = #{noticeFileId}
+    </update>
+
+    <!-- 글 삭제 시 연관 파일 전체 soft delete -->
+    <update id="deleteNoticeFilesByNoticeId">
+        UPDATE NOTICE_FILES
+           SET DELETED_AT = SYSDATE
+         WHERE DELETED_AT IS NULL
+           AND NOTICE_ID = #{noticeId}
+    </update>
+
+    <!-- 게시글 soft delete -->
+    <update id="deleteNotice">
+        UPDATE NOTICES
+           SET DELETED_AT = SYSDATE
+         WHERE DELETED_AT IS NULL
+           AND NOTICE_ID = #{noticeId}
+    </update>
+
 </mapper>

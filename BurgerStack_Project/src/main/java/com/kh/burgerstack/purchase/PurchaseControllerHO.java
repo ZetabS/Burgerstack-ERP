@@ -83,7 +83,7 @@ public class PurchaseControllerHO {
         if (requestURI.contains("/pending")) {
             return "purchase/purchaseApprovalList"; // 승인 대기 발주 페이지
         }
-
+ 
         return "purchase/purchaseListViewHO"; // 기존 발주 이력 목록 페이지
     }
 

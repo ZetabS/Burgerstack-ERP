@@ -30,7 +30,7 @@
 <c:url var="submitUrl" value="/admin/users/${user.userId}" />
 
 <t:layout>
-  <layout:Page title="문의사항 작성" description="">
+  <layout:Page title="점주 등록" description="">
   
 	<jsp:attribute name="actions">
 	  <button type="button" class="btn btn-outline-secondary" onclick="resetPassword()">비밀번호 재설정</button>

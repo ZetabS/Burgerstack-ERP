@@ -1,12 +1,9 @@
 package com.kh.burgerstack.inquiry;
 
-import java.io.File;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,14 +13,15 @@ public class InquiryServiceHO {
 
 	private final InquiryDaoHO inquiryDaoHO;
 
-	public List<Inquiry> InquiryList(String condition, String keyword, int page, int limit) {
+	public List<Inquiry> InquiryList(String condition, String keyword, String answerStatus, int page, int limit) {
         int offset = (page - 1) * limit;
         RowBounds rowBounds = new RowBounds(offset, limit);
-        return inquiryDaoHO.InquiryList(condition, keyword, rowBounds);
+
+        return inquiryDaoHO.InquiryList(condition, keyword, answerStatus, rowBounds);
     }
 
-    public int getTotalCount(String condition, String keyword) {
-        return inquiryDaoHO.getTotalCount(condition, keyword);
+    public int getTotalCount(String condition, String keyword, String answerStatus) {
+        return inquiryDaoHO.getTotalCount(condition, keyword, answerStatus);
     }
 
 	public Inquiry InquiryListDetail(long inquiryId) {

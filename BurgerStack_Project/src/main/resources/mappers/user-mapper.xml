@@ -1,51 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.kh.burgerstack.user.UserMapper">
+
+	<!--
+		User 조회 결과를 User 객체에 매핑하기 위한 resultMap입니다.
+
+		이걸 쓰는 이유:
+		DB 컬럼명은 USER_ID, USER_NAME처럼 언더스코어 형식이고,
+		Java 필드는 userId, userName처럼 카멜케이스이기 때문입니다.
+
+		특히 JSP에서 이런 식으로 사용하므로 정확히 매핑해주는 것이 안전합니다.
+
+		${u.displayNo}
+		${u.userId}
+		${u.userName}
+		${u.status}
+	-->
+	<resultMap id="userResultMap" type="User">
+		<id property="userNo" column="USER_NO" />
+
+		<result property="displayNo" column="DISPLAY_NO" />
+		<result property="userId" column="USER_ID" />
+		<result property="password" column="PASSWORD" />
+		<result property="userName" column="USER_NAME" />
+		<result property="phone" column="PHONE" />
+		<result property="email" column="EMAIL" />
+		<result property="role" column="ROLE" />
+		<result property="status" column="STATUS" />
+		<result property="createdAt" column="CREATED_AT" />
+	</resultMap>
+
+
+	<!-- 로그인 -->
 	<select id="login" parameterType="String" resultType="LoginUser">
-		SELECT U.USER_NO,
-		U.USER_ID,
-		U.PASSWORD,
-		U.USER_NAME,
-		U.PHONE,
-		U.EMAIL,
-		U.ROLE,
-		S.STORE_ID,
-		S.STORE_NAME
+
+		SELECT
+			  U.USER_NO
+			, U.USER_ID
+			, U.PASSWORD
+			, U.USER_NAME
+			, U.PHONE
+			, U.EMAIL
+			, U.ROLE
+			, S.STORE_ID
+			, S.STORE_NAME
 		FROM USERS U
 		LEFT JOIN STORES S
-		ON S.OWNER_USER_NO = U.USER_NO
+		  ON S.OWNER_USER_NO = U.USER_NO
 		WHERE U.USER_ID = #{userId}
-		AND U.STATUS = 'ACTIVE'
+		  AND U.STATUS = 'ACTIVE'
+
 	</select>
 
+
+	<!-- 점주 계정 등록 -->
 	<insert id="NewOwner" parameterType="User">
-		INSERT INTO USERS(USER_NO
-		, USER_ID
-		, PASSWORD
-		, USER_NAME
-		, PHONE
-		, EMAIL
+
+		<!--
+			점주 계정 등록 시 ROLE과 STATUS도 명확히 넣어줍니다.
+
+			ROLE = 'OWNER'
+			STATUS = 'ACTIVE'
+
+			이렇게 해야 점주 목록 조회에서
+			WHERE ROLE = 'OWNER'
+			조건에 걸려서 정상 조회됩니다.
+		-->
+		INSERT INTO USERS (
+			  USER_NO
+			, USER_ID
+			, PASSWORD
+			, USER_NAME
+			, PHONE
+			, EMAIL
+			, ROLE
+			, STATUS
 		)
-		VALUES(SEQ_USER.NEXTVAL
-		, #{userId}
-		, #{password}
-		, #{userName}
-		, #{phone}
-		, #{email}
+		VALUES (
+			  SEQ_USER.NEXTVAL
+			, #{userId}
+			, #{password}
+			, #{userName}
+			, #{phone}
+			, #{email}
+			, 'OWNER'
+			, 'ACTIVE'
 		)
+
 	</insert>
 
+
+	<!-- 관리자 마이페이지 정보 수정 -->
 	<update id="update" parameterType="User">
+
 		UPDATE USERS
 		SET PHONE = #{phone}
-		, EMAIL = #{email}
+		  , EMAIL = #{email}
 		WHERE USER_NO = #{userNo}
+
 	</update>
 
+
+	<!-- 관리자 비밀번호 변경 -->
 	<update id="updatePassword" parameterType="User">
+
 		UPDATE USERS
 		SET PASSWORD = #{password}
 		WHERE USER_NO = #{userNo}
+
 	</update>
 
 	<select id="OwnerList" parameterType="map" resultType="com.kh.burgerstack.user.User">
@@ -57,6 +120,8 @@
 	                 , USER_NAME
 	                 , PHONE
 	                 , EMAIL
+					, ROLE
+					, STATUS
 	                 , CREATED_AT
 	                 , STATUS
 	            FROM USERS
@@ -86,38 +151,53 @@
 	        </otherwise>
 	    </choose>
 	</select>
-	
-	
-	
+
 	<select id="OwnerListDetail" parameterType="User">
-		SELECT USER_ID
+		SELECT 
+		  USER_NO
+		, USER_ID
 		, USER_NAME
 		, PHONE
 		, EMAIL
+		, ROLE
+		, STATUS
 		, CREATED_AT
 		, STATUS
 		FROM USERS
 		WHERE USER_ID = #{userId}
-	</select>
-	<update id="OwnerUpdate" parameterType="User">
-		UPDATE USERS
-		SET USER_ID = #{userId}
-		, USER_NAME = #{userName}
-		, PHONE = #{phone}
-		, EMAIL = #{email}
-		, STATUS = #{status}
 
+	</select>
+
+
+	<!-- 점주 정보 수정 -->
+	<update id="OwnerUpdate" parameterType="User">
+
+		UPDATE USERS
+		SET USER_NAME = #{userName}
+		  , PHONE = #{phone}
+		  , EMAIL = #{email}
+		  , STATUS = #{status}
+
+		<!--
+			비밀번호를 새로 입력한 경우에만 비밀번호 수정
+			Controller에서 비밀번호가 비어 있으면 null로 넘기고 있음
+		-->
 		<if test="password != null">
-			, PASSWORD = #{password}
+		  , PASSWORD = #{password}
 		</if>
 
 		WHERE USER_ID = #{userId}
+
 	</update>
 
+
+	<!-- 점주 상태 변경 -->
 	<update id="OwnerStatus" parameterType="User">
+
 		UPDATE USERS
 		SET STATUS = #{status}
 		WHERE USER_ID = #{userId}
+
 	</update>
 
 	<select id="getOwnerCount" parameterType="map" resultType="int">

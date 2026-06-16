@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.user.LoginUser;
@@ -24,12 +23,14 @@ public class InquiryControllerBO {
 	@Autowired
 	private InquiryServiceBO inquiryServiceBO;
 	
+	// 점주 문의사항 목록 조회 페이지
 	@GetMapping("inquiries")
 	public String InquiryList(
 			com.kh.burgerstack.common.pagination.PagingRequest pi,
 			@RequestParam(value = "page", defaultValue = "1") int page,
 			@RequestParam(value = "condition", required = false) String condition,
 			@RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "answerStatus", required = false) String answerStatus,
 			HttpSession session, Model model) {
 
 		if (keyword != null) {
@@ -39,11 +40,11 @@ public class InquiryControllerBO {
 		Long storeId = ((LoginUser) session.getAttribute("loginUser")).getStoreId();
 		int limit = 10; 
 
-		int totalCount = inquiryServiceBO.getTotalCount(storeId, condition, keyword);
+        int totalCount = inquiryServiceBO.getTotalCount(storeId, condition, keyword, answerStatus);
 
 		com.kh.burgerstack.common.pagination.PageInfo pageInfo = pi.toPageInfo(totalCount);
 
-		List<Inquiry> inquiryList = inquiryServiceBO.InquiryList(storeId, condition, keyword, page, limit);
+        List<Inquiry> inquiryList = inquiryServiceBO.InquiryList(storeId, condition, keyword, answerStatus, page, limit);
 
 		java.util.Map<String, Object> view = new java.util.HashMap<>();
 		view.put("pageInfo", pageInfo);
@@ -51,6 +52,7 @@ public class InquiryControllerBO {
 		model.addAttribute("inquiryList", inquiryList);
 		model.addAttribute("condition", condition);
 		model.addAttribute("keyword", keyword);
+        model.addAttribute("answerStatus", answerStatus);
 		model.addAttribute("view", view); 
 
 		return "inquiry/inquiryListViewBO";
@@ -102,26 +104,35 @@ public class InquiryControllerBO {
 	// 문의사항 상세 조회 페이지
 	@GetMapping("inquiries/{inquiryId}")
 	public String InquiryListDetail(@PathVariable long inquiryId, Model model) {
+
 		System.out.println("받은 Id = " + inquiryId);
 		
 		Inquiry i = inquiryServiceBO.InquiryListDetail(inquiryId);
 		
 		System.out.println("조회 결과 = " + inquiryId);
 		
-		model.addAttribute("inquiry",i);
+		model.addAttribute("inquiry", i);
+
+        // 상세 페이지에서 수정 버튼 URL 만들 때 사용
+        model.addAttribute("inquiryId", inquiryId);
 		
 		return "inquiry/inquiryListDetailBO";
 	}
-	//문의사항 수정 페이지
+
+	// 문의사항 수정 페이지
 	@GetMapping("inquiries/{inquiryId}/edit")
 	public String InquiryListEdit(@PathVariable long inquiryId, Model model) {
 		
 		Inquiry i = inquiryServiceBO.InquiryListDetail(inquiryId);
 		
-		model.addAttribute("inquiry",i);
+		model.addAttribute("inquiry", i);
+
+        // 수정 페이지 form action, deleteUrl 만들 때 사용
+        model.addAttribute("inquiryId", inquiryId);
 		
-		return"inquiry/inquiryEditBO";
+		return "inquiry/inquiryEditBO";
 	}
+
 	// 문의사항 수정 기능
 		@PostMapping("inquiries/{inquiryId}")
 		public ModelAndView InquiryEdit(Inquiry i, ModelAndView mv, HttpSession session) {
@@ -182,7 +193,10 @@ public class InquiryControllerBO {
 		}
 		
 	@PostMapping("inquiries/{inquiryId}/delete")
-	public String inquiryDelete(@PathVariable long inquiryId, Inquiry i, Model model, HttpSession session) {
+	public String inquiryDelete(@PathVariable long inquiryId,
+	                            Inquiry i,
+	                            Model model,
+	                            HttpSession session) {
 		
 		int result = inquiryServiceBO.InquiryDelete(inquiryId);
 		
@@ -190,7 +204,7 @@ public class InquiryControllerBO {
 			session.setAttribute("alertMsg", "성공적으로 삭제되었습니다.");
 			return "redirect:/owner/inquiries";
 			
-		}else {
+		} else {
 			model.addAttribute("errorMsg", "실패하였습니다.");
 			return "common/errorPage";
 			

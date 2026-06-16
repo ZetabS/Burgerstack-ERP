@@ -9,19 +9,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class ClosingDao {
-    public List<StoreClosing> selectOwnerClosingList(SqlSession sqlSession,
-            Long storeId,
-            String startDate,
-            String endDate) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("storeId", storeId);
-        map.put("startDate", startDate);
-        map.put("endDate", endDate);
+	public List<StoreClosing> selectOwnerClosingList(SqlSession sqlSession,
+            Map<String, Object> map) {
 
-        return sqlSession.selectList(
-                "closingMapper.selectOwnerClosingList",
-                map);
-    }
+		return sqlSession.selectList(
+		"closingMapper.selectOwnerClosingList",
+		map
+	);
+}
 
     public List<StoreClosing> selectAdminClosingList(SqlSession sqlSession,
             Long storeId,

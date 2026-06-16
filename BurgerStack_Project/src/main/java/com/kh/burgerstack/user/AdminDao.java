@@ -16,13 +16,17 @@ public class AdminDao {
 
 	private final UserMapper userMapper;
 	
+	// 관리자 마이페이지 정보 수정
 	public int update(User u) {
 		return userMapper.update(u);
 	}
 
+	// 관리자 비밀번호 변경
 	public int updatePassword(User u) {
 		return userMapper.updatePassword(u);
 	}
+
+	// 점주 계정 등록
 	public int NewOwner(User u) {
 		return userMapper.NewOwner(u);
 	}
@@ -45,14 +49,17 @@ public class AdminDao {
 	    return userMapper.OwnerList(param);
 	}
 
+	// 점주 상세 조회
 	public User OwnerListDetail(String userId) {
 		return userMapper.OwnerListDetail(userId);
 	}
 
+	// 점주 상태 변경
 	public int OwnerStatus(User u) {
 		return userMapper.OwnerStatus(u);
 	}
 
+	// 점주 정보 수정
 	public int OwnerUpdate(User user) {
 		return userMapper.OwnerUpdate(user);
 	}
