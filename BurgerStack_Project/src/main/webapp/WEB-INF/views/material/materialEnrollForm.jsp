@@ -1,14 +1,10 @@
+// materialEnrollForm.jsp
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>${empty title ? 'BurgerStack ERP' : title}</title>
-<!-- CSS -->
+
 <style>
     .outer {
         border : 1px solid lightgray;
@@ -35,8 +31,6 @@
         padding : 2px 0px 2px 0px;
     }
 </style>
-</head>
-<body> 
     <t:layout>
         <div class="outer">
             <br>
@@ -62,7 +56,7 @@
 
                 <div id="img-area" align="center">
                     <div id="imagePreviewContainer" onclick="document.getElementById('fileInput').click();" 
-                        style="width: 300px; height: 300px; border: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin: 0 auto 20px; position: relative; background-color: #fff;">
+                        style="width: 250px; height: 250px; border: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin: 0 auto 20px; position: relative; background-color: #fff;">
                         
                         <!-- 등록된 사진 없을 때(수정/신규) -->
                         <span id="uploadText" style="color: #888; text-align: center; ${not empty material.materialFiles ? 'display: none;' : 'display: block;'}">
@@ -98,69 +92,99 @@
                             <th>유형</th>
                             <td>
                                 <select id="materialType" name="materialType">
+                                    <option value="AF" ${material.materialType == 'AF' ? 'selected' : ''}>상온식품</option>
                                     <option value="RF" ${material.materialType == 'RF' ? 'selected' : ''}>냉장식품</option>
                                     <option value="FF" ${material.materialType == 'FF' ? 'selected' : ''}>냉동식품</option>
-                                    <option value="AF" ${material.materialType == 'AF' ? 'selected' : ''}>상온식품</option>
                                     <option value="PK" ${material.materialType == 'PK' ? 'selected' : ''}>포장재</option>
                                     <option value="KW" ${material.materialType == 'KW' ? 'selected' : ''}>주방용품</option>
                                     <option value="ET" ${material.materialType == 'ET' ? 'selected' : ''}>기타</option>
-                                    <option value="NULL" ${empty material ? 'selected' : ''}>----------- 유형 선택 -----------</option>
+                                    <option value="NULL" disabled hidden ${empty material ? 'selected' : ''}>----------- 유형 선택 -----------</option>
                                 </select>
                             </td>
                         </tr>
                         <tr>
                             <th>공급가</th>
                             <td>
-                                <input type="text" name="supplyPrice" value="${material.supplyPrice}" required>
+                                <input type="text" name="supplyPrice"
+                                       value="${not empty material.supplyPrice ? material.supplyPrice : '0'}"
+                                       pattern="^[0-9]+$"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                                       required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>상태</th>
+                            <td>
+                                <select id="status" name="status">
+                                    <option value="ACTIVE" ${material.status eq 'ACTIVE' || empty material ? 'selected' : ''}>판매중</option>
+                                    <option value="INACTIVE" ${material.status eq 'INACTIVE' ? 'selected' : ''}>판매 중단</option>
+                                </select>
                             </td>
                         </tr>
                         <tr>
                             <th>상세정보</th>
                             <td>
-                                <textarea id="material-detail" name="details" required>${material.details}</textarea>
+                                <div class="material-info-p">
+                                <textarea name="details" id="material-detail">${material.details}</textarea>
+                            </div>
                             </td>
                         </tr>
                     </table>
                 </div> <!-- 양식 -->
 
-                <br>
-                
                 <div align="center">
-                    <c:choose>
-                        <c:when test="${not empty material}">
-                            <!-- 수정 상태일 때는 원래대로 돌리는 '초기화'와 '취소' 둘 다 제공 -->
-                            <button class="button-secondary" type="reset">되돌리기</button>
-                            <button class="button-danger" type="button" onclick="history.back();">취소하기</button>
-                        </c:when>
-                        <c:otherwise>
-                            <!-- 신규 등록일 때는 '초기화'만 제공 -->
-                            <button class="button-danger" type="reset">초기화</button>
-                        </c:otherwise>
-                    </c:choose>
+                    <button class="button-secondary" type="button" onclick="location.href='${pageContext.request.contextPath}/admin/materials'">
+                        목록으로
+                    </button>
+                    <button class="button-danger" type="reset">
+                        초기화
+                    </button>
                     <button class="button-primary" type="submit">
-                        ${not empty material ? '수정완료' : '등록하기'}
+                        ${not empty material ? "수정완료" : "등록하기"}
                     </button>
                 </div>
                 <br>
             </form>
         </div>
-    </t:layout>
-    <script>
-        function previewImage(input) {
-            const file = input.files[0];
-            if (!file) return;
+        <script>
+            // 이미지 프리뷰
+            function previewImage(input) {
+                const file = input.files[0];
+                if (!file) return;
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.getElementById("imagePreview");
-                const uploadText = document.getElementById("uploadText");
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById("imagePreview");
+                    const uploadText = document.getElementById("uploadText");
 
-                preview.src = e.target.result;
-                preview.style.display = "block";
-                uploadText.style.display = "none";
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                    uploadText.style.display = "none";
+                };
+                reader.readAsDataURL(file);
+            }
+            // textarea : 유형 선택에 따른 양식 출력
+            // 각 유형별 양식 정의 (객체로 관리)
+            const templates = {
+                'AF': '중량 : \n원재료명 : ',
+                'RF': '중량 : \n원재료명 : ',
+                'FF': '중량 : \n원재료명 : ',
+                'PK': '재질 : \n사이즈 : 가로 × 세로 × 높이 (mm)',
+                'KW': '브랜드 : \n상품명 : ',
+                'ET': ''
             };
-            reader.readAsDataURL(file);
-        }
-    </script>    
-</body>
-</html>
+
+            // 유형 선택 시 실행
+            document.getElementById('materialType').addEventListener('change', function() {
+                const textarea = document.getElementById('material-detail');
+                const selectedType = this.value;
+                
+                // 내용이 비어있거나 기존 양식인 경우에만 덮어쓰기 (사용자 입력 보호)
+                if (textarea.value.trim() === '' || Object.values(templates).includes(textarea.value)) {
+                    textarea.value = templates[selectedType] || '';
+                }
+            });
+
+        </script>
+    </t:layout>
+

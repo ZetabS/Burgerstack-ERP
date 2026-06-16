@@ -14,16 +14,20 @@ public class MaterialDao {
     public int materialInsert(Material m) {
         return materialMapper.insert(m);
     }
+    
+    public int insertInventoryStores(Long materialId) {
+		return materialMapper.insertInventoryStores(materialId);
+	}
 
     public int materialFileInsert(MaterialFile materialFile) {
         return materialMapper.materialFileInsert(materialFile);
     }
 
-    public ArrayList<Material> selectMaterialList() {
-        return materialMapper.selectMaterialList();
+    public ArrayList<Material> selectMaterialList(String materialType, String keyword) {
+        return materialMapper.selectMaterialList(materialType, keyword);
     }
 
-    public Material materialDetail(Long materialId) {
+    public String materialDetail(Long materialId) {
         return materialMapper.materialDetail(materialId);
     }
 
@@ -38,4 +42,6 @@ public class MaterialDao {
     public int deleteMaterial(Long materialId) {
         return materialMapper.deleteMaterial(materialId);
     }
+
+	
 }
