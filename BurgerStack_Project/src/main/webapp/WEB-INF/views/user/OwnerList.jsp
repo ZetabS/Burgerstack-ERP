@@ -57,9 +57,9 @@
         <jsp:attribute name="thead">
           <tr>
             <th class="text-center">No</th>
-            <th class="text-right">점주 아이디</th>
-            <th class="text-right">점포명(이름)</th>
-            <th class="text-right">등록일</th>
+            <th class="text-center">점주 아이디</th>
+            <th class="text-center">이름</th>
+            <th class="text-center">등록일</th>
             <th class="text-center">상태</th>
           </tr>
         </jsp:attribute>
@@ -81,7 +81,6 @@
             --%>
             <c:url var="detailUrl" value="/admin/users/${u.userId}" />
             
-            <%-- 💡 수정 2: 에러를 유발하는 잘못된 <c:set var="u.status"...> 삭제 --%>
             
             <table:TableRow clickable="true" href="${detailUrl}">
 
@@ -95,7 +94,7 @@
                 점주 아이디입니다.
               --%>
               <table:TextCell value="${u.userId}" />
-              <table:TextCell value="${u.userName}" /> <%-- 주의: 현재 점포명 대신 점주 이름이 출력되고 있습니다 --%>
+              <table:TextCell value="${u.userName}" />
               <table:DateTimeCell value="${u.createdAt}" />
               <table:FitCell align="left">
                 <%-- DB에서 꺼내온 u.status ('ACTIVE'/'INACTIVE')가 그대로 들어갑니다. --%>
@@ -109,7 +108,7 @@
     </jsp:attribute>
 
     <jsp:attribute name="pagination">
-      <%-- 💡 수정 3: 컨트롤러 모델 이름에 맞게 view.pageInfo -> pageInfo 로 변경 --%>
+    
       <t:pagination pageInfo="${pageInfo}" />
     </jsp:attribute>
 

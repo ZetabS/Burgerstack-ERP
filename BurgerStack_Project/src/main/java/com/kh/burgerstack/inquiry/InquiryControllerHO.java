@@ -108,7 +108,7 @@ public class InquiryControllerHO {
 	    // 1. 내용 글자 수 검증
 	    if (i.getAnswerContent() != null && i.getAnswerContent().length() > 1000) {
 	        session.setAttribute("alertMsg", "내용은 최대 1000자까지 입력 가능합니다.");
-	        mv.setViewName("redirect:/owner/inquiries");
+	        mv.setViewName("redirect:/admin/inquiries");
 	        return mv;
 	    }
 

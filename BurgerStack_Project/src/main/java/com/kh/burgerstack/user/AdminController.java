@@ -161,7 +161,7 @@ public class AdminController {
 	// 점주 목록 조회
 	@GetMapping("users")
 	public String OwnerList(
-			// 🚨 1. 페이징을 자동으로 처리해줄 PagingRequest 객체를 맨 앞에 추가합니다.
+			
 			com.kh.burgerstack.common.pagination.PagingRequest pi,
 			@RequestParam(value = "page", defaultValue = "1") int page, // 현재 페이지 번호 안전장치
 			String status,
@@ -175,22 +175,17 @@ public class AdminController {
 		System.out.println("status = " + status);
 		System.out.println("keyword = " + keyword);
 
-		// 🚨 2. [필수 추가] 페이징 계산을 위해 먼저 검색 조건에 맞는 '전체 점주 수'를 조회해야 합니다.
-		// (만약 adminService에 이 메서드가 없다면 뒤이어 나오는 '💡 서비스/매퍼 체크'를 확인해 주세요!)
 		int totalCount = adminService.getOwnerCount(status, keyword); 
 
-		// 🚨 3. 프로젝트 공통 규격으로 PageInfo 객체 생성
 		com.kh.burgerstack.common.pagination.PageInfo pageInfo = pi.toPageInfo(totalCount);
 
-		// 🚨 4. 목록 조회 시 페이징 정보(pi 또는 page, limit)를 서비스단으로 넘겨주어야 합니다.
-		// (보통 프로젝트 구조상 pi를 통째로 넘기거나, page와 limit을 따로 넘깁니다. 여기서는 pi를 넘기는 규격으로 작성했습니다.)
 		List<User> ownerList = adminService.OwnerList(status, keyword, pi);
 		
 		// 5. 화면(JSP)으로 데이터 수송
 		model.addAttribute("keyword", keyword);
 		model.addAttribute("status", status);
 		model.addAttribute("ownerList", ownerList);
-		model.addAttribute("pageInfo", pageInfo); // ✨ <t:pagination pageInfo="${pageInfo}" /> 가 정상 작동합니다.
+		model.addAttribute("pageInfo", pageInfo); 
 
 		return "user/OwnerList";
 	}

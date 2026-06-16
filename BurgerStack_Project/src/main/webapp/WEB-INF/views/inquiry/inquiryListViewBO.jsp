@@ -147,8 +147,8 @@
         <jsp:attribute name="thead">
           <tr>
             <th class="text-center">No</th>
-            <th class="text-right">제목</th>
-            <th class="text-right">등록일</th>
+            <th class="text-center">제목</th>
+            <th class="text-center">등록일</th>
             <th class="text-center">답변상태</th>
           </tr>
         </jsp:attribute>
