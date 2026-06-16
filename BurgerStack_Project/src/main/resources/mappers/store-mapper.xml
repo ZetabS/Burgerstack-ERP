@@ -31,7 +31,6 @@
 	    INSERT INTO STORES
 	    (
 	        STORE_ID,
-	        STORE_CODE,
 	        STORE_NAME,
 	        PHONE,
 	        ADDRESS,
@@ -42,7 +41,6 @@
 	    VALUES
 	    (
 	        #{storeId},
-	        'S' || TO_CHAR(SYSDATE, 'YYYY') || LPAD(TO_CHAR(#{storeId}), 4, '0'),
 	        #{storeName},
 	        #{phone},
 	        #{address},
