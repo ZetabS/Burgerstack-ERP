@@ -41,8 +41,15 @@ public class AdminController {
 
 	// 점주 계정 등록 기능
 	@PostMapping("users")
-	public String NewOwner(User u, Model model, HttpSession session) {
+	public String NewOwner(User u, String passwordCheck, Model model, HttpSession session) { // passwordCheck 추가
 
+	    // 1. 비밀번호 일치 확인 (서버단 검증)
+	    if (!u.getPassword().equals(passwordCheck)) {
+	        model.addAttribute("errorMsg", "비밀번호가 일치하지 않습니다.");
+	        return "user/New"; // 다시 등록 페이지로 이동
+	    }
+
+	    // 보안처리 및 암호화
 	    if (u.getUserName() != null) u.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(u.getUserName()));
 	    if (u.getEmail() != null) u.setEmail(org.springframework.web.util.HtmlUtils.htmlEscape(u.getEmail()));
 	    if (u.getPhone() != null) u.setPhone(org.springframework.web.util.HtmlUtils.htmlEscape(u.getPhone()));
@@ -51,18 +58,15 @@ public class AdminController {
 	    u.setPassword(encPwd);
 
 	    int result = adminService.NewOwner(u);
-			
-			if(result > 0) {
-			    session.setAttribute("alertMsg", "계정이 등록되었습니다.");
-			    
-			    return "redirect:/admin/dashboard";
-			} else {
-				model.addAttribute("errorMsg", "계정 등록에 실패했습니다");
-				return "common/errorPage";
-				
-			}
+	        
+	    if(result > 0) {
+	        session.setAttribute("alertMsg", "계정이 등록되었습니다.");
+	        return "redirect:/admin/dashboard";
+	    } else {
+	        model.addAttribute("errorMsg", "계정 등록에 실패했습니다");
+	        return "common/errorPage";
+	    }
 	}
-	
 	// 관리자 마이페이지 정보 수정
 	@PostMapping("mypage")
 	public ModelAndView update(User u, ModelAndView mv, HttpSession session) {

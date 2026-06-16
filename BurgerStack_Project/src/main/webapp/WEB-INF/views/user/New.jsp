@@ -49,6 +49,11 @@
           <layout:FieldRow label="비밀번호" inputId="safetyQuantity" help="비밀번호를 입력하시오.">
             <input type="password" class="password" id="password" name="password" required />
           </layout:FieldRow>
+          
+		  <layout:FieldRow label="비밀번호 확인" inputId="passwordCheck" help="비밀번호를 다시 한번 입력하시오.">
+			<input type="password" class="password" id="passwordCheck" name="passwordCheck" required />
+			<span id="pwdMsg" style="color:red; font-size: 0.9em; display:block;"></span>
+		  </layout:FieldRow>
 
           <layout:FieldRow label="이름" inputId="safetyQuantity" help="이름을 입력하시오.">
             <input type="text" class="userName" id="userName" name="userName"  />
@@ -71,4 +76,19 @@
       </form>
     </jsp:body>
   </layout:Page>
+  
+	<script>
+	$(document).ready(function() {
+	    $("#passwordCheck").on("keyup", function() {
+	        let pwd = $("#password").val();
+	        let pwdCheck = $(this).val();
+	        
+	        if (pwd !== pwdCheck) {
+	            $("#pwdMsg").text("비밀번호가 일치하지 않습니다.");
+	        } else {
+	            $("#pwdMsg").text("비밀번호가 일치합니다.").css("color", "green");
+	        }
+	      });
+	  });
+	</script>
 </t:layout>
