@@ -31,16 +31,11 @@
         </selectKey>
     
         INSERT INTO MATERIALS(MATERIAL_ID
-                            , MATERIAL_CODE
                             , MATERIAL_NAME
                             , MATERIAL_TYPE
                             , SUPPLY_PRICE
                             , DETAILS)
                        VALUES(#{materialId}
-                            , <choose>
-                                <when test="materialType != null and materialType != '' and materialType != 'NULL' and materialType != 'null'">#{materialType}</when>
-                                <otherwise>'ET'</otherwise>
-                              </choose> || '-' || LPAD(#{materialId}, 3, '0')
                             , #{materialName}
                             , <choose>
                                 <when test="materialType != null and materialType != '' and materialType != 'NULL' and materialType != 'null'">#{materialType}</when>
@@ -85,7 +80,7 @@
     <!-- 전체 목록 조회 -->
     <select id="selectMaterialList" resultMap="MaterialWithFilesMap">
         SELECT M.MATERIAL_ID
-             , M.MATERIAL_CODE
+             , M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS MATERIAL_CODE
              , M.MATERIAL_NAME
              , M.MATERIAL_TYPE
              , M.SUPPLY_PRICE
@@ -129,7 +124,7 @@
     <!-- 상세 조회 (첨부파일 전체) -->
     <select id="materialDetail" parameterType="long" resultMap="MaterialWithFilesMap">
         SELECT M.MATERIAL_ID
-             , M.MATERIAL_CODE
+             , M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS MATERIAL_CODE
              , M.MATERIAL_NAME
              , M.MATERIAL_TYPE
              , M.SUPPLY_PRICE
@@ -155,7 +150,7 @@
     <!-- 단건 조회 (수정 화면 복원용) -->
     <select id="selectMaterial" parameterType="long" resultMap="MaterialWithFilesMap">
         SELECT M.MATERIAL_ID
-             , M.MATERIAL_CODE
+             , M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(M.MATERIAL_ID, 4, '0') AS MATERIAL_CODE
              , M.MATERIAL_NAME
              , M.MATERIAL_TYPE
              , M.SUPPLY_PRICE
@@ -181,11 +176,7 @@
     <!-- 자재 수정 -->
     <update id="updateMaterial" parameterType="Material">
         UPDATE MATERIALS
-           SET MATERIAL_CODE = <choose>
-                                 <when test="materialType != null and materialType != '' and materialType != 'NULL' and materialType != 'null'">#{materialType}</when>
-                                 <otherwise>'ET'</otherwise>
-                               </choose> || SUBSTR(MATERIAL_CODE, 3)
-             , MATERIAL_NAME = #{materialName}
+           SET MATERIAL_NAME = #{materialName}
              , MATERIAL_TYPE = <choose>
                                  <when test="materialType != null and materialType != '' and materialType != 'NULL' and materialType != 'null'">#{materialType}</when>
                                  <otherwise>'ET'</otherwise>

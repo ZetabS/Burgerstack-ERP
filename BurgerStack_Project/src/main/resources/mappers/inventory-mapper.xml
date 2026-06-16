@@ -18,7 +18,7 @@
                                      , I.CURRENT_QUANTITY
                                      , I.SAFETY_QUANTITY
                                      , S.STORE_NAME
-                                     , M.MATERIAL_CODE
+                                     , M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(MATERIAL_ID, 4, '0') AS MATERIAL_CODE
                                      , M.MATERIAL_NAME
                                      , M.MATERIAL_TYPE
                                      , STORE_ID

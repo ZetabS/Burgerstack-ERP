@@ -5,7 +5,7 @@
 <span class="ds-display-label">
   <c:choose>
     <c:when test="${value eq 'REQUESTED'}">요청</c:when>
-    <c:when test="${value eq 'PARTIALLY_APPROVED'}">일부 승인</c:when>
+    <c:when test="${value eq 'PARTIALLY_APPROVED'}">부분 승인</c:when>
     <c:when test="${value eq 'APPROVED'}">승인</c:when>
     <c:when test="${value eq 'CANCELED'}">취소</c:when>
     <c:when test="${value eq 'REJECTED'}">반려</c:when>

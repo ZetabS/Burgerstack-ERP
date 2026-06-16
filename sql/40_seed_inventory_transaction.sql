@@ -1,0 +1,13 @@
+-- =========================================================
+-- 40_seed_inventory_transaction.sql
+-- 역할:
+--   - 재고 변동 전용 추가 시나리오 데이터 시딩
+-- 40. 재고 변동 시나리오 데이터
+-- 담당 범위:
+--   - INVENTORY_TRANSACTIONS
+--   - INVENTORY_TRANSACTION_ITEMS
+--   - 필요 시 STORE_INVENTORIES 후속 반영
+-- 작성 원칙:
+--   - RECEIPT / STORE_CLOSING / ADJUSTMENT 흐름과 정합성 유지
+--   - BEFORE_QUANTITY, AFTER_QUANTITY, 현재고 반영값 일치
+-- =========================================================
