@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.common.template.XssDefencePolicy;
 import com.kh.burgerstack.purchase.dto.PurchaseApprovalItemDto;
 import com.kh.burgerstack.purchase.dto.PurchaseApprovalRequestDto;
 import com.kh.burgerstack.purchase.dto.PurchaseDto;
@@ -182,6 +183,15 @@ public class PurchaseControllerHO {
                 purchaseOrderId,
                 request.getItems());
 
+
+        if (bulkRejectReason != null) {
+            bulkRejectReason = bulkRejectReason.trim();
+        }
+
+        if (bulkRejectReason.length() > 10) {
+            throw new IllegalArgumentException("10자 초과");
+        }
+
         if (bulkRejectReason != null &&
             !bulkRejectReason.isBlank()) {
 
@@ -189,7 +199,7 @@ public class PurchaseControllerHO {
                     : request.getItems()) {
 
                 item.setRejectReason(
-                    bulkRejectReason
+                    XssDefencePolicy.defence(bulkRejectReason)
                 );
             }
         }

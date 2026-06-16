@@ -9,18 +9,23 @@ public class XssDefencePolicy {
 	 */
 	public static String defence(String originText) {
 		
+		// null 값 요청시 null 반환
+		if (originText == null) {
+			return null;
+		}
+
 		String changeText = originText;
-		
+
 		changeText = changeText.replace("<", "&lt;");
 		changeText = changeText.replace(">", "&gt;");
 		changeText = changeText.replace("(", "&#40;");
 		changeText = changeText.replace(")", "&#41;");
 		changeText = changeText.replace("\"", "&quot;");
 		changeText = changeText.replace("'", "&apos;");
+		changeText = changeText.replace("&", "&amp;");
 		
 		
 		// > 위와 같이 막고자 하는 html 예약어를 replace 한다!!
-		
 		return changeText;
 	}
 	// > defence 메소드는 NoticeController, BoardController 등에서

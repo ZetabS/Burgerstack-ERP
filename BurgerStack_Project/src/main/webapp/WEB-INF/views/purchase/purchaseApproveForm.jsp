@@ -149,7 +149,7 @@
                     </layout:FieldRow>
 
                     <layout:FieldRow label="비고">
-                        ${list[0].orderMemo}
+                        <c:out value="${list[0].orderMemo}" />
                     </layout:FieldRow>
 
                 </common:FieldList>
@@ -327,9 +327,9 @@
                     <textarea
                         id="rejectMemo"
                         rows="4"
-                        maxlength="500"
-                        placeholder="반려 사유를 입력하세요."
-                        style="width:100%; resize: none;"></textarea>
+                        maxlength="10"
+                        placeholder="반려 사유를 입력하세요. (10자 제한)"
+                        style="width:100%; resize:none;"></textarea>
 
                     <br><br>
 
@@ -699,11 +699,13 @@
 
             const reason = $('#rejectMemo').val().trim();
 
+            const safeReason =
+                $('<div>').text(reason).html();
+
             row.find('.reason')
-                .prop('disabled', false)
                 .append(
-                    '<option value="' + reason + '" selected>'
-                    + reason +
+                    '<option value="' + safeReason + '" selected>' +
+                    safeReason +
                     '</option>'
                 )
                 .val(reason);
@@ -740,6 +742,14 @@
             )
         ){
             e.preventDefault();
+        }
+    });
+
+    // 반려 사유 입력 10자 제한
+    $('#rejectMemo').on('input', function () {
+
+        if ($(this).val().length > 10) {
+            $(this).val($(this).val().substring(0, 10));
         }
     });
 </script>
