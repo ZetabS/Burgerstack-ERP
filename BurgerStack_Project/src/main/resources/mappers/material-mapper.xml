@@ -16,20 +16,20 @@
             SELECT SEQ_MATERIAL.NEXTVAL FROM DUAL
         </selectKey>
 	        INSERT INTO MATERIALS(MATERIAL_ID
-	                            , MATERIAL_CODE
 	                            , MATERIAL_NAME
 	                            , MATERIAL_TYPE
 	                            , SUPPLY_PRICE
-	                            , DETAILS)
+	                            , DETAILS
+	                            , STATUS)
 	                       VALUES(#{materialId}
-	                            , 'MT' || TO_CHAR(SYSDATE, 'YYYY') || LPAD(#{materialId}, 4, '0')
 	                            , #{materialName}
 	                            , <choose>
 	                                <when test="materialType != null and materialType != '' and materialType != 'NULL' and materialType != 'null'">#{materialType}</when>
 	                                <otherwise>'ET'</otherwise>
 	                              </choose>
 	                            , #{supplyPrice}
-	                            , #{details})
+	                            , #{details}
+	                            , #{status})
     </insert>
 
 
@@ -79,7 +79,6 @@
     <!-- 전체 목록 조회 -->
     <select id="selectMaterialList" resultMap="MaterialWithFilesMap">
 	    SELECT M.MATERIAL_ID
-	         , M.MATERIAL_CODE
 	         , M.MATERIAL_NAME
 	         , M.MATERIAL_TYPE
 	         , M.SUPPLY_PRICE
@@ -136,7 +135,6 @@
     <!-- 단건 조회 (수정 화면 복원용) -->
     <select id="selectMaterial" parameterType="long" resultMap="MaterialWithFilesMap">
         SELECT M.MATERIAL_ID
-             , M.MATERIAL_CODE
              , M.MATERIAL_NAME
              , M.MATERIAL_TYPE
              , M.SUPPLY_PRICE
