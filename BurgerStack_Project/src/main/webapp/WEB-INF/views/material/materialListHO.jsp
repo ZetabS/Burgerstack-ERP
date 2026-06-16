@@ -419,13 +419,7 @@
                 }
             };
 
-            window.onload = function() {
-                const textarea = document.getElementById('material-detail');
-                if (textarea.value) {
-                    // 엔티티 코드를 실제 괄호 문자로 변환
-                    textarea.value = textarea.value.replace(/&#40;/g, '(').replace(/&#41;/g, ')');
-                }
-            };
+            
         </script>
         
         <script>
