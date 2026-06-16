@@ -33,6 +33,10 @@ public class InquiryControllerBO {
             HttpSession session,
             Model model) {
 
+		if (keyword != null) {
+	        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+	    }		
+		
         Long storeId = ((LoginUser) session.getAttribute("loginUser")).getStoreId();
 
         int limit = 10;
@@ -68,25 +72,42 @@ public class InquiryControllerBO {
 	public String InquiryEnrollPage() {
 		return "inquiry/inquiryEnrollForm";
 	}
-
 	// 문의사항 등록 기능
-	@PostMapping("inquiries/new")
-	public String InquiryEnroll(Inquiry inquiry,
-	                            HttpSession session) {
+		@PostMapping("inquiries/new")
+		public String InquiryEnroll(Inquiry inquiry,
+		                            HttpSession session) {
 
-	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+		    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-	    if(loginUser != null && loginUser.getStoreId() != null) {
-	        inquiry.setStoreId(loginUser.getStoreId());
-	    } else {
-	        return "redirect:/auth/login";
-	    }
+		    if(loginUser != null && loginUser.getStoreId() != null) {
+		        inquiry.setStoreId(loginUser.getStoreId());
+		    } else {
+		        return "redirect:/auth/login";
+		    }
 
-	    inquiryServiceBO.InquiryEnroll(inquiry);
+		    if (inquiry.getTitle() != null && inquiry.getTitle().length() > 100) {
+		        session.setAttribute("alertMsg", "제목은 최대 100자까지 입력 가능합니다.");
+		        return "redirect:/owner/inquiries/new";
+		    }
 
-	    return "redirect:/owner/inquiries";
-	}
+		    if (inquiry.getContent() != null && inquiry.getContent().length() > 1000) {
+		        session.setAttribute("alertMsg", "내용은 최대 1000자까지 입력 가능합니다.");
+		        return "redirect:/owner/inquiries/new";
+		    }
+		    
+		    if (inquiry.getTitle() != null) {
+		        inquiry.setTitle(org.springframework.web.util.HtmlUtils.htmlEscape(inquiry.getTitle()));
+		    }
+		    if (inquiry.getContent() != null) {
+		        inquiry.setContent(org.springframework.web.util.HtmlUtils.htmlEscape(inquiry.getContent()));
+		    }		    
 
+		    inquiryServiceBO.InquiryEnroll(inquiry);
+
+		    return "redirect:/owner/inquiries";
+		}
+	
+	
 	// 문의사항 상세 조회 페이지
 	@GetMapping("inquiries/{inquiryId}")
 	public String InquiryListDetail(@PathVariable long inquiryId, Model model) {
@@ -120,44 +141,55 @@ public class InquiryControllerBO {
 	}
 
 	// 문의사항 수정 기능
-	@PostMapping("inquiries/{inquiryId}")
-	public ModelAndView InquiryEdit(@PathVariable long inquiryId,
-	                                Inquiry i,
-	                                ModelAndView mv,
-	                                HttpSession session) {
-		
-        // URL에서 받은 inquiryId를 Inquiry 객체에 세팅
-        i.setInquiryId(inquiryId);
+		@PostMapping("inquiries/{inquiryId}")
+		public ModelAndView InquiryEdit(Inquiry i, ModelAndView mv, HttpSession session) {
+			
+		    // 1. 제목 글자 수 검증
+		    if (i.getTitle() != null && i.getTitle().length() > 100) {
+		        session.setAttribute("alertMsg", "제목은 최대 100자까지 입력 가능합니다.");
+		        mv.setViewName("redirect:/owner/inquiries");
+		        return mv; 
+		    }
 
-        // 로그인한 점주의 storeId 세팅
-		i.setStoreId(((LoginUser)session.getAttribute("loginUser")).getStoreId());
+		    // 2. 내용 글자 수 검증
+		    if (i.getContent() != null && i.getContent().length() > 1000) {
+		        session.setAttribute("alertMsg", "내용은 최대 1000자까지 입력 가능합니다.");
+		        mv.setViewName("redirect:/owner/inquiries");
+		        return mv;
+		    }
 
-		System.out.println("수정할 inquiryId = " + inquiryId);
-		System.out.println("수정할 Inquiry 객체 = " + i);
-		
-		int result = inquiryServiceBO.InquiryEdit(i);
-		
-		if(result > 0) {
-			System.out.println("문의사항 수정 성공");
-			
-			session.setAttribute("Inquiry", i);
-			
-			session.setAttribute("alertMsg", "성공적으로 정보가 수정되었습니다.");
-			
-			mv.setViewName("redirect:/owner/inquiries");
-			
-		} else {
-			
-			System.out.println("문의사항 수정 실패");
-			mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
-			mv.setViewName("redirect:/owner/inquiries");
-			
+		    if (i.getTitle() != null) {
+		        i.setTitle(org.springframework.web.util.HtmlUtils.htmlEscape(i.getTitle()));
+		    }
+		    if (i.getContent() != null) {
+		        i.setContent(org.springframework.web.util.HtmlUtils.htmlEscape(i.getContent()));
+		    }		    	
+		    
+		    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+		    if (loginUser != null) {
+		        i.setStoreId(loginUser.getStoreId());
+		    } else {
+		        mv.setViewName("redirect:/auth/login");
+		        return mv;
+		    }
+
+		    System.out.println("1. 세션에서 꺼낸 loginUser 객체: " + i);
+		    
+		    int result = inquiryServiceBO.InquiryEdit(i);
+		    
+		    if(result > 0) {
+		        System.out.println("1");
+		        session.setAttribute("Inquiry", i);
+		        session.setAttribute("alertMsg", "성공적으로 정보가 수정되었습니다.");
+		        mv.setViewName("redirect:/owner/inquiries");
+		    } else {
+		        System.out.println("2");
+		        mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
+		        mv.setViewName("redirect:/owner/inquiries");
+		    }
+		    
+		    return mv;
 		}
-		
-		return mv;
-	}
-
-	// 문의사항 삭제 기능
 	@PostMapping("inquiries/{inquiryId}/delete")
 	public String inquiryDelete(@PathVariable long inquiryId,
 	                            Inquiry i,

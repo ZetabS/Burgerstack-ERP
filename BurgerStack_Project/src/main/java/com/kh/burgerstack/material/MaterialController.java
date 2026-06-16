@@ -27,8 +27,6 @@ public class MaterialController {
     @Autowired
     private MaterialService materialService;
 
-    @Autowired
-    private FileStore fileStore;
 
     @GetMapping("new")
     public String materialEnrollform() {
@@ -51,23 +49,11 @@ public class MaterialController {
                 m.setDetails(XssDefencePolicy.defence(m.getDetails()));
             }
 
-            // 1. 자재 먼저 DB에 등록 (MATERIAL_ID 확보)
-            int result = materialService.materialInsert(m);
+            // 통합 서비스 메소드 호출
+            materialService.materialInsert(m, imageFile);
 
-            if (result > 0) {
-                // 2. 이미지가 있으면 디스크 저장 -> MATERIAL_FILES INSERT
-                if (imageFile != null && !imageFile.isEmpty()) {
-                    StoredFile storedFile = fileStore.store(imageFile, "material_upfiles");
-                    MaterialFile materialFile = storedFile.toMaterialFile(m.getMaterialId());
-                    materialService.materialFileInsert(materialFile);
-                }
-
-                session.setAttribute("alertMsg", "자재 등록이 완료되었습니다.");
-                return "redirect:/admin/materials";
-            } else {
-                session.setAttribute("alertMsg", "자재 등록에 실패했습니다.");
-                return "redirect:/admin/materials/new";
-            }
+            session.setAttribute("alertMsg", "자재 등록이 완료되었습니다.");
+            return "redirect:/admin/materials";
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,18 +66,21 @@ public class MaterialController {
      * 전체 목록 조회
      */
     @GetMapping("")
-    public String selectMaterialList(Model model) {
-        ArrayList<Material> list = materialService.selectMaterialList();
-        model.addAttribute("materials", list);
+    public String selectMaterialList(@RequestParam(value = "materialType", required = false) String materialType,
+                                      @RequestParam(value = "keyword", required = false) String keyword,
+                                      Model model) {
+        ArrayList<Material> materials = materialService.selectMaterialList(materialType, keyword);
+        model.addAttribute("materials", materials);
         return "material/materialListHO";
     }
+
 
     /**
      * 상세 조회 (AJAX)
      */
-    @GetMapping({"/detail", "detail"})
+    @GetMapping("/{materialId}/details")
     @ResponseBody
-    public Material materialDetail(@RequestParam("materialId") Long materialId) {
+    public String materialDetail(@PathVariable("materialId") Long materialId) {
         return materialService.materialDetail(materialId);
     }
 
@@ -100,7 +89,7 @@ public class MaterialController {
      */
     @GetMapping("{materialId}/edit")
     public String materialEdit(@PathVariable("materialId") Long materialId, Model model) {
-        Material material = materialService.materialDetail(materialId);
+        Material material = materialService.selectMaterial(materialId);
         model.addAttribute("material", material);
         return "material/materialEnrollForm";
     }
@@ -110,49 +99,37 @@ public class MaterialController {
      */
     @PostMapping("{materialId}")
     public String updateMaterial(
-            @PathVariable(value = "materialId", required = false) Long pathMaterialId,
+            @PathVariable("materialId") Long materialId,
             @ModelAttribute Material m,
             @RequestParam(value = "materialImage", required = false) MultipartFile imageFile,
-            Model model,
             HttpSession session) {
 
-        Long finalMaterialId = (pathMaterialId != null) ? pathMaterialId : m.getMaterialId();
-        if (finalMaterialId == null) {
-            model.addAttribute("errorMsg", "수정할 자재의 식별 번호(ID)가 누락되었습니다.");
-            return "common/errorPage";
-        }
-        m.setMaterialId(finalMaterialId);
+        m.setMaterialId(materialId);
 
         // XSS 방어
-        if (m.getMaterialName() != null) {
-            m.setMaterialName(XssDefencePolicy.defence(m.getMaterialName()));
-        }
+        m.setMaterialName(XssDefencePolicy.defence(m.getMaterialName()));
         if (m.getDetails() != null) {
             m.setDetails(XssDefencePolicy.defence(m.getDetails()));
         }
 
-        if (imageFile != null && !imageFile.isEmpty()) {
-            StoredFile storedFile = fileStore.store(imageFile, "material_upfiles");
-            MaterialFile materialFile = storedFile.toMaterialFile(finalMaterialId);
-            materialService.materialFileInsert(materialFile);
-        }
-
-        int result = materialService.updateMaterial(m);
-        if (result > 0) {
-        	session.setAttribute("alertMsg", "자재 정보 수정이 완료되었습니다.");
-            return "redirect:/admin/materials";
+        // 서비스 호출
+        boolean isSuccess = materialService.updateMaterial(m, imageFile);
+        
+        if (isSuccess) {
+            session.setAttribute("alertMsg", "수정 성공!");
         } else {
-            model.addAttribute("errorMsg", "자재 정보 수정에 실패했습니다.");
-            return "common/errorPage";
+            session.setAttribute("alertMsg", "수정 실패!");
         }
+        return "redirect:/admin/materials";
     }
 
     /**
      * 자재 삭제 (INACTIVE 처리)
      */
+    /*
     @PostMapping("{materialId}/status")
     public String deleteMaterial(@PathVariable("materialId") Long materialId, Model model, HttpSession session) {
-        int result = materialService.deleteMaterial(materialId);
+    	int result = materialService.deleteMaterial(materialId);
         if (result > 0) {
             session.setAttribute("alertMsg", "자재가 삭제되었습니다.");
             return "redirect:/admin/materials";
@@ -161,4 +138,6 @@ public class MaterialController {
             return "common/errorPage";
         }
     }
+    */
+    
 }

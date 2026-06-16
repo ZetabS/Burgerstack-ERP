@@ -2,10 +2,11 @@ package com.kh.burgerstack.material;
 
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller; // ⭐️ 추가
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping; // ⭐️ 추가
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -17,15 +18,17 @@ public class OwnerMaterialController {
     private MaterialService materialService;
 
     @GetMapping("")
-    public String selectMaterialList(Model model) {
-        ArrayList<Material> list = materialService.selectMaterialList();
-        model.addAttribute("materials", list);
-        return "material/materialListBO"; 
+    public String selectMaterialList(@RequestParam(value = "materialType", required = false) String materialType,
+                                      @RequestParam(value = "keyword", required = false) String keyword,
+                                      Model model) {
+        ArrayList<Material> materials = materialService.selectMaterialList(materialType, keyword);
+        model.addAttribute("materials", materials);
+        return "material/materialListBO";
     }
 
-    @GetMapping("/detail")
+    @GetMapping("/{materialId}/details")
     @ResponseBody
-    public Material materialDetail(@RequestParam("materialId") Long materialId) {
+    public String materialDetail(@PathVariable("materialId") Long materialId) {
         return materialService.materialDetail(materialId);
     }
 }

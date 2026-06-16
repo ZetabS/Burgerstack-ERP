@@ -40,30 +40,34 @@ public class AdminController {
 	// 점주 계정 등록 기능
 	@PostMapping("users")
 	public String NewOwner(User u, Model model, HttpSession session) {
-			
-	    System.out.println("===== 등록 요청 =====");
-	    System.out.println(u);
-		
-	    // 비밀번호 암호화
-		u.setPassword(
-				bCryptPasswordEncoder.encode(u.getPassword())
-		);
 
-		int result = adminService.NewOwner(u);
-		
-		if(result > 0) {
-		    session.setAttribute("alertMsg", "계정이 등록되었습니다.");
-		    
-		    return "redirect:/admin/dashboard";
-		} else {
-			model.addAttribute("errorMsg", "계정 등록에 실패했습니다");
-			return "common/errorPage";
-		}
+	    if (u.getUserName() != null) u.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(u.getUserName()));
+	    if (u.getEmail() != null) u.setEmail(org.springframework.web.util.HtmlUtils.htmlEscape(u.getEmail()));
+	    if (u.getPhone() != null) u.setPhone(org.springframework.web.util.HtmlUtils.htmlEscape(u.getPhone()));
+
+	    String encPwd = bCryptPasswordEncoder.encode(u.getPassword());
+	    u.setPassword(encPwd);
+
+	    int result = adminService.NewOwner(u);
+			
+			if(result > 0) {
+			    session.setAttribute("alertMsg", "계정이 등록되었습니다.");
+			    
+			    return "redirect:/admin/dashboard";
+			} else {
+				model.addAttribute("errorMsg", "계정 등록에 실패했습니다");
+				return "common/errorPage";
+				
+			}
 	}
 	
 	// 관리자 마이페이지 정보 수정
 	@PostMapping("mypage")
 	public ModelAndView update(User u, ModelAndView mv, HttpSession session) {
+		
+		if (u.getUserName() != null) u.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(u.getUserName()));
+	    if (u.getEmail() != null) u.setEmail(org.springframework.web.util.HtmlUtils.htmlEscape(u.getEmail()));
+	    if (u.getPhone() != null) u.setPhone(org.springframework.web.util.HtmlUtils.htmlEscape(u.getPhone()));
 		
 		u.setUserNo(((LoginUser)session.getAttribute("loginUser")).getUserNo());
 		
@@ -175,28 +179,16 @@ public class AdminController {
 
 	        Model model) {
 
+	    if (keyword != null) {
+	        keyword = org.springframework.web.util.HtmlUtils.htmlEscape(keyword);
+	    }
+
 	    System.out.println("status = " + status);
 	    System.out.println("keyword = " + keyword);
 
-	    /*
-	     * status 값 예시:
-	     * ""          전체상태
-	     * "ACTIVE"    영업중
-	     * "INACTIVE"  폐점
-	     *
-	     * keyword 값 예시:
-	     * 점주 아이디 또는 점주명 검색어
-	     */
-	    List<User> ownerList =
-	            adminService.OwnerList(status, keyword);
-
-	    System.out.println("조회건수 = " + ownerList.size());
-
-	    /*
-	     * JSP에서 반복문으로 사용하는 목록
-	     *
-	     * <c:forEach var="u" items="${ownerList}">
-	     */
+	    List<User> ownerList = adminService.OwnerList(status, keyword);
+	    
+	    model.addAttribute("keyword", keyword);
 	    model.addAttribute("ownerList", ownerList);
 
 	    /*
@@ -273,18 +265,15 @@ public class AdminController {
 		 */
 		user.setUserId(userId);
 		
-		/*
-		 * 비밀번호를 새로 입력한 경우에만 암호화해서 수정
-		 * 비밀번호 입력이 비어 있으면 null로 보내서 기존 비밀번호 유지 처리
-		 */
-		if(user.getPassword() != null &&
-				!user.getPassword().trim().isEmpty()){
-				
-			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-			
-		} else {
-			user.setPassword(null);
-		}
+		if (user.getUserName() != null) user.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(user.getUserName()));
+	    if (user.getEmail() != null) user.setEmail(org.springframework.web.util.HtmlUtils.htmlEscape(user.getEmail()));
+	    if (user.getPhone() != null) user.setPhone(org.springframework.web.util.HtmlUtils.htmlEscape(user.getPhone()));
+	    
+	    if(user.getPassword() != null && !user.getPassword().trim().isEmpty()){
+	        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+	    }else{
+	        user.setPassword(null);
+	    }
 		
 		int result = adminService.OwnerUpdate(user);
 		

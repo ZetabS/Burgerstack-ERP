@@ -123,52 +123,15 @@ h1 {
 			--%>
 			<form action="${updateUrl}" method="post">
 
-				<div class="form-group">
-					<input type="text"
-						   name="title"
-						   class="input-title"
-						   value="<c:out value='${inquiry.title}' />"
-						   required>
-				</div>
+		  <%-- number input은 min, required 같은 HTML 제약을 화면에서 직접 선언합니다. --%>
+          <layout:FieldRow label="제목" inputId="safetyQuantity" help="제목을 입력하시오.">
+            <input type="text" class="title" id="title" name="title" maxlength="100" value="${inquiry.title}" required />
+          </layout:FieldRow>
 
-				<div class="form-group">
-					<textarea name="content"
-							  class="textarea-content"
-							  required><c:out value="${inquiry.content}" /></textarea>
-				</div>
-
-				<div class="btn-area">
-
-					<%-- 수정 저장 버튼 --%>
-					<button type="submit" id="saveBtn">등록 및 수정</button>
-
-					<%--
-						삭제 버튼입니다.
-						formaction을 사용해서 같은 form에서 삭제 URL로 전송합니다.
-						최종 요청 URL 예시:
-						/burgerstack/owner/inquiries/11/delete
-					--%>
-					<button type="submit"
-					        id="deleteBtn"
-					        formaction="${deleteUrl}"
-					        formnovalidate>
-					    삭제
-					</button>
-
-					<%--
-						목록으로 이동 버튼입니다.
-						최종 이동 URL 예시:
-						/burgerstack/owner/inquiries
-					--%>
-					<button type="button"
-							id="homeBtn"
-							onclick="location.href='${listUrl}'">
-						목록으로
-					</button>
-
-				</div>
-			</form>
-		</div>
-	</div>
+          <%-- textarea는 업무에 맞게 rows를 직접 선택합니다. --%>
+          <layout:FieldRow label="내용" inputId="memo" help="최대 1000자까지 입력 가능합니다.">
+            <textarea class="form-control" id="content" name="content" rows="4" maxlength="1000"><c:out value="${inquiry.content}" /></textarea>
+          </layout:FieldRow>
+        </layout:Section>
 
 </t:layout>

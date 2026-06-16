@@ -10,6 +10,8 @@
 <c:url var="inquiryListUrl" value="/admin/inquiries"></c:url>
 <c:url var="purchaseListUrl" value="/admin/purchases"></c:url>
 <c:url var="storeListUrl" value="/admin/stores"></c:url>
+<c:url var="inventoryListUrl" value="/admin/inventories?belowSafetyStock=true"></c:url>
+<c:url var="purchasePendingListUrl" value="/admin/purchases/pending"></c:url>
 
 <t:layout>
   <div class="dashboard__container">
@@ -17,46 +19,41 @@
       <div class="card-body">
         <div class="card-title dashboard__card-title">전체 점포 수</div>
         <div class="card-text dashboard__count">${view.storeCount}<span>건</span></div>
-        <a class="card-link" href="${storeListUrl}"> 점포 관리 바로가기 &gt; </a>
+        <a class="card-link" href="${storeListUrl}">점포 목록 바로가기 &gt;</a>
       </div>
     </div>
     <div class="card dashboard__panel dashboard__panel--small">
       <div class="card-body">
-        <div class="card-title dashboard__card-title">발주 요청</div>
+        <div class="card-title dashboard__card-title">승인 대기중인 발주</div>
         <div class="card-text dashboard__count">${view.purchaseCount}<span>건</span></div>
-        <a class="card-link" href="${purchaseListUrl}"> 발주 관리 바로가기 &gt; </a>
+        <a class="card-link" href="${purchasePendingListUrl}"> 발주 승인 바로가기 &gt; </a>
       </div>
     </div>
     <div class="card dashboard__panel dashboard__panel--small">
       <div class="card-body">
         <div class="card-title dashboard__card-title">미답변 문의</div>
-        <div class="card-text dashboard__count">${view.storeCount}<span>건</span></div>
+        <div class="card-text dashboard__count">${view.inquiryCount}<span>건</span></div>
         <a class="card-link" href="${inquiryListUrl}"> 문의사항 바로가기 &gt; </a>
       </div>
     </div>
     <div class="card dashboard__panel dashboard__panel--small">
       <div class="card-body">
-        <div class="dashboard__chart-container">
-          <div class="dashboard__chart-box">
-            <canvas id="storeStatusChart"></canvas>
-          </div>
-          <div class="dashboard__chart-box">
-            <canvas id="purchaseOrderStatusChart"></canvas>
-          </div>
-        </div>
+        <div class="card-title dashboard__card-title">안전재고 미만 재고</div>
+        <div class="card-text dashboard__count">${view.belowSafetyInventoryCount}<span>건</span></div>
+        <a class="card-link" href="${inventoryListUrl}"> 재고 관리 바로가기 &gt; </a>
       </div>
     </div>
 
     <div class="card dashboard__panel dashboard__panel--big">
       <div class="card-body">
-        <div class="card-title d-flex flex-row justify-content-between">
-          <h5>최근 발주 요청</h5>
+        <div class="card-title d-flex flex-row justify-content-between mb-0">
+          <h5>최근 발주</h5>
           <a href="${purchaseListUrl}"> 전체 보기 &gt; </a>
         </div>
 
-        <table:Table isEmpty="${empty view.recentPurchaseOrderList}" emptyMessage="최근 발주 요청이 없습니다.">
+        <table:Table isEmpty="${empty view.recentPurchaseOrderList}" emptyMessage="최근 발주가 없습니다.">
           <jsp:attribute name="thead">
-            <tr>
+            <tr class="visually-hidden">
               <th class="text-left">발주코드</th>
               <th class="text-left">점포명</th>
               <th class="text-right">금액</th>
@@ -83,14 +80,14 @@
 
     <div class="card dashboard__panel dashboard__panel--big">
       <div class="card-body">
-        <div class="card-title d-flex flex-row justify-content-between">
+        <div class="card-title d-flex flex-row justify-content-between mb-0">
           <h5>최근 문의사항</h5>
           <a href="${inquiryListUrl}"> 전체 보기 &gt; </a>
         </div>
 
         <table:Table isEmpty="${empty view.recentInquiryList}" emptyMessage="최근 문의사항이 없습니다.">
           <jsp:attribute name="thead">
-            <tr>
+            <tr class="visually-hidden">
               <th class="text-left">No</th>
               <th class="text-left">제목</th>
               <th class="text-left">점포명</th>
@@ -112,6 +109,68 @@
             </c:forEach>
           </jsp:attribute>
         </table:Table>
+      </div>
+    </div>
+
+    <div class="card dashboard__panel dashboard__panel--chart">
+      <div class="card-body">
+        <div class="card-title d-flex flex-row justify-content-between mb-0">
+          <h5>점포 현황</h5>
+          <a href="${storeListUrl}"> 전체 보기 &gt; </a>
+        </div>
+        <div class="dashboard__chart-panel">
+          <div class="dashboard__chart-container">
+            <div class="dashboard__chart-box">
+              <canvas id="storeStatusChart"></canvas>
+            </div>
+          </div>
+
+          <div class="list-group list-group-flush dashboard__chart-summary">
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <display:StoreStatusBadge value="OPEN" />
+              <span>${view.storeStatistics.openStoreCount}건</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <display:StoreStatusBadge value="PAUSED" />
+              <span>${view.storeStatistics.pausedStoreCount}건</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <display:StoreStatusBadge value="CLOSED" />
+              <span>${view.storeStatistics.closedStoreCount}건</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card dashboard__panel dashboard__panel--chart">
+      <div class="card-body">
+        <div class="card-title d-flex flex-row justify-content-between mb-0">
+          <h5>발주 현황</h5>
+          <a href="${purchaseListUrl}"> 전체 보기 &gt; </a>
+        </div>
+        <div class="dashboard__chart-panel">
+          <div class="dashboard__chart-container">
+            <div class="dashboard__chart-box">
+              <canvas id="purchaseOrderStatusChart"></canvas>
+            </div>
+          </div>
+
+          <div class="list-group list-group-flush dashboard__chart-summary">
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <display:PurchaseStatusBadge value="REQUESTED" />
+              <span>${view.purchaseOrderStatistics.requestedCount}건</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <display:PurchaseStatusBadge value="APPROVED" />
+              <span>${view.purchaseOrderStatistics.approvedCount}건</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <display:PurchaseStatusBadge value="REJECTED" />
+              <span>${view.purchaseOrderStatistics.rejectedCount}건</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -148,7 +207,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: true,
-        cutout: "65%",
+        cutout: "50%",
         events: [],
         layout: {
           padding: 10,
@@ -173,7 +232,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: true,
-        cutout: "65%",
+        cutout: "50%",
         events: [],
         layout: {
           padding: 10,

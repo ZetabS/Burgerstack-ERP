@@ -6,7 +6,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <div class="ds-table-wrapper table-responsive">
-  <table class="ds-table table table-hover w-100">
+  <table class="ds-table table table-hover w-100 mb-0">
     <thead>
       <jsp:invoke fragment="thead" />
     </thead>
