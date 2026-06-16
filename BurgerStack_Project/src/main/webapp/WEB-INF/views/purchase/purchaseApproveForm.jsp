@@ -392,12 +392,47 @@
     }
 
     $('#confirmBtn').on('click', function () {
-        if (confirm('발주를 결재하시겠습니까?\n\n결재 후에는 처리 상태가 변경됩니다.')) {
-            // 결재 처리
+
+        let invalid = false;
+
+        $('tbody tr').each(function () {
+
+            const row = $(this);
+
+            const requestQty =
+                Number(row.find('.requestQty').text()) || 0;
+
+            const approvedQty =
+                Number(row.find('.approvedQty').val()) || 0;
+
+            const reason =
+                row.find('.reason').val();
+
+            // 요청수량과 승인수량이 다르면 반려사유 필수
+            if(requestQty !== approvedQty){
+
+                if(!reason){
+
+                    alert('승인수량과 요청수량이 다른 품목은 반려사유를 반드시 입력해야 합니다.');
+
+                    row.find('.reason').focus();
+
+                    invalid = true;
+
+                    return false;
+                }
+            }
+        });
+
+        if(invalid){
+            return;
+        }
+
+        if(confirm('발주를 결재하시겠습니까?\n\n결재 후에는 처리 상태가 변경됩니다.')){
+
             $('form').submit();
         }
     });
-
     function formatPrices(){
 
         $('.comma-number').each(function(){

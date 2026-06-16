@@ -97,9 +97,6 @@ public class PurchaseControllerHO {
             HttpServletRequest request, // 요청 경로 확인을 위해 추가
             Model model) {
 
-
-
-
         // 1. 발주 목록 조회
         ArrayList<PurchaseDto> list = purchaseService.searchPurchaseApprovalList(pagingRequest, condition, session);
 
@@ -125,10 +122,9 @@ public class PurchaseControllerHO {
         model.addAttribute("condition", condition);
         model.addAttribute("storeList", storeOptions);
 
-
         System.out.println("list size = " + list.size());
         System.out.println("totalCount = " + totalCount);
-        
+
         // 3. View 지정 (요청 경로에 따른 분기 처리)
         String requestURI = request.getRequestURI();
         if (requestURI.contains("/pending")) {
@@ -176,33 +172,43 @@ public class PurchaseControllerHO {
     public String processPurchase(
             @PathVariable("id") Long purchaseOrderId,
             PurchaseApprovalRequestDto request,
-            @RequestParam(required = false)
-            String bulkRejectReason) {
+            @RequestParam(required = false) String bulkRejectReason) {
 
+        // 전체 반려 사유 처리
+        if (bulkRejectReason != null) {
+
+            bulkRejectReason = bulkRejectReason.trim();
+
+            if (bulkRejectReason.length() > 10) {
+                throw new IllegalArgumentException("반려사유는 10자 이하만 가능합니다.");
+            }
+
+            if (!bulkRejectReason.isBlank()) {
+
+                String safeReason = XssDefencePolicy.defence(bulkRejectReason);
+
+                for (PurchaseApprovalItemDto item : request.getItems()) {
+                    item.setRejectReason(safeReason);
+                }
+            }
+        }
+
+        // 승인수량과 요청수량이 다를 경우 반려사유 필수
+        for (PurchaseApprovalItemDto item : request.getItems()) {
+
+            if (item.getApprovedQuantity() != item.getRequestQuantity()
+                    && (item.getRejectReason() == null
+                            || item.getRejectReason().isBlank())) {
+
+                throw new IllegalArgumentException(
+                        "승인수량과 요청수량이 다른 품목은 반려사유를 반드시 입력해야 합니다.");
+            }
+        }
+
+        // 검증 완료 후 처리
         purchaseService.processPurchase(
                 purchaseOrderId,
                 request.getItems());
-
-
-        if (bulkRejectReason != null) {
-            bulkRejectReason = bulkRejectReason.trim();
-        }
-
-        if (bulkRejectReason.length() > 10) {
-            throw new IllegalArgumentException("10자 초과");
-        }
-
-        if (bulkRejectReason != null &&
-            !bulkRejectReason.isBlank()) {
-
-            for (PurchaseApprovalItemDto item
-                    : request.getItems()) {
-
-                item.setRejectReason(
-                    XssDefencePolicy.defence(bulkRejectReason)
-                );
-            }
-        }
 
         return "redirect:/admin/purchases/" + purchaseOrderId;
     }
