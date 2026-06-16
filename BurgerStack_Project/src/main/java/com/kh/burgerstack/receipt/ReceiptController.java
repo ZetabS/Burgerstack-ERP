@@ -161,9 +161,8 @@ public class ReceiptController {
             ReceiptForm form) {
 
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-        Long createdBy = loginUser.getUserNo();
 
-        receiptService.processReceipt(purchaseId, form, createdBy);
+        receiptService.processReceipt(purchaseId, form, loginUser);
 
         return "redirect:/owner/receipts";
     }
