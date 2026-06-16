@@ -6,9 +6,10 @@
 <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 
 <c:url var="listUrl" value="/owner/inquiries" />
+<c:url var="submitUrl" value="/owner/inquiries/${inquiryId}" />
 
 <t:layout>
-  <layout:Page title="문의사항 작성" description="">
+  <layout:Page title="문의사항 수정" description="">
 
     <jsp:body>
     
@@ -17,7 +18,7 @@
       <form action="${submitUrl}" method="post">
         <input type="hidden" name="inventoryId" value="${inquiry.inquiryId}" />
 
-        <layout:Section title="문의사항을 작성해주세요." description="">
+        <layout:Section title="문의사항을 수정해주세요." description="">
           
           <c:if test="${isAnswered}">
             <div class="alert alert-warning text-center mb-4" role="alert" style="font-weight: bold; font-size: 0.95rem;">

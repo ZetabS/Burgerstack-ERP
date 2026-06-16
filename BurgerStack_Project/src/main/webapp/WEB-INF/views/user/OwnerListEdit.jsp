@@ -26,7 +26,7 @@
   - display 컴포넌트: <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 --%>
 
-<c:url var="listUrl" value="/admin/${user.userId}" />
+<c:url var="listUrl" value="/admin/users" />
 <c:url var="submitUrl" value="/admin/users/${user.userId}" />
 
 <t:layout>

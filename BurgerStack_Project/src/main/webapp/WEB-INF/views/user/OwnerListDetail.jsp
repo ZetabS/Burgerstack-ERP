@@ -41,7 +41,7 @@
     </jsp:attribute>
 
     <jsp:body>
-      <layout:Section title="기본 정보" description="FieldRow는 라벨과 값을 3:9 그리드로 맞추는 상세/폼 공통 행입니다.">
+      <layout:Section title="기본 정보" description="">
         <common:FieldList>
           <%-- 단순 텍스트 값은 FieldRow body에 바로 출력합니다. --%>
           <layout:FieldRow label="아이디">${user.userId}</layout:FieldRow>

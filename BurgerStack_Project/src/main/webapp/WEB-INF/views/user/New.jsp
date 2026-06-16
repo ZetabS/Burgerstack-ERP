@@ -26,11 +26,11 @@
   - display 컴포넌트: <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 --%>
 
-<c:url var="listUrl" value="/admin/dashboard" />
+<c:url var="listUrl" value="/admin/users" />
 <c:url var="submitUrl" value="/admin/users" />
 
 <t:layout>
-  <layout:Page title="문의사항 작성" description="">
+  <layout:Page title="점주 계정 작성" description="">
 
     <jsp:body>
       <%--
@@ -39,7 +39,7 @@
       --%>
       <form action="${submitUrl}" method="post">
 
-        <layout:Section title="문의사항을 작성해주세요." description="">
+        <layout:Section title="점주 정보를 작성해주세요." description="">
 
 		  <%-- number input은 min, required 같은 HTML 제약을 화면에서 직접 선언합니다. --%>
           <layout:FieldRow label="아이디" inputId="safetyQuantity" help="아이디를 입력하시오.">
