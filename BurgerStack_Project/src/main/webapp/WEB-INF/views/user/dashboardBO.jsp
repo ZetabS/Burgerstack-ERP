@@ -159,6 +159,30 @@
         text-align: center;
         vertical-align: middle;
     }
+    
+    .status-badge {
+	    display: inline-block;
+	    padding: 3px 8px;
+	    border-radius: 4px;
+	    font-size: 12px;
+	    font-weight: 700;
+	    line-height: 1.2;
+	    min-width: auto;
+	    text-align: center;
+	    white-space: nowrap;
+	}
+	
+	/* 승인 */
+	.status-badge.approved {
+	    background-color: #16a34a;
+	    color: #ffffff;
+	}
+	
+	/* 부분승인 */
+	.status-badge.partial {
+	    background-color: #facc15;
+	    color: #111827;
+	}
 
     .clickable-row {
         cursor: pointer;
@@ -330,7 +354,7 @@
             <div class="panel-card">
                 <div class="panel-head">
                     <div class="panel-title">오늘 입고 예정</div>
-                    <a href="${pageContext.request.contextPath}/owner/purchases?status=APPROVED&startDate=${today}&endDate=${today}"
+                    <a href="${pageContext.request.contextPath}/owner/receipts/planned"
                        class="more-link">전체 보기 &gt;</a>
                 </div>
 
@@ -338,38 +362,44 @@
                     <thead>
                         <tr>
                             <th style="width:20%;">입고번호</th>
-                            <th style="width:55%;">품목요약</th>
+                            <th style="width:20%;">상태</th>
+                            <th style="width:35%;">품목요약</th>
                             <th style="width:25%;">상세</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <c:forEach var="r" items="${todayReceiptList}">
-                            <c:set var="targetId" value="${r.PURCHASEORDERID}" />
-                            <c:if test="${empty targetId}">
-                                <c:set var="targetId" value="${r.RECEIPTID}" />
-                            </c:if>
-
-                            <tr>
-                                <td>
-                                    <span class="badge badge-blue">${targetId}</span>
-                                </td>
-
-                                <td>
-                                    ${r.MATERIALNAME}
-                                    <c:if test="${r.EXTRACOUNT > 0}">
-                                        외 ${r.EXTRACOUNT}건
-                                    </c:if>
-                                </td>
-
-                                <td>
-                                    <a href="${pageContext.request.contextPath}/owner/purchases/${targetId}/receipt"
-                                       class="detail-btn">
-                                        상세보기
-                                    </a>
-                                </td>
-                            </tr>
-                        </c:forEach>
+                            <c:forEach var="r" items="${todayReceiptList}">
+							    <tr>
+							        <td>${r.purchaseOrderId}</td>
+							
+							        <td>
+									    <c:choose>
+									        <c:when test="${r.status eq 'APPROVED'}">
+									            <span class="status-badge approved">승인</span>
+									        </c:when>
+									
+									        <c:when test="${r.status eq 'PARTIALLY_APPROVED'}">
+									            <span class="status-badge partial">부분승인</span>
+									        </c:when>
+									    </c:choose>
+									</td>
+							
+							        <td>
+							            ${r.materialName}
+							            <c:if test="${r.extraCount > 0}">
+							                외 ${r.extraCount}건
+							            </c:if>
+							        </td>
+							
+							        <td>
+							            <a class="detail-btn"
+										   href="${pageContext.request.contextPath}/owner/receipts/${r.purchaseOrderId}/receipt">
+										   상세보기
+										</a>
+							        </td>
+							    </tr>
+							</c:forEach>
 
                         <c:if test="${empty todayReceiptList}">
                             <tr>
