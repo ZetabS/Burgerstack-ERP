@@ -8,6 +8,9 @@
   <c:when test="${value eq 'OPEN'}">
     <c:set var="variant" value="primary" />
   </c:when>
+  <c:when test="${value eq 'PAUSED'}">
+    <c:set var="variant" value="warning" />
+  </c:when>
   <c:when test="${value eq 'CLOSED'}">
     <c:set var="variant" value="secondary" />
   </c:when>

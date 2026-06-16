@@ -5,6 +5,7 @@
 <span class="ds-display-label">
   <c:choose>
     <c:when test="${value eq 'OPEN'}">영업 중</c:when>
+    <c:when test="${value eq 'PAUSED'}">휴업</c:when>
     <c:when test="${value eq 'CLOSED'}">영업 종료</c:when>
     <c:otherwise><c:out value="${value}" /></c:otherwise>
   </c:choose>
