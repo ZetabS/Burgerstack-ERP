@@ -55,10 +55,10 @@
           <layout:FieldRow label="상태">
             <c:choose>
               <c:when test="${user.status eq 'ACTIVE'}">
-                <span class="text-muted">영업중</span>
+                <span class="text-muted">활성</span>
               </c:when>
               <c:otherwise>
-              	<span class="text-muted">폐점</span>
+              	<span class="text-muted">비활성</span>
               </c:otherwise>
             </c:choose>
           </layout:FieldRow>

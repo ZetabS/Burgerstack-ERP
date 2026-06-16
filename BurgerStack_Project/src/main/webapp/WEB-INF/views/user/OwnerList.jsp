@@ -1,11 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
-<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
-<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table" %>
-<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout"%>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/common"%>
+<%@ taglib prefix="table" tagdir="/WEB-INF/tags/table"%>
+<%@ taglib prefix="display" tagdir="/WEB-INF/tags/display"%>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
 
 <%--
   c:url은 context-path(/burgerstack)를 자동으로 붙여줍니다.
@@ -17,17 +18,18 @@
 <c:url var="baseUrl" value="/admin/users" />
 
 <t:layout>
-  <layout:ListPage title="점주 목록 페이지" description="등록된 점주 계정을 조회할 수 있습니다.">
+	<layout:ListPage title="점주 목록 페이지" description="등록된 점주 계정을 조회할 수 있습니다.">
 
-    <jsp:attribute name="actions">
+		<jsp:attribute name="actions">
       <a href="${baseUrl}" class="btn btn-secondary">초기화</a>
     </jsp:attribute>
 
-    <jsp:attribute name="toolbar">
+		<jsp:attribute name="toolbar">
       <form action="${baseUrl}" method="get">
         <input type="hidden" name="page" value="1" />
         <%-- size 파라미터도 컨트롤러와 맞추기 위해 10으로 고정하거나 pageInfo에서 꺼냅니다 --%>
-        <input type="hidden" name="size" value="${empty pageInfo.size ? 10 : pageInfo.size}" />
+        <input type="hidden" name="size"
+					value="${empty pageInfo.size ? 10 : pageInfo.size}" />
 
         <layout:Toolbar>
           <jsp:attribute name="left">
@@ -36,24 +38,28 @@
                 <option value="" ${empty param.status ? 'selected' : ''}>
                     전체상태
                 </option>
-                <option value="ACTIVE" ${param.status eq 'ACTIVE' ? 'selected' : ''}>
-                    영업중
+                <option value="ACTIVE"
+								${param.status eq 'ACTIVE' ? 'selected' : ''}>
+                    활성
                 </option>
-                <option value="INACTIVE" ${param.status eq 'INACTIVE' ? 'selected' : ''}>
-                    폐점
+                <option value="INACTIVE"
+								${param.status eq 'INACTIVE' ? 'selected' : ''}>
+                    비활성
                 </option>
             </select>
           </jsp:attribute>
 
           <jsp:attribute name="right">          
-            <common:SearchBar name="keyword" value="${keyword}" placeholder="아이디, 점주명 검색" />
+            <common:SearchBar name="keyword" value="${keyword}"
+							placeholder="아이디, 점주명 검색" />
           </jsp:attribute>
         </layout:Toolbar>
       </form>
     </jsp:attribute>
 
-    <jsp:attribute name="table">
-      <table:Table isEmpty="${empty ownerList}" emptyMessage="조회된 점주 계정이 없습니다.">
+		<jsp:attribute name="table">
+      <table:Table isEmpty="${empty ownerList}"
+				emptyMessage="조회된 점주 계정이 없습니다.">
         <jsp:attribute name="thead">
           <tr>
             <th class="text-center">No</th>
@@ -96,10 +102,19 @@
               <table:TextCell value="${u.userId}" />
               <table:TextCell value="${u.userName}" />
               <table:DateTimeCell value="${u.createdAt}" />
-              <table:FitCell align="left">
-                <%-- DB에서 꺼내온 u.status ('ACTIVE'/'INACTIVE')가 그대로 들어갑니다. --%>
-                <display:InquiryStatusBadge value="${u.status}"/>
-              </table:FitCell>
+			  <table:FitCell align="left">
+			      <c:choose>
+			          <c:when test="${u.status eq 'ACTIVE'}">
+			             <span class="badge badge-success">활성</span>
+			          </c:when>
+			          <c:when test="${u.status eq 'INACTIVE'}">
+			             <span class="badge badge-secondary">비활성</span>
+			          </c:when>
+			          <c:otherwise>
+			             <span class="badge badge-warning">${u.status}</span>
+			          </c:otherwise>
+			      </c:choose>
+			  </table:FitCell>
 
             </table:TableRow>
           </c:forEach>
@@ -107,10 +122,10 @@
       </table:Table>
     </jsp:attribute>
 
-    <jsp:attribute name="pagination">
+		<jsp:attribute name="pagination">
     
       <t:pagination pageInfo="${pageInfo}" />
     </jsp:attribute>
 
-  </layout:ListPage>
+	</layout:ListPage>
 </t:layout>

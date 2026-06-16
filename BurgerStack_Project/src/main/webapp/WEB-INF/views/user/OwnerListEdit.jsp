@@ -65,7 +65,14 @@
           
           <layout:FieldRow label="이메일" inputId="safetyQuantity" help="이메일을 입력하시오.">
             <input type="email" class="email" id="email" name="email" value="${user.email}"/>
-          </layout:FieldRow>          
+          </layout:FieldRow>     
+          <layout:FieldRow label="상태" inputId="status" help="계정 상태를 선택하세요.">
+		  <select class="form-control" id="status" name="status">
+		    <option value="ACTIVE" <c:if test="${user.status eq 'ACTIVE'}">selected</c:if>>활성</option>
+		    <option value="INACTIVE" <c:if test="${user.status eq 'INACTIVE'}">selected</c:if>>비활성</option>
+		  </select>
+		</layout:FieldRow>
+               
         </layout:Section>
 
         <common:Actions>
