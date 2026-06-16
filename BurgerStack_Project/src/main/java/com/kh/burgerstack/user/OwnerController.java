@@ -44,14 +44,21 @@ public class OwnerController {
 	    int result = ownerService.update(u);
 
 	    if (result > 0) {
-	        System.out.println("1");
-	        session.setAttribute("User", u);
+	        System.out.println("정보 수정 성공");
+	        
+	        // 1. 세션에서 현재 로그인된 사용자 객체를 가져옴
+	        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	        
+	        // 2. 입력받은 새 정보로 업데이트
+	        loginUser.setPhone(u.getPhone());
+	        loginUser.setEmail(u.getEmail());
+	        
+	        // 3. 갱신된 객체를 다시 세션에 저장 
+	        session.setAttribute("loginUser", loginUser);
 	        session.setAttribute("alertMsg", "성공적으로 정보가 수정되었습니다.");
-	        mv.setViewName("redirect:/owner/dashboard");
-	    } else {
-	        System.out.println("2");
-	        mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
-	        mv.setViewName("common/errorPage");
+	        
+	        // 4. 마이페이지로 다시 이동
+	        mv.setViewName("redirect:/owner/mypage");
 	    }
 
 	    return mv;

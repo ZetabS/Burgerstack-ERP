@@ -118,6 +118,7 @@ input:focus {
 			<h2>점포 관리자 정보</h2>
 
 			<form id="upate" action="/burgerstack/owner/mypage" method="post">
+			<input type="hidden" name="userNo" value="${sessionScope.loginUser.userNo}" />
 				<table>
 					<tr>
 						<th>아이디</th>

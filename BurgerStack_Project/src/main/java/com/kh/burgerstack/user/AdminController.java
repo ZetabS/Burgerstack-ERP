@@ -66,32 +66,36 @@ public class AdminController {
 	// 관리자 마이페이지 정보 수정
 	@PostMapping("mypage")
 	public ModelAndView update(User u, ModelAndView mv, HttpSession session) {
-		
-		if (u.getUserName() != null) u.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(u.getUserName()));
+	    
+	    // 1. 보안처리
+	    if (u.getUserName() != null) u.setUserName(org.springframework.web.util.HtmlUtils.htmlEscape(u.getUserName()));
 	    if (u.getEmail() != null) u.setEmail(org.springframework.web.util.HtmlUtils.htmlEscape(u.getEmail()));
 	    if (u.getPhone() != null) u.setPhone(org.springframework.web.util.HtmlUtils.htmlEscape(u.getPhone()));
-		
-		u.setUserNo(((LoginUser)session.getAttribute("loginUser")).getUserNo());
-		
-		int result = adminService.update(u);
+	    
+	    // 2. 현재 로그인된 유저 번호 가져오기
+	    u.setUserNo(((LoginUser)session.getAttribute("loginUser")).getUserNo());
+	    
+	    // 3. 서비스 호출
+	    int result = adminService.update(u);
 
-		if (result > 0) {
-			
-			System.out.println("관리자 정보 수정 성공");
-			
-			session.setAttribute("User", u);
+	    if (result > 0) {
+	        System.out.println("관리자 정보 수정 성공");
+	        
+	        LoginUser updatedUser = (LoginUser)session.getAttribute("loginUser");
+	        updatedUser.setPhone(u.getPhone());
+	        updatedUser.setEmail(u.getEmail());
+	        session.setAttribute("loginUser", updatedUser); // 갱신된 객체를 다시 세션에 저장
 
-			session.setAttribute("alertMsg", "성공적으로 정보가 수정되었습니다.");
+	        session.setAttribute("alertMsg", "성공적으로 정보가 수정되었습니다.");
+	        mv.setViewName("redirect:/admin/mypage"); // 수정 후 다시 마이페이지로 이동
 
-			mv.setViewName("redirect:/admin/dashboard");
+	    } else {
+	        System.out.println("관리자 정보 수정 실패");
+	        mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
+	        mv.setViewName("common/errorPage"); // 오류 페이지가 올바른지 확인
+	    }
 
-		} else {
-			System.out.println("관리자 정보 수정 실패");
-			mv.addObject("errorMsg", "정보 수정에 실패하였습니다.");
-			mv.setViewName("common/mypage");
-		}
-
-		return mv;
+	    return mv;
 	}
 
 	// 관리자 비밀번호 변경

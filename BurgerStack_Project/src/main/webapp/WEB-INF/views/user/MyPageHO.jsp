@@ -115,6 +115,7 @@
 	<h1>관리자 마이페이지</h1>
 
 	<form id="update" action="/burgerstack/admin/mypage" method="post">		
+	<input type="hidden" name="userNo" value="${sessionScope.loginUser.userNo}" />
 		    <table>
 		        <tr>
 		            <th>아이디</th>
