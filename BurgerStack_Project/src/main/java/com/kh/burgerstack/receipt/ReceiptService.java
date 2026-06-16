@@ -18,80 +18,73 @@ public class ReceiptService {
     private ReceiptDao receiptDao;
 
     @Autowired
-	private SqlSessionTemplate sqlSession;
+    private SqlSessionTemplate sqlSession;
 
     public PageInfo getHistoryPageInfo(PagingRequest pagingRequest,
-							            String receiptType,
-							            String startDate,
-							            String endDate,
-							            String keyword) {
-		return pagingRequest.toPageInfo(
-			receiptDao.getHistoryTotalCount(
-						sqlSession,
-						receiptType,
-						startDate,
-						endDate,
-						keyword
-					)
-			);
-	}
+            String receiptType,
+            String startDate,
+            String endDate,
+            String keyword) {
+        return pagingRequest.toPageInfo(
+                receiptDao.getHistoryTotalCount(
+                        sqlSession,
+                        receiptType,
+                        startDate,
+                        endDate,
+                        keyword));
+    }
 
     public PageInfo getPlanPageInfo(PagingRequest pagingRequest,
-						            String status,
-						            String startDate,
-						            String endDate,
-						            String keyword) {
-						
-						return pagingRequest.toPageInfo(
-						receiptDao.getPlanTotalCount(
-						sqlSession,
-						status,
-						startDate,
-						endDate,
-						keyword
-						)
-						);
-						}
+            String status,
+            String startDate,
+            String endDate,
+            String keyword) {
+
+        return pagingRequest.toPageInfo(
+                receiptDao.getPlanTotalCount(
+                        sqlSession,
+                        status,
+                        startDate,
+                        endDate,
+                        keyword));
+    }
 
     public List<PurchaseOrder> selectReceiptPlanList(PagingRequest pagingRequest,
-						            String status,
-						            String startDate,
-						            String endDate,
-						            String keyword) {
-						
-						return receiptDao.selectReceiptPlanList(
-						sqlSession,
-						pagingRequest,
-						status,
-						startDate,
-						endDate,
-						keyword
-						);
-						}
-    
+            String status,
+            String startDate,
+            String endDate,
+            String keyword) {
+
+        return receiptDao.selectReceiptPlanList(
+                sqlSession,
+                pagingRequest,
+                status,
+                startDate,
+                endDate,
+                keyword);
+    }
+
     public List<Receipt> selectReceiptList(PagingRequest pagingRequest,
-								            String receiptType,
-								            String startDate,
-								            String endDate,
-								            String keyword) {
-			return receiptDao.selectReceiptList(
-					sqlSession,
-					pagingRequest,
-					receiptType,
-					startDate,
-					endDate,
-					keyword
-				);
-	}
-    
+            String receiptType,
+            String startDate,
+            String endDate,
+            String keyword) {
+        return receiptDao.selectReceiptList(
+                sqlSession,
+                pagingRequest,
+                receiptType,
+                startDate,
+                endDate,
+                keyword);
+    }
+
     @Transactional
     public void processReceipt(Long purchaseOrderId,
-                               ReceiptForm form,
-                               Long createdBy) {
+            ReceiptForm form,
+            Long createdBy) {
 
         // 발주 번호로 점포 번호 조회
-        Long storeId =
-                receiptDao.selectStoreIdByPurchaseOrderId(purchaseOrderId);
+        Long storeId = receiptDao.selectStoreIdByPurchaseOrderId(purchaseOrderId);
 
         // RECEIPTS 테이블 저장
         Receipt receipt = new Receipt();
@@ -113,17 +106,14 @@ public class ReceiptService {
         Long receiptId = receipt.getReceiptId();
 
         // INVENTORY_TRANSACTIONS 생성
-        ReceiptTransactionParam transactionParam =
-                new ReceiptTransactionParam(
-                        storeId,
-                        receiptId,
-                        createdBy
-                );
+        ReceiptTransactionParam transactionParam = new ReceiptTransactionParam(
+                storeId,
+                receiptId,
+                createdBy);
 
         receiptDao.insertInventoryTransaction(transactionParam);
 
-        Long inventoryTransactionId =
-                transactionParam.getInventoryTransactionId();
+        Long inventoryTransactionId = transactionParam.getInventoryTransactionId();
 
         // 입고 상품 반복 처리
         for (ReceiptItem item : form.getItems()) {
@@ -165,45 +155,36 @@ public class ReceiptService {
             receiptDao.insertReceiptItem(item);
 
             // 현재 재고 조회
-            Long beforeQuantity =
-                    receiptDao.selectCurrentQuantity(
-                            storeId,
-                            item.getPurchaseOrderItemId()
-                    );
+            Long beforeQuantity = receiptDao.selectCurrentQuantity(
+                    storeId,
+                    item.getPurchaseOrderItemId());
 
             if (beforeQuantity == null) {
                 beforeQuantity = 0L;
             }
 
             // 입고 후 재고 계산
-            Long afterQuantity =
-                    beforeQuantity + receivedQuantity;
+            Long afterQuantity = beforeQuantity + receivedQuantity;
 
             // STORE_INVENTORIES 증가
-            ReceiptInventoryParam inventoryParam =
-                    new ReceiptInventoryParam(
-                            storeId,
-                            item.getPurchaseOrderItemId(),
-                            receivedQuantity
-                    );
+            ReceiptInventoryParam inventoryParam = new ReceiptInventoryParam(
+                    storeId,
+                    item.getPurchaseOrderItemId(),
+                    receivedQuantity);
 
             receiptDao.increaseStoreInventory(inventoryParam);
 
             // 증가된 재고 행 조회
-            Long storeInventoryId =
-                    receiptDao.selectStoreInventoryId(
-                            storeId,
-                            item.getPurchaseOrderItemId()
-                    );
+            Long storeInventoryId = receiptDao.selectStoreInventoryId(
+                    storeId,
+                    item.getPurchaseOrderItemId());
 
             // INVENTORY_TRANSACTION_ITEMS 저장
-            ReceiptTransactionItemParam itemParam =
-                    new ReceiptTransactionItemParam(
-                            inventoryTransactionId,
-                            storeInventoryId,
-                            beforeQuantity,
-                            afterQuantity
-                    );
+            ReceiptTransactionItemParam itemParam = new ReceiptTransactionItemParam(
+                    inventoryTransactionId,
+                    storeInventoryId,
+                    beforeQuantity,
+                    afterQuantity);
 
             receiptDao.insertInventoryTransactionItem(itemParam);
         }
@@ -211,11 +192,9 @@ public class ReceiptService {
         // 발주 상태 변경
         // APPROVED -> RECEIVED
         receiptDao.updatePurchaseOrderStatus(
-                purchaseOrderId
-        );
+                purchaseOrderId);
     }
-    
-    
+
     public Receipt selectReceiptDetail(Long receiptId) {
         return receiptDao.selectReceiptDetail(receiptId);
     }
@@ -223,27 +202,13 @@ public class ReceiptService {
     public List<ReceiptItemDetail> selectReceiptItemDetailList(Long receiptId) {
         return receiptDao.selectReceiptItemDetailList(receiptId);
     }
-    
+
     public List<ReceiptCheckItemDto> selectReceiptCheckItemList(Long purchaseId) {
         return receiptDao.selectReceiptCheckItemList(purchaseId);
     }
-    
+
     public String selectPurchaseStatus(Long purchaseId) {
         return receiptDao.selectPurchaseStatus(purchaseId);
     }
-    
-    
-    
-    
-    
-    
-    
-    
+
 }
-
-
-
-
-
-
-
