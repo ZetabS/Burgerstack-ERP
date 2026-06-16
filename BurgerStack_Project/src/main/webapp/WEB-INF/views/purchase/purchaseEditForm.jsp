@@ -227,9 +227,9 @@
                         name="orderMemo"
                         id="orderMemo"
                         rows="4"
-                        style="width:100%; resize:none;"
-                        value="${purchase.orderMemo}"
-                        placeholder="발주 관련 요청사항을 입력하세요."></textarea>
+                        maxlength="100"
+                        placeholder="발주 관련 요청사항을 입력하세요. (100자 제한)"
+                        style="width:100%; resize:none;"></textarea>
                     <br>
                     <button type="button"
                             class="button-primary"
@@ -663,4 +663,11 @@ function resetFilter() {
 
     filterMaterials();
 }
+// 반려 사유 입력 10자 제한
+$('#rejectMemo').on('input', function () {
+
+    if ($(this).val().length > 10) {
+        $(this).val($(this).val().substring(0, 10));
+    }
+});
 </script>

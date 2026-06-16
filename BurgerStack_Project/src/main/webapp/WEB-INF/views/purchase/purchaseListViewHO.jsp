@@ -368,7 +368,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 점포 변경시 자동 조회
     // 점포/상태 변경시 자동 조회
-    [storeId,status].forEach(function(target){
+    // 날짜 변경시 자동 조회
+    [storeId,status,startDate,endDate].forEach(function(target){
 
         if(!target){
             return;

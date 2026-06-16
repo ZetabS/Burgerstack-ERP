@@ -51,7 +51,7 @@ public class PurchaseDao {
         return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseList",
                 param);
     }
-
+    // 페이지 수 조회
     public int selectPurchaseCount(PurchaseSearchDto condition, SqlSessionTemplate sqlSession) {
 
         Map<String, Object> param = new HashMap<>();
@@ -65,6 +65,41 @@ public class PurchaseDao {
 
         return sqlSession.selectOne(
                 "com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseCount",
+                param);
+    }
+
+    // 승인발주 목록 조회
+    public ArrayList<PurchaseDto> searchPurchaseApprovalList(PagingRequest pagingRequest, PurchaseSearchDto condition,
+            SqlSessionTemplate sqlSession) {
+
+        Map<String, Object> param = new HashMap<>();
+
+        param.put("keyword", condition.getKeyword());
+        param.put("startDate", condition.getStartDate());
+        param.put("endDate", condition.getEndDate());
+        param.put("storeId", condition.getStoreId());
+        param.put("isAdmin", condition.isAdmin());
+
+        param.put("startRow", pagingRequest.getStartRow());
+        param.put("endRow", pagingRequest.getEndRow());
+
+        return (ArrayList) sqlSession.selectList("com.kh.burgerstack.purchase.PurchaseMapper.searchPurchaseApprovalList",
+                param);
+    }
+
+    //승인 발주 페이지 수 조회
+    public int selectPurchaseApprovalCount(PurchaseSearchDto condition, SqlSessionTemplate sqlSession) {
+
+        Map<String, Object> param = new HashMap<>();
+
+        param.put("keyword", condition.getKeyword());
+        param.put("startDate", condition.getStartDate());
+        param.put("endDate", condition.getEndDate());
+        param.put("storeId", condition.getStoreId());
+        param.put("isAdmin", condition.isAdmin());
+
+        return sqlSession.selectOne(
+                "com.kh.burgerstack.purchase.PurchaseMapper.selectPurchaseApprovalCount",
                 param);
     }
 
