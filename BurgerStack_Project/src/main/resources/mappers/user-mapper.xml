@@ -34,24 +34,21 @@
 
 	<!-- 로그인 -->
 	<select id="login" parameterType="String" resultType="LoginUser">
-
-		SELECT
-			  U.USER_NO
-			, U.USER_ID
-			, U.PASSWORD
-			, U.USER_NAME
-			, U.PHONE
-			, U.EMAIL
-			, U.ROLE
-			, S.STORE_ID
-			, S.STORE_NAME
-		FROM USERS U
-		LEFT JOIN STORES S
-		  ON S.OWNER_USER_NO = U.USER_NO
-		WHERE U.USER_ID = #{userId}
-		  AND U.STATUS = 'ACTIVE'
-
-	</select>
+	    SELECT
+	          U.USER_NO
+	        , U.USER_ID
+	        , U.PASSWORD
+	        , U.USER_NAME
+	        , U.PHONE
+	        , U.EMAIL
+	        , U.ROLE
+	        , U.STATUS           , S.STORE_ID
+	        , S.STORE_NAME
+	        , S.STATUS AS STORE_STATUS  FROM USERS U
+	    LEFT JOIN STORES S
+	      ON S.OWNER_USER_NO = U.USER_NO
+	    WHERE U.USER_ID = #{userId}
+      </select>
 
 
 	<!-- 점주 계정 등록 -->

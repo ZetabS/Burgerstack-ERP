@@ -20,9 +20,11 @@ public class LoginUser {
 	private String phone;
 	private String email;
 	private String role;
+	private String status;
 
 	private Long storeId;
 	private String storeName;
+	private String storeStatus;
 
 	public boolean isAdmin() {
 		return role.equals("ADMIN");
