@@ -18,38 +18,40 @@
 
 
     <!-- 점포 등록 -->
-    <insert id="insertStore"
-            parameterType="com.kh.burgerstack.store.Store">
-
-        <selectKey keyProperty="storeId"
-                   resultType="long"
-                   order="BEFORE">
-            SELECT SEQ_STORE.NEXTVAL
-            FROM DUAL
-        </selectKey>
-
-        INSERT INTO STORES
-        (
-            STORE_ID,
-            STORE_NAME,
-            PHONE,
-            ADDRESS,
-            OWNER_USER_NO,
-            STATUS,
-            CREATED_AT
-        )
-        VALUES
-        (
-            #{storeId},
-            #{storeName},
-            #{phone},
-            #{address},
-            #{ownerUserNo},
-            'OPEN',
-            SYSDATE
-        )
-
-    </insert>
+	<insert id="insertStore"
+	        parameterType="com.kh.burgerstack.store.Store">
+	
+	    <selectKey keyProperty="storeId"
+	               resultType="long"
+	               order="BEFORE">
+	        SELECT SEQ_STORE.NEXTVAL
+	        FROM DUAL
+	    </selectKey>
+	
+	    INSERT INTO STORES
+	    (
+	        STORE_ID,
+	        STORE_CODE,
+	        STORE_NAME,
+	        PHONE,
+	        ADDRESS,
+	        OWNER_USER_NO,
+	        STATUS,
+	        CREATED_AT
+	    )
+	    VALUES
+	    (
+	        #{storeId},
+	        'S' || TO_CHAR(SYSDATE, 'YYYY') || LPAD(TO_CHAR(#{storeId}), 4, '0'),
+	        #{storeName},
+	        #{phone},
+	        #{address},
+	        #{ownerUserNo},
+	        'OPEN',
+	        SYSDATE
+	    )
+	
+	</insert>
 
 
     <!-- 점포 등록 시 해당 점포의 전체 자재 기준 재고 행 생성 -->
@@ -322,28 +324,35 @@
 
     <!-- 점포 등록 시 연락처 중복 확인 -->
     <select id="countStorePhone"
-            parameterType="string"
-            resultType="int">
-
-        SELECT COUNT(*)
-        FROM STORES
-        WHERE PHONE = #{_parameter}
-          AND STATUS = 'OPEN'
-
-    </select>
+	        parameterType="string"
+	        resultType="int">
+	
+	    SELECT COUNT(*)
+	    FROM STORES
+	    WHERE PHONE = #{_parameter}
+	
+	</select>
 
 
     <!-- 점포 수정 시 연락처 중복 확인 -->
     <select id="countStorePhoneForUpdate"
-            parameterType="com.kh.burgerstack.store.Store"
-            resultType="int">
-
-        SELECT COUNT(*)
-        FROM STORES
-        WHERE PHONE = #{phone}
-          AND STORE_ID != #{storeId}
-          AND STATUS = 'OPEN'
-
-    </select>
+	        parameterType="com.kh.burgerstack.store.Store"
+	        resultType="int">
+	
+	    SELECT COUNT(*)
+	    FROM STORES
+	    WHERE PHONE = #{phone}
+	      AND STORE_ID != #{storeId}
+	
+	</select>
+    
+    <select id="countStoreNameForUpdate"
+	        parameterType="map"
+	        resultType="int">
+	    SELECT COUNT(*)
+	    FROM STORES
+	    WHERE STORE_NAME = #{storeName}
+	      AND STORE_ID != #{storeId}
+	</select>
 
 </mapper>

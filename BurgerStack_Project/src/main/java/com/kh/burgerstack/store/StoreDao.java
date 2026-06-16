@@ -157,5 +157,14 @@ public class StoreDao {
                 store
         );
     }
+    
+    public int countStoreNameForUpdate(SqlSession sqlSession,
+		            Map<String, Object> map) {
+		
+		return sqlSession.selectOne(
+				"storeMapper.countStoreNameForUpdate",
+				map
+		);
+}
 }
 

@@ -120,7 +120,7 @@
 
     <jsp:body>
 
-      <form action="${submitUrl}" method="post">
+      <form id="receiptForm" action="${submitUrl}" method="post">
 
         <layout:Section title="입고 기본 정보">
 
