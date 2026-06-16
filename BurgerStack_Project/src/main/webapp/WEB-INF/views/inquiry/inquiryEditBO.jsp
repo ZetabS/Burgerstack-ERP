@@ -5,27 +5,6 @@
 <%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
 <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
 
-<%--
-  폼 페이지 패턴 예제입니다.
-
-  기본 구조:
-  1. 폼 전용 Page 컴포넌트는 따로 두지 않습니다.
-     <layout:Page>의 본문에 업무별 <form>을 직접 작성합니다.
-  2. 입력 그룹은 <layout:Section>으로 나눕니다.
-  3. 각 입력은 <layout:FieldRow>로 라벨/입력 정렬을 통일합니다.
-  4. 저장/취소 버튼은 <common:Actions>에 둡니다.
-
-  주의:
-  - <layout:Page>에서 actions 슬롯을 사용하므로 <jsp:body>를 반드시 명시합니다.
-  - select option은 과하게 추상화하지 않고 일반 HTML로 작성합니다.
-  - 도메인 코드의 표시만 display 태그를 사용합니다.
-
-  필요한 taglib 지시어:
-  - layout 컴포넌트: <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
-  - common 컴포넌트: <%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
-  - display 컴포넌트: <%@ taglib prefix="display" tagdir="/WEB-INF/tags/display" %>
---%>
-
 <c:url var="listUrl" value="/owner/inquiries" />
 <c:url var="submitUrl" value="/owner/inquiries/${inquiryId}" />
 
@@ -33,30 +12,37 @@
   <layout:Page title="문의사항 작성" description="">
 
     <jsp:body>
-      <%--
-        form 태그는 컴포넌트가 숨기지 않습니다.
-        action, method, hidden input, CSRF 같은 업무별 요구사항을 화면에서 명확히 드러내기 위함입니다.
-      --%>
+    
+      <c:set var="isAnswered" value="${not empty inquiry.answerContent}" />
+
       <form action="${submitUrl}" method="post">
         <input type="hidden" name="inventoryId" value="${inquiry.inquiryId}" />
 
         <layout:Section title="문의사항을 작성해주세요." description="">
+          
+          <c:if test="${isAnswered}">
+            <div class="alert alert-warning text-center mb-4" role="alert" style="font-weight: bold; font-size: 0.95rem;">
+              ⚠️ 본사 답변이 등록된 문의사항은 내용을 수정할 수 없습니다.
+            </div>
+          </c:if>
 
-		  <%-- number input은 min, required 같은 HTML 제약을 화면에서 직접 선언합니다. --%>
           <layout:FieldRow label="제목" inputId="safetyQuantity" help="제목을 입력하시오.">
-            <input type="text" class="title" id="title" name="title" maxlength="100" value="${inquiry.title}" required />
+            <input type="text" class="title" id="title" name="title" maxlength="100" value="${inquiry.title}" required 
+                   ${isAnswered ? 'disabled' : ''} />
           </layout:FieldRow>
 
-          <%-- textarea는 업무에 맞게 rows를 직접 선택합니다. --%>
           <layout:FieldRow label="내용" inputId="memo" help="최대 1000자까지 입력 가능합니다.">
-            <textarea class="form-control" id="content" name="content" rows="4" maxlength="1000"><c:out value="${inquiry.content}" /></textarea>
+            <textarea class="form-control" id="content" name="content" rows="4" maxlength="1000" 
+                      ${isAnswered ? 'disabled' : ''}><c:out value="${inquiry.content}" /></textarea>
           </layout:FieldRow>
         </layout:Section>
 
         <common:Actions>
-          <%-- 취소/저장 순서를 일관되게 유지합니다. --%>
           <common:ReturnLink href="${listUrl}">목록으로</common:ReturnLink>
-          <button type="submit" class="btn btn-primary ml-2">저장</button>
+          
+          <c:if test="${not isAnswered}">
+            <button type="submit" class="btn btn-primary ml-2">저장</button>
+          </c:if>
         </common:Actions>
       </form>
     </jsp:body>

@@ -33,14 +33,13 @@
   - view.pageInfo : <t:pagination>에 전달할 PageInfo
 --%>
 
-<c:url var="baseUrl" value="/burgerstack/owner/inquiries" />
-<c:url var="bUrl" value="/burgerstack/owner/dashboard" />
+<c:url var="baseUrl" value="/owner/inquiries" />
 
 <t:layout>
   <layout:ListPage title="문의사항 목록 페이지" description="">
     <jsp:attribute name="actions">
       <%-- actions 슬롯은 페이지 헤더 오른쪽에 배치됩니다. 초기화, 등록, 다운로드 같은 페이지 단위 액션을 둡니다. --%>
-      <a href="${bUrl}" class="btn btn-secondary">목록으로</a>
+      <a href="${baseUrl}" class="btn btn-secondary">초기화</a>
     </jsp:attribute>
 
     <jsp:attribute name="toolbar">

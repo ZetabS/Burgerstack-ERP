@@ -147,6 +147,14 @@ public class InquiryControllerBO {
 		        i.setContent(org.springframework.web.util.HtmlUtils.htmlEscape(i.getContent()));
 		    }		    	
 		    
+		    Inquiry originalInquiry = inquiryServiceBO.InquiryListDetail(i.getInquiryId());
+		    
+		    if(originalInquiry != null && originalInquiry.getAnswerContent() != null && !originalInquiry.getAnswerContent().trim().isEmpty()) {
+		    	session.setAttribute("alertMsg", "본사 답변이 완료된 문의사항은 수정할 수 없습니다.");
+		    	mv.setViewName("redirect:/owner/inquiries");
+		    	return mv;
+		    }
+		    
 		    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 		    if (loginUser != null) {
 		        i.setStoreId(loginUser.getStoreId());
@@ -172,6 +180,7 @@ public class InquiryControllerBO {
 		    
 		    return mv;
 		}
+		
 	@PostMapping("inquiries/{inquiryId}/delete")
 	public String inquiryDelete(@PathVariable long inquiryId, Inquiry i, Model model, HttpSession session) {
 		

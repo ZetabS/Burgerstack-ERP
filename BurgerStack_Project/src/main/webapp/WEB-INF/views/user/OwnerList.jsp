@@ -35,13 +35,12 @@
 --%>
 
 <c:url var="baseUrl" value="/admin/users" />
-<c:url var="bUrl" value="/admin/dashboard" />
 
 <t:layout>
   <layout:ListPage title="점주 목록 페이지" description="">
     <jsp:attribute name="actions">
       <%-- actions 슬롯은 페이지 헤더 오른쪽에 배치됩니다. 초기화, 등록, 다운로드 같은 페이지 단위 액션을 둡니다. --%>
-      <a href="${bUrl}" class="btn btn-secondary">이전으로</a>
+      <a href="${baseUrl}" class="btn btn-secondary">초기화</a>
     </jsp:attribute>
 
     <jsp:attribute name="toolbar">
