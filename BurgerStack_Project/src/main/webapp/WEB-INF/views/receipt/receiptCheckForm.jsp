@@ -242,7 +242,7 @@
                     <select name="items[${status.index}].receiptItemMemo"
                             class="form-control form-control-sm diff-reason"
                             disabled>
-                      <option value="">선택</option>
+                      <option value="" hidden>선택</option>
                       <option value="수량 부족">수량 부족</option>
                       <option value="초과 입고">초과 입고</option>
                       <option value="파손">파손</option>
