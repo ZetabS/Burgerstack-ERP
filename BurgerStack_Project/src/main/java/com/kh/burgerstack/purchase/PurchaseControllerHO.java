@@ -45,8 +45,8 @@ public class PurchaseControllerHO {
     @Autowired
     private StoreDao storeDao;
 
-    // 발주 목록 및 승인 대기 목록 처리
-    @GetMapping({ "purchases", "purchases/pending" })
+    // 발주 목록
+    @GetMapping({ "purchases"})
     public String purchaseList(
             @RequestParam(required = false) Long storeId,
             PurchaseSearchDto condition,
@@ -77,6 +77,57 @@ public class PurchaseControllerHO {
         model.addAttribute("condition", condition);
         model.addAttribute("storeList", storeOptions);
 
+        // 3. View 지정 (요청 경로에 따른 분기 처리)
+        String requestURI = request.getRequestURI();
+        if (requestURI.contains("/pending")) {
+            return "purchase/purchaseApprovalList"; // 승인 대기 발주 페이지
+        }
+
+        return "purchase/purchaseListViewHO"; // 기존 발주 이력 목록 페이지
+    }
+
+    // 승인 대기 목록
+    @GetMapping({"purchases/pending" })
+    public String purchaseApprovalList(
+            @RequestParam(required = false) Long storeId,
+            PurchaseSearchDto condition,
+            PagingRequest pagingRequest,
+            HttpSession session,
+            HttpServletRequest request, // 요청 경로 확인을 위해 추가
+            Model model) {
+
+
+
+
+        // 1. 발주 목록 조회
+        ArrayList<PurchaseDto> list = purchaseService.searchPurchaseApprovalList(pagingRequest, condition, session);
+
+        List<StoreOption> storeOptions = storeDao.getStoreOptions();
+
+        int totalCount = purchaseService.selectPurchaseApprovalCount(condition, session);
+
+        PageInfo pageInfo = pagingRequest.toPageInfo(totalCount);
+
+        System.out.println("list size 11= " + list.size());
+        System.out.println("totalCount 11= " + totalCount);
+
+        // System.out.println("request storeId = " + storeId);
+        // System.out.println("condition before = " + condition);
+
+        condition.setStoreId(storeId);
+
+        // System.out.println("condition after = " + condition);
+
+        // 2. Model에 담기
+        model.addAttribute("list", list);
+        model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("condition", condition);
+        model.addAttribute("storeList", storeOptions);
+
+
+        System.out.println("list size = " + list.size());
+        System.out.println("totalCount = " + totalCount);
+        
         // 3. View 지정 (요청 경로에 따른 분기 처리)
         String requestURI = request.getRequestURI();
         if (requestURI.contains("/pending")) {

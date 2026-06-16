@@ -152,7 +152,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 </select>
 
-<!-- 발주 목록 페이지 -->
+<!-- 발주 목록 페이지 수 카운트 -->
 <select id="searchPurchaseCount"
         resultType="int">
 
@@ -193,6 +193,156 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     FROM PURCHASE_ORDER_ITEMS POI
                     WHERE POI.PURCHASE_ORDER_ID
                           = PO.PURCHASE_ORDER_ID
+                    AND POI.MATERIAL_NAME_SNAPSHOT
+                        LIKE '%' || #{keyword} || '%'
+                )
+
+                OR
+
+                PO.ORDER_MEMO
+                    LIKE '%' || #{keyword} || '%'
+
+            )
+
+        </if>
+
+    </where>
+
+</select>
+
+<!-- 승인대기 목록 -->
+<select id="searchPurchaseApprovalList"
+        resultType="com.kh.burgerstack.purchase.dto.PurchaseDto">
+
+    SELECT *
+    FROM (
+
+        SELECT
+            ROW_NUMBER() OVER(
+                ORDER BY PO.PURCHASE_ORDER_ID DESC
+            ) RN,
+
+            PO.PURCHASE_ORDER_ID AS purchaseOrderId,
+            'P'
+            || EXTRACT(YEAR FROM PO.CREATED_AT)
+            || LPAD(PO.PURCHASE_ORDER_ID,4,'0')
+            AS purchaseCode,
+            PO.STORE_ID          AS storeId,
+            S.STORE_NAME         AS storeName,
+            PO.STATUS            AS status,
+            PO.TOTAL_AMOUNT      AS totalAmount,
+            PO.ORDER_MEMO        AS orderMemo,
+            PO.CREATED_AT        AS createdAt,
+
+            (
+                SELECT
+                    CASE
+                        WHEN COUNT(*) <![CDATA[>]]> 1 THEN
+                            MIN(POI.MATERIAL_NAME_SNAPSHOT)
+                            || ' 외 '
+                            || (COUNT(*) - 1)
+                            || '건'
+                        ELSE
+                            MIN(POI.MATERIAL_NAME_SNAPSHOT)
+                    END
+                FROM PURCHASE_ORDER_ITEMS POI
+                WHERE POI.PURCHASE_ORDER_ID = PO.PURCHASE_ORDER_ID
+            ) AS itemSummary
+
+        FROM PURCHASE_ORDERS PO
+        JOIN STORES S
+          ON PO.STORE_ID = S.STORE_ID
+
+        <where>
+
+            AND PO.STATUS = 'REQUESTED'
+
+            <if test="storeId != null">
+                AND PO.STORE_ID = #{storeId}
+            </if>
+
+            <if test="startDate != null">
+                AND TRUNC(PO.CREATED_AT)
+                <![CDATA[>=]]>
+                #{startDate}
+            </if>
+
+            <if test="endDate != null">
+                AND TRUNC(PO.CREATED_AT)
+                <![CDATA[<=]]>
+                #{endDate}
+            </if>
+
+            <if test="keyword != null and keyword != ''">
+
+                AND (
+
+                    EXISTS (
+                        SELECT 1
+                        FROM PURCHASE_ORDER_ITEMS POI
+                        WHERE POI.PURCHASE_ORDER_ID
+                              = PO.PURCHASE_ORDER_ID
+                        AND POI.MATERIAL_NAME_SNAPSHOT
+                            LIKE '%' || #{keyword} || '%'
+                    )
+
+                    OR
+
+                    PO.ORDER_MEMO
+                        LIKE '%' || #{keyword} || '%'
+
+                )
+
+            </if>
+
+        </where>
+
+    )
+
+    WHERE RN BETWEEN #{startRow}
+                 AND #{endRow}
+
+</select>
+
+<!-- 승인대기 목록 페이지 수 카운트 -->
+<select id="selectPurchaseApprovalCount"
+        resultType="int">
+
+    SELECT COUNT(*)
+
+    FROM PURCHASE_ORDERS PO
+    JOIN STORES S
+      ON PO.STORE_ID = S.STORE_ID
+
+    <where>
+
+        AND PO.STATUS = 'REQUESTED'
+
+        <if test="storeId != null">
+            AND PO.STORE_ID = #{storeId}
+        </if>
+
+        <if test="startDate != null">
+            AND TRUNC(PO.CREATED_AT)
+            <![CDATA[>=]]>
+            #{startDate}
+        </if>
+
+        <if test="endDate != null">
+            AND TRUNC(PO.CREATED_AT)
+            <![CDATA[<=]]>
+            #{endDate}
+        </if>
+
+        <if test="keyword != null and keyword != ''">
+
+            AND (
+
+                EXISTS (
+                    SELECT 1
+                    FROM PURCHASE_ORDER_ITEMS POI
+                    WHERE POI.PURCHASE_ORDER_ID
+                            = PO.PURCHASE_ORDER_ID
                     AND POI.MATERIAL_NAME_SNAPSHOT
                         LIKE '%' || #{keyword} || '%'
                 )

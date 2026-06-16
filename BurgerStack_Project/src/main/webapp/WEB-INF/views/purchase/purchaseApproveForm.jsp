@@ -278,7 +278,7 @@
                         전체 반려
                     </button>
 
-                    <button type="submit"
+                    <button type="button"
                             class="btn btn-primary"
                             id="confirmBtn">
                         결재
@@ -390,6 +390,13 @@
 
         });
     }
+
+    $('#confirmBtn').on('click', function () {
+        if (confirm('발주를 결재하시겠습니까?\n\n결재 후에는 처리 상태가 변경됩니다.')) {
+            // 결재 처리
+            $('form').submit();
+        }
+    });
 
     function formatPrices(){
 
