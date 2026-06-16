@@ -12,7 +12,7 @@ public class MaterialDao {
     private MaterialMapper materialMapper;
 
     public int materialInsert(Material m) {
-        return materialMapper.insert(m);
+        return materialMapper.materialInsert(m);
     }
     
     public int insertInventoryStores(Long materialId) {
