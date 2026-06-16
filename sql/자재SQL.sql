@@ -1,0 +1,100 @@
+-- 전체 목록 조회 쿼리문
+-- materialId, materialType, materialName, 파일경로, 파일명, 파일확장자 필요 (jsp에 이미지 출력)
+SELECT M.MATERIAL_ID
+     , M.MATERIAL_CODE
+     , M.MATERIAL_NAME
+     , M.MATERIAL_TYPE
+     , M.SUPPLY_PRICE
+     , M.STATUS
+     , MF.MATERIAL_FILE_ID
+     , MF.STORED_NAME
+     , MF.STORAGE_PATH
+     , MF.ORIGINAL_NAME
+     , MF.CREATED_AT  AS FILE_CREATED_AT
+     , MF.DELETED_AT
+     , MF.MATERIAL_ID AS MF_MATERIAL_ID
+  FROM MATERIALS M
+  LEFT OUTER JOIN (
+      SELECT MATERIAL_FILE_ID
+           , MATERIAL_ID
+           , STORED_NAME
+           , STORAGE_PATH
+           , ORIGINAL_NAME
+           , CREATED_AT
+           , DELETED_AT
+        FROM MATERIAL_FILES
+       WHERE DELETED_AT IS NULL
+         AND MATERIAL_FILE_ID IN (
+             SELECT MIN(MATERIAL_FILE_ID)
+               FROM MATERIAL_FILES
+              WHERE DELETED_AT IS NULL
+              GROUP BY MATERIAL_ID
+         )
+  ) MF ON M.MATERIAL_ID = MF.MATERIAL_ID
+ WHERE M.STATUS != 'INACTIVE'
+ ORDER BY CASE MATERIAL_TYPE
+             WHEN 'AF' THEN 1  -- 상온식품
+             WHEN 'RF' THEN 2  -- 냉장식품
+             WHEN 'FF' THEN 3  -- 냉동식품
+             WHEN 'PK' THEN 4  -- 포장재
+             WHEN 'KW' THEN 5  -- 주방용품
+             ELSE 6            -- 기타(ET)
+         END ASC;
+
+-- 상세 조회 (첨부파일 전체) 쿼리문
+SELECT M.MATERIAL_ID
+     , M.MATERIAL_CODE
+     , M.MATERIAL_NAME
+     , M.MATERIAL_TYPE
+     , M.SUPPLY_PRICE
+     , M.DETAILS
+     , M.STATUS
+     , M.CREATED_AT
+     , M.UPDATED_AT
+     , MF.MATERIAL_FILE_ID
+     , MF.STORED_NAME
+     , MF.STORAGE_PATH
+     , MF.ORIGINAL_NAME
+     , MF.CREATED_AT  AS FILE_CREATED_AT
+     , MF.DELETED_AT
+     , MF.MATERIAL_ID AS MF_MATERIAL_ID
+  FROM MATERIALS M
+  LEFT OUTER JOIN MATERIAL_FILES MF
+    ON M.MATERIAL_ID = MF.MATERIAL_ID
+   AND MF.DELETED_AT IS NULL
+ WHERE M.MATERIAL_ID = #{materialId}
+   AND M.STATUS != 'INACTIVE';
+
+-- 
+
+
+-- 현황 확인
+SELECT MATERIAL_ID
+     , MATERIAL_CODE
+     , MATERIAL_TYPE
+     , CASE
+         WHEN REGEXP_LIKE(MATERIAL_CODE, '^MT[0-9]{4}[0-9]{4}$') THEN '신방식'
+         ELSE '구방식'
+       END AS CODE_TYPE
+  FROM MATERIALS
+ ORDER BY MATERIAL_ID;
+
+-- 구방식 → 신방식 변환
+-- 'AF-001' → 'MT20260001'
+-- (등록 연도를 알 수 없으므로 CREATED_AT 기준으로 연도 추출)
+UPDATE MATERIALS
+   SET MATERIAL_CODE = 'MT' || TO_CHAR(CREATED_AT, 'YYYY') || LPAD(MATERIAL_ID, 4, '0')
+     , UPDATED_AT    = SYSDATE
+ WHERE NOT REGEXP_LIKE(MATERIAL_CODE, '^MT[0-9]{4}[0-9]{4}$');
+
+-- 확인
+SELECT MATERIAL_ID
+     , MATERIAL_CODE
+     , CREATED_AT
+  FROM MATERIALS
+ ORDER BY MATERIAL_ID;
+
+-- 이상 없으면
+COMMIT;
+-- 문제 있으면
+-- ROLLBACK;

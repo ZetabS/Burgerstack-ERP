@@ -333,8 +333,14 @@
                         url: this.contextPath + "/owner/materials/" + materialId + "/details",
                         type: "GET",
                         success: (details) => {
-                            document.getElementById('drawerDetails').innerHTML = details;
-                            this.open(); 
+                            const decodedDetails = details
+                                .replace(/&amp;#40;/g, '(')
+                                .replace(/&amp;#41;/g, ')')
+                                .replace(/&#40;/g, '(')
+                                .replace(/&#41;/g, ')');
+                                
+                            document.getElementById('drawerDetails').innerHTML = decodedDetails;
+                            this.open();
                         },
                         error: (xhr, status, error) => {
                             console.error("오류 발생: " + error);

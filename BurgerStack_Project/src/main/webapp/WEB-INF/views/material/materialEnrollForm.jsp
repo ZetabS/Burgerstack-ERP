@@ -92,13 +92,13 @@
                             <th>유형</th>
                             <td>
                                 <select id="materialType" name="materialType" required>
+                                    <option value="" disabled ${empty material ? 'selected' : ''} hidden>----------- 유형 선택 -----------</option>
                                     <option value="AF" ${material.materialType == 'AF' ? 'selected' : ''}>상온식품</option>
                                     <option value="RF" ${material.materialType == 'RF' ? 'selected' : ''}>냉장식품</option>
                                     <option value="FF" ${material.materialType == 'FF' ? 'selected' : ''}>냉동식품</option>
                                     <option value="PK" ${material.materialType == 'PK' ? 'selected' : ''}>포장재</option>
                                     <option value="KW" ${material.materialType == 'KW' ? 'selected' : ''}>주방용품</option>
                                     <option value="ET" ${material.materialType == 'ET' ? 'selected' : ''}>기타</option>
-                                    <option value="" disabled selected hidden>----------- 유형 선택 -----------</option>
                                 </select>
                             </td>
                         </tr>
@@ -154,7 +154,7 @@
                 const maxLength = el.getAttribute('maxlength');
                 const currentLength = el.value.length;
             }
-            
+
             // 파일 확장자 화이트리스트 검증
             document.getElementById('fileInput').addEventListener('change', function(e) {
                 const file = e.target.files[0];
@@ -215,6 +215,12 @@
                 }
             });
 
+            window.onload = function() {
+                const textarea = document.getElementById('material-detail');
+                if (textarea.value) {
+                    textarea.value = textarea.value.replace(/&#40;/g, '(').replace(/&#41;/g, ')');
+                }
+            };
         </script>
     </t:layout>
 
