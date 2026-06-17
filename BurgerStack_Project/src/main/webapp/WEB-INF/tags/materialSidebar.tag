@@ -7,7 +7,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>${empty title ? 'BurgerStack ERP' : title}</title>
+<title><c:out value="${empty title ? 'BurgerStack ERP' : title}" /></title>
 
 <link rel="shortcut icon"
       type="image/x-icon"
@@ -86,7 +86,7 @@
     .drawer-content {
         width : 100%;
     }
-    
+
     #detailContent>p, #drawerName {
         margin : 0 auto;
         width : 70%;
@@ -99,7 +99,7 @@
         display : block;
         margin : 0 auto;
     }
-    
+
     .close-btn {
         background: none;
         border: none;
@@ -125,7 +125,7 @@
         </div>
         <div class="drawer-content">
             <br>
-            
+
             <img id="drawerImg" src="" align="center">
             <br>
             <h3 id="drawerName">자재 상세 정보</h3>
@@ -149,7 +149,7 @@
                             +      "자재명 : " + matName + "<br>"
                             +      "자재 유형 : " + matType + "<br>"
                             +      "단가 : " + price + "원<br>"
-                            +      "[상세 설명]<br>" + discription 
+                            +      "[상세 설명]<br>" + discription
                             + "</p>"
                             + "<br>"
                     + "</div>"

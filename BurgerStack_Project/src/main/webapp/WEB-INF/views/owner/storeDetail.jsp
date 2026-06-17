@@ -80,37 +80,37 @@
 
                 <tr>
                     <th>점포 번호</th>
-                    <td>${store.storeId}</td>
+                    <td><c:out value="${store.storeId}" /></td>
                 </tr>
 
                 <tr>
                     <th>점포 코드</th>
-                    <td>${store.storeCode}</td>
+                    <td><c:out value="${store.storeCode}" /></td>
                 </tr>
 
                 <tr>
                     <th>점포명</th>
-                    <td>${store.storeName}</td>
+                    <td><c:out value="${store.storeName}" /></td>
                 </tr>
 
                 <tr>
                     <th>연락처</th>
-                    <td>${store.phone}</td>
+                    <td><c:out value="${store.phone}" /></td>
                 </tr>
 
                 <tr>
                     <th>주소</th>
-                    <td>${store.address}</td>
+                    <td><c:out value="${store.address}" /></td>
                 </tr>
 
                 <tr>
                     <th>점주 번호</th>
-                    <td>${store.ownerUserNo}</td>
+                    <td><c:out value="${store.ownerUserNo}" /></td>
                 </tr>
 
                 <tr>
                     <th>상태</th>
-                    <td>${store.status}</td>
+                    <td><c:out value="${store.status}" /></td>
                 </tr>
 
             </table>

@@ -49,7 +49,7 @@
             </select>
           </jsp:attribute>
 
-          <jsp:attribute name="right">          
+          <jsp:attribute name="right">
             <common:SearchBar name="keyword" value="${keyword}"
 							placeholder="아이디, 점주명 검색" />
           </jsp:attribute>
@@ -86,8 +86,8 @@
               /admin/users/${u.userId}
             --%>
             <c:url var="detailUrl" value="/admin/users/${u.userId}" />
-            
-            
+
+
             <table:TableRow clickable="true" href="${detailUrl}">
 
               <%--
@@ -111,7 +111,7 @@
 			             <span class="badge badge-secondary">비활성</span>
 			          </c:when>
 			          <c:otherwise>
-			             <span class="badge badge-warning">${u.status}</span>
+			             <span class="badge badge-warning"><c:out value="${u.status}" /></span>
 			          </c:otherwise>
 			      </c:choose>
 			  </table:FitCell>
@@ -123,7 +123,7 @@
     </jsp:attribute>
 
 		<jsp:attribute name="pagination">
-    
+
       <t:pagination pageInfo="${pageInfo}" />
     </jsp:attribute>
 

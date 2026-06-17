@@ -44,14 +44,14 @@
       <layout:Section title="기본 정보" description="">
         <common:FieldList>
           <%-- 단순 텍스트 값은 FieldRow body에 바로 출력합니다. --%>
-          <layout:FieldRow label="아이디">${user.userId}</layout:FieldRow>
-          <layout:FieldRow label="이름">${user.userName}</layout:FieldRow>
-          <layout:FieldRow label="연락처">${user.phone}</layout:FieldRow>
-          <layout:FieldRow label="이메일">${user.email}</layout:FieldRow>
+          <layout:FieldRow label="아이디"><c:out value="${user.userId}" /></layout:FieldRow>
+          <layout:FieldRow label="이름"><c:out value="${user.userName}" /></layout:FieldRow>
+          <layout:FieldRow label="연락처"><c:out value="${user.phone}" /></layout:FieldRow>
+          <layout:FieldRow label="이메일"><c:out value="${user.email}" /></layout:FieldRow>
 		  <layout:FieldRow label="등록일">
             <c:out value="${fn:replace(user.createdAt, 'T', ' ')}" />
           </layout:FieldRow>
-          
+
           <layout:FieldRow label="상태">
             <c:choose>
               <c:when test="${user.status eq 'ACTIVE'}">

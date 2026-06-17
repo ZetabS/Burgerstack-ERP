@@ -18,28 +18,28 @@
     <div class="card dashboard__panel dashboard__panel--small">
       <div class="card-body">
         <div class="card-title dashboard__card-title">전체 점포 수</div>
-        <div class="card-text dashboard__count">${view.storeCount}<span>건</span></div>
+        <div class="card-text dashboard__count"><c:out value="${view.storeCount}" /><span>건</span></div>
         <a class="card-link" href="${storeListUrl}">점포 목록 바로가기 &gt;</a>
       </div>
     </div>
     <div class="card dashboard__panel dashboard__panel--small">
       <div class="card-body">
         <div class="card-title dashboard__card-title">승인 대기중인 발주</div>
-        <div class="card-text dashboard__count">${view.purchaseCount}<span>건</span></div>
+        <div class="card-text dashboard__count"><c:out value="${view.purchaseCount}" /><span>건</span></div>
         <a class="card-link" href="${purchasePendingListUrl}"> 발주 승인 바로가기 &gt; </a>
       </div>
     </div>
     <div class="card dashboard__panel dashboard__panel--small">
       <div class="card-body">
         <div class="card-title dashboard__card-title">미답변 문의</div>
-        <div class="card-text dashboard__count">${view.inquiryCount}<span>건</span></div>
+        <div class="card-text dashboard__count"><c:out value="${view.inquiryCount}" /><span>건</span></div>
         <a class="card-link" href="${inquiryListUrl}"> 문의사항 바로가기 &gt; </a>
       </div>
     </div>
     <div class="card dashboard__panel dashboard__panel--small">
       <div class="card-body">
         <div class="card-title dashboard__card-title">안전재고 미만 재고</div>
-        <div class="card-text dashboard__count">${view.belowSafetyInventoryCount}<span>건</span></div>
+        <div class="card-text dashboard__count"><c:out value="${view.belowSafetyInventoryCount}" /><span>건</span></div>
         <a class="card-link" href="${inventoryListUrl}"> 재고 관리 바로가기 &gt; </a>
       </div>
     </div>

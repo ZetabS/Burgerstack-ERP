@@ -11,7 +11,7 @@
     padding:0;
     font-family:'맑은 고딕', sans-serif;
 	}
-	
+
 	.mypage-container{
 	    width:700px;
 	    margin:50px auto;
@@ -20,18 +20,18 @@
 	    border-radius:12px;
 	    box-shadow:0 2px 10px rgba(0,0,0,0.1);
 	}
-	
+
 	.mypage-container h2{
 	    text-align:center;
 	    margin-bottom:30px;
 	    color:#333;
 	}
-	
+
 	table{
 	    width:100%;
 	    border-collapse:collapse;
 	}
-	
+
 	th{
 	    width:150px;
 	    background:#f8f9fa;
@@ -39,12 +39,12 @@
 	    padding:15px;
 	    border-bottom:1px solid #ddd;
 	}
-	
+
 	td{
 	    padding:15px;
 	    border-bottom:1px solid #ddd;
 	}
-	
+
 	input{
 	    width:95%;
 	    padding:10px;
@@ -52,17 +52,17 @@
 	    border-radius:5px;
 	    font-size:14px;
 	}
-	
+
 	input:focus{
 	    outline:none;
 	    border-color:#6c757d;
 	}
-	
+
 	.button-area{
     text-align:right;
     margin-top:30px;
 	}
-	
+
 	#updateBtn{
 	    width:150px;
 	    height:45px;
@@ -74,7 +74,7 @@
 	    cursor:pointer;
 	    transition:0.2s;
 	}
-	
+
 	#changePwdBtn{
     width:150px;
     height:45px;
@@ -85,11 +85,11 @@
     font-size:15px;
     cursor:pointer;
 	}
-	
+
 	#changePwdBtn:hover{
 	    background:#e86d0c;
 	}
-	
+
 	#updateBtn:hover{
 	    background:#212529;
 	}
@@ -97,7 +97,7 @@
     text-align: center;
     margin-top: 30px;
 	}
-	
+
 	#homeBtn{
 	    width: 150px;
 	    height: 45px;
@@ -111,29 +111,29 @@
 <t:layout>
 
 	<div class="mypage-container">
-	
+
 	<h1>관리자 마이페이지</h1>
 
-	<form id="update" action="/burgerstack/admin/mypage" method="post">		
+	<form id="update" action="/burgerstack/admin/mypage" method="post">
 	<input type="hidden" name="userNo" value="${sessionScope.loginUser.userNo}" />
 		    <table>
 		        <tr>
 		            <th>아이디</th>
-		            <td>${ sessionScope.loginUser.userId }</td>
+		            <td><c:out value="${ sessionScope.loginUser.userId }" /></td>
 		        </tr>
-		
+
 		        <tr>
 		            <th>이름</th>
-		            <td>${ sessionScope.loginUser.userName }</td>
+		            <td><c:out value="${ sessionScope.loginUser.userName }" /></td>
 		        </tr>
-		
+
 		        <tr>
 		            <th>전화번호</th>
 		            <td>
 		                <input type="text" id="phone" name="phone" value="${ sessionScope.loginUser.phone }">
 		            </td>
 		        </tr>
-		
+
 		        <tr>
 		            <th>이메일</th>
 		            <td>
@@ -143,21 +143,21 @@
 		    </table>
 
 		    <br>
-		
+
 		    <div class="button-area">
 			    <button id="updateBtn">
 			        정보 수정
 			    </button>
 			</div>
-		    
+
 		    <hr>
-		    
+
 	</form>
-		    
+
 	<form id="update-password" action="/burgerstack/admin/updatePassword" method="post">
-		    
+
 			<h2>비밀번호 변경</h2>
-			
+
 			<table>
 			    <tr>
 			        <th>현재 비밀번호</th>
@@ -165,14 +165,14 @@
 			            <input type="password" id="currentPwd" name="currentPwd">
 			        </td>
 			    </tr>
-			
+
 			    <tr>
 			        <th>새 비밀번호</th>
 			        <td>
 			            <input type="password" id="newPwd" name="newPwd">
 			        </td>
 			    </tr>
-			
+
 			    <tr>
 			        <th>비밀번호 확인</th>
 			        <td>
@@ -180,23 +180,23 @@
 			        </td>
 			    </tr>
 			</table>
-			
+
 			<div class="button-area">
 			    <button id="changePwdBtn">
 			        비밀번호 변경
 			    </button>
 			</div>
-		
+
 		</div>
-		
+
 	</form>
 
-		
+
 			<div class="home-btn-area">
 	    		<button type="submit" id="homeBtn" onclick="location.href = '/burgerstack/admin/dashboard'">
 			        이전으로
 			    </button>
 			</div>
-		
+
 
 </t:layout>

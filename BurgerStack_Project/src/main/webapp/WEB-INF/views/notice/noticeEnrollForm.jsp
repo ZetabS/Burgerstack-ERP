@@ -133,7 +133,7 @@
                                         <%-- data-file-id 속성으로 JS에서 삭제 처리 가능하게 --%>
                                         <div class="file-item db-file-item" data-file-id="${file.noticeFileId}"
                                             style="display:flex; align-items:center; margin:4px 0;">
-                                            <span>${fileIcon} ${file.originalName}</span>
+                                            <span><c:out value="${fileIcon} ${file.originalName}" /></span>
                                             <%-- X버튼 추가 --%>
                                             <button type="button"
                                                     style="margin-left:8px; color:red; border:none; background:none; cursor:pointer; font-weight:bold;"
@@ -174,7 +174,7 @@
                 }
             });
 
-            
+
             // 수정 모드: data 속성에서 기존 내용 로드
             const savedContent = document.getElementById('saved-content').value;
             if (savedContent && savedContent.trim() !== '') {
@@ -274,7 +274,7 @@
             // ── 3. submit: 에디터 내용 → hidden input ───────────────────
             document.getElementById('noticeForm').addEventListener('submit', function(e) {
                 const htmlContent = quill.root.innerHTML;
-                
+
                 // 바이트 계산 (태그 포함)
                 let byteCount = 0;
                 for (let i = 0; i < htmlContent.length; i++) {
@@ -287,7 +287,7 @@
 
                 if (byteCount > DB_LIMIT) {
                     alert("내용이 너무 깁니다. (이미지나 서식을 줄여주세요)\n현재 바이트: " + byteCount + " / 3000");
-                    e.preventDefault(); 
+                    e.preventDefault();
                     return;
                 }
 
@@ -299,7 +299,7 @@
             let fileIdCounter = 0;
 
             function handleFileSelect(event) {
-                
+
                 const newFiles = Array.from(event.target.files);
                 // 파일 크기, 갯수 제한
                 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
@@ -336,7 +336,7 @@
                     // MIME 타입 검증
                     const isImage = file.type.startsWith('image/');
                     const isDoc = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'].includes(file.type);
-                    
+
                     if (!isImage && !isDoc) {
                         alert("이미지 또는 문서 파일만 업로드 가능합니다.");
                         event.target.value = '';
@@ -455,6 +455,6 @@
                     guide.style.display = 'block';
                 }
             }
-            
+
         </script>
     </t:layout>

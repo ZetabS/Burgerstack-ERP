@@ -5,5 +5,5 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <td class="ds-numeric ds-table__col-fit text-right">
-  <c:if test="${not empty value}"><fmt:formatNumber value="${value}" pattern="#,###" />${suffix}</c:if>
+  <c:if test="${not empty value}"><fmt:formatNumber value="${value}" pattern="#,###" /><c:out value="${suffix}" /></c:if>
 </td>

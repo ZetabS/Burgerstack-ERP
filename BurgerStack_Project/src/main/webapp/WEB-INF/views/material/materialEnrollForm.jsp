@@ -15,7 +15,7 @@
         margin : 5px;
         width : 250px;
     }
-    
+
     #material-detail {
         margin : 5px;
         width : 250px;
@@ -54,16 +54,16 @@
                 </c:if>
 
                 <div id="img-area" align="center">
-                    <div id="imagePreviewContainer" onclick="document.getElementById('fileInput').click();" 
+                    <div id="imagePreviewContainer" onclick="document.getElementById('fileInput').click();"
                         style="width: 250px; height: 250px; border: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin: 0 auto 20px; position: relative; background-color: #fff;">
-                        
+
                         <!-- 등록된 사진 없을 때(수정/신규) -->
                         <span id="uploadText" style="color: #888; text-align: center; ${not empty material.materialFiles ? 'display: none;' : 'display: block;'}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#888888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-plus-icon lucide-image-plus"><path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/></svg>
                             <br>
                             클릭해서 사진 등록
                         </span>
-                        
+
                         <!-- 등록된 사진 있을 때(수정) -->
                         <img id="imagePreview"
                             src="${not empty material.materialFiles
@@ -107,7 +107,7 @@
                                 <input type="text" name="supplyPrice"
                                        value="${not empty material.supplyPrice ? material.supplyPrice : '0'}"
                                        pattern="^[0-9]+$"
-                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                        required>
                             </td>
                         </tr>
@@ -125,7 +125,7 @@
                             <td>
                                 <div class="material-info-p">
                                     <textarea name="details" id="material-detail" maxlength="800"
-                                              oninput="checkLength(this)">${material.details}</textarea>
+                                              oninput="checkLength(this)"><c:out value="${material.details}" /></textarea>
                                 </div>
                             </td>
                         </tr>
@@ -207,7 +207,7 @@
             document.getElementById('materialType').addEventListener('change', function() {
                 const textarea = document.getElementById('material-detail');
                 const selectedType = this.value;
-                
+
                 // 내용이 비어있거나 기존 양식인 경우에만 덮어쓰기 (사용자 입력 보호)
                 if (textarea.value.trim() === '' || Object.values(templates).includes(textarea.value)) {
                     textarea.value = templates[selectedType] || '';

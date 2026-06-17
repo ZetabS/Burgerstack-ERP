@@ -194,14 +194,14 @@
 
                             <tr>
 
-                                <td>${item.materialCode}</td>
+                                <td><c:out value="${item.materialCode}" /></td>
 
                                 <td>
                                     <display:MaterialTypeLabel
                                         value="${item.materialType}" />
                                 </td>
 
-                                <td>${item.materialName}</td>
+                                <td><c:out value="${item.materialName}" /></td>
 
                                 <td class="requestQty">
                                     ${item.requestQuantity}
@@ -303,7 +303,7 @@
 
                         <tr>
                             <th>발주번호</th>
-                            <td>${list[0].purchaseCode}</td>
+                            <td><c:out value="${list[0].purchaseCode}" /></td>
                         </tr>
 
                         <tr>
@@ -594,7 +594,7 @@
             total.toLocaleString() + '원'
         );
     }
-    
+
     // ===============================
     // 결재 전 검증 + 최종 확인
     // ===============================

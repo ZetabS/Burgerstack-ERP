@@ -189,7 +189,7 @@
 
         <div class="date-area">
             <span class="date-label">영업일</span>
-            <span class="date-value">${today}</span>
+            <span class="date-value"><c:out value="${today}" /></span>
 
             <input type="hidden"
                    name="businessDate"
@@ -222,12 +222,12 @@
                                 <c:when test="${inv.materialType eq 'FF'}">냉동</c:when>
                                 <c:when test="${inv.materialType eq 'PK'}">포장재</c:when>
                                 <c:when test="${inv.materialType eq 'KW'}">주방용품</c:when>
-                                <c:otherwise>${inv.materialType}</c:otherwise>
+                                <c:otherwise><c:out value="${inv.materialType}" /></c:otherwise>
                             </c:choose>
                         </td>
 
                         <td>
-                            <span class="material-name">${inv.materialName}</span>
+                            <span class="material-name"><c:out value="${inv.materialName}" /></span>
 
                             <input type="hidden"
                                    name="storeInventoryId"
@@ -246,7 +246,7 @@
                                    value="${inv.materialName}">
                         </td>
 
-                        <td>${inv.currentQuantity}</td>
+                        <td><c:out value="${inv.currentQuantity}" /></td>
 
                         <td>
                             <input type="number"
@@ -266,7 +266,7 @@
                         </td>
 
                         <td>
-                            <span class="remain-qty">${inv.currentQuantity}</span>
+                            <span class="remain-qty"><c:out value="${inv.currentQuantity}" /></span>
                             <div class="danger-text">
                                 실사용수량과 폐기 수량의 합은 전산재고보다 클 수 없습니다.
                             </div>

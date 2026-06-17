@@ -178,7 +178,7 @@
               <c:forEach var="item" items="${itemList}" varStatus="status">
                 <tr class="receipt-row">
 
-                  <td>${item.materialCode}</td>
+                  <td><c:out value="${item.materialCode}" /></td>
 
                   <td class="text-center">
                     <c:choose>
@@ -187,7 +187,7 @@
                       <c:when test="${item.materialType eq 'FF'}">냉동</c:when>
                       <c:when test="${item.materialType eq 'PK'}">포장재</c:when>
                       <c:when test="${item.materialType eq 'KW'}">주방용품</c:when>
-                      <c:otherwise>${item.materialType}</c:otherwise>
+                      <c:otherwise><c:out value="${item.materialType}" /></c:otherwise>
                     </c:choose>
                   </td>
 

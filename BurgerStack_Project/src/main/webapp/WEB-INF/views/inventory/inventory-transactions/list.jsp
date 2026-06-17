@@ -25,7 +25,7 @@
               <select name="storeId" class="form-control mr-2 js-submit-on-change">
                 <option value="">전체 점포</option>
                 <c:forEach var="option" items="${view.storeOptions}">
-                  <option value="${option.storeId}" ${option.storeId eq view.condition.storeId ? 'selected' : ''}>${option.storeName}</option>
+                  <option value="${option.storeId}" ${option.storeId eq view.condition.storeId ? 'selected' : ''}><c:out value="${option.storeName}" /></option>
                 </c:forEach>
               </select>
             </c:if>

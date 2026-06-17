@@ -122,12 +122,12 @@ input:focus {
 				<table>
 					<tr>
 						<th>아이디</th>
-						<td>${ sessionScope.loginUser.userId }</td>
+						<td><c:out value="${ sessionScope.loginUser.userId }" /></td>
 					</tr>
 
 					<tr>
 						<th>이름</th>
-						<td>${ sessionScope.loginUser.userName }</td>
+						<td><c:out value="${ sessionScope.loginUser.userName }" /></td>
 					</tr>
 
 					<tr>

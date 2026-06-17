@@ -46,10 +46,10 @@
           <layout:FieldRow label="문의 등록일">
             <c:out value="${fn:replace(inquiry.createdAt, 'T', ' ')}" />
           </layout:FieldRow>
-          <layout:FieldRow label="문의 내용">${inquiry.content}</layout:FieldRow>
+          <layout:FieldRow label="문의 내용"><c:out value="${inquiry.content}" /></layout:FieldRow>
         </common:FieldList>
       </layout:Section>
-      
+
             <layout:Section title="문의사항 답변" description="">
         <common:FieldList>
           <layout:FieldRow label="답변 등록일">
@@ -67,7 +67,7 @@
           </layout:FieldRow>
         </common:FieldList>
       </layout:Section>
-      
+
     </jsp:body>
   </layout:Page>
 </t:layout>

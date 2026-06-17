@@ -6,7 +6,7 @@
 
 table {
   border-collapse: collapse;
-  width: max-content; 
+  width: max-content;
 }
 
 table thead tr {
@@ -84,9 +84,9 @@ table tbody tr td:nth-child(3) {
 
                         <c:forEach items="${notices}" var="n">
                             <tr onclick="location.href='${pageContext.request.contextPath}/owner/notices/${n.noticeId}'">
-                                <td>${n.noticeId}</td>
-                                <td>${n.title}</td>
-                                <td>${n.listDate}</td>
+                                <td><c:out value="${n.noticeId}" /></td>
+                                <td><c:out value="${n.title}" /></td>
+                                <td><c:out value="${n.listDate}" /></td>
                             </tr>
                         </c:forEach>
                     </tbody>

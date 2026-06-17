@@ -159,7 +159,7 @@
         text-align: center;
         vertical-align: middle;
     }
-    
+
     .status-badge {
 	    display: inline-block;
 	    padding: 3px 8px;
@@ -171,13 +171,13 @@
 	    text-align: center;
 	    white-space: nowrap;
 	}
-	
+
 	/* 승인 */
 	.status-badge.approved {
 	    background-color: #16a34a;
 	    color: #ffffff;
 	}
-	
+
 	/* 부분승인 */
 	.status-badge.partial {
 	    background-color: #facc15;
@@ -269,15 +269,15 @@
 
             <div class="summary-card">
                 <div class="summary-title">재고 부족 품목</div>
-                <div class="summary-count">${shortageCount}<span>건</span></div>
+                <div class="summary-count"><c:out value="${shortageCount}" /><span>건</span></div>
                 <a href="${pageContext.request.contextPath}/owner/inventories"
                    class="summary-link">재고 관리 바로가기 &gt;</a>
             </div>
 
             <div class="summary-card">
 			    <div class="summary-title">오늘 입고 예정</div>
-			    <div class="summary-count">${todayReceiptCount}<span>건</span></div>
-			
+			    <div class="summary-count"><c:out value="${todayReceiptCount}" /><span>건</span></div>
+
 			    <a href="${pageContext.request.contextPath}/owner/receipts/planned?status=ALL"
 			       class="summary-link">
 			        입고 예정 바로가기 &gt;
@@ -286,7 +286,7 @@
 
             <div class="summary-card">
                 <div class="summary-title">승인 대기 발주</div>
-                <div class="summary-count">${pendingPurchaseCount}<span>건</span></div>
+                <div class="summary-count"><c:out value="${pendingPurchaseCount}" /><span>건</span></div>
                 <a href="${pageContext.request.contextPath}/owner/purchases?status=REQUESTED"
                    class="summary-link">발주 관리 바로가기 &gt;</a>
             </div>
@@ -333,8 +333,8 @@
                     <tbody>
                         <c:forEach var="s" items="${shortageList}" varStatus="status">
                             <tr>
-                                <td><span class="rank">${status.count}</span></td>
-                                <td>${s.MATERIALNAME}</td>
+                                <td><span class="rank"><c:out value="${status.count}" /></span></td>
+                                <td><c:out value="${s.MATERIALNAME}" /></td>
                                 <td class="text-right">${s.CURRENTQUANTITY}개</td>
                                 <td class="text-right">${s.SAFETYQUANTITY}개</td>
                             </tr>
@@ -371,27 +371,27 @@
                     <tbody>
                             <c:forEach var="r" items="${todayReceiptList}">
 							    <tr>
-							        <td>${r.purchaseOrderId}</td>
-							
+							        <td><c:out value="${r.purchaseOrderId}" /></td>
+
 							        <td>
 									    <c:choose>
 									        <c:when test="${r.status eq 'APPROVED'}">
 									            <span class="status-badge approved">승인</span>
 									        </c:when>
-									
+
 									        <c:when test="${r.status eq 'PARTIALLY_APPROVED'}">
 									            <span class="status-badge partial">부분승인</span>
 									        </c:when>
 									    </c:choose>
 									</td>
-							
+
 							        <td>
 							            ${r.materialName}
 							            <c:if test="${r.extraCount > 0}">
 							                외 ${r.extraCount}건
 							            </c:if>
 							        </td>
-							
+
 							        <td>
 							            <a class="detail-btn"
 										   href="${pageContext.request.contextPath}/owner/receipts/${r.purchaseOrderId}/receipt">
@@ -434,8 +434,8 @@
                             <td style="width:15%;">
                                 <span class="badge badge-blue">공지</span>
                             </td>
-                            <td class="text-left">${n.NOTICETITLE}</td>
-                            <td style="width:20%;" class="text-right">${n.CREATEDAT}</td>
+                            <td class="text-left"><c:out value="${n.NOTICETITLE}" /></td>
+                            <td style="width:20%;" class="text-right"><c:out value="${n.CREATEDAT}" /></td>
                         </tr>
                     </c:forEach>
 

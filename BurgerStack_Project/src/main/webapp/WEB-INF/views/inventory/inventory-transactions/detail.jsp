@@ -19,18 +19,18 @@
     <jsp:body>
       <layout:Section title="기본 정보">
         <common:FieldList>
-          <layout:FieldRow label="변동 코드">${detail.inventoryTransactionCode}</layout:FieldRow>
+          <layout:FieldRow label="변동 코드"><c:out value="${detail.inventoryTransactionCode}" /></layout:FieldRow>
           <c:if test="${isAdmin}">
-            <layout:FieldRow label="점포명">${detail.storeName}</layout:FieldRow>
+            <layout:FieldRow label="점포명"><c:out value="${detail.storeName}" /></layout:FieldRow>
           </c:if>
           <layout:FieldRow label="변동 유형">
             <display:InventoryTransactionTypeLabel value="${detail.transactionType}" />
           </layout:FieldRow>
-          <layout:FieldRow label="처리자">${detail.createdByName}</layout:FieldRow>
+          <layout:FieldRow label="처리자"><c:out value="${detail.createdByName}" /></layout:FieldRow>
           <layout:FieldRow label="처리 일시">
             <c:out value="${datetime:formatDateTime(detail.createdAt)}" />
           </layout:FieldRow>
-          <layout:FieldRow label="사유">${detail.reason}</layout:FieldRow>
+          <layout:FieldRow label="사유"><c:out value="${detail.reason}" /></layout:FieldRow>
           <layout:FieldRow label="비고">
             <c:choose>
               <c:when test="${empty detail.transactionMemo}">

@@ -9,11 +9,11 @@
         .category-title { margin: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
 
         /* 2. 그리드 배치 */
-        .product-grid { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 15px; 
-            padding: 0 20px; 
+        .product-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 0 20px;
         }
 
         /* 3. 카드 전체 디자인 */
@@ -77,7 +77,7 @@
             display: flex;
             flex-direction: column;
             height: 75vh;
-            
+
             width: 80%;
             margin: 0 auto;
             padding: 12px;
@@ -90,7 +90,7 @@
             max-height: 200px;
             min-height: 60px;
             margin-bottom: 10px;
-            
+
             padding: 12px;
             background-color: #f8fafc;
             border-radius: 6px;
@@ -102,7 +102,7 @@
 
         /* 혹시라도 강제되고 있을 inline-block 제거 */
         #drawerDetails {
-            display: block; 
+            display: block;
         }
 
         .drawer-buttons {
@@ -149,7 +149,7 @@
             <jsp:body>
                 <!-- 사이드바 내부 전체를 감싸는 컨테이너 -->
                 <div class="drawer-container">
-                    
+
                     <div id="drawerImageWrapper" style="display: none; width: 210px; height: 210px; margin: 0 auto; border-radius: 8px; border: 1px solid #dddddd; overflow: hidden; background-color: #ffffff;">
                         <img id="drawerImage" src="" alt="자재 이미지" onerror="this.src='${pageContext.request.contextPath}/resources/images/BS_logo1.svg'" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
@@ -201,7 +201,7 @@
                     </select>
 
                     <div class="search-box">
-                        <input type="text" id="keywordInput" name="keyword" 
+                        <input type="text" id="keywordInput" name="keyword"
                                placeholder="자재명 검색" value="${param.keyword}"
                                onkeyup="MaterialDrawer.filterMaterials()">
                         <button type="button" class="search-btn" onclick="MaterialDrawer.filterMaterials()">
@@ -221,7 +221,7 @@
                             <c:set var="hasItem" value="true" />
                         </c:if>
                     </c:forEach>
-                    
+
                     <c:if test="${hasItem}">
                         <div class="category-section" data-type="${targetType}">
                             <h2 class="category-title">
@@ -234,35 +234,35 @@
                                     <c:otherwise>기타</c:otherwise>
                                 </c:choose>
                             </h2>
-                            
+
                             <div class="product-grid">
                                 <c:forEach var="m" items="${materials}">
                                     <c:if test="${m.materialType eq targetType}">
                                         <div class="img-wrap"
                                             onclick="MaterialDrawer.getDetail('${m.materialId}', '${m.materialName}')"
                                             data-details="${m.details}">
-                                            <b>${m.materialName}</b>
+                                            <b><c:out value="${m.materialName}" /></b>
                                             <c:choose>
                                                 <c:when test="${not empty m.materialFiles}">
-                                                    <img src="${pageContext.request.contextPath}/material-files/${m.materialFiles[0].storedName}" 
+                                                    <img src="${pageContext.request.contextPath}/material-files/${m.materialFiles[0].storedName}"
                                                         alt="${m.materialName}"
                                                         onerror="this.src='${pageContext.request.contextPath}/resources/images/BS_logo1.svg'">
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <img src="${pageContext.request.contextPath}/resources/images/BS_logo1.svg" 
+                                                    <img src="${pageContext.request.contextPath}/resources/images/BS_logo1.svg"
                                                         alt="${m.materialName}">
                                                 </c:otherwise>
                                             </c:choose>
-                                            
+
                                             <div class="card-info">
-                                                
+
                                                 <span style="color: #65a30d; font-weight: bold; font-size: 15px;">
                                                     <fmt:formatNumber value="${m.supplyPrice}" pattern="#,###" />원
                                                 </span>
                                                 <span class="card-badge ${m.status eq 'ACTIVE' ? 'badge-success' : 'badge-danger'}">
                                                     ${m.status eq 'ACTIVE' ? '판매중' : '판매 중단'}
                                                 </span>
-                                            
+
                                             </div>
                                         </div>
                                     </c:if>
@@ -273,7 +273,7 @@
                 </c:forEach>
             </div>
         </div>
-            
+
         <script>
             const materialData = [
                 <c:forEach items="${materials}" var="m" varStatus="vs">
@@ -287,7 +287,7 @@
                     }${!vs.last ? ',' : ''}
                 </c:forEach>
             ];
-            
+
                 const MaterialDrawer = {
                 contextPath: "",
 
@@ -295,10 +295,10 @@
                     this.contextPath = contextPath;
                 },
 
-                switchDetailFields: function(type) { 
+                switchDetailFields: function(type) {
                     const allTextareas = document.querySelectorAll('.detail-box');
                     allTextareas.forEach(el => el.style.display = 'none');
-                    
+
                     const targetBox = document.getElementById('detail-' + type);
                     if (targetBox) targetBox.style.display = 'block';
                 },
@@ -309,7 +309,7 @@
                     const el = event.currentTarget;
                     const details = el.getAttribute('data-details');
                     const material = materialData.find(m => m.id == materialId);
-                    
+
                     // 2. 사이드바 타이틀 및 기본 정보 바인딩
                     if (name) {
                         document.getElementById('drawerSidebarTitle').innerHTML = name;
@@ -328,14 +328,14 @@
                         // 유형 한글화 매핑
                         const typeMap = { 'AF': '상온식품', 'RF': '냉장식품', 'FF': '냉동식품', 'PK': '포장재', 'KW': '주방용품', 'ET': '기타' };
                         document.getElementById('drawerMaterialType').innerHTML = typeMap[material.type] || material.type;
-                        
+
                         // 가격, 상태
                         document.getElementById('drawerSupplyPrice').innerHTML = Number(material.price).toLocaleString();
-                        
+
                         const statusEl = document.getElementById('drawerStatus');
                         statusEl.innerHTML = (material.status === 'ACTIVE') ? '판매중' : '판매 중단';
                         statusEl.className = (material.status === 'ACTIVE') ? 'card-badge badge-success' : 'card-badge badge-danger';
-                        
+
                         // 이벤트 바인딩 (수정 버튼)
                         this.bindEvents(materialId);
                     }
@@ -343,7 +343,7 @@
                     document.getElementById('drawerDetails').innerHTML = '불러오는 중...';
 
                     $.ajax({
-                        
+
                         url: this.contextPath + "/admin/materials/" + materialId + "/details",
                         type: "GET",
                         success: (details) => {
@@ -352,7 +352,7 @@
                                 .replace(/&amp;#41;/g, ')')
                                 .replace(/&#40;/g, '(')
                                 .replace(/&#41;/g, ')');
-                                
+
                             document.getElementById('drawerDetails').innerHTML = decodedDetails;
                             this.open();
                         },
@@ -380,12 +380,12 @@
                     sections.forEach(section => {
                         const sectionType = section.getAttribute('data-type');
                         const cards = section.querySelectorAll('.img-wrap');
-                        
+
                         let sectionVisible = false;
 
                         cards.forEach(card => {
                             const name = card.querySelector('b').innerText.toLowerCase();
-                            
+
                             // 조건 1: 카테고리가 일치하거나, 전체보기(type="")인 경우
                             // 조건 2: 자재명에 키워드가 포함된 경우
                             const typeMatch = (type === "" || sectionType === type);
@@ -408,8 +408,8 @@
                     if (typeof openSidebar === 'function') {
                         openSidebar();
                     } else {
-                        const drawer = document.getElementById('detailDrawer') 
-                                    || document.querySelector('aside') 
+                        const drawer = document.getElementById('detailDrawer')
+                                    || document.querySelector('aside')
                                     || document.querySelector('.sidebar');
                         if(drawer) {
                             drawer.classList.add('open');
@@ -419,9 +419,9 @@
                 }
             };
 
-            
+
         </script>
-        
+
         <script>
             MaterialDrawer.init("${pageContext.request.contextPath}");
         </script>

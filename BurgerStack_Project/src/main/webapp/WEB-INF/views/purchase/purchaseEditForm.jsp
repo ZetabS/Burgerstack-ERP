@@ -131,15 +131,15 @@
                                     <c:when test="${m.materialType eq 'PK'}">건자재</c:when>
                                     <c:when test="${m.materialType eq 'KW'}">주방용품</c:when>
                                     <c:when test="${m.materialType eq 'ET'}">기타</c:when>
-                                    <c:otherwise>${m.materialType}</c:otherwise>
+                                    <c:otherwise><c:out value="${m.materialType}" /></c:otherwise>
                                 </c:choose>
                             </td>
-                            <td class="item-name">${m.materialName}</td>
+                            <td class="item-name"><c:out value="${m.materialName}" /></td>
                             <td class="unit-price comma-number" data-price="${m.supplyPrice}">
                                 ${m.supplyPrice}
                             </td>
-                            <td class="stock">${m.currentQuantity}</td>
-                            <td class="safety-stock">${m.safetyQuantity}</td>
+                            <td class="stock"><c:out value="${m.currentQuantity}" /></td>
+                            <td class="safety-stock"><c:out value="${m.safetyQuantity}" /></td>
                             <td>
                                 <input type="number"
                                     class="qty-input"
@@ -173,7 +173,7 @@
 
                 </button>
             </div>
-            
+
             <div class="button-area">
                 <button type="button"
                         class="btn btn-primary"
@@ -220,7 +220,7 @@
                 </div>
 
 
-                <div style="margin-top:10px;">                    
+                <div style="margin-top:10px;">
 
                 <div style="width:90%; margin-left:20px;">
                     <textarea
@@ -239,7 +239,7 @@
                     </button>
                 </div>
 
-                    
+
                 </div>
             </jsp:body>
         </t:sidebar>
@@ -278,7 +278,7 @@
 
             // 체크 자동
             $row.find('.row-check').prop('checked', qty > 0);
-            
+
             updateSidebar();
         });
 
@@ -396,7 +396,7 @@
                         $('<td>').text((price* qty).toLocaleString() + "원")
                     )
                 );
-        
+
             });
 
             $('.main-total-amount').text(total.toLocaleString() + "원");
@@ -634,10 +634,10 @@ function filterMaterials() {
 }
 // 금액 포멧팅
 function priceFormatting() {
-    
+
     // 클래스가 'comma-number'인 모든 태그 선택
     const elements = document.querySelectorAll('.comma-number');
-    
+
     elements.forEach(el => {
         const num = Number(el.textContent);
         // 숫자가 맞을 때만 변경

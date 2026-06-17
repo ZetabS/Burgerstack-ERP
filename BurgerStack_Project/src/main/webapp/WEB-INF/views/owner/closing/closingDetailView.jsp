@@ -146,7 +146,7 @@
 
         <tr>
             <th>영업일</th>
-            <td>${closing.businessDate}</td>
+            <td><c:out value="${closing.businessDate}" /></td>
         </tr>
 
         <tr>
@@ -238,11 +238,11 @@
                         </c:choose>
                     </td>
 
-                    <td>${item.systemQuantity}</td>
+                    <td><c:out value="${item.systemQuantity}" /></td>
 
-                    <td>${item.physicalQuantity}</td>
+                    <td><c:out value="${item.physicalQuantity}" /></td>
 
-                    <td>${item.disposalQuantity}</td>
+                    <td><c:out value="${item.disposalQuantity}" /></td>
 
                     <td>
                         <c:choose>

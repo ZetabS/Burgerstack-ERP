@@ -16,9 +16,9 @@
       <form action="${editAction}" method="post">
         <layout:Section title="기본 정보">
           <common:FieldList>
-            <layout:FieldRow label="자재명">${detail.materialName}</layout:FieldRow>
-            <layout:FieldRow label="현재 수량">${detail.currentQuantity}</layout:FieldRow>
-            <layout:FieldRow label="안전재고 수량">${detail.safetyQuantity}</layout:FieldRow>
+            <layout:FieldRow label="자재명"><c:out value="${detail.materialName}" /></layout:FieldRow>
+            <layout:FieldRow label="현재 수량"><c:out value="${detail.currentQuantity}" /></layout:FieldRow>
+            <layout:FieldRow label="안전재고 수량"><c:out value="${detail.safetyQuantity}" /></layout:FieldRow>
           </common:FieldList>
         </layout:Section>
 

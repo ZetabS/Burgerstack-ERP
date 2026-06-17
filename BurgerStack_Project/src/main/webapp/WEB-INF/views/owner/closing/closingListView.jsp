@@ -162,18 +162,18 @@
 	           id="startDate"
 	           name="startDate"
 	           value="${startDate}">
-	
+
 	    ~
-	
+
 	    <input type="date"
 	           id="endDate"
 	           name="endDate"
 	           value="${endDate}">
-	
+
 	    <button type="submit" class="btn btn-primary">
 	        조회
 	    </button>
-	
+
 	    <a href="${pageContext.request.contextPath}/owner/closings"
 	       class="btn btn-secondary">
 	        초기화
@@ -212,7 +212,7 @@
                         </c:choose>
                     </td>
 
-                    <td>${c.businessDate}</td>
+                    <td><c:out value="${c.businessDate}" /></td>
 
                     <td class="text-left">
                         <c:choose>
@@ -246,47 +246,47 @@
 	    document.addEventListener("DOMContentLoaded", function() {
 	        const startDate = document.getElementById("startDate");
 	        const endDate = document.getElementById("endDate");
-	
+
 	        const today = new Date();
 	        const todayStr = formatDate(today);
-	
+
 	        // 마감 이력은 시작일도 오늘 포함 가능
 	        startDate.max = todayStr;
 	        endDate.max = todayStr;
 	    });
-	
+
 	    function formatDate(date) {
 	        const year = date.getFullYear();
 	        const month = String(date.getMonth() + 1).padStart(2, "0");
 	        const day = String(date.getDate()).padStart(2, "0");
-	
+
 	        return year + "-" + month + "-" + day;
 	    }
-	
+
 	    function validateDateSearch() {
 	        const startDate = document.getElementById("startDate").value;
 	        const endDate = document.getElementById("endDate").value;
-	
+
 	        const today = formatDate(new Date());
-	
+
 	        if (startDate !== "" && startDate > today) {
 	            alert("시작일은 오늘 이후 날짜를 선택할 수 없습니다.");
 	            document.getElementById("startDate").focus();
 	            return false;
 	        }
-	
+
 	        if (endDate !== "" && endDate > today) {
 	            alert("종료일은 오늘 이후 날짜를 선택할 수 없습니다.");
 	            document.getElementById("endDate").focus();
 	            return false;
 	        }
-	
+
 	        if (startDate !== "" && endDate !== "" && startDate > endDate) {
 	            alert("시작일은 종료일보다 늦을 수 없습니다.");
 	            document.getElementById("startDate").focus();
 	            return false;
 	        }
-	
+
 	        return true;
 	    }
 	</script>
