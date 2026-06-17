@@ -77,3 +77,8 @@
     </jsp:body>
 	</layout:Page>
 </t:layout>
+<style>
+    textarea {
+        resize: none;
+    }
+</style>

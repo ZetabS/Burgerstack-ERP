@@ -80,15 +80,11 @@
       
             <layout:Section title="문의사항 답변" description="">
         <common:FieldList>
-          <layout:FieldRow label="답변 등록일">
-            <c:out value="${fn:replace(inquiry.answeredAt, 'T', ' ')}" />
-          </layout:FieldRow>
-
           <%-- 답변 등록일 --%>
           <layout:FieldRow label="답변 등록일">
             <c:choose>
               <c:when test="${empty inquiry.answeredAt}">
-                <span class="answer-content">아직 등록된 답변이 없습니다.</span>
+                <span class="answer-content">-</span>
               </c:when>
               <c:otherwise>
                 <c:out
