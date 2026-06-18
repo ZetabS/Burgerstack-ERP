@@ -37,7 +37,7 @@ public class InventoryTransactionController {
                         loginUser);
 
         model.addAttribute("view", inventoryTransactionListView);
-        return "inventory/inventory-transactions/list";
+        return "inventory-transaction/list";
     }
 
     @GetMapping("/{inventoryTransactionId}")
@@ -52,6 +52,6 @@ public class InventoryTransactionController {
                 loginUser);
 
         model.addAttribute("detail", detail);
-        return "inventory/inventory-transactions/detail";
+        return "inventory-transaction/detail";
     }
 }
