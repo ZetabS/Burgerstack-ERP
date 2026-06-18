@@ -60,8 +60,18 @@ public class InventoryService {
     public void change(ChangeInventoryCommand command) {
         List<InventoryTransactionItem> inventoryTransactionItems = new ArrayList<>();
 
+        Integer storeId = null;
+
         for (ChangeInventoryCommand.Item item : command.getItems()) {
             StoreInventory inventory = find(item.getInventoryId());
+            if (storeId == null) {
+                storeId = inventory.getStoreId();
+            }
+
+            if (storeId != inventory.getStoreId()) {
+                throw new IllegalArgumentException("하나의 재고 변동에는 하나의 점포 재고만 포함될 수 있습니다.");
+            }
+
             validateAccess(command.getLoginUser(), inventory.getStoreId());
 
             InventoryTransactionItem inventoryTransactionItem = inventory
@@ -72,7 +82,7 @@ public class InventoryService {
         }
 
         inventoryTransactionService.createTransaction(
-                command.getInventoryTransaction(),
+                command.createInventoryTransaction(storeId),
                 inventoryTransactionItems);
     }
 
@@ -95,6 +105,22 @@ public class InventoryService {
         }
 
         return current;
+    }
+
+    public int resolveSingleStoreId(List<StoreInventory> inventories) {
+        if (inventories.isEmpty()) {
+            throw new IllegalArgumentException("재고 변경 대상이 없습니다.");
+        }
+
+        int storeId = inventories.get(0).getStoreId();
+
+        for (StoreInventory inventory : inventories) {
+            if (inventory.getStoreId() != storeId) {
+                throw new IllegalStateException("하나의 재고 변동 이력에는 하나의 점포 재고만 포함될 수 있습니다.");
+            }
+        }
+
+        return storeId;
     }
 
     private void validateAccess(LoginUser loginUser, Integer storeId) {

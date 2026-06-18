@@ -13,11 +13,9 @@ import lombok.ToString;
 public interface ChangeInventoryCommand {
     LoginUser getLoginUser();
 
-    int getStoreId();
-
-    InventoryTransaction getInventoryTransaction();
-
     List<? extends ChangeInventoryCommand.Item> getItems();
+
+    InventoryTransaction createInventoryTransaction(int storeId);
 
     interface Item {
         int getInventoryId();

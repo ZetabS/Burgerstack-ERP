@@ -14,8 +14,6 @@ import lombok.ToString;
 public class ChangeInventoryByAdjustmentCommand implements ChangeInventoryCommand {
     @Getter
     private final LoginUser loginUser; // 로그인 사용자
-    @Getter
-    private final int storeId; // 점포 ID
 
     private final String reason;
     private final String transactionMemo;
@@ -24,7 +22,7 @@ public class ChangeInventoryByAdjustmentCommand implements ChangeInventoryComman
     private final List<ChangeInventoryCommand.ActualItem> items; // 변경된 재고 정보
 
     @Override
-    public InventoryTransaction getInventoryTransaction() {
+    public InventoryTransaction createInventoryTransaction(int storeId) {
         return new InventoryTransaction(
                 null,
                 InventoryTransaction.Type.ADJUSTMENT,

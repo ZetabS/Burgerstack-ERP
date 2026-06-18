@@ -111,7 +111,6 @@ public class ClosingService {
 
         ChangeInventoryByClosingCommand inventoryStoreClosingChangeCommand = new ChangeInventoryByClosingCommand(
                 loginUser,
-                loginUser.getStoreId().intValue(),
                 closing.getClosingMemo(),
                 closing.getStoreClosingId().intValue(),
                 inventoryChangeItems);

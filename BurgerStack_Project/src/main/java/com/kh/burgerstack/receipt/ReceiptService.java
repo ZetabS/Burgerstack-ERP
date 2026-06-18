@@ -168,7 +168,6 @@ public class ReceiptService {
 
         ChangeInventoryByReceivingCommand inventoryReceiptChangeCommand = new ChangeInventoryByReceivingCommand(
                 loginUser,
-                loginUser.getStoreId().intValue(),
                 receiptMemo,
                 receiptId.intValue(),
                 inventoryChangeItems);

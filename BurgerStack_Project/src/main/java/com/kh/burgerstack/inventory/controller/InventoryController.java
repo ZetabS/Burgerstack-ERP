@@ -101,7 +101,6 @@ public class InventoryController {
         inventoryService.change(
                 new ChangeInventoryByAdjustmentCommand(
                         loginUser,
-                        loginUser.getStoreId().intValue(),
                         reason,
                         transactionMemo,
                         List.of(new ChangeInventoryCommand.ActualItem(inventoryId,

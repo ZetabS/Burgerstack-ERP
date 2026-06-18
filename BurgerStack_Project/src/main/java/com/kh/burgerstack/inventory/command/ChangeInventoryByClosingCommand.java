@@ -14,8 +14,6 @@ import lombok.ToString;
 public class ChangeInventoryByClosingCommand implements ChangeInventoryCommand {
     @Getter
     private final LoginUser loginUser; // 로그인 사용자
-    @Getter
-    private final int storeId; // 점포 ID
 
     private final String transactionMemo; // 변동 메모
     private final Integer storeClosingId; // 마감 ID
@@ -24,7 +22,7 @@ public class ChangeInventoryByClosingCommand implements ChangeInventoryCommand {
     private final List<ChangeInventoryCommand.DeltaItem> items; // 변경된 재고 정보
 
     @Override
-    public InventoryTransaction getInventoryTransaction() {
+    public InventoryTransaction createInventoryTransaction(int storeId) {
         return new InventoryTransaction(
                 null,
                 InventoryTransaction.Type.STORE_CLOSING,
