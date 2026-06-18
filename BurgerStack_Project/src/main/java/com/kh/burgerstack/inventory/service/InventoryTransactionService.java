@@ -70,6 +70,10 @@ public class InventoryTransactionService {
             InventoryTransactionSearchCondition condition,
             PagingRequest pagingRequest,
             LoginUser loginUser) {
+        if (loginUser.isOwner()) {
+            condition.setStoreId(loginUser.getStoreId().intValue());
+        }
+
         if (!loginUser.isAdmin() && condition.getStoreId() != null
                 && condition.getStoreId() != loginUser.getStoreId().intValue()) {
             throw new BusinessException("재고를 찾을 수 없습니다.");

@@ -18,9 +18,9 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/owner/inventory-transactions")
+@RequestMapping("/{role}/inventory-transactions")
 @RequiredArgsConstructor
-public class OwnerInventoryTransactionController {
+public class InventoryTransactionController {
     private final InventoryTransactionService inventoryTransactionService;
 
     @GetMapping
@@ -31,7 +31,6 @@ public class OwnerInventoryTransactionController {
             HttpSession session,
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-        condition.setStoreId(loginUser.getStoreId().intValue());
 
         InventoryTransactionListView inventoryTransactionListView = inventoryTransactionService
                 .getInventoryTransactionListView(
