@@ -2,7 +2,7 @@ package com.kh.burgerstack.inventory.command;
 
 import java.util.List;
 
-import com.kh.burgerstack.inventory.domain.TransactionType;
+import com.kh.burgerstack.inventory.domain.InventoryTransactionType;
 import com.kh.burgerstack.user.LoginUser;
 
 import lombok.Getter;
@@ -20,6 +20,6 @@ public class ChangeInventoryByReceivingCommand implements ChangeInventoryCommand
     private final int storeId; // 점포 ID
 
     private final Integer storeClosingId = null;
-    private final TransactionType transactionType = TransactionType.RECEIPT;
+    private final InventoryTransactionType transactionType = InventoryTransactionType.RECEIPT;
     private final String reason = "발주 입고 반영";
 }

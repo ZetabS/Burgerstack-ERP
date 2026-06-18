@@ -2,7 +2,7 @@ package com.kh.burgerstack.inventory.command;
 
 import java.util.List;
 
-import com.kh.burgerstack.inventory.domain.TransactionType;
+import com.kh.burgerstack.inventory.domain.InventoryTransactionType;
 import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InventoryTransactionCreateCommand {
-    private TransactionType transactionType;
+    private InventoryTransactionType transactionType;
     private String reason;
     private String transactionMemo;
 

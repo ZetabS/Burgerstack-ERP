@@ -2,14 +2,14 @@ package com.kh.burgerstack.inventory.command;
 
 import java.util.List;
 
-import com.kh.burgerstack.inventory.domain.TransactionType;
+import com.kh.burgerstack.inventory.domain.InventoryTransactionType;
 import com.kh.burgerstack.user.LoginUser;
 
 import lombok.Getter;
 import lombok.ToString;
 
 public interface ChangeInventoryCommand {
-    TransactionType getTransactionType();
+    InventoryTransactionType getTransactionType();
 
     LoginUser getLoginUser();
 

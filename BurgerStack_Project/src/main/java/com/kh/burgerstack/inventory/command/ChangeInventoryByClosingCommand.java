@@ -2,7 +2,7 @@ package com.kh.burgerstack.inventory.command;
 
 import java.util.List;
 
-import com.kh.burgerstack.inventory.domain.TransactionType;
+import com.kh.burgerstack.inventory.domain.InventoryTransactionType;
 import com.kh.burgerstack.user.LoginUser;
 
 import lombok.Getter;
@@ -20,6 +20,6 @@ public class ChangeInventoryByClosingCommand implements ChangeInventoryCommand {
     private final int storeId; // 점포 ID
 
     private final Integer receiptId = null;
-    private final TransactionType transactionType = TransactionType.STORE_CLOSING;
+    private final InventoryTransactionType transactionType = InventoryTransactionType.STORE_CLOSING;
     private final String reason = "일일 마감 반영";
 }

@@ -2,7 +2,7 @@ package com.kh.burgerstack.inventory.command;
 
 import java.util.List;
 
-import com.kh.burgerstack.inventory.domain.TransactionType;
+import com.kh.burgerstack.inventory.domain.InventoryTransactionType;
 import com.kh.burgerstack.user.LoginUser;
 
 import lombok.Getter;
@@ -21,5 +21,5 @@ public class ChangeInventoryByAdjustmentCommand implements ChangeInventoryComman
 
     private final Integer receiptId = null;
     private final Integer storeClosingId = null;
-    private final TransactionType transactionType = TransactionType.ADJUSTMENT;
+    private final InventoryTransactionType transactionType = InventoryTransactionType.ADJUSTMENT;
 }
