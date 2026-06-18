@@ -21,9 +21,9 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/admin/inventories")
+@RequestMapping("/{role}/inventories")
 @RequiredArgsConstructor
-public class AdminInventoryController {
+public class InventoryController {
     private final InventoryService inventoryService;
 
     @GetMapping
@@ -44,6 +44,21 @@ public class AdminInventoryController {
         return "inventory/inventories/list";
     }
 
+    @GetMapping("/{inventoryId}/edit")
+    public String editForm(
+            @PathVariable int inventoryId,
+            HttpSession session,
+            Model model) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        InventoryDetail detail = inventoryService.getInventoryDetail(
+                inventoryId,
+                loginUser);
+
+        model.addAttribute("detail", detail);
+        return "inventory/inventories/edit";
+    }
+
     @GetMapping("/{inventoryId}/adjust")
     public String adjustForm(
             @PathVariable Integer inventoryId,
@@ -57,9 +72,25 @@ public class AdminInventoryController {
         return "inventory/inventories/adjust";
     }
 
+    @PostMapping("/{inventoryId}")
+    public String edit(
+            @PathVariable int inventoryId,
+            int safetyQuantity,
+            HttpSession session) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        inventoryService.changeSafetyQuantity(
+                inventoryId,
+                safetyQuantity,
+                loginUser);
+
+        return "redirect:/owner/inventories";
+    }
+
     @PostMapping("/{inventoryId}/adjust")
     public String adjust(
             @PathVariable Integer inventoryId,
+            @PathVariable String role,
             InventoryAdjustRequest inventoryAdjustRequest,
             HttpSession session,
             Model model) {
@@ -73,6 +104,6 @@ public class AdminInventoryController {
                 loginUser));
 
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
-        return "redirect:/admin/inventories";
+        return String.format("redirect:/%s/inventories", role);
     }
 }

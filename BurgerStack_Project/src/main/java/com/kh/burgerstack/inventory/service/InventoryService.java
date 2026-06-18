@@ -38,6 +38,10 @@ public class InventoryService {
             InventorySearchCondition condition,
             PagingRequest pagingRequest,
             LoginUser loginUser) {
+        if (loginUser.isOwner()) {
+            condition.setStoreId(loginUser.getStoreId().intValue());
+        }
+
         validateAccess(loginUser, condition.getStoreId());
 
         List<InventoryListItem> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
