@@ -7,13 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.BusinessException;
-import com.kh.burgerstack.inventory.command.InventoryTransactionCreateCommand;
 import com.kh.burgerstack.inventory.dao.InventoryTransactionDao;
 import com.kh.burgerstack.inventory.domain.InventoryTransaction;
 import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailViewModel;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionListViewModel;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionListCondition;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionListViewModel;
 import com.kh.burgerstack.store.StoreDao;
 import com.kh.burgerstack.store.dto.StoreOption;
 import com.kh.burgerstack.user.LoginUser;
@@ -32,21 +31,12 @@ public class InventoryTransactionService {
      * @return
      */
     @Transactional
-    protected InventoryTransaction createTransaction(InventoryTransactionCreateCommand command) {
-        InventoryTransaction inventoryTransaction = new InventoryTransaction(
-                null,
-                command.getTransactionType(),
-                command.getReason(),
-                command.getTransactionMemo(),
-                null,
-                command.getCreatedBy(),
-                command.getStoreId(),
-                command.getReceiptId(),
-                command.getStoreClosingId());
+    protected InventoryTransaction createTransaction(InventoryTransaction inventoryTransaction,
+            List<InventoryTransactionItem> items) {
 
         inventoryTransactionDao.insert(inventoryTransaction);
 
-        for (InventoryTransactionItem item : command.getInventoryTransactionItems()) {
+        for (InventoryTransactionItem item : items) {
             item.setInventoryTransactionId(inventoryTransaction.getInventoryTransactionId());
             inventoryTransactionDao.insertItem(item);
         }

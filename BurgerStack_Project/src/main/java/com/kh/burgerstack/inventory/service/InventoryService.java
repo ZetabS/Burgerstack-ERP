@@ -9,10 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.BusinessException;
 import com.kh.burgerstack.exception.NotFoundException;
-import com.kh.burgerstack.inventory.command.ChangeInventoryByAdjustmentCommand;
 import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
-import com.kh.burgerstack.inventory.command.InventoryAdjustmentCommand;
-import com.kh.burgerstack.inventory.command.InventoryTransactionCreateCommand;
 import com.kh.burgerstack.inventory.dao.InventoryDao;
 import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
 import com.kh.burgerstack.inventory.domain.StoreInventory;
@@ -60,45 +57,23 @@ public class InventoryService {
     }
 
     @Transactional
-    public void adjust(ChangeInventoryCommand command) {
+    public void change(ChangeInventoryCommand command) {
         List<InventoryTransactionItem> inventoryTransactionItems = new ArrayList<>();
 
         for (ChangeInventoryCommand.Item item : command.getItems()) {
             StoreInventory inventory = find(item.getInventoryId());
             validateAccess(command.getLoginUser(), inventory.getStoreId());
 
-            InventoryTransactionItem inventoryTransactionItem = inventory.changeBy(item.getDeltaQuantity());
+            InventoryTransactionItem inventoryTransactionItem = inventory
+                    .change(item.resolveAfterQuantity(inventory.getCurrentQuantity()));
             inventoryTransactionItems.add(inventoryTransactionItem);
 
             inventoryDao.update(inventory);
         }
 
-        inventoryTransactionService.createTransaction(new InventoryTransactionCreateCommand(
-                command.getTransactionType(),
-                command.getReason(),
-                command.getTransactionMemo(),
-                command.getLoginUser().getUserNo().intValue(),
-                command.getStoreId(),
-                command.getReceiptId(),
-                command.getStoreClosingId(),
-                inventoryTransactionItems));
-    }
-
-    @Transactional
-    public void adjustQuantity(InventoryAdjustmentCommand command) {
-        StoreInventory current = find(command.getInventoryId());
-
-        // 검증은 adjust에서 수행하므로 다루지 않음
-        int deltaQuantity = command.getAfterQuantity() - current.getCurrentQuantity();
-        List<ChangeInventoryCommand.Item> items = List
-                .of(new ChangeInventoryCommand.Item(command.getInventoryId(), deltaQuantity));
-
-        adjust(new ChangeInventoryByAdjustmentCommand(
-                command.getLoginUser(),
-                items,
-                command.getTransactionMemo(),
-                command.getReason(),
-                current.getStoreId()));
+        inventoryTransactionService.createTransaction(
+                command.getInventoryTransaction(),
+                inventoryTransactionItems);
     }
 
     @Transactional

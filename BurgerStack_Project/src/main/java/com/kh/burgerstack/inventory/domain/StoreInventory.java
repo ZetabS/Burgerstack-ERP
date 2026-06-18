@@ -25,21 +25,7 @@ public class StoreInventory {
     private Integer storeId;
     private Integer materialId;
 
-    public InventoryTransactionItem changeBy(int deltaQuantity) {
-        int actualQuantity = this.currentQuantity + deltaQuantity;
-        return change(deltaQuantity, actualQuantity);
-    }
-
-    public InventoryTransactionItem changeTo(int actualQuantity) {
-        int deltaQuantity = actualQuantity - this.currentQuantity;
-        return change(deltaQuantity, actualQuantity);
-    }
-
-    private InventoryTransactionItem change(int deltaQuantity, int actualQuantity) {
-        if (deltaQuantity == 0) {
-            throw new BusinessException("변경 전과 후의 수량이 동일합니다.");
-        }
-
+    public InventoryTransactionItem change(int actualQuantity) {
         if (actualQuantity < 0) {
             throw new BadRequestException("수량은 0 이상이어야 합니다.");
         }

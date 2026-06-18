@@ -111,7 +111,10 @@
         UPDATE STORE_INVENTORIES
            SET CURRENT_QUANTITY = #{inventory.currentQuantity}
              , SAFETY_QUANTITY = #{inventory.safetyQuantity}
+             , UPDATED_AT = SYSDATE
          WHERE STORE_INVENTORY_ID = #{inventory.storeInventoryId}
+            <if test="inventory.updatedAt != null">
            AND UPDATED_AT = #{inventory.updatedAt}
+            </if>
     </update>
 </mapper>

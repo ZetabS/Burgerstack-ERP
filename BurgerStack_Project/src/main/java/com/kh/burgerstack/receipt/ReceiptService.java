@@ -156,22 +156,24 @@ public class ReceiptService {
             receiptDao.insertReceiptItem(item);
         }
 
-        List<ChangeInventoryCommand.Item> inventoryChangeItems = form.getItems().stream()
-                .map((ReceiptItem item) -> {
+        List<ChangeInventoryCommand.DeltaItem> inventoryChangeItems = form.getItems()
+                .stream()
+                .filter(item -> item.getReceivedQuantity() != 0)
+                .map(item -> {
                     int deltaQuantity = item.getReceivedQuantity().intValue();
                     int inventoryId = receiptDao
                             .selectStoreInventoryId(loginUser.getStoreId(), item.getPurchaseOrderItemId()).intValue();
-                    return new ChangeInventoryCommand.Item(inventoryId, deltaQuantity);
-                }).filter((ChangeInventoryCommand.Item item) -> item.getDeltaQuantity() != 0).toList();
+                    return new ChangeInventoryCommand.DeltaItem(inventoryId, deltaQuantity);
+                }).toList();
 
         ChangeInventoryByReceivingCommand inventoryReceiptChangeCommand = new ChangeInventoryByReceivingCommand(
                 loginUser,
-                inventoryChangeItems,
+                loginUser.getStoreId().intValue(),
                 receiptMemo,
                 receiptId.intValue(),
-                loginUser.getStoreId().intValue());
+                inventoryChangeItems);
 
-        inventoryService.adjust(inventoryReceiptChangeCommand);
+        inventoryService.change(inventoryReceiptChangeCommand);
 
         // 발주 상태 변경
         // APPROVED -> RECEIVED
