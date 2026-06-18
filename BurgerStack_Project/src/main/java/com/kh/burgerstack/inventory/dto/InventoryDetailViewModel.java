@@ -1,4 +1,4 @@
-package com.kh.burgerstack.inventory.vo;
+package com.kh.burgerstack.inventory.dto;
 
 import java.time.LocalDateTime;
 
@@ -13,12 +13,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class StoreInventory {
-    private Integer storeInventoryId;
+public class InventoryDetailViewModel {
+    private Integer inventoryId;
     private Integer currentQuantity;
     private Integer safetyQuantity;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String storeName;
+    private String materialName;
     private Integer storeId;
     private Integer materialId;
 }

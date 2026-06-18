@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionDetail;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionListSort;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionListView;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionSearchCondition;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionListViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionListCondition;
 import com.kh.burgerstack.inventory.service.InventoryTransactionService;
 import com.kh.burgerstack.user.LoginUser;
 
@@ -25,14 +24,13 @@ public class InventoryTransactionController {
 
     @GetMapping
     public String list(
-            InventoryTransactionSearchCondition condition,
-            InventoryTransactionListSort inventoryListSort,
+            InventoryTransactionListCondition condition,
             PagingRequest pagingRequest,
             HttpSession session,
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        InventoryTransactionListView inventoryTransactionListView = inventoryTransactionService
+        InventoryTransactionListViewModel inventoryTransactionListView = inventoryTransactionService
                 .getInventoryTransactionListView(
                         condition,
                         pagingRequest,
@@ -49,7 +47,7 @@ public class InventoryTransactionController {
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        InventoryTransactionDetail detail = inventoryTransactionService.getInventoryTransactionDetail(
+        InventoryTransactionDetailViewModel detail = inventoryTransactionService.getInventoryTransactionDetail(
                 inventoryTransactionId,
                 loginUser);
 

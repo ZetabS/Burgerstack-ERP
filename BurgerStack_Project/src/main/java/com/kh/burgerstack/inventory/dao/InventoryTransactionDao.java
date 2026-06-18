@@ -6,12 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.BusinessException;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionDetail;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailItem;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionListItem;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionSearchCondition;
-import com.kh.burgerstack.inventory.vo.InventoryTransaction;
-import com.kh.burgerstack.inventory.vo.InventoryTransactionItem;
+import com.kh.burgerstack.inventory.domain.InventoryTransaction;
+import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionListViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionListCondition;
 import com.kh.burgerstack.user.LoginUser;
 
 import lombok.RequiredArgsConstructor;
@@ -48,22 +47,23 @@ public class InventoryTransactionDao {
         return inventoryTransactionMapper.findItemById(item.getInventoryTransactionItemId());
     }
 
-    public List<InventoryTransactionListItem> findInventoryTransactionListItems(
-            InventoryTransactionSearchCondition condition,
+    public List<InventoryTransactionListViewModel.Item> findInventoryTransactionListItems(
+            InventoryTransactionListCondition condition,
             PagingRequest pagingRequest,
             LoginUser loginUser) {
         return inventoryTransactionMapper.findInventoryTransactionListItems(condition, pagingRequest);
     }
 
-    public int count(InventoryTransactionSearchCondition condition) {
+    public int count(InventoryTransactionListCondition condition) {
         return inventoryTransactionMapper.count(condition);
     }
 
-    public InventoryTransactionDetail getInventoryTransactionDetailById(int inventoryTransactionId) {
+    public InventoryTransactionDetailViewModel getInventoryTransactionDetailById(int inventoryTransactionId) {
         return inventoryTransactionMapper.getInventoryTransactionDetailById(inventoryTransactionId);
     }
 
-    public List<InventoryTransactionDetailItem> findInventoryTransactionDetailItems(int inventoryTransactionId) {
+    public List<InventoryTransactionDetailViewModel.Item> findInventoryTransactionDetailItems(
+            int inventoryTransactionId) {
         return inventoryTransactionMapper.findInventoryTransactionDetailItems(inventoryTransactionId);
     }
 }

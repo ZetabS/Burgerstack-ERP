@@ -12,7 +12,7 @@ import com.kh.burgerstack.dashboard.dto.PurchaseOrderStatistics;
 import com.kh.burgerstack.dashboard.dto.StoreStatistics;
 import com.kh.burgerstack.inquiry.InquiryDaoHO;
 import com.kh.burgerstack.inventory.dao.InventoryDao;
-import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
+import com.kh.burgerstack.inventory.dto.InventoryListCondition;
 import com.kh.burgerstack.purchase.PurchaseDao;
 import com.kh.burgerstack.purchase.dto.PurchaseSearchDto;
 import com.kh.burgerstack.store.StoreDao;
@@ -40,7 +40,7 @@ public class AdminDashboardService {
                 sqlSession);
         int inquiryCount = inquiryDao.countUnanswerd();
 
-        int belowSafetyInventoryCount = inventoryDao.count(new InventorySearchCondition(
+        int belowSafetyInventoryCount = inventoryDao.count(new InventoryListCondition(
                 null,
                 null,
                 null,

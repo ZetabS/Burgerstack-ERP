@@ -9,10 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.inventory.dto.InventoryChangeItem;
-import com.kh.burgerstack.inventory.dto.InventoryReceiptChangeCommand;
+import com.kh.burgerstack.inventory.command.ChangeInventoryByReceivingCommand;
+import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
 import com.kh.burgerstack.inventory.service.InventoryService;
-import com.kh.burgerstack.purchase.PurchaseOrder;
 import com.kh.burgerstack.user.LoginUser;
 
 @Service
@@ -51,14 +50,14 @@ public class ReceiptService {
             String keyword,
             Long storeId) {
 
-		return pagingRequest.toPageInfo(
-		receiptDao.getPlanTotalCount(
-		status,
-		startDate,
-		endDate,
-		keyword,
-		storeId));
-}
+        return pagingRequest.toPageInfo(
+                receiptDao.getPlanTotalCount(
+                        status,
+                        startDate,
+                        endDate,
+                        keyword,
+                        storeId));
+    }
 
     public List<ReceiptPlanDto> selectReceiptPlanList(PagingRequest pagingRequest,
             String status,
@@ -67,14 +66,14 @@ public class ReceiptService {
             String keyword,
             Long storeId) {
 
-		return receiptDao.selectReceiptPlanList(
-		pagingRequest,
-		status,
-		startDate,
-		endDate,
-		keyword,
-		storeId);
-}
+        return receiptDao.selectReceiptPlanList(
+                pagingRequest,
+                status,
+                startDate,
+                endDate,
+                keyword,
+                storeId);
+    }
 
     public List<Receipt> selectReceiptList(PagingRequest pagingRequest,
             String receiptType,
@@ -89,7 +88,7 @@ public class ReceiptService {
                 endDate,
                 keyword);
     }
-    
+
     public Long selectStoreIdByOwnerUserNo(Long ownerUserNo) {
         return receiptDao.selectStoreIdByOwnerUserNo(ownerUserNo);
     }
@@ -157,15 +156,15 @@ public class ReceiptService {
             receiptDao.insertReceiptItem(item);
         }
 
-        List<InventoryChangeItem> inventoryChangeItems = form.getItems().stream()
+        List<ChangeInventoryCommand.Item> inventoryChangeItems = form.getItems().stream()
                 .map((ReceiptItem item) -> {
                     int deltaQuantity = item.getReceivedQuantity().intValue();
                     int inventoryId = receiptDao
                             .selectStoreInventoryId(loginUser.getStoreId(), item.getPurchaseOrderItemId()).intValue();
-                    return new InventoryChangeItem(inventoryId, deltaQuantity);
-                }).filter((InventoryChangeItem item) -> item.getDeltaQuantity() != 0).toList();
+                    return new ChangeInventoryCommand.Item(inventoryId, deltaQuantity);
+                }).filter((ChangeInventoryCommand.Item item) -> item.getDeltaQuantity() != 0).toList();
 
-        InventoryReceiptChangeCommand inventoryReceiptChangeCommand = new InventoryReceiptChangeCommand(
+        ChangeInventoryByReceivingCommand inventoryReceiptChangeCommand = new ChangeInventoryByReceivingCommand(
                 loginUser,
                 inventoryChangeItems,
                 receiptMemo,

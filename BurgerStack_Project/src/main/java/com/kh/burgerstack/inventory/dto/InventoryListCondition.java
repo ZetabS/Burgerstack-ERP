@@ -11,13 +11,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class InventoryListItem {
-    private Integer inventoryId;
-    private Integer currentQuantity;
-    private Integer shortageQuantity;
-    private Integer safetyQuantity;
-    private String storeName;
-    private String materialCode;
+public class InventoryListCondition {
+    private Integer storeId;
+    private Integer materialId;
     private String materialName;
     private String materialType;
+    private Boolean belowSafetyStock;
 }

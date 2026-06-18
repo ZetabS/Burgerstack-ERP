@@ -7,15 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.BusinessException;
+import com.kh.burgerstack.inventory.command.InventoryTransactionCreateCommand;
 import com.kh.burgerstack.inventory.dao.InventoryTransactionDao;
+import com.kh.burgerstack.inventory.domain.InventoryTransaction;
+import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
 import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionCreateCommand;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionDetail;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionListItem;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionListView;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionSearchCondition;
-import com.kh.burgerstack.inventory.vo.InventoryTransaction;
-import com.kh.burgerstack.inventory.vo.InventoryTransactionItem;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionListViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionListCondition;
 import com.kh.burgerstack.store.StoreDao;
 import com.kh.burgerstack.store.dto.StoreOption;
 import com.kh.burgerstack.user.LoginUser;
@@ -66,8 +65,8 @@ public class InventoryTransactionService {
 
     }
 
-    public InventoryTransactionListView getInventoryTransactionListView(
-            InventoryTransactionSearchCondition condition,
+    public InventoryTransactionListViewModel getInventoryTransactionListView(
+            InventoryTransactionListCondition condition,
             PagingRequest pagingRequest,
             LoginUser loginUser) {
         if (loginUser.isOwner()) {
@@ -79,24 +78,24 @@ public class InventoryTransactionService {
             throw new BusinessException("재고를 찾을 수 없습니다.");
         }
 
-        List<InventoryTransactionListItem> list = inventoryTransactionDao.findInventoryTransactionListItems(
+        List<InventoryTransactionListViewModel.Item> list = inventoryTransactionDao.findInventoryTransactionListItems(
                 condition,
                 pagingRequest,
                 loginUser);
         int totalCount = inventoryTransactionDao.count(condition);
         List<StoreOption> storeOptions = storeDao.getStoreOptions();
 
-        return new InventoryTransactionListView(
+        return new InventoryTransactionListViewModel(
                 list,
                 storeOptions,
                 condition,
                 pagingRequest.toPageInfo(totalCount));
     }
 
-    public InventoryTransactionDetail getInventoryTransactionDetail(
+    public InventoryTransactionDetailViewModel getInventoryTransactionDetail(
             int inventoryTransactionId,
             LoginUser loginUser) {
-        InventoryTransactionDetail detail = inventoryTransactionDao
+        InventoryTransactionDetailViewModel detail = inventoryTransactionDao
                 .getInventoryTransactionDetailById(inventoryTransactionId);
         if (!loginUser.isAdmin() && detail.getStoreId() != null
                 && detail.getStoreId() != loginUser.getStoreId().intValue()) {

@@ -6,23 +6,23 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.inventory.domain.StoreInventory;
 import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
-import com.kh.burgerstack.inventory.dto.InventoryDetail;
-import com.kh.burgerstack.inventory.dto.InventoryListItem;
-import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
-import com.kh.burgerstack.inventory.vo.StoreInventory;
+import com.kh.burgerstack.inventory.dto.InventoryDetailViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryListCondition;
+import com.kh.burgerstack.inventory.dto.InventoryListViewModel;
 
 @Mapper
 public interface InventoryMapper {
 
-    public List<InventoryListItem> findInventoryListItems(
-            @Param("condition") InventorySearchCondition condition,
+    public List<InventoryListViewModel.Item> findInventoryListItems(
+            @Param("condition") InventoryListCondition condition,
             @Param("paging") PagingRequest pagingRequest);
 
     public int count(
-            @Param("condition") InventorySearchCondition condition);
+            @Param("condition") InventoryListCondition condition);
 
-    public InventoryDetail getInventoryDetailById(
+    public InventoryDetailViewModel getInventoryDetailById(
             @Param("storeInventoryId") int storeInventoryId);
 
     public int updateQuantity(

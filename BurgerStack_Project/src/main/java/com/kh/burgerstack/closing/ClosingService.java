@@ -8,8 +8,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kh.burgerstack.inventory.dto.InventoryChangeItem;
-import com.kh.burgerstack.inventory.dto.InventoryStoreClosingChangeCommand;
+import com.kh.burgerstack.inventory.command.ChangeInventoryByClosingCommand;
+import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
 import com.kh.burgerstack.inventory.service.InventoryService;
 import com.kh.burgerstack.user.LoginUser;
 
@@ -29,14 +29,14 @@ public class ClosingService {
             String startDate,
             String endDate) {
 
-	Map<String, Object> map = new HashMap<>();
-	
-	map.put("storeId", storeId);
-	map.put("startDate", startDate);
-	map.put("endDate", endDate);
-	
-	return closingDao.selectOwnerClosingList(sqlSession, map);
-}
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("storeId", storeId);
+        map.put("startDate", startDate);
+        map.put("endDate", endDate);
+
+        return closingDao.selectOwnerClosingList(sqlSession, map);
+    }
 
     public List<StoreClosing> selectAdminClosingList(Long storeId,
             String startDate,
@@ -102,13 +102,13 @@ public class ClosingService {
                     item);
         }
 
-        List<InventoryChangeItem> inventoryChangeItems = itemList.stream()
+        List<ChangeInventoryCommand.Item> inventoryChangeItems = itemList.stream()
                 .map((StoreClosingItem item) -> {
                     int deltaQuantity = -item.getPhysicalQuantity().intValue() - item.getDisposalQuantity().intValue();
-                    return new InventoryChangeItem(item.getStoreInventoryId().intValue(), deltaQuantity);
-                }).filter((InventoryChangeItem item) -> item.getDeltaQuantity() != 0).toList();
+                    return new ChangeInventoryCommand.Item(item.getStoreInventoryId().intValue(), deltaQuantity);
+                }).filter((ChangeInventoryCommand.Item item) -> item.getDeltaQuantity() != 0).toList();
 
-        InventoryStoreClosingChangeCommand inventoryStoreClosingChangeCommand = new InventoryStoreClosingChangeCommand(
+        ChangeInventoryByClosingCommand inventoryStoreClosingChangeCommand = new ChangeInventoryByClosingCommand(
                 loginUser,
                 inventoryChangeItems,
                 closing.getClosingMemo(),

@@ -6,12 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionDetail;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailItem;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionListItem;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionSearchCondition;
-import com.kh.burgerstack.inventory.vo.InventoryTransaction;
-import com.kh.burgerstack.inventory.vo.InventoryTransactionItem;
+import com.kh.burgerstack.inventory.domain.InventoryTransaction;
+import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionListViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryTransactionListCondition;
 
 @Mapper
 public interface InventoryTransactionMapper {
@@ -30,16 +29,16 @@ public interface InventoryTransactionMapper {
     public List<InventoryTransactionItem> findItemsByTransactionId(
             @Param("inventoryTransactionId") int inventoryTransactionId);
 
-    public List<InventoryTransactionListItem> findInventoryTransactionListItems(
-            @Param("condition") InventoryTransactionSearchCondition condition,
+    public List<InventoryTransactionListViewModel.Item> findInventoryTransactionListItems(
+            @Param("condition") InventoryTransactionListCondition condition,
             @Param("paging") PagingRequest paging);
 
     public int count(
-            @Param("condition") InventoryTransactionSearchCondition condition);
+            @Param("condition") InventoryTransactionListCondition condition);
 
-    public InventoryTransactionDetail getInventoryTransactionDetailById(
+    public InventoryTransactionDetailViewModel getInventoryTransactionDetailById(
             @Param("inventoryTransactionId") int inventoryTransactionId);
 
-    public List<InventoryTransactionDetailItem> findInventoryTransactionDetailItems(
+    public List<InventoryTransactionDetailViewModel.Item> findInventoryTransactionDetailItems(
             @Param("inventoryTransactionId") int inventoryTransactionId);
 }

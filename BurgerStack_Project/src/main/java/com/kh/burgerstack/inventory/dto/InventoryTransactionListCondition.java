@@ -15,7 +15,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class InventoryTransactionSearchCondition {
+public class InventoryTransactionListCondition {
     private Integer storeId;
     private String transactionType;
 

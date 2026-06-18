@@ -1,8 +1,6 @@
-package com.kh.burgerstack.inventory.dto;
+package com.kh.burgerstack.inventory.domain;
 
-import java.util.List;
-
-import com.kh.burgerstack.inventory.enums.TransactionType;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,15 +13,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class InventoryTransactionCreateCommand {
+public class InventoryTransaction {
+    private Integer inventoryTransactionId;
     private TransactionType transactionType;
     private String reason;
     private String transactionMemo;
-
+    private LocalDateTime createdAt;
     private Integer createdBy;
     private Integer storeId;
     private Integer receiptId;
     private Integer storeClosingId;
-
-    private List<InventoryChangeParam> inventoryTransactionItems;
 }

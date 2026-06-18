@@ -1,4 +1,4 @@
-package com.kh.burgerstack.inventory.dto;
+package com.kh.burgerstack.inventory.command;
 
 import com.kh.burgerstack.user.LoginUser;
 

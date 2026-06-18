@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class InventoryAdjustRequest {
+public class AdjustInventoryRequest {
     private Integer afterQuantity;
     private String reason;
     private String transactionMemo;

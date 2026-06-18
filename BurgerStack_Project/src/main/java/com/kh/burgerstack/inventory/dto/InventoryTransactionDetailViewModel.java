@@ -14,7 +14,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class InventoryTransactionDetail {
+public class InventoryTransactionDetailViewModel {
     private Integer inventoryTransactionId;
     private String inventoryTransactionCode;
     private String transactionType;
@@ -26,5 +26,24 @@ public class InventoryTransactionDetail {
     private String storeName;
     private Integer storeId;
 
-    private List<InventoryTransactionDetailItem> list;
+    private List<InventoryTransactionDetailViewModel.Item> list;
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @ToString
+    public static class Item {
+        private Integer inventoryTransactionItemId;
+        private Integer beforeQuantity;
+        private Integer changedQuantity;
+        private Integer afterQuantity;
+        private String materialCode;
+        private String materialType;
+        private String materialName;
+        private Integer inventoryTransactionId;
+        private Integer storeInventoryId;
+        private Integer materialId;
+    }
+
 }

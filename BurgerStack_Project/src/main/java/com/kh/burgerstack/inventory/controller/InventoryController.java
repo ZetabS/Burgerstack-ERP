@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.inventory.dto.InventoryAdjustRequest;
-import com.kh.burgerstack.inventory.dto.InventoryAdjustmentCommand;
-import com.kh.burgerstack.inventory.dto.InventoryDetail;
-import com.kh.burgerstack.inventory.dto.InventoryListSort;
-import com.kh.burgerstack.inventory.dto.InventoryListView;
-import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
+import com.kh.burgerstack.inventory.command.InventoryAdjustmentCommand;
+import com.kh.burgerstack.inventory.dto.AdjustInventoryRequest;
+import com.kh.burgerstack.inventory.dto.InventoryDetailViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryListCondition;
+import com.kh.burgerstack.inventory.dto.InventoryListViewModel;
 import com.kh.burgerstack.inventory.service.InventoryService;
 import com.kh.burgerstack.user.LoginUser;
 
@@ -28,14 +27,13 @@ public class InventoryController {
 
     @GetMapping
     public String list(
-            InventorySearchCondition condition,
-            InventoryListSort inventoryListSort,
+            InventoryListCondition condition,
             PagingRequest pagingRequest,
             HttpSession session,
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        InventoryListView inventoryListView = inventoryService.getInventoryListView(
+        InventoryListViewModel inventoryListView = inventoryService.getInventoryListView(
                 condition,
                 pagingRequest,
                 loginUser);
@@ -51,7 +49,7 @@ public class InventoryController {
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        InventoryDetail detail = inventoryService.getInventoryDetail(
+        InventoryDetailViewModel detail = inventoryService.getInventoryDetail(
                 inventoryId,
                 loginUser);
 
@@ -66,7 +64,7 @@ public class InventoryController {
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        InventoryDetail detail = inventoryService.getInventoryDetail(inventoryId, loginUser);
+        InventoryDetailViewModel detail = inventoryService.getInventoryDetail(inventoryId, loginUser);
 
         model.addAttribute("detail", detail);
         return "inventory/inventories/adjust";
@@ -91,7 +89,7 @@ public class InventoryController {
     public String adjust(
             @PathVariable Integer inventoryId,
             @PathVariable String role,
-            InventoryAdjustRequest inventoryAdjustRequest,
+            AdjustInventoryRequest inventoryAdjustRequest,
             HttpSession session,
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");

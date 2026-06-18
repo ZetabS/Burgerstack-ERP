@@ -1,4 +1,4 @@
-package com.kh.burgerstack.inventory.vo;
+package com.kh.burgerstack.inventory.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

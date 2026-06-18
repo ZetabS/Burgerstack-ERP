@@ -9,18 +9,16 @@ import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.BadRequestException;
 import com.kh.burgerstack.exception.BusinessException;
 import com.kh.burgerstack.exception.NotFoundException;
+import com.kh.burgerstack.inventory.command.ChangeInventoryByAdjustmentCommand;
+import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
+import com.kh.burgerstack.inventory.command.InventoryAdjustmentCommand;
+import com.kh.burgerstack.inventory.command.InventoryTransactionCreateCommand;
 import com.kh.burgerstack.inventory.dao.InventoryDao;
-import com.kh.burgerstack.inventory.dto.InventoryAdjustmentChangeCommand;
-import com.kh.burgerstack.inventory.dto.InventoryAdjustmentCommand;
-import com.kh.burgerstack.inventory.dto.InventoryChangeItem;
+import com.kh.burgerstack.inventory.domain.StoreInventory;
 import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
-import com.kh.burgerstack.inventory.dto.InventoryDetail;
-import com.kh.burgerstack.inventory.dto.InventoryListItem;
-import com.kh.burgerstack.inventory.dto.InventoryListView;
-import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
-import com.kh.burgerstack.inventory.dto.InventoryTransactionCreateCommand;
-import com.kh.burgerstack.inventory.interfaces.InventoryChangeCommand;
-import com.kh.burgerstack.inventory.vo.StoreInventory;
+import com.kh.burgerstack.inventory.dto.InventoryDetailViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryListCondition;
+import com.kh.burgerstack.inventory.dto.InventoryListViewModel;
 import com.kh.burgerstack.store.StoreDao;
 import com.kh.burgerstack.store.dto.StoreOption;
 import com.kh.burgerstack.user.LoginUser;
@@ -34,8 +32,8 @@ public class InventoryService {
     private final InventoryDao inventoryDao;
     private final StoreDao storeDao;
 
-    public InventoryListView getInventoryListView(
-            InventorySearchCondition condition,
+    public InventoryListViewModel getInventoryListView(
+            InventoryListCondition condition,
             PagingRequest pagingRequest,
             LoginUser loginUser) {
         if (loginUser.isOwner()) {
@@ -44,29 +42,29 @@ public class InventoryService {
 
         validateAccess(loginUser, condition.getStoreId());
 
-        List<InventoryListItem> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
+        List<InventoryListViewModel.Item> list = inventoryDao.findInventoryListItems(condition, pagingRequest);
         int totalCount = inventoryDao.count(condition);
         List<StoreOption> storeOptions = storeDao.getStoreOptions();
 
-        return new InventoryListView(
+        return new InventoryListViewModel(
                 list,
                 storeOptions,
                 condition,
                 pagingRequest.toPageInfo(totalCount));
     }
 
-    public InventoryDetail getInventoryDetail(int inventoryId, LoginUser loginUser) {
-        InventoryDetail detail = inventoryDao.getInventoryDetailById(inventoryId);
+    public InventoryDetailViewModel getInventoryDetail(int inventoryId, LoginUser loginUser) {
+        InventoryDetailViewModel detail = inventoryDao.getInventoryDetailById(inventoryId);
         validateAccess(loginUser, detail.getStoreId());
         return detail;
     }
 
     @Transactional
-    public void change(InventoryChangeCommand command) {
+    public void change(ChangeInventoryCommand command) {
         // InventoryChangeItem 리스트를 InventoryChangeParam 리스트로 변환
         List<InventoryChangeParam> inventoryChangeParams = command.getItems()
                 .stream()
-                .map((InventoryChangeItem item) -> {
+                .map((ChangeInventoryCommand.Item item) -> {
                     StoreInventory current = find(item.getInventoryId());
                     validateAccess(command.getLoginUser(), current.getStoreId());
 
@@ -102,9 +100,10 @@ public class InventoryService {
 
         // 검증은 change에서 수행하므로 다루지 않음
         int deltaQuantity = command.getAfterQuantity() - current.getCurrentQuantity();
-        List<InventoryChangeItem> items = List.of(new InventoryChangeItem(command.getInventoryId(), deltaQuantity));
+        List<ChangeInventoryCommand.Item> items = List
+                .of(new ChangeInventoryCommand.Item(command.getInventoryId(), deltaQuantity));
 
-        change(new InventoryAdjustmentChangeCommand(
+        change(new ChangeInventoryByAdjustmentCommand(
                 command.getLoginUser(),
                 items,
                 command.getTransactionMemo(),

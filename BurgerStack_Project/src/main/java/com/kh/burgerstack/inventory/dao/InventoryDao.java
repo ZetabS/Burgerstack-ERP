@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.inventory.domain.StoreInventory;
 import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
-import com.kh.burgerstack.inventory.dto.InventoryDetail;
-import com.kh.burgerstack.inventory.dto.InventoryListItem;
-import com.kh.burgerstack.inventory.dto.InventorySearchCondition;
+import com.kh.burgerstack.inventory.dto.InventoryDetailViewModel;
+import com.kh.burgerstack.inventory.dto.InventoryListCondition;
+import com.kh.burgerstack.inventory.dto.InventoryListViewModel;
 import com.kh.burgerstack.inventory.exception.InventoryConflictException;
-import com.kh.burgerstack.inventory.vo.StoreInventory;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,17 +19,17 @@ import lombok.RequiredArgsConstructor;
 public class InventoryDao {
     private final InventoryMapper inventoryMapper;
 
-    public List<InventoryListItem> findInventoryListItems(
-            InventorySearchCondition condition,
+    public List<InventoryListViewModel.Item> findInventoryListItems(
+            InventoryListCondition condition,
             PagingRequest pagingRequest) {
         return inventoryMapper.findInventoryListItems(condition, pagingRequest);
     }
 
-    public InventoryDetail getInventoryDetailById(int inventoryId) {
+    public InventoryDetailViewModel getInventoryDetailById(int inventoryId) {
         return inventoryMapper.getInventoryDetailById(inventoryId);
     }
 
-    public int count(InventorySearchCondition condition) {
+    public int count(InventoryListCondition condition) {
         return inventoryMapper.count(condition);
     }
 
