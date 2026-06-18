@@ -46,7 +46,7 @@
                #{item.inventoryTransactionItemId}
              , #{item.beforeQuantity}
              , #{item.afterQuantity}
-             , #{inventoryTransactionId}
+             , #{item.inventoryTransactionId}
              , #{item.storeInventoryId}
           )
     </insert>

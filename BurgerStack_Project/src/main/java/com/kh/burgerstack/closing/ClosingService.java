@@ -115,7 +115,7 @@ public class ClosingService {
                 closing.getStoreClosingId().intValue(),
                 loginUser.getStoreId().intValue());
 
-        inventoryService.change(inventoryStoreClosingChangeCommand);
+        inventoryService.adjust(inventoryStoreClosingChangeCommand);
         return result;
     }
 

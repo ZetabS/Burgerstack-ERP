@@ -38,9 +38,8 @@ public class InventoryTransactionDao {
     }
 
     public InventoryTransactionItem insertItem(
-            int inventoryTransactionId,
             InventoryTransactionItem item) {
-        int result = inventoryTransactionMapper.insertItem(inventoryTransactionId, item);
+        int result = inventoryTransactionMapper.insertItem(item);
         if (result <= 0) {
             throw new BusinessException("재고 변동 이력을 추가할 수 없습니다.");
         }

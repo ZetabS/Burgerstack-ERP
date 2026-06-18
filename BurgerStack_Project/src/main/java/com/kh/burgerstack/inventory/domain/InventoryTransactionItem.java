@@ -27,4 +27,8 @@ public class InventoryTransactionItem {
         this.storeInventoryId = storeInventoryId;
     }
 
+    public int getDeltaQuantity() {
+        return afterQuantity - beforeQuantity;
+    }
+
 }

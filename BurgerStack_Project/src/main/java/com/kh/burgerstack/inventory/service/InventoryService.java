@@ -1,12 +1,12 @@
 package com.kh.burgerstack.inventory.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.exception.BadRequestException;
 import com.kh.burgerstack.exception.BusinessException;
 import com.kh.burgerstack.exception.NotFoundException;
 import com.kh.burgerstack.inventory.command.ChangeInventoryByAdjustmentCommand;
@@ -14,8 +14,8 @@ import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
 import com.kh.burgerstack.inventory.command.InventoryAdjustmentCommand;
 import com.kh.burgerstack.inventory.command.InventoryTransactionCreateCommand;
 import com.kh.burgerstack.inventory.dao.InventoryDao;
+import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
 import com.kh.burgerstack.inventory.domain.StoreInventory;
-import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
 import com.kh.burgerstack.inventory.dto.InventoryDetailViewModel;
 import com.kh.burgerstack.inventory.dto.InventoryListCondition;
 import com.kh.burgerstack.inventory.dto.InventoryListViewModel;
@@ -60,27 +60,17 @@ public class InventoryService {
     }
 
     @Transactional
-    public void change(ChangeInventoryCommand command) {
-        // InventoryChangeItem 리스트를 InventoryChangeParam 리스트로 변환
-        List<InventoryChangeParam> inventoryChangeParams = command.getItems()
-                .stream()
-                .map((ChangeInventoryCommand.Item item) -> {
-                    StoreInventory current = find(item.getInventoryId());
-                    validateAccess(command.getLoginUser(), current.getStoreId());
+    public void adjust(ChangeInventoryCommand command) {
+        List<InventoryTransactionItem> inventoryTransactionItems = new ArrayList<>();
 
-                    int beforeQuantity = current.getCurrentQuantity();
-                    int afterQuantity = beforeQuantity + item.getDeltaQuantity();
+        for (ChangeInventoryCommand.Item item : command.getItems()) {
+            StoreInventory inventory = find(item.getInventoryId());
+            validateAccess(command.getLoginUser(), inventory.getStoreId());
 
-                    validateQuantity(beforeQuantity, afterQuantity);
+            InventoryTransactionItem inventoryTransactionItem = inventory.changeBy(item.getDeltaQuantity());
+            inventoryTransactionItems.add(inventoryTransactionItem);
 
-                    return new InventoryChangeParam(
-                            item.getInventoryId(),
-                            beforeQuantity,
-                            afterQuantity);
-                }).toList();
-
-        for (InventoryChangeParam param : inventoryChangeParams) {
-            inventoryDao.updateQuantity(param);
+            inventoryDao.update(inventory);
         }
 
         inventoryTransactionService.createTransaction(new InventoryTransactionCreateCommand(
@@ -91,19 +81,19 @@ public class InventoryService {
                 command.getStoreId(),
                 command.getReceiptId(),
                 command.getStoreClosingId(),
-                inventoryChangeParams));
+                inventoryTransactionItems));
     }
 
     @Transactional
     public void adjustQuantity(InventoryAdjustmentCommand command) {
         StoreInventory current = find(command.getInventoryId());
 
-        // 검증은 change에서 수행하므로 다루지 않음
+        // 검증은 adjust에서 수행하므로 다루지 않음
         int deltaQuantity = command.getAfterQuantity() - current.getCurrentQuantity();
         List<ChangeInventoryCommand.Item> items = List
                 .of(new ChangeInventoryCommand.Item(command.getInventoryId(), deltaQuantity));
 
-        change(new ChangeInventoryByAdjustmentCommand(
+        adjust(new ChangeInventoryByAdjustmentCommand(
                 command.getLoginUser(),
                 items,
                 command.getTransactionMemo(),
@@ -116,15 +106,10 @@ public class InventoryService {
             int inventoryId,
             int safetyQuantity,
             LoginUser loginUser) {
-        StoreInventory current = find(inventoryId);
-
-        validateAccess(loginUser, current.getStoreId());
-        validateQuantity(current.getSafetyQuantity(), safetyQuantity);
-
-        inventoryDao.updateSafetyQuantity(
-                inventoryId,
-                safetyQuantity,
-                current.getSafetyQuantity());
+        StoreInventory inventory = find(inventoryId);
+        validateAccess(loginUser, inventory.getStoreId());
+        inventory.changeSafetyQuantityTo(safetyQuantity);
+        inventoryDao.update(inventory);
     }
 
     private StoreInventory find(int inventoryId) {
@@ -153,15 +138,5 @@ public class InventoryService {
 
         // 해당하지 않으면 거절
         throw new BusinessException("재고에 접근할 권한이 없습니다.");
-    }
-
-    private void validateQuantity(int beforeQuantity, int afterQuantity) {
-        if (afterQuantity < 0) {
-            throw new BadRequestException("수량은 0 이상이어야 합니다.");
-        }
-
-        if (beforeQuantity == afterQuantity) {
-            throw new BusinessException("변경 전과 후의 수량이 동일합니다.");
-        }
     }
 }

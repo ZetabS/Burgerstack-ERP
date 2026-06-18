@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.burgerstack.inventory.dao.InventoryMapper">
+    <select id="findById">
+        SELECT *
+          FROM STORE_INVENTORIES
+         WHERE STORE_INVENTORY_ID = #{storeInventoryId}
+    </select>
+
     <select id="findInventoryListItems">
         SELECT STORE_INVENTORY_ID AS inventoryId
-             , CURRENT_QUANTITY
+        , CURRENT_QUANTITY
              , SHORTAGE_QUANTITY
              , SAFETY_QUANTITY
              , STORE_NAME
@@ -101,23 +107,11 @@
          WHERE STORE_INVENTORY_ID = #{storeInventoryId}
     </select>
 
-    <update id="updateQuantity">
+    <update id="update">
         UPDATE STORE_INVENTORIES
-           SET CURRENT_QUANTITY = #{param.afterQuantity}
-         WHERE STORE_INVENTORY_ID = #{param.inventoryId}
-           AND CURRENT_QUANTITY = #{param.beforeQuantity}
-    </update>
-
-    <select id="findById">
-        SELECT *
-          FROM STORE_INVENTORIES
-         WHERE STORE_INVENTORY_ID = #{storeInventoryId}
-    </select>
-
-    <update id="updateSafetyQuantity">
-        UPDATE STORE_INVENTORIES
-           SET SAFETY_QUANTITY = #{safetyQuantity}
-         WHERE STORE_INVENTORY_ID = #{storeInventoryId}
-           AND SAFETY_QUANTITY = #{currentSafetyQuantity}
+           SET CURRENT_QUANTITY = #{inventory.currentQuantity}
+             , SAFETY_QUANTITY = #{inventory.safetyQuantity}
+         WHERE STORE_INVENTORY_ID = #{inventory.storeInventoryId}
+           AND UPDATED_AT = #{inventory.updatedAt}
     </update>
 </mapper>

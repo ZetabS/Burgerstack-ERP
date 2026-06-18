@@ -2,8 +2,8 @@ package com.kh.burgerstack.inventory.command;
 
 import java.util.List;
 
+import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
 import com.kh.burgerstack.inventory.domain.InventoryTransactionType;
-import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,5 +26,5 @@ public class InventoryTransactionCreateCommand {
     private Integer receiptId;
     private Integer storeClosingId;
 
-    private List<InventoryChangeParam> inventoryTransactionItems;
+    private List<InventoryTransactionItem> inventoryTransactionItems;
 }

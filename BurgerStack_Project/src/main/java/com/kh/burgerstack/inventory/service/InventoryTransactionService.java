@@ -11,7 +11,6 @@ import com.kh.burgerstack.inventory.command.InventoryTransactionCreateCommand;
 import com.kh.burgerstack.inventory.dao.InventoryTransactionDao;
 import com.kh.burgerstack.inventory.domain.InventoryTransaction;
 import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
-import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionDetailViewModel;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionListViewModel;
 import com.kh.burgerstack.inventory.dto.InventoryTransactionListCondition;
@@ -47,18 +46,9 @@ public class InventoryTransactionService {
 
         inventoryTransactionDao.insert(inventoryTransaction);
 
-        List<InventoryTransactionItem> items = command.getInventoryTransactionItems()
-                .stream()
-                .map((InventoryChangeParam param) -> new InventoryTransactionItem(
-                        param.getBeforeQuantity(),
-                        param.getAfterQuantity(),
-                        param.getInventoryId()))
-                .toList();
-
-        for (InventoryTransactionItem item : items) {
-            inventoryTransactionDao.insertItem(
-                    inventoryTransaction.getInventoryTransactionId(),
-                    item);
+        for (InventoryTransactionItem item : command.getInventoryTransactionItems()) {
+            item.setInventoryTransactionId(inventoryTransaction.getInventoryTransactionId());
+            inventoryTransactionDao.insertItem(item);
         }
 
         return inventoryTransaction;

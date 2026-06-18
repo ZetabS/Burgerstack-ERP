@@ -171,7 +171,7 @@ public class ReceiptService {
                 receiptId.intValue(),
                 loginUser.getStoreId().intValue());
 
-        inventoryService.change(inventoryReceiptChangeCommand);
+        inventoryService.adjust(inventoryReceiptChangeCommand);
 
         // 발주 상태 변경
         // APPROVED -> RECEIVED

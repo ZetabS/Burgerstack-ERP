@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.inventory.domain.StoreInventory;
-import com.kh.burgerstack.inventory.dto.InventoryChangeParam;
 import com.kh.burgerstack.inventory.dto.InventoryDetailViewModel;
 import com.kh.burgerstack.inventory.dto.InventoryListCondition;
 import com.kh.burgerstack.inventory.dto.InventoryListViewModel;
@@ -18,6 +17,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class InventoryDao {
     private final InventoryMapper inventoryMapper;
+
+    public StoreInventory findById(int storeInventoryId) {
+        return inventoryMapper.findById(storeInventoryId);
+    }
 
     public List<InventoryListViewModel.Item> findInventoryListItems(
             InventoryListCondition condition,
@@ -33,27 +36,9 @@ public class InventoryDao {
         return inventoryMapper.count(condition);
     }
 
-    public void updateQuantity(InventoryChangeParam param) {
-        int updatedCount = inventoryMapper.updateQuantity(param);
+    public void update(StoreInventory inventory) {
+        int updatedCount = inventoryMapper.update(inventory);
         if (updatedCount != 1) {
-            throw new InventoryConflictException();
-        }
-    }
-
-    public StoreInventory findById(
-            int storeInventoryId) {
-        return inventoryMapper.findById(storeInventoryId);
-    }
-
-    public void updateSafetyQuantity(
-            int storeInventoryId,
-            int safetyQuantity,
-            int currentSafetyQuantity) {
-        int updatedCount = inventoryMapper.updateSafetyQuantity(
-                storeInventoryId,
-                safetyQuantity,
-                currentSafetyQuantity);
-        if (updatedCount <= 0) {
             throw new InventoryConflictException();
         }
     }
