@@ -3,7 +3,6 @@ package com.kh.burgerstack.inventory.command;
 import java.util.List;
 
 import com.kh.burgerstack.inventory.domain.InventoryTransaction;
-import com.kh.burgerstack.inventory.domain.InventoryTransactionType;
 import com.kh.burgerstack.user.LoginUser;
 
 import lombok.Getter;
@@ -28,7 +27,7 @@ public class ChangeInventoryByClosingCommand implements ChangeInventoryCommand {
     public InventoryTransaction getInventoryTransaction() {
         return new InventoryTransaction(
                 null,
-                InventoryTransactionType.STORE_CLOSING,
+                InventoryTransaction.Type.STORE_CLOSING,
                 "일일 마감 반영",
                 transactionMemo,
                 null,

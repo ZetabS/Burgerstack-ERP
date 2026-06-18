@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 public class InventoryTransaction {
     private Integer inventoryTransactionId;
-    private InventoryTransactionType transactionType;
+    private InventoryTransaction.Type transactionType;
     private String reason;
     private String transactionMemo;
     private LocalDateTime createdAt;
@@ -23,4 +23,14 @@ public class InventoryTransaction {
     private Integer storeId;
     private Integer receiptId;
     private Integer storeClosingId;
+
+    @AllArgsConstructor
+    @Getter
+    public enum Type {
+        RECEIPT("입고"),
+        STORE_CLOSING("마감"),
+        ADJUSTMENT("조정");
+
+        private String label;
+    }
 }
