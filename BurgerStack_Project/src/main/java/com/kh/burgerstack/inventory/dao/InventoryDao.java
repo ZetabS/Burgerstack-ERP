@@ -37,7 +37,6 @@ public class InventoryDao {
     }
 
     public void update(StoreInventory inventory) {
-        System.out.println(inventory);
         int updatedCount = inventoryMapper.update(inventory);
         if (updatedCount != 1) {
             throw new InventoryConflictException();
