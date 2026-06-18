@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.inventory.command.ChangeInventoryByAdjustmentCommand;
 import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
-import com.kh.burgerstack.inventory.dto.AdjustInventoryRequest;
 import com.kh.burgerstack.inventory.dto.InventoryDetailViewModel;
 import com.kh.burgerstack.inventory.dto.InventoryListCondition;
 import com.kh.burgerstack.inventory.dto.InventoryListViewModel;
@@ -92,7 +91,9 @@ public class InventoryController {
     public String adjust(
             @PathVariable Integer inventoryId,
             @PathVariable String role,
-            AdjustInventoryRequest inventoryAdjustRequest,
+            Integer afterQuantity,
+            String reason,
+            String transactionMemo,
             HttpSession session,
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
@@ -101,10 +102,10 @@ public class InventoryController {
                 new ChangeInventoryByAdjustmentCommand(
                         loginUser,
                         loginUser.getStoreId().intValue(),
-                        inventoryAdjustRequest.getReason(),
-                        inventoryAdjustRequest.getTransactionMemo(),
+                        reason,
+                        transactionMemo,
                         List.of(new ChangeInventoryCommand.ActualItem(inventoryId,
-                                inventoryAdjustRequest.getAfterQuantity()))));
+                                afterQuantity))));
 
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");
         return String.format("redirect:/%s/inventories", role);
