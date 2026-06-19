@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.BadRequestException;
 import com.kh.burgerstack.exception.BusinessException;
-import com.kh.burgerstack.exception.NotFoundException;
 import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
 import com.kh.burgerstack.inventory.dao.InventoryDao;
 import com.kh.burgerstack.inventory.domain.InventoryTransaction;
@@ -62,7 +61,7 @@ public class InventoryService {
 
     @Transactional
     public void change(ChangeInventoryCommand command) {
-        List<StoreInventory> inventories = inventoryDao.findByIds(command.getItems().stream()
+        List<StoreInventory> inventories = inventoryDao.getByIds(command.getItems().stream()
                 .map(item -> item.getInventoryId())
                 .toList());
 
@@ -108,20 +107,10 @@ public class InventoryService {
             int inventoryId,
             int safetyQuantity,
             LoginUser loginUser) {
-        StoreInventory inventory = find(inventoryId);
+        StoreInventory inventory = inventoryDao.getById(inventoryId);
         validateAccess(loginUser, inventory.getStoreId());
         inventory.changeSafetyQuantityTo(safetyQuantity);
         inventoryDao.update(inventory);
-    }
-
-    private StoreInventory find(int inventoryId) {
-        StoreInventory current = inventoryDao.findById(inventoryId);
-
-        if (current == null) {
-            throw new NotFoundException("재고를 찾을 수 없습니다.");
-        }
-
-        return current;
     }
 
     private int resolveSingleStoreId(List<StoreInventory> inventories) {

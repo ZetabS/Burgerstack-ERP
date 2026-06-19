@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.exception.NotFoundException;
 import com.kh.burgerstack.inventory.domain.StoreInventory;
 import com.kh.burgerstack.inventory.dto.InventoryDetailViewModel;
 import com.kh.burgerstack.inventory.dto.InventoryListCondition;
@@ -18,12 +19,20 @@ import lombok.RequiredArgsConstructor;
 public class InventoryDao {
     private final InventoryMapper inventoryMapper;
 
-    public StoreInventory findById(int storeInventoryId) {
-        return inventoryMapper.findById(storeInventoryId);
+    public StoreInventory getById(int storeInventoryId) {
+        StoreInventory inventory = inventoryMapper.findById(storeInventoryId);
+        if (inventory == null) {
+            throw new NotFoundException("재고를 찾을 수 없습니다.");
+        }
+        return inventory;
     }
 
-    public List<StoreInventory> findByIds(List<Integer> storeInventoryIds) {
-        return inventoryMapper.findByIds(storeInventoryIds);
+    public List<StoreInventory> getByIds(List<Integer> storeInventoryIds) {
+        List<StoreInventory> inventories = inventoryMapper.findByIds(storeInventoryIds);
+        if (inventories.isEmpty()) {
+            throw new NotFoundException("재고를 찾을 수 없습니다.");
+        }
+        return inventories;
     }
 
     public List<InventoryListViewModel.Item> findInventoryListItems(
