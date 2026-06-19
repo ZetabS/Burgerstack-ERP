@@ -99,7 +99,9 @@
                                      , T.REASON
                                      , T.CREATED_AT
                                      , T.CREATED_BY
-                                     , CASE WHEN U.ROLE = 'OWNER' THEN '점주 ' || U.USER_NAME ELSE U.USER_NAME END AS CREATED_BY_NAME
+                                     , CASE WHEN U.ROLE = 'OWNER' THEN '점주 ' || U.USER_NAME
+                                            ELSE U.USER_NAME
+                                             END AS CREATED_BY_NAME
                                      , S.STORE_NAME
                                      , STORE_ID
                                   FROM INVENTORY_TRANSACTIONS T
@@ -132,7 +134,7 @@
              , CASE WHEN T.TRANSACTION_TYPE = 'RECEIPT'       THEN '입고'
                     WHEN T.TRANSACTION_TYPE = 'STORE_CLOSING' THEN '마감'
                     WHEN T.TRANSACTION_TYPE = 'ADJUSTMENT'    THEN '조정'
-                END AS TRANSACTION_TYPE
+                     END AS TRANSACTION_TYPE
              , T.REASON
              , T.TRANSACTION_MEMO
              , T.CREATED_AT AS CREATED_AT

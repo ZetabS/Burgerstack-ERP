@@ -35,7 +35,7 @@
 
     <select id="findInventoryListItems">
         SELECT STORE_INVENTORY_ID AS inventoryId
-        , CURRENT_QUANTITY
+             , CURRENT_QUANTITY
              , SHORTAGE_QUANTITY
              , SAFETY_QUANTITY
              , STORE_NAME
@@ -51,7 +51,7 @@
                                      , I.CURRENT_QUANTITY
                                      , CASE WHEN I.CURRENT_QUANTITY &lt; I.SAFETY_QUANTITY THEN I.CURRENT_QUANTITY - I.SAFETY_QUANTITY
                                             ELSE 0
-                                       END AS SHORTAGE_QUANTITY
+                                             END AS SHORTAGE_QUANTITY
                                      , I.SAFETY_QUANTITY
                                      , S.STORE_NAME
                                      , M.MATERIAL_TYPE || EXTRACT(YEAR FROM M.CREATED_AT) || LPAD(MATERIAL_ID, 4, '0') AS MATERIAL_CODE
