@@ -19,7 +19,7 @@ public class ChangeInventoryByAdjustmentCommand implements ChangeInventoryComman
     private final String transactionMemo;
 
     @Getter
-    private final List<ChangeInventoryCommand.ActualItem> items; // 변경된 재고 정보
+    private final List<ChangeInventoryCommand.FixedQuantityChange> items; // 변경된 재고 정보
 
     @Override
     public InventoryTransaction createInventoryTransaction(int storeId) {

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.BusinessException;
 import com.kh.burgerstack.exception.NotFoundException;
+import com.kh.burgerstack.inventory.command.ChangeInventoryByAdjustmentCommand;
 import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
 import com.kh.burgerstack.inventory.dao.InventoryDao;
 import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
@@ -75,11 +76,19 @@ public class InventoryService {
         List<InventoryTransactionItem> inventoryTransactionItems = new ArrayList<>();
 
         // 부작용이 포함되어 있으므로 반복문으로 처리
-        for (ChangeInventoryCommand.Item item : command.getItems()) {
+        for (ChangeInventoryCommand.QuantityChange item : command.getItems()) {
             StoreInventory inventory = inventoryMap.get(item.getInventoryId());
 
-            InventoryTransactionItem inventoryTransactionItem = inventory
-                    .change(item.resolveAfterQuantity(inventory.getCurrentQuantity()));
+            InventoryTransactionItem inventoryTransactionItem = null;
+
+            if (item instanceof ChangeInventoryCommand.FixedQuantityChange fixedQuantityChange) {
+                inventoryTransactionItem = inventory
+                        .changeTo(fixedQuantityChange.getActualQuantity());
+            } else if (item instanceof ChangeInventoryCommand.DeltaQuantityChange deltaQuantityChange) {
+                inventoryTransactionItem = inventory
+                        .changeBy(deltaQuantityChange.getDeltaQuantity());
+            }
+
             inventoryDao.update(inventory);
 
             inventoryTransactionItems.add(inventoryTransactionItem);

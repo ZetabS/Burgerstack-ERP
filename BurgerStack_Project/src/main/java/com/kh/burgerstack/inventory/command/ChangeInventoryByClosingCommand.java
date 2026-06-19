@@ -19,7 +19,7 @@ public class ChangeInventoryByClosingCommand implements ChangeInventoryCommand {
     private final Integer storeClosingId; // 마감 ID
 
     @Getter
-    private final List<ChangeInventoryCommand.DeltaItem> items; // 변경된 재고 정보
+    private final List<ChangeInventoryCommand.DeltaQuantityChange> items; // 변경된 재고 정보
 
     @Override
     public InventoryTransaction createInventoryTransaction(int storeId) {

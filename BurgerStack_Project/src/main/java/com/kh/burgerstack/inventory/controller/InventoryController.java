@@ -103,7 +103,7 @@ public class InventoryController {
                         loginUser,
                         reason,
                         transactionMemo,
-                        List.of(new ChangeInventoryCommand.ActualItem(inventoryId,
+                        List.of(new ChangeInventoryCommand.FixedQuantityChange(inventoryId,
                                 afterQuantity))));
 
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");

@@ -156,14 +156,14 @@ public class ReceiptService {
             receiptDao.insertReceiptItem(item);
         }
 
-        List<ChangeInventoryCommand.DeltaItem> inventoryChangeItems = form.getItems()
+        List<ChangeInventoryCommand.DeltaQuantityChange> inventoryChangeItems = form.getItems()
                 .stream()
                 .filter(item -> item.getReceivedQuantity() != 0)
                 .map(item -> {
                     int deltaQuantity = item.getReceivedQuantity().intValue();
                     int inventoryId = receiptDao
                             .selectStoreInventoryId(loginUser.getStoreId(), item.getPurchaseOrderItemId()).intValue();
-                    return new ChangeInventoryCommand.DeltaItem(inventoryId, deltaQuantity);
+                    return new ChangeInventoryCommand.DeltaQuantityChange(inventoryId, deltaQuantity);
                 }).toList();
 
         ChangeInventoryByReceivingCommand inventoryReceiptChangeCommand = new ChangeInventoryByReceivingCommand(

@@ -102,11 +102,13 @@ public class ClosingService {
                     item);
         }
 
-        List<ChangeInventoryCommand.DeltaItem> inventoryChangeItems = itemList.stream()
+        List<ChangeInventoryCommand.DeltaQuantityChange> inventoryChangeItems = itemList.stream()
                 .filter(item -> -item.getPhysicalQuantity() - item.getDisposalQuantity() != 0)
                 .map(item -> {
                     int deltaQuantity = -item.getPhysicalQuantity().intValue() - item.getDisposalQuantity().intValue();
-                    return new ChangeInventoryCommand.DeltaItem(item.getStoreInventoryId().intValue(), deltaQuantity);
+                    return new ChangeInventoryCommand.DeltaQuantityChange(
+                            item.getStoreInventoryId().intValue(),
+                            deltaQuantity);
                 }).toList();
 
         ChangeInventoryByClosingCommand inventoryStoreClosingChangeCommand = new ChangeInventoryByClosingCommand(
