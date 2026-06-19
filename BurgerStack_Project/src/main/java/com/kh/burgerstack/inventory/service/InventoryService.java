@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
+import com.kh.burgerstack.exception.BadRequestException;
 import com.kh.burgerstack.exception.BusinessException;
 import com.kh.burgerstack.exception.NotFoundException;
 import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
@@ -125,14 +126,14 @@ public class InventoryService {
 
     private int resolveSingleStoreId(List<StoreInventory> inventories) {
         if (inventories.isEmpty()) {
-            throw new IllegalArgumentException("재고 변경 대상이 없습니다.");
+            throw new BadRequestException("재고 변경 대상이 없습니다.");
         }
 
         int storeId = inventories.get(0).getStoreId();
 
         for (StoreInventory inventory : inventories) {
             if (inventory.getStoreId() != storeId) {
-                throw new IllegalStateException("하나의 재고 변동 이력에는 하나의 점포 재고만 포함될 수 있습니다.");
+                throw new BadRequestException("하나의 재고 변동 이력에는 하나의 점포 재고만 포함될 수 있습니다.");
             }
         }
 
