@@ -22,6 +22,10 @@ public class InventoryDao {
         return inventoryMapper.findById(storeInventoryId);
     }
 
+    public List<StoreInventory> findByIds(List<Integer> storeInventoryIds) {
+        return inventoryMapper.findByIds(storeInventoryIds);
+    }
+
     public List<InventoryListViewModel.Item> findInventoryListItems(
             InventoryListCondition condition,
             PagingRequest pagingRequest) {

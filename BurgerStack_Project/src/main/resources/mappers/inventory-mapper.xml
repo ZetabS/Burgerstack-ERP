@@ -7,6 +7,15 @@
          WHERE STORE_INVENTORY_ID = #{storeInventoryId}
     </select>
 
+    <select id="findByIds">
+        SELECT *
+          FROM STORE_INVENTORIES
+         WHERE STORE_INVENTORY_ID IN
+         <foreach item="storeInventoryId" collection="storeInventoryIds" open="(" separator="," close=")">
+            #{storeInventoryId}
+         </foreach>
+    </select>
+
     <select id="findInventoryListItems">
         SELECT STORE_INVENTORY_ID AS inventoryId
         , CURRENT_QUANTITY

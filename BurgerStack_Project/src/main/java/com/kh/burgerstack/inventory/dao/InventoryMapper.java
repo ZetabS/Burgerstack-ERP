@@ -16,6 +16,9 @@ public interface InventoryMapper {
     public StoreInventory findById(
             @Param("storeInventoryId") int storeInventoryId);
 
+    public List<StoreInventory> findByIds(
+            @Param("storeInventoryIds") List<Integer> storeInventoryIds);
+
     public List<InventoryListViewModel.Item> findInventoryListItems(
             @Param("condition") InventoryListCondition condition,
             @Param("paging") PagingRequest pagingRequest);

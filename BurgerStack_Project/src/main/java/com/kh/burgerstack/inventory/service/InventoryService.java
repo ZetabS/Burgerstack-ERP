@@ -2,6 +2,8 @@ package com.kh.burgerstack.inventory.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,27 +60,29 @@ public class InventoryService {
 
     @Transactional
     public void change(ChangeInventoryCommand command) {
+        List<StoreInventory> inventories = inventoryDao.findByIds(command.getItems().stream()
+                .map(item -> item.getInventoryId())
+                .toList());
+
+        int storeId = resolveSingleStoreId(inventories);
+        validateAccess(command.getLoginUser(), storeId);
+
+        Map<Integer, StoreInventory> inventoryMap = inventories.stream()
+                .collect(Collectors.toMap(
+                        inventory -> inventory.getStoreInventoryId(),
+                        inventory -> inventory));
+
         List<InventoryTransactionItem> inventoryTransactionItems = new ArrayList<>();
 
-        Integer storeId = null;
-
+        // 부작용이 포함되어 있으므로 반복문으로 처리
         for (ChangeInventoryCommand.Item item : command.getItems()) {
-            StoreInventory inventory = find(item.getInventoryId());
-            if (storeId == null) {
-                storeId = inventory.getStoreId();
-            }
-
-            if (storeId != inventory.getStoreId()) {
-                throw new IllegalArgumentException("하나의 재고 변동에는 하나의 점포 재고만 포함될 수 있습니다.");
-            }
-
-            validateAccess(command.getLoginUser(), inventory.getStoreId());
+            StoreInventory inventory = inventoryMap.get(item.getInventoryId());
 
             InventoryTransactionItem inventoryTransactionItem = inventory
                     .change(item.resolveAfterQuantity(inventory.getCurrentQuantity()));
-            inventoryTransactionItems.add(inventoryTransactionItem);
-
             inventoryDao.update(inventory);
+
+            inventoryTransactionItems.add(inventoryTransactionItem);
         }
 
         inventoryTransactionService.createTransaction(
@@ -107,7 +111,7 @@ public class InventoryService {
         return current;
     }
 
-    public int resolveSingleStoreId(List<StoreInventory> inventories) {
+    private int resolveSingleStoreId(List<StoreInventory> inventories) {
         if (inventories.isEmpty()) {
             throw new IllegalArgumentException("재고 변경 대상이 없습니다.");
         }
