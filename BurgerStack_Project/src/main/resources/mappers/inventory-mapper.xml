@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.burgerstack.inventory.dao.InventoryMapper">
+    <sql id="inventoryListCondition">
+        <where>
+            <if test="condition.storeId != null">
+                       STORE_ID = #{condition.storeId}
+            </if>
+            <if test="condition.materialName != null and condition.materialName != ''">
+                   AND M.MATERIAL_NAME LIKE '%' || #{condition.materialName} || '%'
+            </if>
+            <if test="condition.materialType != null and condition.materialType != ''">
+                   AND M.MATERIAL_TYPE = #{condition.materialType}
+            </if>
+            <if test="condition.belowSafetyStock != null and condition.belowSafetyStock">
+                   AND I.CURRENT_QUANTITY &lt; I.SAFETY_QUANTITY
+            </if>
+        </where>
+    </sql>
+
     <select id="findById">
         SELECT *
           FROM STORE_INVENTORIES
@@ -47,20 +64,7 @@
                                  USING (MATERIAL_ID)
                                   JOIN STORES S
                                  USING (STORE_ID)
-                        <where>
-                            <if test="condition.storeId != null">
-                                       STORE_ID = #{condition.storeId}
-                            </if>
-                            <if test="condition.materialName != null and condition.materialName != ''">
-                                   AND M.MATERIAL_NAME LIKE '%' || #{condition.materialName} || '%'
-                            </if>
-                            <if test="condition.materialType != null and condition.materialType != ''">
-                                   AND M.MATERIAL_TYPE = #{condition.materialType}
-                            </if>
-                            <if test="condition.belowSafetyStock != null and condition.belowSafetyStock">
-                                   AND I.CURRENT_QUANTITY &lt; I.SAFETY_QUANTITY
-                            </if>
-                        </where>
+                                <include refid="inventoryListCondition" />
                                  ORDER BY I.CREATED_AT DESC, I.STORE_INVENTORY_ID
                                 ) temp
                          WHERE ROWNUM  &lt;= #{paging.endRow}
@@ -76,20 +80,7 @@
          USING (MATERIAL_ID)
           JOIN STORES S
          USING (STORE_ID)
-        <where>
-            <if test="condition.storeId != null">
-                        STORE_ID = #{condition.storeId}
-            </if>
-            <if test="condition.materialName != null and condition.materialName != ''">
-                    AND M.MATERIAL_NAME LIKE '%' || #{condition.materialName} || '%'
-            </if>
-            <if test="condition.materialType != null and condition.materialType != ''">
-                    AND M.MATERIAL_TYPE = #{condition.materialType}
-            </if>
-            <if test="condition.belowSafetyStock != null and condition.belowSafetyStock">
-                    AND I.CURRENT_QUANTITY &lt; I.SAFETY_QUANTITY
-            </if>
-        </where>
+        <include refid="inventoryListCondition" />
     </select>
 
     <select id="getInventoryDetailById">

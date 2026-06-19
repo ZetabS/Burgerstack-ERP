@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.burgerstack.inventory.dao.InventoryTransactionMapper">
+    <sql id="inventoryTransactionListCondition">
+        <where>
+            <if test="condition.storeId != null">
+                       STORE_ID = #{condition.storeId}
+            </if>
+            <if test="condition.transactionType != null and condition.transactionType != ''">
+                   AND TRANSACTION_TYPE = #{condition.transactionType}
+            </if>
+            <if test="condition.startDate != null">
+                   AND T.CREATED_AT &gt; #{condition.startDate}
+            </if>
+            <if test="condition.endDate != null">
+                   AND T.CREATED_AT &lt; #{condition.endDate}
+            </if>
+        </where>
+    </sql>
     <insert id="insert">
         <selectKey keyProperty="inventoryTransactionId" resultType="int" order="BEFORE">
             SELECT SEQ_INV_TX.NEXTVAL FROM DUAL
@@ -91,20 +107,7 @@
                                   ON ( T.CREATED_BY = U.USER_NO )
                                   JOIN STORES S
                                  USING ( STORE_ID )
-                        <where>
-                            <if test="condition.storeId != null">
-                                       STORE_ID = #{condition.storeId}
-                            </if>
-                            <if test="condition.transactionType != null and condition.transactionType != ''">
-                                   AND TRANSACTION_TYPE = #{condition.transactionType}
-                            </if>
-                            <if test="condition.startDate != null">
-                                   AND T.CREATED_AT &gt; #{condition.startDate}
-                            </if>
-                            <if test="condition.endDate != null">
-                                   AND T.CREATED_AT &lt; #{condition.endDate}
-                            </if>
-                        </where>
+                                <include refid="inventoryTransactionListCondition"/>
                                  ORDER BY T.CREATED_AT DESC, T.INVENTORY_TRANSACTION_ID
                                 ) temp
                          WHERE ROWNUM  &lt;= #{paging.endRow}
@@ -120,20 +123,7 @@
           ON ( T.CREATED_BY = U.USER_NO )
           JOIN STORES S
          USING ( STORE_ID )
-        <where>
-            <if test="condition.storeId != null">
-                       STORE_ID = #{condition.storeId}
-            </if>
-            <if test="condition.transactionType != null and condition.transactionType != ''">
-                   AND TRANSACTION_TYPE = #{condition.transactionType}
-            </if>
-            <if test="condition.startDate != null">
-                   AND T.CREATED_AT &gt;= #{condition.startDate}
-            </if>
-            <if test="condition.endDate != null">
-                   AND T.CREATED_AT &lt;= #{condition.endDate}
-            </if>
-        </where>
+        <include refid="inventoryTransactionListCondition"/>
     </select>
 
     <select id="getInventoryTransactionDetailById">
