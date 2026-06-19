@@ -13,7 +13,6 @@ import lombok.ToString;
 @ToString
 public class InventoryListCondition {
     private Integer storeId;
-    private Integer materialId;
     private String materialName;
     private String materialType;
     private Boolean belowSafetyStock;

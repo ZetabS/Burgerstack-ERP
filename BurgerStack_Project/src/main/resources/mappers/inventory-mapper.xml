@@ -51,9 +51,6 @@
                             <if test="condition.storeId != null">
                                        STORE_ID = #{condition.storeId}
                             </if>
-                            <if test="condition.materialId != null">
-                                   AND MATERIAL_ID = #{condition.materialId}
-                            </if>
                             <if test="condition.materialName != null and condition.materialName != ''">
                                    AND M.MATERIAL_NAME LIKE '%' || #{condition.materialName} || '%'
                             </if>
@@ -82,9 +79,6 @@
         <where>
             <if test="condition.storeId != null">
                         STORE_ID = #{condition.storeId}
-            </if>
-            <if test="condition.materialId != null">
-                    AND MATERIAL_ID = #{condition.materialId}
             </if>
             <if test="condition.materialName != null and condition.materialName != ''">
                     AND M.MATERIAL_NAME LIKE '%' || #{condition.materialName} || '%'

@@ -44,7 +44,6 @@ public class AdminDashboardService {
                 null,
                 null,
                 null,
-                null,
                 true));
 
         List<AdminDashboardInquiryListItem> recentInquiryList = inquiryDao.findRecent(5);
