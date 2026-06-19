@@ -13,6 +13,7 @@ import com.kh.burgerstack.exception.BusinessException;
 import com.kh.burgerstack.exception.NotFoundException;
 import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
 import com.kh.burgerstack.inventory.dao.InventoryDao;
+import com.kh.burgerstack.inventory.domain.InventoryTransaction;
 import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
 import com.kh.burgerstack.inventory.domain.StoreInventory;
 import com.kh.burgerstack.inventory.dto.InventoryDetailViewModel;
@@ -93,8 +94,11 @@ public class InventoryService {
             inventoryTransactionItems.add(inventoryTransactionItem);
         }
 
+        InventoryTransaction inventoryTransaction = command.getInventoryTransaction();
+        inventoryTransaction.setStoreId(storeId);
+
         inventoryTransactionService.createTransaction(
-                command.getInventoryTransaction(),
+                inventoryTransaction,
                 inventoryTransactionItems);
     }
 
