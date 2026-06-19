@@ -47,11 +47,11 @@ public class InventoryTransactionController {
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        InventoryTransactionDetailViewModel detail = inventoryTransactionService.getInventoryTransactionDetail(
+        InventoryTransactionDetailViewModel view = inventoryTransactionService.getInventoryTransactionDetail(
                 inventoryTransactionId,
                 loginUser);
 
-        model.addAttribute("detail", detail);
+        model.addAttribute("view", view);
         return "inventory-transaction/detail";
     }
 }

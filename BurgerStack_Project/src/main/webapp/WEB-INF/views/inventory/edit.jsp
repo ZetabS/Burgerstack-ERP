@@ -4,7 +4,7 @@
 <%@ taglib prefix="common" tagdir="/WEB-INF/tags/common" %>
 <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layout" %>
 <c:url var="baseUrl" value="/owner/inventories" />
-<c:url var="editAction" value="/owner/inventories/${detail.inventoryId}" />
+<c:url var="editAction" value="/owner/inventories/${view.inventoryId}" />
 
 <t:layout>
   <layout:Page title="안전재고 조정">
@@ -16,15 +16,15 @@
       <form action="${editAction}" method="post">
         <layout:Section title="기본 정보">
           <common:FieldList>
-            <layout:FieldRow label="자재명"><c:out value="${detail.materialName}" /></layout:FieldRow>
-            <layout:FieldRow label="현재 수량"><c:out value="${detail.currentQuantity}" /></layout:FieldRow>
-            <layout:FieldRow label="안전재고 수량"><c:out value="${detail.safetyQuantity}" /></layout:FieldRow>
+            <layout:FieldRow label="자재명"><c:out value="${view.materialName}" /></layout:FieldRow>
+            <layout:FieldRow label="현재 수량"><c:out value="${view.currentQuantity}" /></layout:FieldRow>
+            <layout:FieldRow label="안전재고 수량"><c:out value="${view.safetyQuantity}" /></layout:FieldRow>
           </common:FieldList>
         </layout:Section>
 
         <layout:Section title="안전재고 입력">
           <layout:FieldRow label="안전재고 수량" inputId="safetyQuantity">
-            <input type="number" class="form-control" id="safetyQuantity" name="safetyQuantity" value="${detail.safetyQuantity}" min="0" required />
+            <input type="number" class="form-control" id="safetyQuantity" name="safetyQuantity" value="${view.safetyQuantity}" min="0" required />
           </layout:FieldRow>
         </layout:Section>
 

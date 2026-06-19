@@ -19,25 +19,25 @@
     <jsp:body>
       <layout:Section title="기본 정보">
         <common:FieldList>
-          <layout:FieldRow label="변동 코드"><c:out value="${detail.inventoryTransactionCode}" /></layout:FieldRow>
+          <layout:FieldRow label="변동 코드"><c:out value="${view.inventoryTransactionCode}" /></layout:FieldRow>
           <c:if test="${isAdmin}">
-            <layout:FieldRow label="점포명"><c:out value="${detail.storeName}" /></layout:FieldRow>
+            <layout:FieldRow label="점포명"><c:out value="${view.storeName}" /></layout:FieldRow>
           </c:if>
           <layout:FieldRow label="변동 유형">
-            <display:InventoryTransactionTypeLabel value="${detail.transactionType}" />
+            <display:InventoryTransactionTypeLabel value="${view.transactionType}" />
           </layout:FieldRow>
-          <layout:FieldRow label="처리자"><c:out value="${detail.createdByName}" /></layout:FieldRow>
+          <layout:FieldRow label="처리자"><c:out value="${view.createdByName}" /></layout:FieldRow>
           <layout:FieldRow label="처리 일시">
-            <c:out value="${datetime:formatDateTime(detail.createdAt)}" />
+            <c:out value="${datetime:formatDateTime(view.createdAt)}" />
           </layout:FieldRow>
-          <layout:FieldRow label="사유"><c:out value="${detail.reason}" /></layout:FieldRow>
+          <layout:FieldRow label="사유"><c:out value="${view.reason}" /></layout:FieldRow>
           <layout:FieldRow label="비고">
             <c:choose>
-              <c:when test="${empty detail.transactionMemo}">
+              <c:when test="${empty view.transactionMemo}">
                 <span class="text-muted">-</span>
               </c:when>
               <c:otherwise>
-                <c:out value="${detail.transactionMemo}" />
+                <c:out value="${view.transactionMemo}" />
               </c:otherwise>
             </c:choose>
           </layout:FieldRow>
@@ -57,7 +57,7 @@
             </tr>
           </jsp:attribute>
           <jsp:attribute name="tbody">
-            <c:forEach var="item" items="${detail.list}">
+            <c:forEach var="item" items="${view.list}">
               <table:TableRow>
                 <table:TextFitCell value="${item.materialCode}" />
                 <table:TextCell value="${item.materialName}" />

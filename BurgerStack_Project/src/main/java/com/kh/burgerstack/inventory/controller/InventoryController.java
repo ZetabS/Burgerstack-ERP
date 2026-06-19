@@ -51,11 +51,11 @@ public class InventoryController {
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        InventoryDetailViewModel detail = inventoryService.getInventoryDetail(
+        InventoryDetailViewModel view = inventoryService.getInventoryDetail(
                 inventoryId,
                 loginUser);
 
-        model.addAttribute("detail", detail);
+        model.addAttribute("view", view);
         return "inventory/edit";
     }
 
@@ -66,9 +66,9 @@ public class InventoryController {
             Model model) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        InventoryDetailViewModel detail = inventoryService.getInventoryDetail(inventoryId, loginUser);
+        InventoryDetailViewModel view = inventoryService.getInventoryDetail(inventoryId, loginUser);
 
-        model.addAttribute("detail", detail);
+        model.addAttribute("view", view);
         return "inventory/adjust";
     }
 

@@ -6,7 +6,7 @@
 <c:set var="isAdmin" value="${sessionScope.loginUser.admin}" />
 <c:set var="role" value="${isAdmin ? 'admin' : 'owner'}" />
 <c:url var="baseUrl" value="/${role}/inventories" />
-<c:url var="adjustAction" value="/${role}/inventories/${detail.inventoryId}/adjust" />
+<c:url var="adjustAction" value="/${role}/inventories/${view.inventoryId}/adjust" />
 
 <t:layout>
   <layout:Page title="재고 조정">
@@ -19,17 +19,17 @@
         <layout:Section title="기본 정보">
           <common:FieldList>
             <c:if test="${isAdmin}">
-              <layout:FieldRow label="점포명"><c:out value="${detail.storeName}" /></layout:FieldRow>
+              <layout:FieldRow label="점포명"><c:out value="${view.storeName}" /></layout:FieldRow>
             </c:if>
-            <layout:FieldRow label="자재명"><c:out value="${detail.materialName}" /></layout:FieldRow>
-            <layout:FieldRow label="현재 수량"><c:out value="${detail.currentQuantity}" /></layout:FieldRow>
-            <layout:FieldRow label="안전재고 수량"><c:out value="${detail.safetyQuantity}" /></layout:FieldRow>
+            <layout:FieldRow label="자재명"><c:out value="${view.materialName}" /></layout:FieldRow>
+            <layout:FieldRow label="현재 수량"><c:out value="${view.currentQuantity}" /></layout:FieldRow>
+            <layout:FieldRow label="안전재고 수량"><c:out value="${view.safetyQuantity}" /></layout:FieldRow>
           </common:FieldList>
         </layout:Section>
 
         <layout:Section title="조정 입력">
           <layout:FieldRow label="조정 후 수량" inputId="afterQuantity">
-            <input type="number" class="form-control" id="afterQuantity" name="afterQuantity" value="${detail.currentQuantity}" min="0" max="1000" required />
+            <input type="number" class="form-control" id="afterQuantity" name="afterQuantity" value="${view.currentQuantity}" min="0" max="1000" required />
           </layout:FieldRow>
 
           <layout:FieldRow label="사유" inputId="reason">
