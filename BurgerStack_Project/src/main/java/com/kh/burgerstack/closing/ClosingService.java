@@ -8,8 +8,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kh.burgerstack.inventory.command.ChangeInventoryByClosingCommand;
 import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
+import com.kh.burgerstack.inventory.domain.InventoryTransaction;
 import com.kh.burgerstack.inventory.service.InventoryService;
 import com.kh.burgerstack.user.LoginUser;
 
@@ -111,10 +111,12 @@ public class ClosingService {
                             deltaQuantity);
                 }).toList();
 
-        ChangeInventoryByClosingCommand inventoryStoreClosingChangeCommand = new ChangeInventoryByClosingCommand(
+        ChangeInventoryCommand inventoryStoreClosingChangeCommand = new ChangeInventoryCommand(
                 loginUser,
-                closing.getClosingMemo(),
-                closing.getStoreClosingId().intValue(),
+                InventoryTransaction.forClosing(
+                        loginUser,
+                        closing.getClosingMemo(),
+                        closing.getStoreClosingId().intValue()),
                 inventoryChangeItems);
 
         inventoryService.change(inventoryStoreClosingChangeCommand);

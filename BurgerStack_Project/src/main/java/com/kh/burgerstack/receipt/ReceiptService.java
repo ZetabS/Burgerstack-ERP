@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.burgerstack.common.pagination.PageInfo;
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.inventory.command.ChangeInventoryByReceivingCommand;
 import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
+import com.kh.burgerstack.inventory.domain.InventoryTransaction;
 import com.kh.burgerstack.inventory.service.InventoryService;
 import com.kh.burgerstack.user.LoginUser;
 
@@ -166,10 +166,12 @@ public class ReceiptService {
                     return new ChangeInventoryCommand.DeltaQuantityChange(inventoryId, deltaQuantity);
                 }).toList();
 
-        ChangeInventoryByReceivingCommand inventoryReceiptChangeCommand = new ChangeInventoryByReceivingCommand(
+        ChangeInventoryCommand inventoryReceiptChangeCommand = new ChangeInventoryCommand(
                 loginUser,
-                receiptMemo,
-                receiptId.intValue(),
+                InventoryTransaction.forReceiving(
+                        loginUser,
+                        receiptMemo,
+                        receiptId.intValue()),
                 inventoryChangeItems);
 
         inventoryService.change(inventoryReceiptChangeCommand);

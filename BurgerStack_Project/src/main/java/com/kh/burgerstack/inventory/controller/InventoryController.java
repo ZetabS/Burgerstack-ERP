@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kh.burgerstack.common.pagination.PagingRequest;
-import com.kh.burgerstack.inventory.command.ChangeInventoryByAdjustmentCommand;
 import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
+import com.kh.burgerstack.inventory.domain.InventoryTransaction;
 import com.kh.burgerstack.inventory.dto.InventoryDetailViewModel;
 import com.kh.burgerstack.inventory.dto.InventoryListCondition;
 import com.kh.burgerstack.inventory.dto.InventoryListViewModel;
@@ -99,11 +99,14 @@ public class InventoryController {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
         inventoryService.change(
-                new ChangeInventoryByAdjustmentCommand(
+                new ChangeInventoryCommand(
                         loginUser,
-                        reason,
-                        transactionMemo,
-                        List.of(new ChangeInventoryCommand.FixedQuantityChange(inventoryId,
+                        InventoryTransaction.forAdjustment(
+                                loginUser,
+                                transactionMemo,
+                                reason),
+                        List.of(new ChangeInventoryCommand.FixedQuantityChange(
+                                inventoryId,
                                 afterQuantity))));
 
         model.addAttribute("alertMsg", "재고 조정에 성공했습니다.");

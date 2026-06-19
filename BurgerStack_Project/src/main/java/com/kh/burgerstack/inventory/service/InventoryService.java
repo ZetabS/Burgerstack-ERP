@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.burgerstack.common.pagination.PagingRequest;
 import com.kh.burgerstack.exception.BusinessException;
 import com.kh.burgerstack.exception.NotFoundException;
-import com.kh.burgerstack.inventory.command.ChangeInventoryByAdjustmentCommand;
 import com.kh.burgerstack.inventory.command.ChangeInventoryCommand;
 import com.kh.burgerstack.inventory.dao.InventoryDao;
 import com.kh.burgerstack.inventory.domain.InventoryTransactionItem;
@@ -95,7 +94,7 @@ public class InventoryService {
         }
 
         inventoryTransactionService.createTransaction(
-                command.createInventoryTransaction(storeId),
+                command.getInventoryTransaction(),
                 inventoryTransactionItems);
     }
 

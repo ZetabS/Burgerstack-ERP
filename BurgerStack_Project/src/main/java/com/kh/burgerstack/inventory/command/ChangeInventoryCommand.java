@@ -9,14 +9,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-public interface ChangeInventoryCommand {
-    LoginUser getLoginUser();
+@RequiredArgsConstructor
+@Getter
+public class ChangeInventoryCommand {
+    private final LoginUser loginUser; // 로그인 사용자
+    private final InventoryTransaction inventoryTransaction;
+    private final List<? extends ChangeInventoryCommand.QuantityChange> items; // 변경된 재고 정보
 
-    List<? extends ChangeInventoryCommand.QuantityChange> getItems();
-
-    InventoryTransaction createInventoryTransaction(int storeId);
-
-    interface QuantityChange {
+    public static interface QuantityChange {
         int getInventoryId();
     }
 
